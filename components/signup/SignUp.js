@@ -3,9 +3,12 @@ import { StyleSheet, Text, View, TextInput, Button, TouchableHighlight, Touchabl
 
 import {Ionicons} from '@expo/vector-icons'
 
+const serverUrl = "http://10.0.0.7:3001/"
+
 const axios = require("axios")
 
 export default class SignUp extends React.Component{
+    _isMounted = false
 
     state = {
         emailValue: '',
@@ -21,7 +24,8 @@ export default class SignUp extends React.Component{
         },
         isEmailValid: false,
         isPasswordValid: false,
-        isRePasswordValid: false
+        isRePasswordValid: false,
+        dateValue: undefined
     }
 
     SwitchToLoginScreen = () => {
@@ -29,7 +33,21 @@ export default class SignUp extends React.Component{
     }
 
     SignUp = () => {
-
+        axios({
+            method:'post',
+            url: serverUrl + 'user',
+            data: {
+                email: this.state.emailValue,
+                password: this.state.passValue,
+                fullName: this.state.fullNameValue
+            }
+        })
+        .then(res => {
+            console.log(res)
+        })
+        .catch(err => {
+            console.log(err)
+        })
     }
 
     componentDidUpdate(prevProps, prevState){
@@ -83,6 +101,17 @@ export default class SignUp extends React.Component{
         }
     }
 
+    componentDidMount(){
+        this._isMounted = true
+
+        if(this._isMounted)
+            console.log("Sign Up")
+    }
+
+    componentWillUnmount(){
+        this._isMounted = false
+    }
+
     render(){
         return(
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -103,7 +132,7 @@ export default class SignUp extends React.Component{
                             }
                         </View>
                     </View>
-                            
+
                     <View style={styles.overlayContainer}>
                         <TextInput style= {this.state.fillingInput}
                             placeholder="Email*"

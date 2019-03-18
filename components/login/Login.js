@@ -19,6 +19,17 @@ export default class Login extends React.Component{
         this.props.navigation.navigate('SignUp')
     }
 
+    componentDidMount(){
+        console.log("Login")
+
+        const willFocusSubscription = this.props.navigation.addListener(
+            'willFocus',
+            payload => {
+              console.debug('willFocus', payload);
+            }
+        );
+    }
+
     render(){   
         return(
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
