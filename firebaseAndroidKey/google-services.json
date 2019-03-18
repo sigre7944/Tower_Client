@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "129611253621",
+    "firebase_url": "https://tower-8ed43.firebaseio.com",
+    "project_id": "tower-8ed43",
+    "storage_bucket": "tower-8ed43.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:129611253621:android:945c81475c119c31",
+        "android_client_info": {
+          "package_name": "com.tower.tower"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "129611253621-82duhvae0gdrpf2fb4la0iop3s471fpp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBj0iFvLMM_oBcmgniWdi9xASu1U4GQzag"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

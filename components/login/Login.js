@@ -1,17 +1,42 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, Button, TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback, TouchableNativeFeedback, Keyboard } from 'react-native';
+// import { GoogleSignIn } from 'expo'
+import firebase from 'firebase'
 
 const axios = require("axios")
 
-export default class Login extends React.Component{
+const config = {
+    apiKey: "AIzaSyBt1JPKlumZRjBKtlvgW8Hn7gYY8yidfQo",
+    authDomain: "tower-8ed43.firebaseapp.com",
+    databaseURL: "https://tower-8ed43.firebaseio.com",
+    projectId: "tower-8ed43",
+    storageBucket: "tower-8ed43.appspot.com",
+    messagingSenderId: "129611253621"
+}
 
+firebase.initializeApp(config)
+
+export default class Login extends React.Component{
     state = {
         emailValue: '',
         passValue: ''
     }
     
+    //Google Sign In from expo-google-sign-in library is for standalone app (built one), thus cannot be used in expo developing environment
+
+    // initAsync = async () => {
+    //     await GoogleSignIn.initAsync({
+    //         clientId: '129611253621-uveutitfi5g84q1g7fv7rnkos64clg31.apps.googleusercontent.com',
+    //     })
+    //     this._syncUserWithStateAsync();
+    // }
+
 
     Login = () => {
+
+    }
+
+    LoginInWithGoogle = () => {
 
     }
 
@@ -20,14 +45,19 @@ export default class Login extends React.Component{
     }
 
     componentDidMount(){
-        console.log("Login")
 
-        const willFocusSubscription = this.props.navigation.addListener(
-            'willFocus',
-            payload => {
-              console.debug('willFocus', payload);
-            }
-        );
+        //Use React Native Navigation Lifecycle events to handle different states of a screen (willFocus, didFocus, willBlur and didBlur)
+
+        // const willFocusSubscription = this.props.navigation.addListener(
+        //     'willFocus',
+        //     payload => {
+        //       console.debug('willFocus', payload);
+        //     }
+        // );
+
+
+
+        // this.initAsync()
     }
 
     render(){   
@@ -61,6 +91,7 @@ export default class Login extends React.Component{
                     
                     <Text>Or   <Text style={styles.SignUpAnchor} onPress={this.SwitchToSignUp}>Sign Up</Text></Text>
                     
+                    <Text>Or   <Text style={styles.SignUpAnchor} onPress={this.LoginInWithGoogle}>Login In With Google</Text></Text>
                 </View>
             </TouchableWithoutFeedback>
         )

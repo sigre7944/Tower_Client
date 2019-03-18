@@ -8,7 +8,7 @@ const serverUrl = "http://10.0.0.7:3001/"
 const axios = require("axios")
 
 export default class SignUp extends React.Component{
-    _isMounted = false
+    // _isMounted = false
 
     state = {
         emailValue: '',
@@ -102,14 +102,14 @@ export default class SignUp extends React.Component{
     }
 
     componentDidMount(){
-        this._isMounted = true
+        // this._isMounted = true
 
-        if(this._isMounted)
-            console.log("Sign Up")
+        // if(this._isMounted)
+        //     console.log("Sign Up")
     }
 
     componentWillUnmount(){
-        this._isMounted = false
+        // this._isMounted = false
     }
 
     render(){
