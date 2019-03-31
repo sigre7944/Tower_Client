@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Login from './components/login/Login' //Login screen
 import SignUp from './components/signup/SignUp' //Sign Up screen
+import Main from './components/main/Main' //Main screen
 import {createStackNavigator, createAppContainer} from 'react-navigation'
 
 export default class App extends React.Component {
@@ -26,9 +27,19 @@ const AppNavigator = createStackNavigator({ //Stack navigator works as a history
   },
   SignUp: {
     screen: SignUp
+  },
+  Main: {
+    screen: Main,
+    navigationOptions: {
+      title: 'Home',
+      header: null //this will hide the header
+    },
   }
 }, {
   initialRouteName: "Login"
+},
+{
+  initialRouteName: "Main",
 })
 
 const AppContainer =  createAppContainer(AppNavigator) //return a React component, which is to wrap the stack navigator

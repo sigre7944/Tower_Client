@@ -10,14 +10,26 @@ export default class Login extends React.Component{
         passValue: ''
     }
     
+    componentDidMount() {
+        const willFocusSubscription = this.props.navigation.addListener(
+            'willFocus',
+            payload => {
+              console.debug('willFocus', payload);
+            }
+        );
 
+        willFocusSubscription.remove();
+    }   
+    
     Login = () => {
-
+        // temporary
+        this.props.navigation.navigate('Main')
     }
 
     SwitchToSignUp = () => {
         this.props.navigation.navigate('SignUp')
     }
+
 
     render(){   
         return(
