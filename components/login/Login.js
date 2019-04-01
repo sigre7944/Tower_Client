@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, Button, TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback, TouchableNativeFeedback, Keyboard } from 'react-native';
 // import { GoogleSignIn } from 'expo'
+import { Facebook } from 'expo'
+
 import firebase from 'firebase'
 
 const axios = require("axios")
@@ -31,6 +33,39 @@ export default class Login extends React.Component{
     //     this._syncUserWithStateAsync();
     // }
 
+    LoginWithFaceBook = async () => {
+        // try{
+            const {
+                type,
+                token,
+                expires,
+                permissions,
+                declinedPermissions,
+                behevior,
+            } = await Facebook.logInWithReadPermissionsAsync('425642994856328',
+            {
+                permissions: ['public_profile'],
+                behevior: 'browser'
+            })
+
+            console.log(type)
+
+            console.log(token)
+
+            if(type === 'success'){
+                const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
+                console.debug('Logged in!', `Hi ${(await response.json()).name}!`);
+            }
+
+            else{
+                console.log("cancel")
+            }
+        // }
+        // catch ({ message }) {
+        //     console.log(`Facebook Login Error: ${message}`)
+        // }
+    }
+
 
     Login = () => {
 
@@ -54,8 +89,6 @@ export default class Login extends React.Component{
         //       console.debug('willFocus', payload);
         //     }
         // );
-
-
 
         // this.initAsync()
     }
@@ -91,7 +124,7 @@ export default class Login extends React.Component{
                     
                     <Text>Or   <Text style={styles.SignUpAnchor} onPress={this.SwitchToSignUp}>Sign Up</Text></Text>
                     
-                    <Text>Or   <Text style={styles.SignUpAnchor} onPress={this.LoginInWithGoogle}>Login In With Google</Text></Text>
+                    <Text>Or   <Text style={styles.SignUpAnchor} onPress={this.LoginWithFaceBook}>Login With FaceBook</Text></Text>
                 </View>
             </TouchableWithoutFeedback>
         )
