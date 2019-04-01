@@ -23,7 +23,18 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tower.tower",
+      "config": {
+        "googleSignIn" : {
+          "reservedClientId": "com.googleusercontent.apps.129611253621-uveutitfi5g84q1g7fv7rnkos64clg31"
+        }
+      }
+    },
+    "android": {
+      "package": "com.tower.tower",
+      "googleServicesFile": "./firebaseAndroidKey/google-services.json"
     }
+
   }
 }

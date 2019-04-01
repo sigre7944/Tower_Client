@@ -4,6 +4,7 @@ import Login from './components/login/Login' //Login screen
 import SignUp from './components/signup/SignUp' //Sign Up screen
 import {createStackNavigator, createAppContainer} from 'react-navigation'
 
+
 export default class App extends React.Component {
   render() {
     return (
