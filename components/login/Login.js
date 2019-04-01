@@ -66,9 +66,9 @@ export default class Login extends React.Component{
         // }
     }
 
-
     Login = () => {
-
+        // temporary
+        this.props.navigation.navigate('Main')
     }
 
     LoginInWithGoogle = () => {
