@@ -1,35 +1,97 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, Button, TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback, TouchableNativeFeedback, Keyboard } from 'react-native';
+// import { GoogleSignIn } from 'expo'
+import { Facebook } from 'expo'
+
+import firebase from 'firebase'
 
 const axios = require("axios")
 
-export default class Login extends React.Component{
+const config = {
+    apiKey: "AIzaSyBt1JPKlumZRjBKtlvgW8Hn7gYY8yidfQo",
+    authDomain: "tower-8ed43.firebaseapp.com",
+    databaseURL: "https://tower-8ed43.firebaseio.com",
+    projectId: "tower-8ed43",
+    storageBucket: "tower-8ed43.appspot.com",
+    messagingSenderId: "129611253621"
+}
 
+firebase.initializeApp(config)
+
+export default class Login extends React.Component{
     state = {
         emailValue: '',
         passValue: ''
     }
     
-    componentDidMount() {
-        const willFocusSubscription = this.props.navigation.addListener(
-            'willFocus',
-            payload => {
-              console.debug('willFocus', payload);
-            }
-        );
+    //Google Sign In from expo-google-sign-in library is for standalone app (built one), thus cannot be used in expo developing environment
 
-        willFocusSubscription.remove();
-    }   
-    
+    // initAsync = async () => {
+    //     await GoogleSignIn.initAsync({
+    //         clientId: '129611253621-uveutitfi5g84q1g7fv7rnkos64clg31.apps.googleusercontent.com',
+    //     })
+    //     this._syncUserWithStateAsync();
+    // }
+
+    LoginWithFaceBook = async () => {
+        // try{
+            const {
+                type,
+                token,
+                expires,
+                permissions,
+                declinedPermissions,
+                behevior,
+            } = await Facebook.logInWithReadPermissionsAsync('425642994856328',
+            {
+                permissions: ['public_profile'],
+                behevior: 'browser'
+            })
+
+            console.log(type)
+
+            console.log(token)
+
+            if(type === 'success'){
+                const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
+                console.debug('Logged in!', `Hi ${(await response.json()).name}!`);
+            }
+
+            else{
+                console.log("cancel")
+            }
+        // }
+        // catch ({ message }) {
+        //     console.log(`Facebook Login Error: ${message}`)
+        // }
+    }
+
     Login = () => {
         // temporary
         this.props.navigation.navigate('Main')
+    }
+
+    LoginInWithGoogle = () => {
+
     }
 
     SwitchToSignUp = () => {
         this.props.navigation.navigate('SignUp')
     }
 
+    componentDidMount(){
+
+        //Use React Native Navigation Lifecycle events to handle different states of a screen (willFocus, didFocus, willBlur and didBlur)
+
+        // const willFocusSubscription = this.props.navigation.addListener(
+        //     'willFocus',
+        //     payload => {
+        //       console.debug('willFocus', payload);
+        //     }
+        // );
+
+        // this.initAsync()
+    }
 
     render(){   
         return(
@@ -62,6 +124,7 @@ export default class Login extends React.Component{
                     
                     <Text>Or   <Text style={styles.SignUpAnchor} onPress={this.SwitchToSignUp}>Sign Up</Text></Text>
                     
+                    <Text>Or   <Text style={styles.SignUpAnchor} onPress={this.LoginWithFaceBook}>Login With FaceBook</Text></Text>
                 </View>
             </TouchableWithoutFeedback>
         )

@@ -5,6 +5,7 @@ import SignUp from './components/signup/SignUp' //Sign Up screen
 import Main from './components/main/Main' //Main screen
 import {createStackNavigator, createAppContainer} from 'react-navigation'
 
+
 export default class App extends React.Component {
   render() {
     return (
