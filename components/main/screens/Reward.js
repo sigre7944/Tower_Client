@@ -5,17 +5,11 @@ import {
 } from 'react-native';
 
 export default class Reward extends React.Component {
-    // render() {
-    //   return (
-    //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    //       <Text>Reward!</Text>
-    //     </View>
-    //   );
-    // }
-
     render() {
-        return(
-            <Text>Reward</Text>
-        )
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text>Reward!</Text>
+        </View>
+      );
     }
 }

@@ -30,6 +30,11 @@ const SimpleTabs = createMaterialTopTabNavigator({
 class Journal extends React.Component {
     static router = SimpleTabs.router;
 
+    static navigationOptions = {
+        header: null,
+        title: 'Journal'
+    }
+
     // componentDidMount() {
     //     const willFocusSubscription = this.props.navigation.addListener(
     //         'willFocus',
