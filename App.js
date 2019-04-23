@@ -3,11 +3,18 @@ import Login from './components/login/Login' //Login screen
 import SignUp from './components/signup/SignUp' //Sign Up screen
 import MainNavigator from './components/main/Main' //Main screen
 import {createStackNavigator, createAppContainer, createSwitchNavigator} from 'react-navigation'
+import {createStore} from 'redux'
+import {Provider} from 'react-redux'
+
+// const store = createStore()
+
 
 export default class App extends React.Component {
   render() {
     return (
-      <AppContainer />
+      // <Provider>
+        <AppContainer />
+      // </Provider>
     )
   }
 }

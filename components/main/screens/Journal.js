@@ -5,7 +5,8 @@ import {
     StyleSheet,
     Text,
     View,
-    Button
+    Button,
+    TextInput
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {
@@ -69,9 +70,30 @@ class Journal extends React.Component {
 
     render() {
         return(
-            <Text>Journal</Text>
+            <View style={styles.inputContainer}>
+                <TextInput 
+                    style={styles.input}
+                />
+                
+                <Button title="Add"/>
+            </View>
         )
     }
 }
 
-    export default Journal;
+const styles = StyleSheet.create({
+    inputContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+
+    input: {
+        borderWidth: 2,
+        width: 100,
+        height: 30
+    }
+})
+
+
+export default Journal;
