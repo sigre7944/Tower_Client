@@ -1,10 +1,24 @@
 import React from 'react'
+import {
+    LayoutAnimation,
+    StatusBar,
+    StyleSheet,
+    Text,
+    View,
+    Button,
+    TextInput
+} from 'react-native';
 
-export default class AddAllTodo extends React.Component{
 
+class AddAllTodo extends React.Component{
+
+    state= {
+        currentAllTodo: ''
+    }
 
     AddTodoToAll = () => {
-        this.props.addTodoToAll()
+        if(this.state.currentAllTodo.length > 0)
+            this.props.addTodoToAll(this.state.currentAllTodo)
     }
 
     render(){
@@ -12,6 +26,9 @@ export default class AddAllTodo extends React.Component{
             <View style={styles.inputContainer}>
                 <TextInput 
                     style={styles.input}
+                    onChange = {(eventCount, target, currentAllTodo) => {
+                        this.setState({currentAllTodo})
+                    }}
                 />
                 
                 <Button title="Add" onPress={this.AddTodoToAll}/>
@@ -34,3 +51,11 @@ const styles = StyleSheet.create({
         height: 30
     }
 })
+
+// export default AddAllTodo = ({}) => (
+//     <>
+//         <AddAllTodoClass />
+//     </>
+// )
+
+export default AddAllTodo
