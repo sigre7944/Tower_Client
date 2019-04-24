@@ -16,20 +16,20 @@ import {
     SafeAreaView,
 } from 'react-navigation';
 
-import DailyScreen from './tabs/Daily';
-import WeeklyScreen from './tabs/Weekly';
-import MonthlyScreen from './tabs/Monthly';
+// import DailyScreen from './tabs/Daily';
+// import WeeklyScreen from './tabs/Weekly';
+// import MonthlyScreen from './tabs/Monthly';
 
-import Header from './shared/Header'
+// import Header from './shared/Header'
 
-const SimpleTabs = createMaterialTopTabNavigator({
-    Daily: DailyScreen,
-    Weekly: WeeklyScreen,
-    Monthly: MonthlyScreen,
-});
+// const SimpleTabs = createMaterialTopTabNavigator({
+//     Daily: DailyScreen,
+//     Weekly: WeeklyScreen,
+//     Monthly: MonthlyScreen,
+// });
 
 class Journal extends React.Component {
-    static router = SimpleTabs.router;
+    // static router = SimpleTabs.router;
 
     static navigationOptions = {
         header: null,
@@ -68,17 +68,21 @@ class Journal extends React.Component {
     //     }
     // }
 
-    render() {
-        return(
-            <View style={styles.inputContainer}>
-                <TextInput 
-                    style={styles.input}
-                />
+    // AddTodo = () => {
+        
+    // }
+
+    // render() {
+    //     return(
+    //         <View style={styles.inputContainer}>
+    //             <TextInput 
+    //                 style={styles.input}
+    //             />
                 
-                <Button title="Add"/>
-            </View>
-        )
-    }
+    //             <Button title="Add" onPress={this.AddTodo}/>
+    //         </View>
+    //     )
+    // }
 }
 
 const styles = StyleSheet.create({

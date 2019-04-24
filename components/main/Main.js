@@ -1,4 +1,4 @@
-import Journal from './screens/Journal'
+import Journal from './screens/Journal/'
 import Progress from './screens/Progress'
 import Reward from './screens/Reward'
 import Settings from './screens/Settings'
