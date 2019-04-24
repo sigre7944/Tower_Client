@@ -26,7 +26,7 @@ class AddAllTodo extends React.Component{
             <View style={styles.inputContainer}>
                 <TextInput 
                     style={styles.input}
-                    onChange = {(eventCount, target, currentAllTodo) => {
+                    onChangeText = {(currentAllTodo) => {
                         this.setState({currentAllTodo})
                     }}
                 />
@@ -51,11 +51,5 @@ const styles = StyleSheet.create({
         height: 30
     }
 })
-
-// export default AddAllTodo = ({}) => (
-//     <>
-//         <AddAllTodoClass />
-//     </>
-// )
 
 export default AddAllTodo

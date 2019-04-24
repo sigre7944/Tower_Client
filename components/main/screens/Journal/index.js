@@ -1,6 +1,6 @@
 import React from 'react';
-
 import AddAllTodo from './containers/AddAllTodo.Container'
+import DisplayAllTodos from './containers/DisplayAllTodos.Container'
 
 class Journal extends React.Component {
     static navigationOptions = {
@@ -10,7 +10,10 @@ class Journal extends React.Component {
 
     render(){
         return(
-            <AddAllTodo />
+            <>
+                <AddAllTodo />
+                <DisplayAllTodos />
+            </>
         )
     }
 }
