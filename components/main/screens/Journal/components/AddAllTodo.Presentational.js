@@ -40,7 +40,6 @@ class AddAllTodo extends React.Component{
 
 const styles = StyleSheet.create({
     inputContainer: {
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center'
     },

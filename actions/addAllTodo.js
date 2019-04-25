@@ -4,8 +4,3 @@ export const addTodoToAll = title => ({
     title
 })
 
-export const toggleAllTodo = id => ({
-    type: 'TOGGLE_ALL_TODO',
-    id
-})
-

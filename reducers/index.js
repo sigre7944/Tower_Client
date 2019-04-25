@@ -1,8 +1,8 @@
 import {combineReducers} from 'redux'
 import {allTodos} from './allTodos'
-
-
+import {allCompletedTodos} from './allCompletedTodos'
 const rootReducer = combineReducers({
-    allTodos
+    allTodos,
+    allCompletedTodos
 })
 export default rootReducer

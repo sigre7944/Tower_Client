@@ -11,18 +11,31 @@ import {
 
 export default class DisplayAllTodos extends React.Component{
     
+    state = {
+        todoNodes: null
+    }
+
+    ActionToCompleteAllTodoTask = (todo) => {
+        this.props.ActionToCompleteAllTodoTask(todo)
+    }
+
+    componentDidMount(){
+    }
+
+    componentDidUpdate = (prevProps, prevState) => {
+    }
+
     render(){
-        let todoNodes = this.props.allTodos.map(todo => {
-            return(
-                <View>
-                    <Text>{todo.title}</Text>
-                </View>
-            )
-        })
 
         return(
             <>
-            {todoNodes}
+            {this.props.allTodos.map((todo, index) => (
+                <View key={todo+"-"+index}>
+                    <Text 
+                    onPress={this.ActionToCompleteAllTodoTask.bind(this, todo)}
+                    >{todo.title}</Text>
+                </View>
+            ))}
             </>
         )
     }
