@@ -18,8 +18,20 @@ const JournalTopNavigator = createMaterialTopTabNavigator({
 {
     initialRouteName: "Daily",
     tabBarOptions: {
+        upperCaseLabel: false,
+        labelStyle: {
+            color: 'black',
+            fontSize: 18
+        },
         style: {
-            backgroundColor: 'white'
+            backgroundColor: 'white',
+            shadowColor: 'transparent'
+        },
+        tabStyle: {
+        },
+        indicatorStyle: {
+            top: 0,
+            backgroundColor: 'black',
         }
     }
 })

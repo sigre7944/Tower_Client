@@ -9,6 +9,11 @@ import {
 
 
 export default class Monthly extends React.Component{
+    static navigationOptions = {
+        swipeEnabled: false
+    }
+
+    
     render(){
         return(
             <View>

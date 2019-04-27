@@ -9,6 +9,11 @@ import {
 
 
 export default class Daily extends React.Component{
+    static navigationOptions = {
+        swipeEnabled: false,
+        header: null
+    }
+
     render(){
         return(
             <View>
