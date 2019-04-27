@@ -1,4 +1,4 @@
-import Journal from './screens/Journal'
+import JournalTopNavigator from './screens/Journal'
 import Progress from './screens/Progress/Progress'
 import Reward from './screens/Reward/Reward'
 import Settings from './screens/Settings/Settings'
@@ -6,7 +6,7 @@ import Settings from './screens/Settings/Settings'
 import {createBottomTabNavigator} from 'react-navigation'
 
 const MainNavigator = createBottomTabNavigator({
-    Journal: { screen: Journal },
+    Journal: JournalTopNavigator,
     Progress: { screen: Progress },
     Reward: { screen: Reward },
     Settings: { screen: Settings },
