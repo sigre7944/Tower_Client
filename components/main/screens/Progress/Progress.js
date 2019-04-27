@@ -7,7 +7,7 @@ import {
     Button
 } from 'react-native';
 
-import Header from './shared/Header';
+import Header from '../shared/Header';
 
 export default class Progress extends React.Component {
     render() {

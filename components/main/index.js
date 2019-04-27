@@ -1,7 +1,7 @@
-import Journal from './screens/Journal/'
-import Progress from './screens/Progress'
-import Reward from './screens/Reward'
-import Settings from './screens/Settings'
+import Journal from './screens/Journal'
+import Progress from './screens/Progress/Progress'
+import Reward from './screens/Reward/Reward'
+import Settings from './screens/Settings/Settings'
 
 import {createBottomTabNavigator} from 'react-navigation'
 
