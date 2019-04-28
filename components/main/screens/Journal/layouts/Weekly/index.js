@@ -10,7 +10,7 @@ import {
 
 export default class Weekly extends React.Component{
     static navigationOptions = {
-        swipeEnabled: false
+        swipeEnabled: false,
     }
 
     

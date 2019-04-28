@@ -9,6 +9,7 @@ import {
     ScrollView
 } from 'react-native';
 
+let scrollViewRef
 
 export default class Daily extends React.Component{
     static navigationOptions = {
@@ -76,16 +77,30 @@ export default class Daily extends React.Component{
             ))
         })
 
+        this.focusScrollViewToToday(scrollViewRef, days_arr, today)
+
+        console.log("mounted")
+    }
+
+    focusScrollViewToToday = (scrollViewRef, days_arr, today) => {
+        scrollViewRef.scrollTo({
+            y: 0,
+            x: days_arr.findIndex(obj => obj.dayNumb === today) * 50
+        })
     }
 
     getDaysInMonth = (month, year) => {
         return new Date(year, month, 0).getDate()
     }
 
+    componentWillUnmount(){
+        console.log("unmount")
+    }
+
     render(){
         return(
             <View style={styles.container}>
-                <ScrollView style={styles.scrollViewContainer} horizontal={true}>
+                <ScrollView style={styles.scrollViewContainer} horizontal={true} ref={view => scrollViewRef = view}>
                     {this.state.dailyTimeView}
                 </ScrollView>
             </View>
