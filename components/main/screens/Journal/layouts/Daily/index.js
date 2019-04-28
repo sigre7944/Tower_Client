@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 
 let scrollViewRef,
-    dayHolderWidth = 60
+    dayHolderWidth = 60,
+    days_arr = []
     
 
 export default class Daily extends React.Component{
@@ -21,21 +22,22 @@ export default class Daily extends React.Component{
     }
 
     state = {
-        dailyTimeView: null
+        dailyTimeView: null,
+        days_arr: days_arr
     }
 
     componentDidMount(){
+        days_arr.length = 0
+
         let today = new Date().getDate(),
-            month = new Date().getMonth(),
+            month = new Date().getMonth() + 1,
             year = new Date().getFullYear()
         
         let daysInMonth = this.getDaysInMonth(month, year)
 
-        let days_arr = []
-
         for(let i = 1; i <= daysInMonth; i++){
             let dayWord,
-                dayInWeek = new Date(year, month, i).getDay()
+                dayInWeek = new Date(year, month-1, i).getDay()
 
             if(dayInWeek === 0){
                 dayWord = 'Su'
@@ -67,7 +69,12 @@ export default class Daily extends React.Component{
 
             days_arr.push({
                dayWord: dayWord,
-               dayNumb: i
+               dayNumb: i,
+               chosen: false
+            })
+
+            this.setState({
+                days_arr: days_arr
             })
         }
 
@@ -75,18 +82,37 @@ export default class Daily extends React.Component{
             dailyTimeView: days_arr.map((obj, index) => {
                 if(obj.dayNumb === today){
                     return (
-                        <TouchableHighlight onPress={() => console.log("true")} style={styles.dayHolder} key={obj + " " + index}>
+                        <TouchableHighlight 
+                            onPress={this.chooseDay.bind(this, scrollViewRef, days_arr, obj.dayNumb)} 
+                            style={styles.dayHolder} 
+                            key={obj + " " + index}
+                            underlayColor={'#dcdcdc'}
+                        >
                         <>
                             <View>
-                                <Text>{obj.dayWord}</Text>
-                            </View>
-
-                            <View style={styles.currentDayHolder}>
-                                <Text 
+                                <Text
                                     style={{
-                                        color: 'white'
+                                        fontWeight: "600",
                                     }}
                                 >
+                                    {obj.dayWord}
+                                </Text>
+                            </View>
+
+                            <View 
+                                style={{
+                                    height: 35,
+                                    width: dayHolderWidth,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    
+                                }}
+                            >
+                                <Text 
+                                    style={{
+                                        fontWeight: "600",
+                                    }}
+                                > 
                                     {obj.dayNumb}
                                 </Text>
                             </View>
@@ -97,10 +123,21 @@ export default class Daily extends React.Component{
                 
                 else{
                     return (
-                        <TouchableHighlight onPress={() => console.log("true")} style={styles.dayHolder} key={obj + " " + index}>
+                        <TouchableHighlight 
+                            onPress={this.chooseDay.bind(this, scrollViewRef, days_arr, obj.dayNumb)} 
+                            style={styles.dayHolder} 
+                            key={obj + " " + index}
+                            underlayColor={'#dcdcdc'}
+                        >
                         <>
                             <View>
-                                <Text>{obj.dayWord}</Text>
+                                <Text
+                                    style={{
+                                        color: 'gray'
+                                    }}
+                                >
+                                    {obj.dayWord}
+                                </Text>
                             </View>
 
                             <View 
@@ -111,7 +148,13 @@ export default class Daily extends React.Component{
                                     justifyContent: 'center',
                                 }}
                             >
-                                <Text>{obj.dayNumb}</Text>
+                                <Text
+                                    style={{
+                                        color: 'gray'
+                                    }}
+                                >
+                                    {obj.dayNumb}
+                                </Text>
                             </View>
                         </>
                         </TouchableHighlight>
@@ -121,22 +164,26 @@ export default class Daily extends React.Component{
         })
 
 
-        this.focusScrollViewToToday(scrollViewRef, days_arr, today)
+        this.focusScrollViewToDay(scrollViewRef, days_arr, today)
     }
 
-    focusScrollViewToToday = (scrollViewRef, days_arr, today) => {
-        let todayIndex = days_arr.findIndex(obj => obj.dayNumb === today),
+    chooseDay = (scrollViewRef, days_arr, day) => {
+        this.focusScrollViewToDay(scrollViewRef, days_arr, day)
+    }
+
+    focusScrollViewToDay = (scrollViewRef, days_arr, day) => {
+        let dayIndex = days_arr.findIndex(obj => obj.dayNumb === day),
             x_off_set
 
-        if(todayIndex > (days_arr.length - 3)){
-            todayIndex = days_arr.length - 7
+        if(dayIndex > (days_arr.length - 4)){
+            dayIndex = days_arr.length - 7
             scrollViewRef.scrollTo({
                 y: 0,
-                x: todayIndex * dayHolderWidth
+                x: dayIndex * dayHolderWidth
             })
         }
 
-        else if (todayIndex < 3){
+        else if (dayIndex < 3){
             scrollViewRef.scrollTo({
                 y: 0,
                 x: 0
@@ -144,8 +191,8 @@ export default class Daily extends React.Component{
         }
 
         else{
-            todayIndex -= 3
-            x_off_set = todayIndex * dayHolderWidth
+            dayIndex -= 3
+            x_off_set = dayIndex * dayHolderWidth
 
             scrollViewRef.scrollTo({
                 y: 0,
@@ -187,7 +234,8 @@ const styles = StyleSheet.create({
         width: dayHolderWidth,
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        borderRadius: 15,
     },
 
     currentDayHolder: {
