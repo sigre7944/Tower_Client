@@ -80,13 +80,28 @@ export default class Daily extends React.Component{
         this.focusScrollViewToToday(scrollViewRef, days_arr, today)
 
         console.log("mounted")
+
+
     }
 
     focusScrollViewToToday = (scrollViewRef, days_arr, today) => {
-        scrollViewRef.scrollTo({
-            y: 0,
-            x: days_arr.findIndex(obj => obj.dayNumb === today) * 50
-        })
+        let todayIndex = days_arr.findIndex(obj => obj.dayNumb === today),
+            x_off_set = todayIndex * 60
+
+        if(todayIndex >= (days_arr.length -7)){
+            todayIndex = days_arr.length -7
+            scrollViewRef.scrollTo({
+                y: 0,
+                x: todayIndex * 60
+            })
+        }
+
+        else{
+            scrollViewRef.scrollTo({
+                y: 0,
+                x: x_off_set
+            })
+        }
     }
 
     getDaysInMonth = (month, year) => {
@@ -117,7 +132,7 @@ const styles = StyleSheet.create({
     },
 
     dayHolder: {
-        width: 50,
+        width: 60,
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center'
