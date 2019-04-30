@@ -13,7 +13,8 @@ import {
 let scrollViewRef,
     dayHolderWidth = 60,
     days_arr = [],
-    today = new Date().getDate()
+    today = new Date().getDate(),
+    lastDayIndex 
     
 
 export default class Daily extends React.Component{
@@ -25,7 +26,7 @@ export default class Daily extends React.Component{
     state = {
         dailyTimeView: null,
         days_style_arr: [],
-        day_chosen: 0
+        days_arr: []
     }
 
     componentDidMount(){
@@ -76,14 +77,15 @@ export default class Daily extends React.Component{
                chosen: false
             })
 
-            days_style_arr.push({
-                color: 'gray'
-            })
+            days_style_arr.push(styles.dayHolder)
         }
 
-        
         this.setState({
-            days_style_arr: days_style_arr
+            days_arr: days_arr.map(day => {return day})
+        })
+
+        this.setState({
+            days_style_arr: days_style_arr.map(style => {return style})
         })
         
         this.focusScrollViewToDay(scrollViewRef, days_arr, today)
@@ -91,105 +93,25 @@ export default class Daily extends React.Component{
 
     
     componentDidUpdate(prevProps, prevState){
-        if(this.state.days_style_arr !== prevState.days_style_arr){
-            console.log(true)
-            this.setState({
-                dailyTimeView: days_arr.map((obj, index) => {
-                    if(obj.dayNumb === today){
-                        return (
-                            <TouchableHighlight 
-                                onPress={this.chooseDay.bind(this, scrollViewRef, days_arr, obj.dayNumb, index)} 
-                                style={styles.dayHolder} 
-                                key={obj + " " + index}
-                                underlayColor={'#dcdcdc'}
-                            >
-                            <>
-                                <View>
-                                    <Text
-                                        style={{
-                                            fontWeight: "600",
-                                        }}
-                                    >
-                                        {obj.dayWord}
-                                    </Text>
-                                </View>
-    
-                                <View 
-                                    style={{
-                                        height: 35,
-                                        width: dayHolderWidth,
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    <Text 
-                                        style={{
-                                            fontWeight: "600",
-                                        }}
-                                    > 
-                                        {obj.dayNumb}
-                                    </Text>
-                                </View>
-                            </>
-                            </TouchableHighlight>
-                        )
-                    }
-                    
-                    else{
-                        return (
-                            <TouchableHighlight 
-                                onPress={this.chooseDay.bind(this, scrollViewRef, days_arr, obj.dayNumb,index)} 
-                                style={styles.dayHolder} 
-                                key={obj + " " + index}
-                                underlayColor={'#dcdcdc'}
-                                onFocus={() => console.log(true)}
-                            >
-                            <>
-                                <View>
-                                    <Text
-                                        style={{
-                                            color: 'gray'
-                                        }}
-                                    >
-                                        {obj.dayWord}
-                                    </Text>
-                                </View>
-    
-                                <View 
-                                    style={{
-                                        height: 35,
-                                        width: dayHolderWidth,
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    <Text
-                                        style={this.state.days_style_arr[index]}
-                                    >
-                                        {obj.dayNumb}
-                                    </Text>
-                                </View>
-                            </>
-                            </TouchableHighlight>
-                        )
-                    }
-                })
-            })
-        }
     }
 
     chooseDay = (scrollViewRef, days_arr, day, dayIndex) => {
         let days_style_arr = this.state.days_style_arr
 
-        days_style_arr[dayIndex] = {
-            color: 'black'
+        if(lastDayIndex){
+            days_style_arr[lastDayIndex] = {...styles.dayHolder, backgroundColor: 'transparent'}
         }
+            
+        days_style_arr[dayIndex] = {...styles.dayHolder, backgroundColor: '#DCDCDC'}
+
 
         this.setState({
-            days_style_arr: days_style_arr
+            days_style_arr: days_style_arr.map(style => {return style})
         })
 
         this.focusScrollViewToDay(scrollViewRef, days_arr, day)
+
+        lastDayIndex = dayIndex
     }
 
     focusScrollViewToDay = (scrollViewRef, days_arr, day) => {
@@ -236,8 +158,87 @@ export default class Daily extends React.Component{
                     onScroll={this.onScrolling}
                     scrollEventThrottle={1}
                 >
-                    {/* <View style={styles.underlayIndicator}>
-                    </View> */}
+                    {this.state.days_arr.map((obj, index) => {
+                        if(obj.dayNumb === today){
+                            return (
+                                <TouchableHighlight 
+                                    onPress={this.chooseDay.bind(this, scrollViewRef, days_arr, obj.dayNumb, index)} 
+                                    style={this.state.days_style_arr[index]} 
+                                    key={obj + " " + index}
+                                    underlayColor='#dcdcdc'
+                                >
+                                <>
+                                    <View>
+                                        <Text
+                                            style={{
+                                                fontWeight: "600",
+                                            }}
+                                        >
+                                            {obj.dayWord}
+                                        </Text>
+                                    </View>
+        
+                                    <View 
+                                        style={{
+                                            height: 35,
+                                            width: dayHolderWidth,
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                        }}
+                                    >
+                                        <Text 
+                                            style={{
+                                                fontWeight: "600",
+                                            }}
+                                        > 
+                                            {obj.dayNumb}
+                                        </Text>
+                                    </View>
+                                </>
+                                </TouchableHighlight>
+                            )
+                        }
+                        
+                        else{
+                            return (
+                                <TouchableHighlight 
+                                    onPress={this.chooseDay.bind(this, scrollViewRef, days_arr, obj.dayNumb,index)} 
+                                    style={this.state.days_style_arr[index]} 
+                                    key={obj + " " + index}
+                                    underlayColor='#dcdcdc'
+                                >
+                                <>
+                                    <View>
+                                        <Text
+                                            style={{
+                                                color: 'gray'
+                                            }}
+                                        >
+                                            {obj.dayWord}
+                                        </Text>
+                                    </View>
+        
+                                    <View 
+                                        style={{
+                                            height: 35,
+                                            width: dayHolderWidth,
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                        }}
+                                    >
+                                        <Text
+                                            style={{
+                                                color: 'gray'
+                                            }}
+                                        >
+                                            {obj.dayNumb}
+                                        </Text>
+                                    </View>
+                                </>
+                                </TouchableHighlight>
+                            )
+                        }
+                    })}
 
                     {this.state.dailyTimeView}
 
@@ -277,7 +278,6 @@ const styles = StyleSheet.create({
         width: dayHolderWidth,
         backgroundColor: 'yellow',
         height: 70,
-        
     },
 
     unactive: {
