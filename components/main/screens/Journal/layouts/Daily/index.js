@@ -176,7 +176,7 @@ export default class Daily extends React.Component{
                             onPress={this.chooseDay.bind(this, scrollViewRef, days_arr, obj.dayNumb,index)} 
                             style={styles.dayHolder} 
                             key={obj + " " + index}
-                            underlayColor='#eaeaea'
+                            underlayColor='transparent'
                         >
                         <>
                             <View>
