@@ -25,7 +25,7 @@ export default class Daily extends React.Component{
 
     state = {
         dailyTimeView: null,
-        days_style_arr: [],
+        day_number_style_arr: [],
         days_arr: []
     }
 
@@ -37,7 +37,7 @@ export default class Daily extends React.Component{
 
         
         let daysInMonth = this.getDaysInMonth(month, year),
-            days_style_arr = []
+            day_number_style_arr = []
 
         for(let i = 1; i <= daysInMonth; i++){
             let dayWord,
@@ -77,7 +77,7 @@ export default class Daily extends React.Component{
                chosen: false
             })
 
-            days_style_arr.push(styles.dayHolder)
+            day_number_style_arr.push(styles.circleCenterDayNumberHolder)
         }
 
         this.setState({
@@ -85,7 +85,7 @@ export default class Daily extends React.Component{
         })
 
         this.setState({
-            days_style_arr: days_style_arr.map(style => {return style})
+            day_number_style_arr: day_number_style_arr.map(style => {return style})
         })
         
         this.focusScrollViewToDay(scrollViewRef, days_arr, today)
@@ -96,17 +96,17 @@ export default class Daily extends React.Component{
     }
 
     chooseDay = (scrollViewRef, days_arr, day, dayIndex) => {
-        let days_style_arr = this.state.days_style_arr
+        let day_number_style_arr = this.state.day_number_style_arr
 
         if(lastDayIndex){
-            days_style_arr[lastDayIndex] = {...styles.dayHolder, backgroundColor: 'transparent'}
+            day_number_style_arr[lastDayIndex] = {...styles.circleCenterDayNumberHolder, backgroundColor: 'transparent'}
         }
             
-        days_style_arr[dayIndex] = {...styles.dayHolder, backgroundColor: '#DCDCDC'}
+        day_number_style_arr[dayIndex] = {...styles.circleCenterDayNumberHolder, backgroundColor: 'black'}
 
 
         this.setState({
-            days_style_arr: days_style_arr.map(style => {return style})
+            day_number_style_arr: day_number_style_arr.map(style => {return style})
         })
 
         this.focusScrollViewToDay(scrollViewRef, days_arr, day)
@@ -163,36 +163,29 @@ export default class Daily extends React.Component{
                             return (
                                 <TouchableHighlight 
                                     onPress={this.chooseDay.bind(this, scrollViewRef, days_arr, obj.dayNumb, index)} 
-                                    style={this.state.days_style_arr[index]} 
+                                    style={styles.dayHolder} 
                                     key={obj + " " + index}
-                                    underlayColor='#dcdcdc'
+                                    underlayColor='#e3e3e3'
                                 >
                                 <>
                                     <View>
                                         <Text
-                                            style={{
-                                                fontWeight: "600",
-                                            }}
+                                            style={styles.biggerFontWeightForToday}
                                         >
                                             {obj.dayWord}
                                         </Text>
                                     </View>
         
                                     <View 
-                                        style={{
-                                            height: 35,
-                                            width: dayHolderWidth,
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                        }}
-                                    >
-                                        <Text 
-                                            style={{
-                                                fontWeight: "600",
-                                            }}
-                                        > 
-                                            {obj.dayNumb}
-                                        </Text>
+                                        style={styles.dayNumberHolder}
+                                    >   
+                                        <View style={styles.circleCenterDayNumberHolder}>
+                                            <Text 
+                                                style={styles.biggerFontWeightForToday}
+                                            > 
+                                                {obj.dayNumb}
+                                            </Text>
+                                        </View>
                                     </View>
                                 </>
                                 </TouchableHighlight>
@@ -203,36 +196,29 @@ export default class Daily extends React.Component{
                             return (
                                 <TouchableHighlight 
                                     onPress={this.chooseDay.bind(this, scrollViewRef, days_arr, obj.dayNumb,index)} 
-                                    style={this.state.days_style_arr[index]} 
+                                    style={styles.dayHolder} 
                                     key={obj + " " + index}
-                                    underlayColor='#dcdcdc'
+                                    underlayColor='#e3e3e3'
                                 >
                                 <>
                                     <View>
                                         <Text
-                                            style={{
-                                                color: 'gray'
-                                            }}
+                                            style={styles.notToday}
                                         >
                                             {obj.dayWord}
                                         </Text>
                                     </View>
         
                                     <View 
-                                        style={{
-                                            height: 35,
-                                            width: dayHolderWidth,
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                        }}
+                                        style={styles.dayNumberHolder}
                                     >
-                                        <Text
-                                            style={{
-                                                color: 'gray'
-                                            }}
-                                        >
-                                            {obj.dayNumb}
-                                        </Text>
+                                        <View style={this.state.day_number_style_arr[index]}>
+                                            <Text
+                                                style={styles.notToday}
+                                            >
+                                                {obj.dayNumb}
+                                            </Text>
+                                        </View>
                                     </View>
                                 </>
                                 </TouchableHighlight>
@@ -273,6 +259,13 @@ const styles = StyleSheet.create({
         borderRadius: 35/2
     },
 
+    dayNumberHolder: {
+        height: 35,
+        width: dayHolderWidth,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
     underlayIndicator: {
         position: 'absolute',
         width: dayHolderWidth,
@@ -280,7 +273,20 @@ const styles = StyleSheet.create({
         height: 70,
     },
 
-    unactive: {
+    biggerFontWeightForToday: {
+        fontWeight: "600"
+    },
+
+    notToday: {
         color: 'gray'
+    },
+
+    circleCenterDayNumberHolder: {
+        marginTop: 10,
+        height: 25,
+        width: 25,
+        borderRadius: 25,
+        alignItems: 'center',
+        justifyContent: 'center',
     }
 })
