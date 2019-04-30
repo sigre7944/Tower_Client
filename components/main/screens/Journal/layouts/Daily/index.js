@@ -3,9 +3,6 @@ import {
     View,
     StyleSheet,
     Text,
-    StatusBar,
-    SafeAreaView,
-    Button,
     ScrollView,
     TouchableHighlight
 } from 'react-native';
@@ -25,8 +22,8 @@ export default class Daily extends React.Component{
 
     state = {
         dailyTimeView: null,
-        day_number_style_arr: [],
-        day_word_style_arr: [],
+        day_number_circle_style_arr: [],
+        day_number_text_style_arr: [],
         days_arr: []
     }
 
@@ -38,8 +35,8 @@ export default class Daily extends React.Component{
 
         
         let daysInMonth = this.getDaysInMonth(month, year),
-            day_number_style_arr = [],
-            day_word_style_arr = []
+            day_number_circle_style_arr = [],
+            day_number_text_style_arr = []
 
         for(let i = 1; i <= daysInMonth; i++){
             let dayWord,
@@ -79,13 +76,17 @@ export default class Daily extends React.Component{
                chosen: false
             })
 
-            day_number_style_arr.push(styles.circleCenterDayNumberHolder)
-            day_word_style_arr.push(styles.notToday)
+            day_number_circle_style_arr.push(styles.circleCenterDayNumberHolder)
+
+            if(i === today)
+                day_number_text_style_arr.push(styles.biggerFontWeightForToday)
+            else
+                day_number_text_style_arr.push(styles.notToday)
         }
 
         this.setState({
-            day_number_style_arr: day_number_style_arr.map(style => {return style}),
-            day_word_style_arr: day_word_style_arr.map(style => {return style}),
+            day_number_circle_style_arr: day_number_circle_style_arr.map(style => {return style}),
+            day_number_text_style_arr: day_number_text_style_arr.map(style => {return style}),
             days_arr: days_arr.map(day => {return day})
         })
         
@@ -97,22 +98,28 @@ export default class Daily extends React.Component{
     }
 
     chooseDay = (scrollViewRef, days_arr, day, dayIndex) => {
-        let day_number_style_arr = this.state.day_number_style_arr,
-            day_word_style_arr = this.state.day_word_style_arr
+        let day_number_circle_style_arr = this.state.day_number_circle_style_arr,
+            day_number_text_style_arr = this.state.day_number_text_style_arr
 
-        console.log(lastDayIndex)
+        day_number_circle_style_arr[lastDayIndex] = {...styles.circleCenterDayNumberHolder, backgroundColor: 'transparent'}
 
-        if(lastDayIndex){
-            day_number_style_arr[lastDayIndex] = {...styles.circleCenterDayNumberHolder, backgroundColor: 'transparent'}
-            day_word_style_arr[lastDayIndex] = {...styles.notToday, color: 'gray'}
-        }
-            
-        day_number_style_arr[dayIndex] = {...styles.circleCenterDayNumberHolder, backgroundColor: 'black'}
-        day_word_style_arr[dayIndex] = {...styles.notToday, color: 'white'}
+        if(lastDayIndex === today-1)
+            day_number_text_style_arr[lastDayIndex] = {...styles.biggerFontWeightForToday, color: 'black'}
+        else
+            day_number_text_style_arr[lastDayIndex] = {...styles.notToday, color: 'gray'}
+        
+
+
+        day_number_circle_style_arr[dayIndex] = {...styles.circleCenterDayNumberHolder, backgroundColor: 'black'}
+
+        if(dayIndex === today-1)
+            day_number_text_style_arr[dayIndex] = {...styles.biggerFontWeightForToday, color: 'white'}
+        else
+            day_number_text_style_arr[dayIndex] = {...styles.notToday, color: 'white'}
 
         this.setState({
-            day_number_style_arr: day_number_style_arr.map(style => {return style}),
-            day_word_style_arr: day_word_style_arr.map(style => {return style})
+            day_number_circle_style_arr: day_number_circle_style_arr.map(style => {return style}),
+            day_number_text_style_arr: day_number_text_style_arr.map(style => {return style})
         })
 
         this.focusScrollViewToDay(scrollViewRef, days_arr, day)
@@ -194,27 +201,13 @@ export default class Daily extends React.Component{
                             <View 
                                 style={styles.dayNumberHolder}
                             >
-                                {
-                                    obj.dayNumb === today ?
-
-                                    <View style={styles.circleCenterDayNumberHolder}>
-                                        <Text 
-                                            style={styles.biggerFontWeightForToday}
-                                        > 
-                                            {obj.dayNumb}
-                                        </Text>
-                                    </View>
-
-                                    :
-
-                                    <View style={this.state.day_number_style_arr[index]}>
-                                        <Text
-                                            style={this.state.day_word_style_arr[index]}
-                                        >
-                                            {obj.dayNumb}
-                                        </Text>
-                                    </View>
-                                }
+                                <View style={this.state.day_number_circle_style_arr[index]}>
+                                    <Text
+                                        style={this.state.day_number_text_style_arr[index]}
+                                    >
+                                        {obj.dayNumb}
+                                    </Text>
+                                </View>
                             </View>
                         </>
                         </TouchableHighlight>
@@ -268,7 +261,8 @@ const styles = StyleSheet.create({
     },
 
     biggerFontWeightForToday: {
-        fontWeight: "600"
+        fontWeight: "600",
+        color: 'black'
     },
 
     notToday: {
