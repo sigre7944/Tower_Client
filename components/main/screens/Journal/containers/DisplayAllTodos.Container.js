@@ -1,5 +1,5 @@
 import {connect} from 'react-redux'
-import {actionToCompleteAllTodoTask} from '../../../../../actions/actionToCompleteAllTodoTask'
+import {actionToCompleteAllTodoTask} from '../actions/actionToCompleteAllTodoTask'
 import DisplayAllTodos from '../components/DisplayAllTodos.Presentational'
 
 const mapStateToProps = (state) => ({

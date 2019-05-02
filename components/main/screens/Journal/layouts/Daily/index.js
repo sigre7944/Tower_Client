@@ -168,14 +168,12 @@ export default class Daily extends React.Component{
                     horizontal={true} 
                     ref={view => scrollViewRef = view}
                     indicatorStyle='white'
-                    onScroll={this.onScrolling}
-                    scrollEventThrottle={1}
                 >
                     {this.state.days_arr.map((obj, index) => (
                         <TouchableHighlight 
                             onPress={this.chooseDay.bind(this, scrollViewRef, days_arr, obj.dayNumb,index)} 
                             style={styles.dayHolder} 
-                            key={obj + " " + index}
+                            key={"day " + index}
                             underlayColor='transparent'
                         >
                         <>

@@ -34,4 +34,4 @@ const AppNavigator = createStackNavigator(
   }
 )
 
-const AppContainer =  createAppContainer(AppNavigator) //return a React component, which is to wrap the stack navigator
+const AppContainer =  createAppContainer(AppNavigator) //return a React component, which is to wrap the stack navigator 
