@@ -1,4 +1,4 @@
-import JournalTopNavigator from './screens/Journal'
+import JournalTopNavigator from './screens/Journal/Journal'
 import Progress from './screens/Progress/Progress'
 import Reward from './screens/Reward/Reward'
 import Settings from './screens/Settings/Settings'

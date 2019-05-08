@@ -1,14 +1,13 @@
 import React from 'react';
 import Login from './components/login/Login' //Login screen
 import SignUp from './components/signup/SignUp' //Sign Up screen
-import DrawerNavigator from './components/main' //Main screen
+import MainNavigator from './components/main/Main' //Main screen
 import {createStackNavigator, createAppContainer, createDrawerNavigator} from 'react-navigation'
 import {createStore} from 'redux'
 import {Provider} from 'react-redux'
 import rootReducer from './reducers'
 import Drawer from './components/drawer/Drawer'
 import Header from './components/main/header/Header'
-import MainNavigator from './components/main';
 
 const store = createStore(rootReducer)
 

@@ -5,9 +5,9 @@ import DisplayAllCompletedTodos from './containers/DisplayAllCompletedTodos.Cont
 
 import {createMaterialTopTabNavigator} from 'react-navigation'
 
-import Daily from './layouts/Daily/'
-import Weekly from './layouts/Weekly/'
-import Monthly from './layouts/Monthly/'
+import Daily from './layouts/Daily/Daily'
+import Weekly from './layouts/Weekly/Weekly'
+import Monthly from './layouts/Monthly/Monthly'
 
 
 const JournalTopNavigator = createMaterialTopTabNavigator({
