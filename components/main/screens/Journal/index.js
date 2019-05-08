@@ -33,7 +33,7 @@ const JournalTopNavigator = createMaterialTopTabNavigator({
             top: 0,
             backgroundColor: 'black',
         }
-    }
+    },
 })
 
 import {
