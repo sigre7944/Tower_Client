@@ -232,35 +232,7 @@ export default class Daily extends React.Component{
                     alignItems: "center",
                     justifyContent: "center",
                 }}>
-                    <View style={{
-                        backgroundColor: 'red',
-                        flex: 1
-                    }}>
-                        <Modal 
-                            animationType="slide"
-                            visible={true}
-                            transparent={true}
-                        >
-                            <TouchableHighlight
-                                onPress = {this.openAddTaskTab}
-                                style= {{
-                                    height: 50,
-                                    width: 50,
-                                    borderRadius: 50,
-                                    backgroundColor: 'black',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    bottom: 0,
-                                    position: 'absolute',
-                                    
-                                }}
-                            >
-                                <Text style={{
-                                    color: 'white'
-                                }}>add</Text>
-                            </TouchableHighlight>
-                        </Modal>
-                    </View>
+                    
                     {this.state.taskTabOpened ? 
                         <View
                             style={{
