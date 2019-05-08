@@ -3,8 +3,10 @@ import {
     View,
     StyleSheet,
     Text,
+    Button,
     ScrollView,
-    TouchableHighlight
+    TouchableHighlight,
+    Modal
 } from 'react-native';
 
 let scrollViewRef,
@@ -24,7 +26,9 @@ export default class Daily extends React.Component{
         dailyTimeView: null,
         day_number_circle_style_arr: [],
         day_number_text_style_arr: [],
-        days_arr: []
+        days_arr: [],
+
+        taskTabOpened: false
     }
 
     componentDidMount(){
@@ -161,59 +165,116 @@ export default class Daily extends React.Component{
         return new Date(year, month, 0).getDate()
     }
 
+
+    openAddTaskTab = () => {
+        this.setState(prevState => ({
+            taskTabOpened: !prevState.taskTabOpened
+        }))
+    }
+
     render(){
         return(
             <View style={styles.container}>
-                <ScrollView style={styles.scrollViewContainer} 
-                    horizontal={true} 
-                    ref={view => scrollViewRef = view}
-                    indicatorStyle='white'
-                >
-                    {this.state.days_arr.map((obj, index) => (
-                        <TouchableHighlight 
-                            onPress={this.chooseDay.bind(this, scrollViewRef, days_arr, obj.dayNumb,index)} 
-                            style={styles.dayHolder} 
-                            key={"day " + index}
-                            underlayColor='transparent'
-                        >
-                        <>
-                            <View>
-                                {
-                                    obj.dayNumb === today ?
-                                        <Text
-                                        style={styles.biggerFontWeightForToday}
-                                        >
-                                            {obj.dayWord}
-                                        </Text>
-
-                                        :
-
-                                        <Text
-                                            style={styles.notToday}
-                                        >
-                                            {obj.dayWord}
-                                        </Text>
-                                }
-                            </View>
-
-                            <View 
-                                style={styles.dayNumberHolder}
+                <View style={styles.scrollViewContainer} >
+                    <ScrollView 
+                        horizontal={true} 
+                        ref={view => scrollViewRef = view}
+                        indicatorStyle='white'
+                    >
+                        {this.state.days_arr.map((obj, index) => (
+                            <TouchableHighlight 
+                                onPress={this.chooseDay.bind(this, scrollViewRef, days_arr, obj.dayNumb,index)} 
+                                style={styles.dayHolder} 
+                                key={"day " + index}
+                                underlayColor='transparent'
                             >
-                                <View style={this.state.day_number_circle_style_arr[index]}>
-                                    <Text
-                                        style={this.state.day_number_text_style_arr[index]}
-                                    >
-                                        {obj.dayNumb}
-                                    </Text>
+                            <>
+                                <View>
+                                    {
+                                        obj.dayNumb === today ?
+                                            <Text
+                                            style={styles.biggerFontWeightForToday}
+                                            >
+                                                {obj.dayWord}
+                                            </Text>
+
+                                            :
+
+                                            <Text
+                                                style={styles.notToday}
+                                            >
+                                                {obj.dayWord}
+                                            </Text>
+                                    }
                                 </View>
-                            </View>
-                        </>
-                        </TouchableHighlight>
-                    ))}
 
-                    {this.state.dailyTimeView}
+                                <View 
+                                    style={styles.dayNumberHolder}
+                                >
+                                    <View style={this.state.day_number_circle_style_arr[index]}>
+                                        <Text
+                                            style={this.state.day_number_text_style_arr[index]}
+                                        >
+                                            {obj.dayNumb}
+                                        </Text>
+                                    </View>
+                                </View>
+                            </>
+                            </TouchableHighlight>
+                        ))}
 
-                </ScrollView>
+                        {this.state.dailyTimeView}
+
+                    </ScrollView>
+                </View>
+                <View style={{
+                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}>
+                    <View style={{
+                        backgroundColor: 'red',
+                        flex: 1
+                    }}>
+                        <Modal 
+                            animationType="slide"
+                            visible={true}
+                            transparent={true}
+                        >
+                            <TouchableHighlight
+                                onPress = {this.openAddTaskTab}
+                                style= {{
+                                    height: 50,
+                                    width: 50,
+                                    borderRadius: 50,
+                                    backgroundColor: 'black',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    bottom: 0,
+                                    position: 'absolute',
+                                    
+                                }}
+                            >
+                                <Text style={{
+                                    color: 'white'
+                                }}>add</Text>
+                            </TouchableHighlight>
+                        </Modal>
+                    </View>
+                    {this.state.taskTabOpened ? 
+                        <View
+                            style={{
+                                position: 'absolute'
+                            }}
+                        >
+                            <Text>Test</Text>
+                        </View>
+
+                        :
+
+                        <></>
+                    }
+                </View>
             </View>
         )
     }
@@ -221,9 +282,11 @@ export default class Daily extends React.Component{
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1
     },
 
     scrollViewContainer: {
+        flex: 0,
         height: 70,
     },
 

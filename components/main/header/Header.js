@@ -19,15 +19,6 @@ const styles = StyleSheet.create({
 });
 
 export default class Header extends React.Component {
-    // static navigationOptions = {
-    //   drawerLabel: 'Home',
-    //   drawerIcon: ({ tintColor }) => (
-    //     <Image
-    //       source={require('./Hamburger_icon.png')}
-    //       style={[styles.icon, {tintColor: tintColor}]}
-    //     />
-    //   ),
-    // };
 
     state = {
       modalVisible: false,
@@ -36,70 +27,15 @@ export default class Header extends React.Component {
   
 
     componentDidMount = () => {
-        // console.log(this.props.navigation)
     }
     
     render() {
       return (
-        // <View style={{
-        //   zIndex: 1,
-        //   justifyContent: 'space-between',
-        //   flexDirection: 'row-reverse', 
-        //   height: 52, 
-        //   padding:8, 
-        //   borderWidth: 1,
-        //   borderRadius: 2,
-        //   borderColor: '#ddd',
-        //   borderBottomWidth: 0,
-        //   shadowColor: '#000',
-        //   shadowOffset: { width: 0, height: 2 },
-        //   shadowOpacity: 0.8,
-        //   shadowRadius: 2}}>
-        // <Modal
-        //   animationType="slide"
-        //   transparent={false}
-        //   visible={this.state.modalVisible}
-        //   onRequestClose={() => {
-        //     Alert.alert('Modal has been closed.');
-        //   }}>
-        //   <View style={{marginTop: 22}}>
-        //     <View>
-        //       <Text>Hello World!</Text>
-
-        //       <TouchableHighlight
-        //         onPress={() => {
-        //           this.setModalVisible(!this.state.modalVisible);
-        //         }}>
-        //         <Text>Hide Modal</Text>
-        //       </TouchableHighlight>
-        //     </View>
-        //   </View>
-        // </Modal>
-        
-        // <TouchableHighlight onPress={this.toggleDropdownMenuVisible}>
-        //   <Image
-        //       onPress={this.toggleDropdownMenuVisible}
-        //       source={require('./dots.png')}
-        //       style={[styles.icon, {tintColor: 'black'}]}
-        //   />
-        // </TouchableHighlight>
-        // {
-        //   this.props.currentNavigationState.routeName === "Journal" && <TouchableHighlight onPress={() => this.props.openDrawer()}>
-        //     <Image
-        //         onPress={() => this.props.openDrawer()}
-        //         source={require('./Hamburger_icon.png')}
-        //         style={[styles.icon, {tintColor: 'black'}]}
-        //     />
-        //   </TouchableHighlight>
-        // }
-        // { this.state.dropdownMenuVisible && this.dropDownMenu}
-        
-        // </View>
 
         <View style={{
             paddingTop: 20,
             paddingHorizontal: 10,
-            height: 100,
+            height: 80,
             flexDirection: "row",
             alignItems: 'center',
             justifyContent: 'space-between',
