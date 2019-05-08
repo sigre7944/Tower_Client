@@ -22,13 +22,18 @@ const MainNavigator = createBottomTabNavigator({
 },
 {
     initialRouteName: "Journal",
-    tabBarComponent: ({navigation}) => (
-        <RenderBottomTabNavigator navigation = {navigation} />
+    tabBarComponent: props => (
+        <RenderBottomTabNavigator {...props} />
     )
 })
 
 
 class RenderBottomTabNavigator extends React.Component{
+
+    componentDidMount(){
+        console.log(this.props.navigation.state.routeName)
+    }
+
     render(){
         return(
             <>
