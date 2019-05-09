@@ -5,14 +5,44 @@ import {
     Text,
     ScrollView,
     StyleSheet,
-    TouchableHighlight
+    TouchableHighlight,
+    Keyboard,
+    TextInput
 } from 'react-native';
 
 export default class BottomTabNavigator extends React.Component{
 
-    componentDidMount(){
+    state = {
+        addClicked: false,
+        renderAddTaskUI: null,
+        keyboardHeight: 0
     }
 
+    componentDidMount(){
+        this.keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            (e) => {
+                this.setState({keyboardHeight: e.endCoordinates.height})
+            }
+        )
+
+        this.keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            (e) => {
+
+            }
+        )
+    }
+
+    componentDidUpdate = (prepProps, prevState) => {
+
+
+    }
+
+    componentWillUnmount(){
+        this.keyboardDidShowListener.remove();
+        this.keyboardDidHideListener.remove();
+    }
 
     render(){
         return(
@@ -21,11 +51,23 @@ export default class BottomTabNavigator extends React.Component{
                 height: 60,
                 display: "flex",
                 alignItems: "center",
-            }}>
-                {this.props.routeName === "Daily" || this.props.routeName === "Weekly" || this.props.routeName === "Monthly" ?
+            }}> 
+                {this.state.addClicked ? 
+                    <TextInput autoFocus={true} style={{
+                        position: "absolute",
+                        bottom: this.state.keyboardHeight,
+                        width: 100,
+                        height: 50,
+                        backgroundColor: 'pink'
+                    }}/>
 
+                    : 
+
+                    <></>
+                }
+                {this.props.routeName === "Daily" || this.props.routeName === "Weekly" || this.props.routeName === "Monthly" ?
                     <TouchableHighlight
-                        onPress = {() => console.log(true)}
+                        onPress = {() => this.setState(prevState => ({addClicked: !prevState.addClicked}))}
                         style= {{
                             height: 50,
                             width: 50,
