@@ -2,7 +2,7 @@
 import React from 'react'
 
 import JournalTopNavigator from './screens/Journal/Journal'
-import Progress from './screens/Progress/Progress'
+import Progress from './screens/Progress/Progress.Container'
 import Reward from './screens/Reward/Reward'
 import Settings from './screens/Settings/Settings'
 

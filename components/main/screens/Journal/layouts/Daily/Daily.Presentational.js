@@ -35,7 +35,6 @@ export default class Daily extends React.Component{
         const didFocusScreen = this.props.navigation.addListener(
             'didFocus',
             payload => {
-                console.log(payload.state.routeName)
                 this.props.changeRouteAction(payload.state.routeName)
             }
         )
