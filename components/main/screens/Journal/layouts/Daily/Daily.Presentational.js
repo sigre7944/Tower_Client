@@ -32,6 +32,15 @@ export default class Daily extends React.Component{
     }
 
     componentDidMount(){
+        const didFocusScreen = this.props.navigation.addListener(
+            'didFocus',
+            payload => {
+                console.log(payload.state.routeName)
+                this.props.changeRouteAction(payload.state.routeName)
+            }
+        )
+
+
         days_arr.length = 0
 
         let month = new Date().getMonth() + 1,
