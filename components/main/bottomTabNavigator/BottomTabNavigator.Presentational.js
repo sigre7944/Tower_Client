@@ -7,7 +7,10 @@ import {
     StyleSheet,
     TouchableHighlight,
     Keyboard,
-    TextInput
+    TextInput,
+    Dimensions,
+    Modal,
+    TouchableWithoutFeedback
 } from 'react-native';
 
 export default class BottomTabNavigator extends React.Component{
@@ -15,23 +18,21 @@ export default class BottomTabNavigator extends React.Component{
     state = {
         addClicked: false,
         renderAddTaskUI: null,
-        keyboardHeight: 0
+        keyboardHeight: 0,
+        addTaskUIDisplayProperty: 'none'
     }
 
     componentDidMount(){
-        this.keyboardDidShowListener = Keyboard.addListener(
-            'keyboardDidShow',
+        this.keyboardWillShowListener = Keyboard.addListener(
+            'keyboardWillShow',
             (e) => {
-                this.setState({keyboardHeight: e.endCoordinates.height})
+                this.setState({
+                    keyboardHeight: e.endCoordinates.height,
+                    addTaskUIDisplayProperty: 'flex'
+                })
             }
         )
 
-        this.keyboardDidHideListener = Keyboard.addListener(
-            'keyboardDidHide',
-            (e) => {
-
-            }
-        )
     }
 
     componentDidUpdate = (prepProps, prevState) => {
@@ -40,8 +41,7 @@ export default class BottomTabNavigator extends React.Component{
     }
 
     componentWillUnmount(){
-        this.keyboardDidShowListener.remove();
-        this.keyboardDidHideListener.remove();
+        this.keyboardWillShowListener.remove();
     }
 
     render(){
@@ -52,15 +52,82 @@ export default class BottomTabNavigator extends React.Component{
                 display: "flex",
                 alignItems: "center",
             }}> 
-                {this.state.addClicked ? 
-                    <TextInput autoFocus={true} style={{
-                        position: "absolute",
-                        bottom: this.state.keyboardHeight,
-                        width: 100,
-                        height: 50,
-                        backgroundColor: 'pink'
-                    }}/>
+                {this.state.addClicked ?
+                    <Modal 
+                        visible={true}
+                        transparent={true}
+                    >   
+                        <TouchableWithoutFeedback
+                            onPress={() => {
+                                Keyboard.dismiss
+                                this.setState(prevState => ({
+                                    keyboardHeight: 0,
+                                    addTaskUIDisplayProperty: 'none',
+                                    addClicked: !prevState.addClicked
+                                }))
+                            }}
+                        >
+                            <View style={{
+                                backgroundColor: "black",
+                                opacity: 0.5,
+                                flex: 1
+                            }}>
 
+                            </View>
+                        </TouchableWithoutFeedback>
+                        <View style={{
+                            display: this.state.addTaskUIDisplayProperty,
+                            position: "absolute",
+                            bottom: this.state.keyboardHeight,
+                            backgroundColor: 'gainsboro',
+                            width: Dimensions.get('window').width,
+                            height: 200,
+                            borderTopRightRadius: 20,
+                            borderTopLeftRadius: 20,
+                            flexDirection: "column",
+                            // alignItems: 'center',
+                            justifyContent: "center",
+                            paddingHorizontal: 20,
+                            paddingTop: 10,
+                        }}>
+                            <View style={{
+                                flex: 1,
+                            }}>
+                                <Text style={{
+                                    fontSize: 13,
+                                    color: 'white'
+                                }}>
+                                    Task Title
+                                </Text>
+                                <TextInput autoFocus={true} style={{
+                                    
+                                    flex: 1
+                                }}/>
+                            </View>
+                            
+                            <View style={{
+                                flex: 1,
+                                marginVertical: 5
+                            }}>
+                                <Text style={{
+                                    fontSize: 13,
+                                    color: 'white'
+                                }}>
+                                    Task Description
+                                </Text>
+                                <TextInput autoFocus={true} style={{
+                                    flex: 1
+                                }}/>
+                            </View>
+
+                            <View style={{
+                                flex: 1,
+
+                            }}>
+                            </View>
+                        </View>
+                    
+                    </Modal>
                     : 
 
                     <></>
