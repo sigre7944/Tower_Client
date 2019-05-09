@@ -1,5 +1,5 @@
 import {connect} from 'react-redux'
-import {actionToUncompleteAllTodoTask} from '../../../../../actions/actionToUncompleteAllTodoTask'
+import {actionToUncompleteAllTodoTask} from '../actions/actionToUncompleteAllTodoTask'
 import DisplayAllCompletedTodos from '../components/DisplayAllCompletedTodos.Presesntational'
 
 
