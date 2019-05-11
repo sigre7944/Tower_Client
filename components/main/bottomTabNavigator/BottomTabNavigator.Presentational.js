@@ -11,7 +11,7 @@ import {
     Dimensions,
     Modal,
     TouchableWithoutFeedback,
-    Animated
+    KeyboardAvoidingView,
 } from 'react-native';
 
 export default class BottomTabNavigator extends React.Component{
@@ -20,7 +20,6 @@ export default class BottomTabNavigator extends React.Component{
         addClicked: false,
         renderAddTaskUI: null,
         keyboardHeight: 0,
-        bottomAni: new Animated.Value(0)
     }
 
     componentDidMount(){
@@ -38,13 +37,6 @@ export default class BottomTabNavigator extends React.Component{
 
     componentDidUpdate = (prepProps, prevState) => {
         if(this.state.keyboardHeight !== prevState.keyboardHeight && this.state.keyboardHeight > 0){
-            Animated.timing(
-                this.state.bottomAni,
-                {
-                    toValue: this.state.keyboardHeight,
-                    duration: 200,
-                }
-            ).start()
         }
     }
 
@@ -69,7 +61,6 @@ export default class BottomTabNavigator extends React.Component{
                             onPress={() => {
                                 Keyboard.dismiss
                                 this.setState(prevState => ({
-                                    bottomAni: new Animated.Value(0),
                                     keyboardHeight: 0,
                                     addClicked: !prevState.addClicked
                                 }))
@@ -80,12 +71,12 @@ export default class BottomTabNavigator extends React.Component{
                                 opacity: 0.5,
                                 flex: 1
                             }}>
-
                             </View>
                         </TouchableWithoutFeedback>
-                        <Animated.View style={{
+                        <KeyboardAvoidingView>
+                        <View style={{
                             position: "absolute",
-                            bottom: this.state.bottomAni,
+                            bottom: this.state.keyboardHeight,
                             backgroundColor: 'white',
                             width: Dimensions.get('window').width,
                             height: 200,
@@ -108,7 +99,8 @@ export default class BottomTabNavigator extends React.Component{
                                     Task Title
                                 </Text>
                                 <TextInput 
-                                    autoFocus={true}
+                                    onLayout = {() => {setTimeout(() => {this.taskTextInput.focus()}, 200)}}
+                                    ref= {(ref) => {this.taskTextInput = ref}}
                                     style={{
                                         flex: 1,
                                         fontSize: 16,
@@ -147,8 +139,8 @@ export default class BottomTabNavigator extends React.Component{
 
                             }}>
                             </View>
-                        </Animated.View>
-                    
+                        </View>
+                        </KeyboardAvoidingView>
                     </Modal>
                     : 
 
@@ -156,7 +148,9 @@ export default class BottomTabNavigator extends React.Component{
                 }
                 {this.props.routeName === "Daily" || this.props.routeName === "Weekly" || this.props.routeName === "Monthly" ?
                     <TouchableHighlight
-                        onPress = {() => this.setState(prevState => ({addClicked: !prevState.addClicked}))}
+                        onPress = {() => {
+                            this.setState(prevState => ({addClicked: !prevState.addClicked}))
+                        }}
                         style= {{
                             height: 50,
                             width: 50,
@@ -169,9 +163,11 @@ export default class BottomTabNavigator extends React.Component{
                             zIndex: 10
                         }}
                     >
-                            <Text style={{
-                                color: 'white'
-                            }}>add</Text>
+                        <>
+                        <Text style={{
+                            color: 'white'
+                        }}>add</Text>
+                        </>
                     </TouchableHighlight>
 
                     : 
