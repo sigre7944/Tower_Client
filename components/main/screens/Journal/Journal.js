@@ -5,7 +5,7 @@ import DisplayAllCompletedTodos from './containers/DisplayAllCompletedTodos.Cont
 
 import {createMaterialTopTabNavigator} from 'react-navigation'
 
-import Daily from './layouts/Daily/Daily'
+import Daily from './layouts/Daily/Daily.Container'
 import Weekly from './layouts/Weekly/Weekly'
 import Monthly from './layouts/Monthly/Monthly'
 
@@ -35,53 +35,5 @@ const JournalTopNavigator = createMaterialTopTabNavigator({
         }
     },
 })
-
-import {
-    LayoutAnimation,
-    StatusBar,
-    StyleSheet,
-    Text,
-    View,
-    Button,
-    TextInput
-} from 'react-native';
-
-
-// class Journal extends React.Component {
-//     static navigationOptions = {
-//         header: null,
-//         title: 'Journal'
-//     }
-
-//     render(){
-//         return(
-//             <View style={styles.container}>
-//                 <AddAllTodo />
-
-//                 <View>
-//                     <Text style={styles.filteringTodoTasks}>Show all uncompleted todo tasks:</Text>
-//                     <DisplayAllTodos />
-//                 </View>
-
-//                 <View>
-//                     <Text style={styles.filteringTodoTasks}>Show all completed todo tasks:</Text>
-//                     <DisplayAllCompletedTodos />
-//                 </View>
-//             </View>
-//         )
-//     }
-// }
-
-// const styles = StyleSheet.create({
-//     container: {
-//         flex: 1,
-//         justifyContent: 'center',
-//         alignItems: 'center'
-//     },
-
-//     filteringTodoTasks: {
-//         margin: 20,
-//     }
-// })
 
 export default JournalTopNavigator;
