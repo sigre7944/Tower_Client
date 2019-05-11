@@ -10,7 +10,8 @@ import {
     TextInput,
     Dimensions,
     Modal,
-    TouchableWithoutFeedback
+    TouchableWithoutFeedback,
+    Animated
 } from 'react-native';
 
 export default class BottomTabNavigator extends React.Component{
@@ -19,7 +20,8 @@ export default class BottomTabNavigator extends React.Component{
         addClicked: false,
         renderAddTaskUI: null,
         keyboardHeight: 0,
-        addTaskUIDisplayProperty: 'none'
+        addTaskUIDisplayProperty: 'none',
+        bottomAni: new Animated.Value(0)
     }
 
     componentDidMount(){
@@ -33,10 +35,19 @@ export default class BottomTabNavigator extends React.Component{
             }
         )
 
+        
     }
 
     componentDidUpdate = (prepProps, prevState) => {
-
+        if(this.state.keyboardHeight !== prevState.keyboardHeight && this.state.keyboardHeight > 0){
+            Animated.timing(
+                this.state.bottomAni,
+                {
+                    toValue: this.state.keyboardHeight,
+                    duration: 500,
+                }
+            ).start()
+        }
 
     }
 
@@ -53,7 +64,7 @@ export default class BottomTabNavigator extends React.Component{
                 alignItems: "center",
             }}> 
                 {this.state.addClicked ?
-                    <Modal 
+                    <Modal
                         visible={true}
                         transparent={true}
                     >   
@@ -61,6 +72,7 @@ export default class BottomTabNavigator extends React.Component{
                             onPress={() => {
                                 Keyboard.dismiss
                                 this.setState(prevState => ({
+                                    bottomAni: new Animated.Value(0),
                                     keyboardHeight: 0,
                                     addTaskUIDisplayProperty: 'none',
                                     addClicked: !prevState.addClicked
@@ -75,10 +87,10 @@ export default class BottomTabNavigator extends React.Component{
 
                             </View>
                         </TouchableWithoutFeedback>
-                        <View style={{
+                        <Animated.View style={{
                             display: this.state.addTaskUIDisplayProperty,
                             position: "absolute",
-                            bottom: this.state.keyboardHeight,
+                            bottom: this.state.bottomAni,
                             backgroundColor: 'gainsboro',
                             width: Dimensions.get('window').width,
                             height: 200,
@@ -125,7 +137,7 @@ export default class BottomTabNavigator extends React.Component{
 
                             }}>
                             </View>
-                        </View>
+                        </Animated.View>
                     
                     </Modal>
                     : 
