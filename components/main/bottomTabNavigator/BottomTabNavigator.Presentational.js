@@ -20,7 +20,6 @@ export default class BottomTabNavigator extends React.Component{
         addClicked: false,
         renderAddTaskUI: null,
         keyboardHeight: 0,
-        addTaskUIDisplayProperty: 'none',
         bottomAni: new Animated.Value(0)
     }
 
@@ -30,7 +29,6 @@ export default class BottomTabNavigator extends React.Component{
             (e) => {
                 this.setState({
                     keyboardHeight: e.endCoordinates.height,
-                    addTaskUIDisplayProperty: 'flex'
                 })
             }
         )
@@ -44,11 +42,10 @@ export default class BottomTabNavigator extends React.Component{
                 this.state.bottomAni,
                 {
                     toValue: this.state.keyboardHeight,
-                    duration: 500,
+                    duration: 200,
                 }
             ).start()
         }
-
     }
 
     componentWillUnmount(){
@@ -74,7 +71,6 @@ export default class BottomTabNavigator extends React.Component{
                                 this.setState(prevState => ({
                                     bottomAni: new Animated.Value(0),
                                     keyboardHeight: 0,
-                                    addTaskUIDisplayProperty: 'none',
                                     addClicked: !prevState.addClicked
                                 }))
                             }}
@@ -88,16 +84,14 @@ export default class BottomTabNavigator extends React.Component{
                             </View>
                         </TouchableWithoutFeedback>
                         <Animated.View style={{
-                            display: this.state.addTaskUIDisplayProperty,
                             position: "absolute",
                             bottom: this.state.bottomAni,
-                            backgroundColor: 'gainsboro',
+                            backgroundColor: 'white',
                             width: Dimensions.get('window').width,
                             height: 200,
                             borderTopRightRadius: 20,
                             borderTopLeftRadius: 20,
                             flexDirection: "column",
-                            // alignItems: 'center',
                             justifyContent: "center",
                             paddingHorizontal: 20,
                             paddingTop: 10,
@@ -105,31 +99,47 @@ export default class BottomTabNavigator extends React.Component{
                             <View style={{
                                 flex: 1,
                             }}>
-                                <Text style={{
-                                    fontSize: 13,
-                                    color: 'white'
-                                }}>
+                                <Text 
+                                    style={{
+                                        fontSize: 12,
+                                        color: 'gainsboro',
+                                    }}
+                                >
                                     Task Title
                                 </Text>
-                                <TextInput autoFocus={true} style={{
-                                    
-                                    flex: 1
-                                }}/>
+                                <TextInput 
+                                    autoFocus={true}
+                                    style={{
+                                        flex: 1,
+                                        fontSize: 16,
+                                        borderBottomColor: 'gainsboro',
+                                        borderBottomWidth: 1,
+                                        
+                                    }}
+                                    placeholder="Add a task here"
+                                />
                             </View>
                             
                             <View style={{
                                 flex: 1,
-                                marginVertical: 5
+                                marginVertical: 20
                             }}>
                                 <Text style={{
-                                    fontSize: 13,
-                                    color: 'white'
+                                    fontSize: 12,
+                                    color: 'gainsboro',
                                 }}>
                                     Task Description
                                 </Text>
-                                <TextInput autoFocus={true} style={{
-                                    flex: 1
-                                }}/>
+                                <TextInput  
+                                    style={{
+                                        flex: 1,
+                                        fontSize: 16,
+                                        borderBottomColor: 'gainsboro',
+                                        borderBottomWidth: 1,
+                                    }}
+
+                                    placeholder="Add task description"
+                                />
                             </View>
 
                             <View style={{
