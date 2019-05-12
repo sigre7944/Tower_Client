@@ -20,6 +20,7 @@ export default class BottomTabNavigator extends React.Component{
         addClicked: false,
         renderAddTaskUI: null,
         keyboardHeight: 0,
+        addTaskDisplayProperty: 'none'
     }
 
     componentDidMount(){
@@ -36,7 +37,10 @@ export default class BottomTabNavigator extends React.Component{
     }
 
     componentDidUpdate = (prepProps, prevState) => {
-        if(this.state.keyboardHeight !== prevState.keyboardHeight && this.state.keyboardHeight > 0){
+        if(this.state.addClicked && this.state.addClicked !== prevState.addClicked){
+            this.setState({
+                addTaskDisplayProperty: 'flex'
+            })
         }
     }
 
@@ -57,153 +61,171 @@ export default class BottomTabNavigator extends React.Component{
                         visible={true}
                         transparent={true}
                     >   
-                        <TouchableWithoutFeedback
-                            onPress={() => {
-                                Keyboard.dismiss
-                                this.setState(prevState => ({
-                                    keyboardHeight: 0,
-                                    addClicked: !prevState.addClicked
-                                }))
-                            }}
-                        >
-                            <View style={{
+                        {/* <View
+                            style={{
+                                flex: 1,
                                 backgroundColor: "black",
                                 opacity: 0.5,
-                                flex: 1
-                            }}>
-                            </View>
-                        </TouchableWithoutFeedback>
-                        <KeyboardAvoidingView>
-                        <View style={{
-                            position: "absolute",
-                            bottom: this.state.keyboardHeight,
-                            backgroundColor: 'white',
-                            width: Dimensions.get('window').width,
-                            height: 200,
-                            borderTopRightRadius: 20,
-                            borderTopLeftRadius: 20,
-                            flexDirection: "column",
-                            justifyContent: "center",
-                            paddingTop: 10,
-                        }}>
+                            }}
+                        > */}
+
+                        
+                            <TouchableWithoutFeedback
+                                onPress={() => {
+                                    Keyboard.dismiss
+                                    this.setState(prevState => ({
+                                        keyboardHeight: 0,
+                                        addClicked: !prevState.addClicked
+                                    }))
+                                }}
+                            >
+                                <View style={{
+                                    flex: 1,
+                                    backgroundColor: "black",
+                                    opacity: 0.5,
+                                }}>
+                                </View>
+                            </TouchableWithoutFeedback>
+
+                            <KeyboardAvoidingView>
                             <View style={{
-                                flex: 1,
-                                marginHorizontal: 20
+                                display: this.state.addTaskDisplayProperty,
+                                position: "absolute",
+                                bottom: this.state.keyboardHeight,
+                                backgroundColor: 'white',
+                                width: Dimensions.get('window').width,
+                                height: 200,
+                                borderTopRightRadius: 20,
+                                borderTopLeftRadius: 20,
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                paddingTop: 10,
                             }}>
-                                <Text 
-                                    style={{
+                                <View style={{
+                                    flex: 1,
+                                    marginHorizontal: 20
+                                }}>
+                                    <Text 
+                                        style={{
+                                            fontSize: 12,
+                                            color: 'gainsboro',
+                                        }}
+                                    >
+                                        Task Title
+                                    </Text>
+                                    <TextInput 
+                                        onLayout = {() => {setTimeout(() => {this.taskTextInput.focus()}, 50)}}
+                                        ref= {(ref) => {this.taskTextInput = ref}}
+                                        style={{
+                                            flex: 1,
+                                            fontSize: 16,
+                                            borderBottomColor: 'gainsboro',
+                                            borderBottomWidth: 1,
+                                            
+                                        }}
+                                        placeholder="Add a task here"
+                                    />
+                                </View>
+                                
+                                <View style={{
+                                    flex: 1,
+                                    margin: 20,
+                                }}>
+                                    <Text style={{
                                         fontSize: 12,
                                         color: 'gainsboro',
-                                    }}
-                                >
-                                    Task Title
-                                </Text>
-                                <TextInput 
-                                    onLayout = {() => {setTimeout(() => {this.taskTextInput.focus()}, 50)}}
-                                    ref= {(ref) => {this.taskTextInput = ref}}
-                                    style={{
-                                        flex: 1,
-                                        fontSize: 16,
-                                        borderBottomColor: 'gainsboro',
-                                        borderBottomWidth: 1,
-                                        
-                                    }}
-                                    placeholder="Add a task here"
-                                />
-                            </View>
-                            
-                            <View style={{
-                                flex: 1,
-                                margin: 20,
-                            }}>
-                                <Text style={{
-                                    fontSize: 12,
-                                    color: 'gainsboro',
+                                    }}>
+                                        Task Description
+                                    </Text>
+                                    <TextInput  
+                                        style={{
+                                            flex: 1,
+                                            fontSize: 16,
+                                            borderBottomColor: 'gainsboro',
+                                            borderBottomWidth: 1,
+                                        }}
+
+                                        placeholder="Add task description"
+                                    />
+                                </View>
+
+                                <View style={{
+                                    flex: 1,
+                                    flexDirection: 'row'
                                 }}>
-                                    Task Description
-                                </Text>
-                                <TextInput  
-                                    style={{
-                                        flex: 1,
-                                        fontSize: 16,
-                                        borderBottomColor: 'gainsboro',
-                                        borderBottomWidth: 1,
-                                    }}
+                                    <TouchableHighlight
+                                        style= {{
+                                            flex: 1,
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            borderRadius: 10,  
+                                        }}
 
-                                    placeholder="Add task description"
-                                />
+                                        onPress={() => {
+                                            this.setState({addTaskDisplayProperty: 'none'})
+                                            Keyboard.dismiss
+                                            this.taskTextInput.blur()
+                                        }}
+                                        activeOpacity={0.5}
+                                        underlayColor="gainsboro"
+                                    >
+                                        <Text>Cal</Text>
+                                    </TouchableHighlight>
+
+                                    <TouchableHighlight
+                                        style= {{
+                                            flex: 1,
+                                            alignItems: "center",
+                                            justifyContent: "center"
+
+                                        }}
+                                    >
+                                        <Text>Cat</Text>
+                                    </TouchableHighlight>
+
+                                    <TouchableHighlight
+                                        style= {{
+                                            flex: 1,
+                                            alignItems: "center",
+                                            justifyContent: "center"
+
+                                        }}
+                                    >
+                                        <Text>Pri</Text>
+                                    </TouchableHighlight>
+
+                                    <TouchableHighlight
+                                        style= {{
+                                            flex: 1,
+                                            alignItems: "center",
+                                            justifyContent: "center"
+
+                                        }}
+                                    >
+                                        <Text>Rep</Text>
+                                    </TouchableHighlight>
+
+                                    <TouchableHighlight
+                                        style= {{
+                                            flex: 1,
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            borderRadius: 10,    
+
+                                        }}
+
+                                        onPress={() => console.log(true)}
+                                        activeOpacity={0.5}
+                                        underlayColor="gainsboro"
+                                    >
+                                        <Text>ok</Text>
+                                    </TouchableHighlight>
+                                </View>
                             </View>
+                            </KeyboardAvoidingView>
 
-                            <View style={{
-                                flex: 1,
-                                flexDirection: 'row'
-                            }}>
-                                <TouchableHighlight
-                                    style= {{
-                                        flex: 1,
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        borderRadius: 10,  
-                                    }}
 
-                                    onPress={() => console.log(true)}
-                                    activeOpacity={0.5}
-                                    underlayColor="gainsboro"
-                                >
-                                    <Text>Cal</Text>
-                                </TouchableHighlight>
-
-                                <TouchableHighlight
-                                    style= {{
-                                        flex: 1,
-                                        alignItems: "center",
-                                        justifyContent: "center"
-
-                                    }}
-                                >
-                                    <Text>Cat</Text>
-                                </TouchableHighlight>
-
-                                <TouchableHighlight
-                                    style= {{
-                                        flex: 1,
-                                        alignItems: "center",
-                                        justifyContent: "center"
-
-                                    }}
-                                >
-                                    <Text>Pri</Text>
-                                </TouchableHighlight>
-
-                                <TouchableHighlight
-                                    style= {{
-                                        flex: 1,
-                                        alignItems: "center",
-                                        justifyContent: "center"
-
-                                    }}
-                                >
-                                    <Text>Rep</Text>
-                                </TouchableHighlight>
-
-                                <TouchableHighlight
-                                    style= {{
-                                        flex: 1,
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        borderRadius: 10,    
-
-                                    }}
-
-                                    onPress={() => console.log(true)}
-                                    activeOpacity={0.5}
-                                    underlayColor="gainsboro"
-                                >
-                                    <Text>ok</Text>
-                                </TouchableHighlight>
-                            </View>
-                        </View>
-                        </KeyboardAvoidingView>
+                        {/* </View> */}
                     </Modal>
                     : 
 
