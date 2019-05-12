@@ -20,7 +20,19 @@ export default class BottomTabNavigator extends React.Component{
         addClicked: false,
         renderAddTaskUI: null,
         keyboardHeight: 0,
-        addTaskDisplayProperty: 'none'
+        addTaskDisplayProperty: 'none',
+        calendarChosen: false
+    }
+
+
+    chooseCalenderOption = () => {
+        this.setState({addTaskDisplayProperty: 'none'})
+        this.setState(prevState=> ({
+            calendarChosen: !prevState.calendarChosen
+        }))
+
+        Keyboard.dismiss
+        this.taskTextInput.blur()
     }
 
     componentDidMount(){
@@ -161,11 +173,7 @@ export default class BottomTabNavigator extends React.Component{
                                             borderRadius: 10,  
                                         }}
 
-                                        onPress={() => {
-                                            this.setState({addTaskDisplayProperty: 'none'})
-                                            Keyboard.dismiss
-                                            this.taskTextInput.blur()
-                                        }}
+                                        onPress={this.chooseCalenderOption}
                                         activeOpacity={0.5}
                                         underlayColor="gainsboro"
                                     >
@@ -223,8 +231,27 @@ export default class BottomTabNavigator extends React.Component{
                                 </View>
                             </View>
                             </KeyboardAvoidingView>
+                            
+                            {this.state.calendarChosen ?
+                            <View 
+                                style={{
+                                    position: 'absolute',
+                                    top: 100,
+                                    bottom: 100,
+                                    right: 25,
+                                    left: 25,
+                                    backgroundColor: 'white',
+                                    borderRadius: 10,
 
+                                }}
+                            >
+                            </View>
 
+                            :
+
+                            <></>
+                            }
+                            
                         {/* </View> */}
                     </Modal>
                     : 
@@ -234,7 +261,10 @@ export default class BottomTabNavigator extends React.Component{
                 {this.props.routeName === "Daily" || this.props.routeName === "Weekly" || this.props.routeName === "Monthly" ?
                     <TouchableHighlight
                         onPress = {() => {
-                            this.setState(prevState => ({addClicked: !prevState.addClicked}))
+                            this.setState(prevState => ({
+                                addClicked: !prevState.addClicked,
+                                calendarChosen: false
+                            }))
                         }}
                         style= {{
                             height: 50,
