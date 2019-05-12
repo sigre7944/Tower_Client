@@ -142,8 +142,13 @@ export default class BottomTabNavigator extends React.Component{
                                     style= {{
                                         flex: 1,
                                         alignItems: "center",
-                                        justifyContent: "center"
+                                        justifyContent: "center",
+                                        borderRadius: 10,  
                                     }}
+
+                                    onPress={() => console.log(true)}
+                                    activeOpacity={0.5}
+                                    underlayColor="gainsboro"
                                 >
                                     <Text>Cal</Text>
                                 </TouchableHighlight>
