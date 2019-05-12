@@ -99,7 +99,7 @@ export default class BottomTabNavigator extends React.Component{
                                     Task Title
                                 </Text>
                                 <TextInput 
-                                    onLayout = {() => {setTimeout(() => {this.taskTextInput.focus()}, 200)}}
+                                    onLayout = {() => {setTimeout(() => {this.taskTextInput.focus()}, 50)}}
                                     ref= {(ref) => {this.taskTextInput = ref}}
                                     style={{
                                         flex: 1,
