@@ -252,12 +252,58 @@ export default class BottomTabNavigator extends React.Component{
                                     paddingVertical: 20,
                                 }}>
                                     <View style={{
-                                        height: 50,
+                                        height: 35,
                                         borderRadius: 25,
                                         borderWidth: 1,
-                                        borderColor: "gainsboro"
+                                        borderColor: "gainsboro",
+                                        flexDirection: "row",
+                                        justifyContent: 'space-between',
                                     }}>
+                                        <View style={{
+                                            backgroundColor: "gainsboro",
+                                            borderRadius: 25,
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        }}>
+                                            <Text
+                                                style={{
+                                                    color: 'white',
+                                                    paddingHorizontal: 20,
+                                                    fontWeight: "700"
+                                                }}
+                                            >Today</Text>
+                                        </View>
 
+                                        <View style={{
+                                            backgroundColor: "gainsboro",
+                                            borderRadius: 25,
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        }}>
+                                            <Text
+                                                style={{
+                                                    color: 'white',
+                                                    paddingHorizontal: 10,
+                                                    fontWeight: "700"
+                                                }}
+                                            >Tomorrow</Text>
+                                        </View>
+
+                                        <View style={{
+                                            backgroundColor: "gainsboro",
+                                            borderRadius: 25,
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            
+                                        }}>
+                                            <Text
+                                                style={{
+                                                    color: 'white',
+                                                    paddingHorizontal: 10,
+                                                    fontWeight: "700"
+                                                }}
+                                            >Next Monday</Text>
+                                        </View>
                                     </View>
                                 </View>
                                 
