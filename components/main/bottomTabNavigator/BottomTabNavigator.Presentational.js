@@ -232,6 +232,7 @@ export default class BottomTabNavigator extends React.Component{
                             </View>
                             </KeyboardAvoidingView>
                             
+                            {/* Calendar View */}
                             {this.state.calendarChosen ?
                             <View 
                                 style={{
@@ -245,6 +246,21 @@ export default class BottomTabNavigator extends React.Component{
 
                                 }}
                             >
+                                <View style={{
+                                    height: 80,
+                                    paddingHorizontal: 30,
+                                    paddingVertical: 20,
+                                }}>
+                                    <View style={{
+                                        height: 50,
+                                        borderRadius: 25,
+                                        borderWidth: 1,
+                                        borderColor: "gainsboro"
+                                    }}>
+
+                                    </View>
+                                </View>
+                                
                             </View>
 
                             :
