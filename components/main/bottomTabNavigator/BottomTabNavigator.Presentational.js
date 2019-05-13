@@ -14,6 +14,8 @@ import {
     KeyboardAvoidingView,
 } from 'react-native';
 
+import AddTaskButton from './layouts/AddTaskButton'
+
 export default class BottomTabNavigator extends React.Component{
 
     state = {
@@ -24,6 +26,12 @@ export default class BottomTabNavigator extends React.Component{
         calendarChosen: false
     }
 
+    addTaskButtonActionProp = () => {
+        this.setState(prevState => ({
+            addClicked: !prevState.addClicked,
+            calendarChosen: false
+        }))
+    }
 
     chooseCalenderOption = () => {
         this.setState({addTaskDisplayProperty: 'none'})
@@ -73,15 +81,6 @@ export default class BottomTabNavigator extends React.Component{
                         visible={true}
                         transparent={true}
                     >   
-                        {/* <View
-                            style={{
-                                flex: 1,
-                                backgroundColor: "black",
-                                opacity: 0.5,
-                            }}
-                        > */}
-
-                        
                             <TouchableWithoutFeedback
                                 onPress={() => {
                                     Keyboard.dismiss
@@ -314,38 +313,14 @@ export default class BottomTabNavigator extends React.Component{
                             <></>
                             }
                             
-                        {/* </View> */}
                     </Modal>
                     : 
 
                     <></>
                 }
                 {this.props.routeName === "Daily" || this.props.routeName === "Weekly" || this.props.routeName === "Monthly" ?
-                    <TouchableHighlight
-                        onPress = {() => {
-                            this.setState(prevState => ({
-                                addClicked: !prevState.addClicked,
-                                calendarChosen: false
-                            }))
-                        }}
-                        style= {{
-                            height: 50,
-                            width: 50,
-                            borderRadius: 50,
-                            backgroundColor: 'black',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            position: 'absolute',
-                            top: -35,
-                            zIndex: 10
-                        }}
-                    >
-                        <>
-                        <Text style={{
-                            color: 'white'
-                        }}>add</Text>
-                        </>
-                    </TouchableHighlight>
+                    
+                    <AddTaskButton addTaskButtonActionProp = {this.addTaskButtonActionProp}/>
 
                     : 
 
