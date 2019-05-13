@@ -11,7 +11,71 @@ import {
     KeyboardAvoidingView,
 } from 'react-native';
 
+TaskTitleElement = (props) => (
+    <View style={{
+        flex: 1,
+        marginHorizontal: 20
+    }}>
+        <Text 
+            style={{
+                fontSize: 12,
+                color: 'gainsboro',
+            }}
+        >
+            Task Title
+        </Text>
+        <TextInput 
+            ref= {(ref) => {props.setTaskTextInputRef(ref)}}
+            onLayout = {() => {
+                setTimeout(() => {props.taskTextInputRef.focus()}, 50)
+            }}
+            style={{
+                flex: 1,
+                fontSize: 16,
+                borderBottomColor: 'gainsboro',
+                borderBottomWidth: 1,
+                
+            }}
+            placeholder="Add a task here"
+        />
+    </View>
+)
+
+TaskDescriptionElement = (props) => (
+    <View style={{
+        flex: 1,
+        margin: 20,
+    }}>
+        <Text style={{
+            fontSize: 12,
+            color: 'gainsboro',
+        }}>
+            Task Description
+        </Text>
+        <TextInput  
+            style={{
+                flex: 1,
+                fontSize: 16,
+                borderBottomColor: 'gainsboro',
+                borderBottomWidth: 1,
+            }}
+
+            placeholder="Add task description"
+        />
+    </View>
+)
+
 export default class AddTaskPanel extends Component{
+
+    constructor(props){
+        super(props)
+
+        taskTextInputRef = React.createRef()
+    }
+
+    setTaskTextInputRef = (ref) => {
+        this.taskTextInputRef = ref
+    }
 
     render(){
         return(
@@ -29,53 +93,13 @@ export default class AddTaskPanel extends Component{
                 justifyContent: "center",
                 paddingTop: 10,
             }}>
-                <View style={{
-                    flex: 1,
-                    marginHorizontal: 20
-                }}>
-                    <Text 
-                        style={{
-                            fontSize: 12,
-                            color: 'gainsboro',
-                        }}
-                    >
-                        Task Title
-                    </Text>
-                    <TextInput 
-                        ref= {(ref) => {this.taskTextInput = ref}}
-                        onLayout = {() => {setTimeout(() => {this.taskTextInput.focus()}, 50)}}
-                        style={{
-                            flex: 1,
-                            fontSize: 16,
-                            borderBottomColor: 'gainsboro',
-                            borderBottomWidth: 1,
-                            
-                        }}
-                        placeholder="Add a task here"
-                    />
-                </View>
                 
-                <View style={{
-                    flex: 1,
-                    margin: 20,
-                }}>
-                    <Text style={{
-                        fontSize: 12,
-                        color: 'gainsboro',
-                    }}>
-                        Task Description
-                    </Text>
-                    <TextInput  
-                        style={{
-                            flex: 1,
-                            fontSize: 16,
-                            borderBottomColor: 'gainsboro',
-                            borderBottomWidth: 1,
-                        }}
+                <TaskTitleElement 
+                    setTaskTextInputRef = {this.setTaskTextInputRef} 
+                    taskTextInputRef = {this.taskTextInputRef}
+                />
 
-                        placeholder="Add task description"
-                    />
-                </View>
+                <TaskDescriptionElement />
 
                 <View style={{
                     flex: 1,
@@ -91,7 +115,7 @@ export default class AddTaskPanel extends Component{
 
                         onPress={() => {
                             this.props.chooseCalenderOption()
-                            this.taskTextInput.blur()
+                            this.taskTextInputRef.blur()
                         }}
                         activeOpacity={0.5}
                         underlayColor="gainsboro"
