@@ -30,6 +30,9 @@ DismissElement = (props) => (
 
 export default class UnderlayModal extends Component {
 
+    state = {
+    }
+
     render(){
         return(
             <Modal

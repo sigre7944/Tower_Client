@@ -6,10 +6,87 @@ import {
     TouchableHighlight,
     TextInput,
     Dimensions,
-    Modal,
-    TouchableWithoutFeedback,
     KeyboardAvoidingView,
 } from 'react-native';
+
+
+export default class AddTaskPanel extends Component{
+
+    constructor(props){
+        super(props)
+
+        taskTextInputRef = React.createRef()
+    }
+
+    setTaskTextInputRef = (ref) => {
+        this.taskTextInputRef = ref
+    }
+
+    render(){
+        return(
+            <KeyboardAvoidingView>
+            <View style={{
+                display: this.props.addTaskDisplayProperty,
+                position: "absolute",
+                bottom: this.props.keyboardHeight,
+                backgroundColor: 'white',
+                width: Dimensions.get('window').width,
+                height: 200,
+                borderTopRightRadius: 20,
+                borderTopLeftRadius: 20,
+                flexDirection: "column",
+                justifyContent: "center",
+                paddingTop: 10,
+            }}>
+                
+                <TaskTitleElement 
+                    setTaskTextInputRef = {this.setTaskTextInputRef} 
+                    taskTextInputRef = {this.taskTextInputRef}
+                />
+
+                <TaskDescriptionElement />
+
+                <View style={{
+                    flex: 1,
+                    flexDirection: 'row'
+                }}>
+                    
+                    <BottomOptionElement 
+                        chooseOption = {this.props.chooseCalenderOption} 
+                        taskTextInputRef = {this.taskTextInputRef}
+                        title = "Cal"
+                    />
+
+                    <BottomOptionElement 
+                        chooseOption = {() => {console.log(true)}} 
+                        taskTextInputRef = {this.taskTextInputRef}
+                        title = "Cat"
+                    />
+
+                    <BottomOptionElement 
+                        chooseOption = {() => {console.log(true)}} 
+                        taskTextInputRef = {this.taskTextInputRef}
+                        title = "Pri"
+                    />
+
+                    <BottomOptionElement 
+                        chooseOption = {() => {console.log(true)}} 
+                        taskTextInputRef = {this.taskTextInputRef}
+                        title = "Rep"
+                    />
+
+                    <BottomOptionElement 
+                        chooseOption = {() => {console.log(true)}} 
+                        taskTextInputRef = {this.taskTextInputRef}
+                        title = "Ok"
+                    />
+                </View>
+            </View>
+            </KeyboardAvoidingView>
+        )
+    }
+}
+
 
 TaskTitleElement = (props) => (
     <View style={{
@@ -65,115 +142,23 @@ TaskDescriptionElement = (props) => (
     </View>
 )
 
-export default class AddTaskPanel extends Component{
+BottomOptionElement = (props) => (
+    <TouchableHighlight
+        style= {{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: 10,  
+        }}
 
-    constructor(props){
-        super(props)
+        onPress={() => {
+            props.chooseOption()
+            props.taskTextInputRef.blur()
+        }}
+        activeOpacity={0.5}
+        underlayColor="gainsboro"
+    >
+        <Text>{props.title}</Text>
+    </TouchableHighlight>
+)
 
-        taskTextInputRef = React.createRef()
-    }
-
-    setTaskTextInputRef = (ref) => {
-        this.taskTextInputRef = ref
-    }
-
-    render(){
-        return(
-            <KeyboardAvoidingView>
-            <View style={{
-                display: this.props.addTaskDisplayProperty,
-                position: "absolute",
-                bottom: this.props.keyboardHeight,
-                backgroundColor: 'white',
-                width: Dimensions.get('window').width,
-                height: 200,
-                borderTopRightRadius: 20,
-                borderTopLeftRadius: 20,
-                flexDirection: "column",
-                justifyContent: "center",
-                paddingTop: 10,
-            }}>
-                
-                <TaskTitleElement 
-                    setTaskTextInputRef = {this.setTaskTextInputRef} 
-                    taskTextInputRef = {this.taskTextInputRef}
-                />
-
-                <TaskDescriptionElement />
-
-                <View style={{
-                    flex: 1,
-                    flexDirection: 'row'
-                }}>
-                    <TouchableHighlight
-                        style= {{
-                            flex: 1,
-                            alignItems: "center",
-                            justifyContent: "center",
-                            borderRadius: 10,  
-                        }}
-
-                        onPress={() => {
-                            this.props.chooseCalenderOption()
-                            this.taskTextInputRef.blur()
-                        }}
-                        activeOpacity={0.5}
-                        underlayColor="gainsboro"
-                    >
-                        <Text>Cal</Text>
-                    </TouchableHighlight>
-
-                    <TouchableHighlight
-                        style= {{
-                            flex: 1,
-                            alignItems: "center",
-                            justifyContent: "center"
-
-                        }}
-                    >
-                        <Text>Cat</Text>
-                    </TouchableHighlight>
-
-                    <TouchableHighlight
-                        style= {{
-                            flex: 1,
-                            alignItems: "center",
-                            justifyContent: "center"
-
-                        }}
-                    >
-                        <Text>Pri</Text>
-                    </TouchableHighlight>
-
-                    <TouchableHighlight
-                        style= {{
-                            flex: 1,
-                            alignItems: "center",
-                            justifyContent: "center"
-
-                        }}
-                    >
-                        <Text>Rep</Text>
-                    </TouchableHighlight>
-
-                    <TouchableHighlight
-                        style= {{
-                            flex: 1,
-                            alignItems: "center",
-                            justifyContent: "center",
-                            borderRadius: 10,    
-
-                        }}
-
-                        onPress={() => console.log(true)}
-                        activeOpacity={0.5}
-                        underlayColor="gainsboro"
-                    >
-                        <Text>ok</Text>
-                    </TouchableHighlight>
-                </View>
-            </View>
-            </KeyboardAvoidingView>
-        )
-    }
-}
