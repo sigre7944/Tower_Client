@@ -14,6 +14,8 @@ import {
 
 export default class Calendar extends Component{
 
+    state = {
+    }
 
     render(){
         return(
@@ -43,7 +45,7 @@ export default class Calendar extends Component{
                         justifyContent: 'space-between',
                     }}>
                         <View style={{
-                            backgroundColor: "gainsboro",
+                            backgroundColor: "black",
                             borderRadius: 25,
                             alignItems: "center",
                             justifyContent: "center",
