@@ -209,7 +209,8 @@ export default class AddTaskPanel extends Component{
 TaskTitleElement = (props) => (
     <View style={{
         flex: 1,
-        marginHorizontal: 20
+        marginHorizontal: 20,
+        marginTop: 10,
     }}>
         <Text 
             style={{
