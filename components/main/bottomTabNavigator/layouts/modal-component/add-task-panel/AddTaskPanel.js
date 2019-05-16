@@ -58,6 +58,10 @@ export default class AddTaskPanel extends Component{
         }
     }
 
+    componentDidMount(){
+        this.chooseAnnotation('day') //automatically choose day annotation when loaded as default
+    }
+
     render(){
         return(
             <KeyboardAvoidingView>
@@ -83,6 +87,7 @@ export default class AddTaskPanel extends Component{
                     }}
                     
                     onPress = {this.chooseAnnotation.bind(this, 'day')}
+                    underlayColor = "transparent"
                     >
                         <Text style={{
                             color: "white",
@@ -104,6 +109,7 @@ export default class AddTaskPanel extends Component{
                     }}
 
                     onPress = {this.chooseAnnotation.bind(this, 'week')}
+                    underlayColor = "transparent"
                     >
                         <Text style={{
                             color: "white",
@@ -125,6 +131,7 @@ export default class AddTaskPanel extends Component{
                     }}
 
                     onPress = {this.chooseAnnotation.bind(this, 'month')}
+                    underlayColor = "transparent"
                     >
                         <Text style={{
                             color: "white",
