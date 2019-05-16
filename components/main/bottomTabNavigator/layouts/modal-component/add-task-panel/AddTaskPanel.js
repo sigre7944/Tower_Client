@@ -16,6 +16,10 @@ export default class AddTaskPanel extends Component{
         super(props)
 
         taskTextInputRef = React.createRef()
+
+        state = {
+
+        }
     }
 
     setTaskTextInputRef = (ref) => {
@@ -26,60 +30,126 @@ export default class AddTaskPanel extends Component{
         return(
             <KeyboardAvoidingView>
             <View style={{
-                display: this.props.addTaskDisplayProperty,
                 position: "absolute",
-                bottom: this.props.keyboardHeight,
-                backgroundColor: 'white',
                 width: Dimensions.get('window').width,
-                height: 200,
-                borderTopRightRadius: 20,
-                borderTopLeftRadius: 20,
-                flexDirection: "column",
-                justifyContent: "center",
-                paddingTop: 10,
+                bottom: this.props.keyboardHeight,
+                display: this.props.addTaskDisplayProperty,
+                height: 250,
             }}>
-                
-                <TaskTitleElement 
-                    setTaskTextInputRef = {this.setTaskTextInputRef} 
-                    taskTextInputRef = {this.taskTextInputRef}
-                />
+                <View style={{
+                    height: 100,
+                    position: 'relative',
+                    flexDirection: "row",
+                }}>
+                    <TouchableHighlight 
+                    style={{
+                        position: 'absolute',
+                        height: 100,
+                        width: Dimensions.get('window').width,
+                        backgroundColor: 'black',
+                        borderTopLeftRadius: 20,
+                    }}>
+                        <Text style={{
+                            color: "white",
+                            marginTop: 10,
+                            marginLeft: 50,
+                            fontSize: 20,
+                            fontWeight: "500",
+                        }}>Day</Text>
+                    </TouchableHighlight>
 
-                <TaskDescriptionElement />
+                    <TouchableHighlight 
+                    style={{
+                        position: 'absolute',
+                        width: Dimensions.get('window').width * 2/3,
+                        left: Dimensions.get('window').width * 1/3,
+                        height: 100,
+                        backgroundColor: 'gainsboro',
+                        borderTopLeftRadius: 20,
+                    }}>
+                        <Text style={{
+                            color: "white",
+                            marginTop: 10,
+                            marginLeft: 50,
+                            fontSize: 20,
+                            fontWeight: "500",
+                        }}>Week</Text>
+                    </TouchableHighlight>
+
+                    <TouchableHighlight 
+                    style={{
+                        position: 'absolute',
+                        width: Dimensions.get('window').width * 1/3,
+                        left: Dimensions.get('window').width * 2/3,
+                        height: 100,
+                        backgroundColor: 'gray',
+                        borderTopLeftRadius: 20,
+                    }}>
+                        <Text style={{
+                            color: "white",
+                            marginTop: 10,
+                            marginLeft: 50,
+                            fontSize: 20,
+                            fontWeight: "500",
+                        }}>Month</Text>
+                    </TouchableHighlight>
+                </View>
 
                 <View style={{
-                    flex: 1,
-                    flexDirection: 'row'
+                    position: 'absolute',
+                    bottom: 0,
+                    height: 200,
+                    width: Dimensions.get('window').width,
+                    backgroundColor: 'white',
+                    borderTopRightRadius: 20,
+                    borderTopLeftRadius: 20,
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    paddingTop: 10,
                 }}>
                     
-                    <BottomOptionElement 
-                        chooseOption = {this.props.chooseCalenderOption} 
+                    <TaskTitleElement 
+                        setTaskTextInputRef = {this.setTaskTextInputRef} 
                         taskTextInputRef = {this.taskTextInputRef}
-                        title = "Cal"
                     />
 
-                    <BottomOptionElement 
-                        chooseOption = {() => {console.log(true)}} 
-                        taskTextInputRef = {this.taskTextInputRef}
-                        title = "Cat"
-                    />
+                    <TaskDescriptionElement />
 
-                    <BottomOptionElement 
-                        chooseOption = {() => {console.log(true)}} 
-                        taskTextInputRef = {this.taskTextInputRef}
-                        title = "Pri"
-                    />
+                    <View style={{
+                        flex: 1,
+                        flexDirection: 'row'
+                    }}>
+                        
+                        <BottomOptionElement 
+                            chooseOption = {this.props.chooseCalenderOption} 
+                            taskTextInputRef = {this.taskTextInputRef}
+                            title = "Cal"
+                        />
 
-                    <BottomOptionElement 
-                        chooseOption = {() => {console.log(true)}} 
-                        taskTextInputRef = {this.taskTextInputRef}
-                        title = "Rep"
-                    />
+                        <BottomOptionElement 
+                            chooseOption = {() => {console.log(true)}} 
+                            taskTextInputRef = {this.taskTextInputRef}
+                            title = "Cat"
+                        />
 
-                    <BottomOptionElement 
-                        chooseOption = {() => {console.log(true)}} 
-                        taskTextInputRef = {this.taskTextInputRef}
-                        title = "Ok"
-                    />
+                        <BottomOptionElement 
+                            chooseOption = {() => {console.log(true)}} 
+                            taskTextInputRef = {this.taskTextInputRef}
+                            title = "Pri"
+                        />
+
+                        <BottomOptionElement 
+                            chooseOption = {() => {console.log(true)}} 
+                            taskTextInputRef = {this.taskTextInputRef}
+                            title = "Rep"
+                        />
+
+                        <BottomOptionElement 
+                            chooseOption = {() => {console.log(true)}} 
+                            taskTextInputRef = {this.taskTextInputRef}
+                            title = "Ok"
+                        />
+                    </View>
                 </View>
             </View>
             </KeyboardAvoidingView>

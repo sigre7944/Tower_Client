@@ -38,7 +38,7 @@ export default class UnderlayModal extends Component {
                 transparent={true}
             >   
                 <DismissElement dismissAddTaskProcessWhenClickOnUnderlayModal = {this.props.dismissAddTaskProcessWhenClickOnUnderlayModal}/>
-
+                
                 <AddTaskPanel 
                     addTaskDisplayProperty = {this.props.addTaskDisplayProperty}
                     keyboardHeight = {this.props.keyboardHeight}
