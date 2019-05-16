@@ -10,6 +10,10 @@ import {
 } from 'react-native';
 
 
+let dayAnnotationColor= '#b0b0b0',
+    weekAnnotationColor= '#9a9a9a',
+    monthAnnotationColor= '#848484'
+
 export default class AddTaskPanel extends Component{
 
     constructor(props){
@@ -17,13 +21,41 @@ export default class AddTaskPanel extends Component{
 
         taskTextInputRef = React.createRef()
 
-        state = {
-
+        this.state = {
+            dayAnnotationColor: dayAnnotationColor,
+            weekAnnotationColor: weekAnnotationColor,
+            monthAnnotationColor: monthAnnotationColor,
         }
     }
 
     setTaskTextInputRef = (ref) => {
         this.taskTextInputRef = ref
+    }
+
+    chooseAnnotation = (annotation) => {
+        if(annotation === "day"){
+            this.setState({
+                dayAnnotationColor: "black",
+                weekAnnotationColor: weekAnnotationColor,
+                monthAnnotationColor: monthAnnotationColor,
+            })
+        }
+
+        else if(annotation === "week"){
+            this.setState({
+                dayAnnotationColor: dayAnnotationColor,
+                weekAnnotationColor: "black",
+                monthAnnotationColor: monthAnnotationColor,
+            })
+        }
+
+        else{
+            this.setState({
+                dayAnnotationColor: dayAnnotationColor,
+                weekAnnotationColor: weekAnnotationColor,
+                monthAnnotationColor: "black",
+            })
+        }
     }
 
     render(){
@@ -46,9 +78,12 @@ export default class AddTaskPanel extends Component{
                         position: 'absolute',
                         height: 100,
                         width: Dimensions.get('window').width,
-                        backgroundColor: 'black',
+                        backgroundColor: this.state.dayAnnotationColor,
                         borderTopLeftRadius: 20,
-                    }}>
+                    }}
+                    
+                    onPress = {this.chooseAnnotation.bind(this, 'day')}
+                    >
                         <Text style={{
                             color: "white",
                             marginTop: 10,
@@ -64,9 +99,12 @@ export default class AddTaskPanel extends Component{
                         width: Dimensions.get('window').width * 2/3,
                         left: Dimensions.get('window').width * 1/3,
                         height: 100,
-                        backgroundColor: 'gainsboro',
+                        backgroundColor: this.state.weekAnnotationColor,
                         borderTopLeftRadius: 20,
-                    }}>
+                    }}
+
+                    onPress = {this.chooseAnnotation.bind(this, 'week')}
+                    >
                         <Text style={{
                             color: "white",
                             marginTop: 10,
@@ -82,9 +120,12 @@ export default class AddTaskPanel extends Component{
                         width: Dimensions.get('window').width * 1/3,
                         left: Dimensions.get('window').width * 2/3,
                         height: 100,
-                        backgroundColor: 'gray',
+                        backgroundColor: this.state.monthAnnotationColor,
                         borderTopLeftRadius: 20,
-                    }}>
+                    }}
+
+                    onPress = {this.chooseAnnotation.bind(this, 'month')}
+                    >
                         <Text style={{
                             color: "white",
                             marginTop: 10,
