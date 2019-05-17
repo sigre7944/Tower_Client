@@ -7,7 +7,8 @@ import {
     Modal,
     Alert,
     Text,
-    TouchableHighlight
+    TouchableHighlight,
+    TouchableOpacity
 } from 'react-native';
 import { DrawerActions } from 'react-navigation-drawer';
 
@@ -41,7 +42,7 @@ export default class Header extends React.Component {
             justifyContent: 'space-between',
             backgroundColor: 'gray'
         }}>
-            <TouchableHighlight onPress={() => this.props.navigation.dispatch(DrawerActions.openDrawer())}>
+            <TouchableOpacity onPress={() => this.props.navigation.dispatch(DrawerActions.openDrawer())}>
                 <Image
                     source={require('./Hamburger_icon.png')}
                     style= {{
@@ -50,14 +51,14 @@ export default class Header extends React.Component {
                         tintColor: 'white'
                     }}
                 />
-            </TouchableHighlight>
+            </TouchableOpacity>
             <Text style= {{
                 color: 'white',
                 fontSize: 20,
                 fontWeight: '500',
             }}>Today</Text>
 
-            <TouchableHighlight >
+            <TouchableOpacity >
                 <Image 
                     source={require('./dots.png')}
                     style= {{
@@ -66,7 +67,7 @@ export default class Header extends React.Component {
                         tintColor: 'white'
                     }}
                 />
-            </TouchableHighlight>
+            </TouchableOpacity>
 
             
         </View>

@@ -14,6 +14,12 @@ import {
     KeyboardAvoidingView,
 } from 'react-native';
 
+
+const styles= {
+    text: {
+        fontSize: 12
+    }
+}
 export default class BottomTabNavigator extends React.Component{
 
     state = {
@@ -152,21 +158,27 @@ export default class BottomTabNavigator extends React.Component{
                             this.setState(prevState => ({addClicked: !prevState.addClicked}))
                         }}
                         style= {{
-                            height: 50,
-                            width: 50,
+                            height: 64,
+                            width: 64,
                             borderRadius: 50,
                             backgroundColor: 'black',
                             alignItems: 'center',
                             justifyContent: 'center',
                             position: 'absolute',
-                            top: -35,
-                            zIndex: 10
+                            top: -50,
+                            zIndex: 10,
+                            shadowOffset:{  width: 50,  height: 50,  },
+                            shadowColor: 'black',
+                            shadowOpacity: 0.75,
+                            elevation: 5
                         }}
                     >
                         <>
                         <Text style={{
-                            color: 'white'
-                        }}>add</Text>
+                            color: 'white',
+                            fontSize: 24,
+                            fontWeight: "200"
+                        }}> + </Text>
                         </>
                     </TouchableHighlight>
 
@@ -192,10 +204,10 @@ export default class BottomTabNavigator extends React.Component{
                             flex: 1,
                             height: 60,
                             alignItems: 'center',
-                            justifyContent: 'center',
+                            justifyContent: 'center'
                         }}
                     >
-                        <Text>Journal</Text>
+                        <Text style={styles.text}>Journal</Text>
                     </TouchableHighlight>
 
                     <TouchableHighlight
@@ -207,7 +219,7 @@ export default class BottomTabNavigator extends React.Component{
                             justifyContent: 'center',
                         }}
                     >
-                        <Text>Progress</Text>
+                        <Text style={styles.text}>Progress</Text>
                     </TouchableHighlight>
 
                     <TouchableHighlight
@@ -219,7 +231,7 @@ export default class BottomTabNavigator extends React.Component{
                             justifyContent: 'center',
                         }}
                     >
-                        <Text>Reward</Text>
+                        <Text style={styles.text}>Reward</Text>
                     </TouchableHighlight>
 
                     <TouchableHighlight
@@ -231,7 +243,7 @@ export default class BottomTabNavigator extends React.Component{
                             justifyContent: 'center',
                         }}
                     >
-                        <Text>Settings</Text>
+                        <Text style={styles.text}>Settings</Text>
                     </TouchableHighlight>
                 </View>
             </View>
