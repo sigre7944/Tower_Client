@@ -19,9 +19,6 @@ export default class Calendar extends Component{
     state = {
     }
 
-    componentDidUpdate(prevProps){
-        console.log(prevProps.currentAnnotation)
-    }
 
     render(){
         return(

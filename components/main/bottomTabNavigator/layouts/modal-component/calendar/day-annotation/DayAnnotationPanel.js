@@ -9,13 +9,19 @@ import {
     Modal,
     TouchableWithoutFeedback,
     KeyboardAvoidingView,
+    ScrollView
 } from 'react-native';
 
 export default class DayAnnotationPanel extends Component{
 
+    state = {
+        currentMonthAndYear: 'Match 2019'
+    }
+
 
     render(){
         return(
+            <>
             <View style={{
                 height: 80,
                 paddingHorizontal: 30,
@@ -76,6 +82,36 @@ export default class DayAnnotationPanel extends Component{
                     </View>
                 </View>
             </View> 
+
+
+            <View 
+                style = {{
+                    marginTop: 10,
+                    height: 50,
+                }}
+            >
+                <ScrollView
+                    horizontal={true}
+
+                    // onScroll = {() => console.log(true)}
+                    // scrollEventThrottle={1}
+
+                    onMomentumScrollEnd = {() => console.log(true)}
+                >
+                    <View style={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: Dimensions.get('window').width - 50,
+                    }}>
+                        <Text>
+                            {this.state.currentMonthAndYear}
+                        </Text>
+                    </View>
+                    
+                </ScrollView>
+            </View>
+
+            </>
         )
     }
 }
