@@ -12,11 +12,53 @@ import {
     ScrollView
 } from 'react-native';
 
+
+DayInWeekHolder = (props) => (
+    <View
+        style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+        }}
+    >
+        <Text
+            style={{
+                color: "gray",
+            }}
+        >
+            {props.day}
+        </Text>
+    </View>
+)
+
+const monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
 export default class DayAnnotationPanel extends Component{
 
     state = {
         currentMonth: 'May',
         currentYear: '2019',
+        renderDaysInMonth: null
+    }
+
+    getDaysInMonth = (month, year) => {
+        return new Date(year, month, 0).getDate()
+    }
+
+    componentDidMount(){
+        let currentMonth = monthNames[new Date().getMonth()],
+            currentYear = new Date().getFullYear()
+        
+        this.setState({currentMonth, currentYear})
+
+        let daysInMonth = this.getDaysInMonth(new Date().getMonth() + 1, currentYear)
+
+        for(let i = 1; i <= daysInMonth; i++){
+            let dayInWeek = new Date(currentYear, currentMonth - 1, i).getDay(),
+                dayText
+        }
     }
 
 
@@ -26,7 +68,8 @@ export default class DayAnnotationPanel extends Component{
             <View style={{
                 height: 80,
                 paddingHorizontal: 30,
-                paddingVertical: 20,
+                paddingTop: 30,
+                paddingBottom: 10,
             }}>
                 <View style={{
                     height: 35,
@@ -87,7 +130,6 @@ export default class DayAnnotationPanel extends Component{
 
             <View 
                 style = {{
-                    marginTop: 10,
                     flex: 1,
                 }}
             >
@@ -135,6 +177,30 @@ export default class DayAnnotationPanel extends Component{
                                     {this.state.currentYear}
                                 </Text>
                             </View>
+                            
+                        </View>
+
+                        <View
+                            style={{
+                                flex: 1,
+                                marginTop: 10,
+                            }}
+                        >
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                }}
+                            >
+                                <DayInWeekHolder day='M' />
+                                <DayInWeekHolder day='T' />
+                                <DayInWeekHolder day='W' />
+                                <DayInWeekHolder day='T' />
+                                <DayInWeekHolder day='F' />
+                                <DayInWeekHolder day='S' />
+                                <DayInWeekHolder day='S' />
+                            </View>
+
+                            {this.state.renderDaysInMonth}
                             
                         </View>
                     </View>
