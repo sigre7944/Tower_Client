@@ -15,7 +15,8 @@ import {
 export default class DayAnnotationPanel extends Component{
 
     state = {
-        currentMonthAndYear: 'Match 2019'
+        currentMonth: 'May',
+        currentYear: '2019',
     }
 
 
@@ -87,27 +88,92 @@ export default class DayAnnotationPanel extends Component{
             <View 
                 style = {{
                     marginTop: 10,
-                    height: 50,
+                    flex: 1,
                 }}
             >
                 <ScrollView
                     horizontal={true}
+                    decelerationRate={0}
+                    snapToInterval={Dimensions.get('window').width - 50}
+                    snapToAlignment="center"
 
-                    // onScroll = {() => console.log(true)}
-                    // scrollEventThrottle={1}
+                    showsHorizontalScrollIndicator={false}
 
-                    onMomentumScrollEnd = {() => console.log(true)}
                 >
                     <View style={{
-                        alignItems: "center",
-                        justifyContent: "center",
+                        flex: 1,
                         width: Dimensions.get('window').width - 50,
+                            
                     }}>
-                        <Text>
-                            {this.state.currentMonthAndYear}
-                        </Text>
+                        <View style={{
+                            height: 50,
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}>
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                    alignItems: "center",
+                                    justifyContent: "center"
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        fontSize: 22,
+                                        fontWeight: "500"
+                                    }}
+                                >
+                                    {this.state.currentMonth}
+                                </Text>
+                                <Text
+                                    style={{
+                                        color: "gray",
+                                        fontSize: 14,
+                                        marginLeft: 5
+                                    }}
+                                >
+                                    {this.state.currentYear}
+                                </Text>
+                            </View>
+                            
+                        </View>
                     </View>
-                    
+
+
+                    <View style={{
+                        flex: 1,
+                        width: Dimensions.get('window').width - 50,
+                            
+                    }}>
+                        <View style={{
+                            height: 50,
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}>
+                            <Text>
+                                February 2019
+                            </Text>
+                        </View>
+                    </View>
+
+
+                    <View style={{
+                        flex: 1,
+                        width: Dimensions.get('window').width - 50,
+                            
+                    }}>
+                        <View style={{
+                            height: 50,
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}>
+                            <Text>
+                                February 2019
+                            </Text>
+                        </View>
+                    </View>
+
+
                 </ScrollView>
             </View>
 
