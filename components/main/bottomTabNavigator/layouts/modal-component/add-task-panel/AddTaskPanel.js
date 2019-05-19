@@ -56,6 +56,8 @@ export default class AddTaskPanel extends Component{
                 monthAnnotationColor: "black",
             })
         }
+
+        this.props.setCurrentAnnotation(annotation)
     }
 
     componentDidMount(){

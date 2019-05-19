@@ -29,6 +29,11 @@ DismissElement = (props) => (
 export default class UnderlayModal extends Component {
 
     state = {
+        currentAnnotation: 'day'
+    }
+
+    setCurrentAnnotation = (annotation) => {
+        this.setState({currentAnnotation: annotation})
     }
 
     render(){
@@ -43,12 +48,15 @@ export default class UnderlayModal extends Component {
                     addTaskDisplayProperty = {this.props.addTaskDisplayProperty}
                     keyboardHeight = {this.props.keyboardHeight}
                     chooseCalenderOption = {this.props.chooseCalenderOption}
+                    setCurrentAnnotation = {this.setCurrentAnnotation}
+                    currentAnnotation = {this.state.currentAnnotation}
                 />
                 
                 {/* Calendar View */}
                 {this.props.calendarChosen ?
-                
-                    <Calendar />
+                    <Calendar 
+                        currentAnnotation = {this.state.currentAnnotation}
+                    />
                 :
 
                     <></>

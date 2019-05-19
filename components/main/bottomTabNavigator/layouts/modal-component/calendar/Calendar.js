@@ -11,35 +11,16 @@ import {
     KeyboardAvoidingView,
 } from 'react-native';
 
+import DayAnnotationPanel from './day-annotation/DayAnnotationPanel'
+import WeekAnnotationPanel from './week-annotation/WeekAnnotationPanel'
 
 export default class Calendar extends Component{
 
     state = {
-        currentMonth: 'This month',
-        nextMonthColor: 'white',
-        nextMonthTextColor: 'gray',
-        thisMonthColor: 'black',
-        thisMonthTextColor: 'white'
     }
 
-    chooseMonthOption = (monthOption) => {
-        if(monthOption === "This month"){
-            this.setState({
-                thisMonthColor: 'black',
-                thisMonthTextColor: 'white',
-                nextMonthColor: 'white',
-                nextMonthTextColor: 'gray'
-            })
-        }
-
-        else if(monthOption === "Next month"){
-            this.setState({
-                thisMonthColor: 'white',
-                thisMonthTextColor: 'gray',
-                nextMonthColor: 'black',
-                nextMonthTextColor: 'white'
-            })
-        }
+    componentDidUpdate(prevProps){
+        console.log(prevProps.currentAnnotation)
     }
 
     render(){
@@ -56,121 +37,25 @@ export default class Calendar extends Component{
 
                 }}
             >
-                {/* <View style={{
-                    height: 80,
-                    paddingHorizontal: 30,
-                    paddingVertical: 20,
-                }}>
-                    <View style={{
-                        height: 35,
-                        borderRadius: 25,
-                        borderWidth: 1,
-                        borderColor: "gainsboro",
-                        flexDirection: "row",
-                        justifyContent: 'space-between',
-                    }}>
-                        <View style={{
-                            backgroundColor: "black",
-                            borderRadius: 25,
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}>
-                            <Text
-                                style={{
-                                    color: 'white',
-                                    paddingHorizontal: 20,
-                                    fontWeight: "700"
-                                }}
-                            >Today</Text>
-                        </View>
 
-                        <View style={{
-                            backgroundColor: "gainsboro",
-                            borderRadius: 25,
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}>
-                            <Text
-                                style={{
-                                    color: 'white',
-                                    paddingHorizontal: 10,
-                                    fontWeight: "700"
-                                }}
-                            >Tomorrow</Text>
-                        </View>
-
-                        <View style={{
-                            backgroundColor: "gainsboro",
-                            borderRadius: 25,
-                            alignItems: "center",
-                            justifyContent: "center",
-                            
-                        }}>
-                            <Text
-                                style={{
-                                    color: 'white',
-                                    paddingHorizontal: 10,
-                                    fontWeight: "700"
-                                }}
-                            >Next Monday</Text>
-                        </View>
-                    </View>
-                </View> */}
+            {this.props.currentAnnotation === 'day' ?
+                <DayAnnotationPanel />
                 
-                <View
-                    style={{
-                        height: 80,
-                        paddingHorizontal: 30,
-                        paddingVertical: 20,
-                    }}
-                >
-                    <View 
-                        style={{
-                            height: 35,
-                            borderRadius: 25,
-                            borderWidth: 1,
-                            borderColor: "gainsboro",
-                            flexDirection: "row",
-                        }}
-                    >
-                        <TouchableHighlight 
-                            style={{
-                                backgroundColor: this.state.thisMonthColor,
-                                borderRadius: 25,
-                                alignItems: "center",
-                                justifyContent: "center",
-                                flex: 1,
-                            }}
-                            onPress={this.chooseMonthOption.bind(this, "This month")}
-                            underlayColor="transparent"
-                        >
-                            <Text
-                                style={{
-                                    color: this.state.thisMonthTextColor
-                                }}
-                            >This month</Text>
-                        </TouchableHighlight>
-                        
-                        <TouchableHighlight 
-                            style={{
-                                backgroundColor: this.state.nextMonthColor,
-                                borderRadius: 25,
-                                alignItems: "center",
-                                justifyContent: "center",
-                                flex: 1,
-                            }}
-                            onPress={this.chooseMonthOption.bind(this, "Next month")}    
-                            underlayColor="transparent"
-                        >
-                            <Text
-                                style={{
-                                    color: this.state.nextMonthTextColor
-                                }}
-                            >Next month</Text>
-                        </TouchableHighlight>
-                    </View>
+                :
 
-                </View>
+                <>
+                {this.props.currentAnnotation === 'week' ?
+                    <WeekAnnotationPanel />
+
+                    :
+
+                    <>
+                    <MonthAnnotationPanel />
+                    </>
+                
+                }
+                </>
+            }
             </View>
         )
     }
