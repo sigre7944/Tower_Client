@@ -122,7 +122,7 @@ export default class AddTaskPanel extends Component{
 
                     <TouchableHighlight 
                     style={{
-                        position: 'absolute',
+                        // position: 'absolute',
                         width: Dimensions.get('window').width * 1/3,
                         left: Dimensions.get('window').width * 2/3,
                         height: 100,
