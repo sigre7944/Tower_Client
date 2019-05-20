@@ -85,11 +85,8 @@ export default class DayAnnotationPanel extends Component{
         this.setState({currentMonthInText, currentYear})
 
         let daysInMonth = this.getDaysInMonth(currentMonth + 1, currentYear),
-            calendar_array = [],
+            calendar_row_array = [new Array(7), new Array(7), new Array(7), new Array(7), new Array(7), new Array(7)], //6 rows in total
             display_day_array = [] //length of 7*6 = 42
-
-        let lastDayInWeekOfMonth = new Date(currentYear, currentMonth, daysInMonth).getDay(),
-            postDaysFromNextMonth = 7 - lastDayInWeekOfMonth
 
         let daysInLastMonth
         //To check the current month is January or not
@@ -99,8 +96,19 @@ export default class DayAnnotationPanel extends Component{
         else
             daysInLastMonth = this.getDaysInMonth(12, currentYear - 1)
 
+        let firstDayOfCurrentMonthInWeek = new Date(currentYear, currentMonth, 1).getDay() ,
+            numberOfDaysFromLastMonth
+
+        if(firstDayOfCurrentMonthInWeek !== 0){
+            numberOfDaysFromLastMonth = firstDayOfCurrentMonthInWeek - 1
+        }
+
+        else{
+            numberOfDaysFromLastMonth = 6
+        }
+
         //Get the days in last month
-        for(let i = daysInLastMonth - 3; i <= daysInLastMonth; i++){
+        for(let i = daysInLastMonth - numberOfDaysFromLastMonth + 1; i <= daysInLastMonth; i++){
             display_day_array.push(i) 
         }
 
@@ -109,19 +117,58 @@ export default class DayAnnotationPanel extends Component{
             display_day_array.push(i)
         }
 
+        let lastDayInWeekOfCurrentMonth = new Date(currentYear, currentMonth, daysInMonth).getDay(),
+            postDaysFromNextMonth = 7 - lastDayInWeekOfCurrentMonth
+
         //Get the days in next month
         for(let i = 1; i <= postDaysFromNextMonth; i++){
             display_day_array.push(i)
         }
 
+        if(display_day_array.length < 42){
+            for(let i = display_day_array.length; i < 42; i++){
+                display_day_array.push(<></>)
+            }
+        }
+
+        
+
         for(let i = 0; i < display_day_array.length; i++){
             let dayInWeek = new Date(currentYear, currentMonth - 1, display_day_array[i]).getDay(),
                 dayWord = this.getDayWordInWeek(dayInWeek)
 
-            if(i % 7 === 0){
-                calendar_array
-            }
+            calendar_row_array[parseInt((i) / 7)].push(
+                <View
+                    style={{
+                        flex: 1,
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                    key={"view holder for day in calendar " + i}
+                >
+                    <Text
+                        style={{
+                            color: "black",
+                        }}
+                    >
+                        {display_day_array[i]}
+                    </Text>
+                </View>
+            )
         }
+
+        this.setState({
+            renderDaysInMonth: calendar_row_array.map((elements, index) => (
+                <View 
+                    key={index}
+                    style={{
+                        flexDirection: 'row',
+                    }}
+                >
+                    {elements}
+                </View>
+            ))
+        })
     }
 
 
