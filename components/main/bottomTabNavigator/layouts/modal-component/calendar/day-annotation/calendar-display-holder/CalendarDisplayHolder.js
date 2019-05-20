@@ -79,12 +79,17 @@ export default class CalendarDisplayHolder extends Component{
 
         //Get the days in last month based on the number of last month's days calculated above
         for(let i = daysInLastMonth - numberOfDaysFromLastMonth + 1; i <= daysInLastMonth; i++){
-            display_day_array.push(i) 
+            display_day_array.push({
+                day: i
+            }) 
         }
 
         //Get the days in current month (main context)
         for(let i = 1; i <= daysInMonth; i++){
-            display_day_array.push(i)
+            display_day_array.push({
+                day: i,
+                main: true
+            })
         }
 
         //Get the days will be displayed in the calendar from the next month
@@ -94,7 +99,9 @@ export default class CalendarDisplayHolder extends Component{
 
         //Get the days in next month
         for(let i = 1; i <= postDaysFromNextMonth; i++){
-            display_day_array.push(i)
+            display_day_array.push({
+                day: i
+            })
         }
 
 
@@ -107,24 +114,49 @@ export default class CalendarDisplayHolder extends Component{
 
         //In calendar_row_array, each index is a row, containing all the neccessary React elements to form the Calendar.
         for(let i = 0; i < display_day_array.length; i++){
-            calendar_row_array[parseInt((i) / 7)].push(
-                <View
-                    style={{
-                        flex: 1,
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }}
-                    key={"view holder for day in calendar " + i}
-                >
-                    <Text
+            if(display_day_array[i].main)
+                calendar_row_array[parseInt((i) / 7)].push(
+                    <TouchableHighlight
                         style={{
-                            color: "black",
+                            flex: 1,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            marginVertical: 7,
                         }}
+                        key={"Touchable holder for day in calendar " + i}
                     >
-                        {display_day_array[i]}
-                    </Text>
-                </View>
-            )
+                        <Text
+                            style= {{
+                                color: "black"
+                            }}
+                        >
+                            {display_day_array[i].day}
+                        </Text>
+                    </TouchableHighlight>
+                )
+
+            else
+                calendar_row_array[parseInt((i) / 7)].push(
+                    <View
+                        style={{
+                            flex: 1,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            marginVertical: 7,
+                        }}
+
+                        key={"view holder for day in calendar " + i}
+                    >
+                        <Text
+                            style= {{
+                                color: "gainsboro"
+                            }}
+                        >
+                            {display_day_array[i].day}
+                        </Text>
+                    </View>
+                )
+            
         }
 
         //Display the Calendar through state.
