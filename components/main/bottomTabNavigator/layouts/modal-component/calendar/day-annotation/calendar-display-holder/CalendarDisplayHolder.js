@@ -68,6 +68,7 @@ export default class CalendarDisplayHolder extends Component{
         let firstDayOfCurrentMonthInWeek = new Date(year, month, 1).getDay() ,
             numberOfDaysFromLastMonth
 
+        //Find the number of days from last month to determine how many last month's days will be displayed in the calendar
         if(firstDayOfCurrentMonthInWeek !== 0){
             numberOfDaysFromLastMonth = firstDayOfCurrentMonthInWeek - 1
         }
@@ -76,30 +77,35 @@ export default class CalendarDisplayHolder extends Component{
             numberOfDaysFromLastMonth = 6
         }
 
-        //Get the days in last month
+        //Get the days in last month based on the number of last month's days calculated above
         for(let i = daysInLastMonth - numberOfDaysFromLastMonth + 1; i <= daysInLastMonth; i++){
             display_day_array.push(i) 
         }
 
-        //Get the days in current month
+        //Get the days in current month (main context)
         for(let i = 1; i <= daysInMonth; i++){
             display_day_array.push(i)
         }
 
+        //Get the days will be displayed in the calendar from the next month
         let lastDayInWeekOfCurrentMonth = new Date(year, month, daysInMonth).getDay(),
-            postDaysFromNextMonth = lastDayInWeekOfCurrentMonth !== 0 ? 7 - lastDayInWeekOfCurrentMonth : 0
+            postDaysFromNextMonth = lastDayInWeekOfCurrentMonth !== 0 ? 7 - lastDayInWeekOfCurrentMonth : 0 //To determine displaying only when the last day in week of current month
+                                                                                                            // is not Sunday.
 
         //Get the days in next month
         for(let i = 1; i <= postDaysFromNextMonth; i++){
             display_day_array.push(i)
         }
 
+
+        //After we get all the information needed from 3 above loops, we need to fill up remaining indexes in display_day_array to complete 42 holders.
         if(display_day_array.length < 42){
             for(let i = display_day_array.length; i < 42; i++){
                 display_day_array.push(<></>)
             }
         }
 
+        //In calendar_row_array, each index is a row, containing all the neccessary React elements to form the Calendar.
         for(let i = 0; i < display_day_array.length; i++){
             calendar_row_array[parseInt((i) / 7)].push(
                 <View
@@ -121,6 +127,7 @@ export default class CalendarDisplayHolder extends Component{
             )
         }
 
+        //Display the Calendar through state.
         this.setState({
             renderDaysInMonth : calendar_row_array.map((elements, index) => (
                 <View 
