@@ -38,7 +38,7 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
 export default class DayAnnotationPanel extends Component{
 
     state = {
-        currentMonth: 'May',
+        currentMonthInText: 'May',
         currentYear: '2019',
         renderDaysInMonth: null
     }
@@ -78,45 +78,48 @@ export default class DayAnnotationPanel extends Component{
     }
 
     componentDidMount(){
-        let currentMonth = monthNames[new Date().getMonth()],
+        let currentMonth = new Date().getMonth(),
+            currentMonthInText = monthNames[currentMonth],
             currentYear = new Date().getFullYear()
         
-        this.setState({currentMonth, currentYear})
+        this.setState({currentMonthInText, currentYear})
 
-        let daysInMonth = this.getDaysInMonth(new Date().getMonth() + 1, currentYear),
+        let daysInMonth = this.getDaysInMonth(currentMonth + 1, currentYear),
             calendar_array = [],
             display_day_array = [] //length of 7*6 = 42
 
-        let firstDayInWeekOfMonth = new Date(currentYear, currentMonth - 1, 1).getDay(),
-            formerDaysFromLastMonth = firstDayInWeekOfMonth - 1,
-            lastDayInWeekOfMonth = new Date(currentYear, currentMonth - 1, daysInMonth).getDay(),
+        let lastDayInWeekOfMonth = new Date(currentYear, currentMonth, daysInMonth).getDay(),
             postDaysFromNextMonth = 7 - lastDayInWeekOfMonth
 
         let daysInLastMonth
         //To check the current month is January or not
-        if(new Date().getMonth() !== 0)
-            daysInLastMonth = this.getDaysInMonth(new Date().getMonth(), currentYear)
+        if(currentMonth !== 0)
+            daysInLastMonth = this.getDaysInMonth(currentMonth, currentYear)
 
         else
             daysInLastMonth = this.getDaysInMonth(12, currentYear - 1)
 
+        //Get the days in last month
         for(let i = daysInLastMonth - 3; i <= daysInLastMonth; i++){
+            display_day_array.push(i) 
+        }
+
+        //Get the days in current month
+        for(let i = 1; i <= daysInMonth; i++){
             display_day_array.push(i)
         }
 
-        for(let i = 1; i <= daysInMonth; i++){
+        //Get the days in next month
+        for(let i = 1; i <= postDaysFromNextMonth; i++){
             display_day_array.push(i)
-            let dayInWeek = new Date(currentYear, currentMonth - 1, i).getDay(),
+        }
+
+        for(let i = 0; i < display_day_array.length; i++){
+            let dayInWeek = new Date(currentYear, currentMonth - 1, display_day_array[i]).getDay(),
                 dayWord = this.getDayWordInWeek(dayInWeek)
 
-            
-
-            if(dayInWeek === 1){
-                row_array
-            }
-
-            else{
-
+            if(i % 7 === 0){
+                calendar_array
             }
         }
     }
@@ -225,7 +228,7 @@ export default class DayAnnotationPanel extends Component{
                                         fontWeight: "500"
                                     }}
                                 >
-                                    {this.state.currentMonth}
+                                    {this.state.currentMonthInText}
                                 </Text>
                                 <Text
                                     style={{
