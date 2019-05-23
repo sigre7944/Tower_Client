@@ -37,11 +37,15 @@ DayInWeekHolder = (props) => (
     </View>
 )
 
-
 export default class CalendarDisplayHolder extends Component{
+    /*TO EXPLITCITLY USE GLOBAL VARIABLES WITHIN CLASS, ONE MUST DEFINE THOSE VARIABLES INSIDE CLASS*/
+    /*IF DEFINING OUTSIDE, THOSE VARIABLES WILL BE UPDATED EVERY TIME THE SCRIPT THAT EXECUTES IT IS RAN*/
+    
     display_day_array = [] //Hold the data to display of each day in the current calendar month
     calendar_row_array = [] //Hold all the row of React element to display the current calendar month
     lastIndexOfDay //The last day's index in display_day_array to reset the style of the last day
+
+
     state = {
         monthInText: '',
         year: '',
