@@ -9,12 +9,19 @@ import {
     Modal,
     TouchableWithoutFeedback,
     KeyboardAvoidingView,
-    ScrollView
+    ScrollView,
+    StyleSheet
 } from 'react-native';
+
 
 const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
+
+let calendar_row_array, //Hold all the row of React element to display the current calendar month
+    display_day_array, //Hold the data to display of each day in the current calendar month
+    lastIndexOfDay //The last day's index in display_day_array to reset the style of the last day
+
 
 DayInWeekHolder = (props) => (
     <View
@@ -34,12 +41,39 @@ DayInWeekHolder = (props) => (
     </View>
 )
 
+
 export default class CalendarDisplayHolder extends Component{
 
     state = {
         monthInText: '',
         year: '',
-        renderDaysInMonth: <></>
+        renderDaysInMonth: <></>,
+        display_day_style_array: [],
+        display_day_text_style_array: [],
+        calendar_row_array: []
+    }
+
+    chooseDay = (index, day) => {
+        let display_day_style_array = this.state.display_day_style_array,
+            display_day_text_style_array = this.state.display_day_text_style_array
+
+        if(lastIndexOfDay){
+            display_day_style_array[lastIndexOfDay] = styles.UnchosenDay
+
+            display_day_text_style_array[lastIndexOfDay] = styles.UnchosenDayText
+        }
+
+
+        display_day_style_array[index] = styles.ChosenDay
+
+        display_day_text_style_array[index] = styles.ChosenDayText
+
+        this.setState({
+            display_day_style_array: [... display_day_style_array],
+            display_day_text_style_array: [... display_day_text_style_array]
+        })
+
+        lastIndexOfDay = index
     }
 
     getDaysInMonth = (month, year) => {
@@ -54,8 +88,11 @@ export default class CalendarDisplayHolder extends Component{
         this.setState({monthInText, year})  
 
         let daysInMonth = this.getDaysInMonth(month + 1, year),
-            calendar_row_array = [new Array(7), new Array(7), new Array(7), new Array(7), new Array(7), new Array(7)], //6 rows in total
-            display_day_array = [] //length of 7*6 = 42
+            display_day_style_array = [], //to store style of each day for display proper style when chossing
+            display_day_text_style_array = [] //to store style of each day's text for display proper style when chossing
+
+        display_day_array = [] //length of 7*6 = 42
+       
 
         let daysInLastMonth
         //To check the current month is January or not
@@ -82,6 +119,10 @@ export default class CalendarDisplayHolder extends Component{
             display_day_array.push({
                 day: i
             }) 
+
+            display_day_style_array.push(styles.UnchosenDay)
+
+            display_day_text_style_array.push(styles.UnchosenDayText)
         }
 
         //Get the days in current month (main context)
@@ -90,6 +131,10 @@ export default class CalendarDisplayHolder extends Component{
                 day: i,
                 main: true
             })
+
+            display_day_style_array.push(styles.UnchosenDay)
+
+            display_day_text_style_array.push(styles.UnchosenDayText)
         }
 
         //Get the days will be displayed in the calendar from the next month
@@ -102,8 +147,11 @@ export default class CalendarDisplayHolder extends Component{
             display_day_array.push({
                 day: i
             })
-        }
 
+            display_day_style_array.push(styles.UnchosenDay)
+
+            display_day_text_style_array.push(styles.UnchosenDayText)
+        }
 
         //After we get all the information needed from 3 above loops, we need to fill up remaining indexes in display_day_array to complete 42 holders.
         if(display_day_array.length < 42){
@@ -112,68 +160,90 @@ export default class CalendarDisplayHolder extends Component{
             }
         }
 
-        //In calendar_row_array, each index is a row, containing all the neccessary React elements to form the Calendar.
-        for(let i = 0; i < display_day_array.length; i++){
-            if(display_day_array[i].main)
-                calendar_row_array[parseInt((i) / 7)].push(
-                    <TouchableHighlight
-                        style={{
-                            flex: 1,
-                            alignItems: "center",
-                            justifyContent: "center",
-                            marginVertical: 7,
-                        }}
-                        key={"Touchable holder for day in calendar " + i}
-                    >
-                        <Text
-                            style= {{
-                                color: "black"
-                            }}
-                        >
-                            {display_day_array[i].day}
-                        </Text>
-                    </TouchableHighlight>
-                )
-
-            else
-                calendar_row_array[parseInt((i) / 7)].push(
-                    <View
-                        style={{
-                            flex: 1,
-                            alignItems: "center",
-                            justifyContent: "center",
-                            marginVertical: 7,
-                        }}
-
-                        key={"view holder for day in calendar " + i}
-                    >
-                        <Text
-                            style= {{
-                                color: "gainsboro"
-                            }}
-                        >
-                            {display_day_array[i].day}
-                        </Text>
-                    </View>
-                )
-            
-        }
+        
 
         //Display the Calendar through state.
         this.setState({
-            renderDaysInMonth : calendar_row_array.map((elements, index) => (
-                <View 
-                    key={index}
-                    style={{
-                        flexDirection: 'row',
-                    }}
-                >
-                    {elements}
-                </View>
-            ))
+            display_day_style_array: [... display_day_style_array],
+            display_day_text_style_array: [... display_day_text_style_array],
         }) 
     }
 
+
+    componentDidUpdate(prevProps, prevState){
+        if(this.state.display_day_style_array !== prevState.display_day_style_array){
+            calendar_row_array = [new Array(7), new Array(7), new Array(7), new Array(7), new Array(7), new Array(7)] //6 rows in total
+
+            //In calendar_row_array, each index is a row, containing all the neccessary React elements to form the Calendar.
+            for(let i = 0; i < display_day_array.length; i++){
+                if(display_day_array[i].main)
+                    calendar_row_array[parseInt((i) / 7)].push(
+                        <TouchableHighlight
+                            style={{
+                                flex: 1,
+                                alignItems: "center",
+                                justifyContent: "center",
+                                marginVertical: 5,
+                            }}
+                            onPress={this.chooseDay.bind(this, i, display_day_array[i].day)}
+                            key={"maindayholder "+i}
+                        >   
+                            <View
+                                style={this.state.display_day_style_array[i]}
+                            >
+                                <Text
+                                    style= {this.state.display_day_text_style_array[i]}
+                                >
+                                    {display_day_array[i].day}
+                                </Text>
+                            </View>
+                            
+                        </TouchableHighlight>
+                    )
+
+                else
+                    calendar_row_array[parseInt((i) / 7)].push(
+                        <View
+                            style={{
+                                flex: 1,
+                                alignItems: "center",
+                                justifyContent: "center",
+                                marginVertical: 5,
+                            }}
+
+                            key={"view holder for day in calendar " + i}
+                        >
+                            <Text
+                                style= {{
+                                    color: "gainsboro"
+                                }}
+                            >
+                                {display_day_array[i].day}
+                            </Text>
+                        </View>
+                    )
+            }
+
+            this.setState({
+                calendar_row_array: [... calendar_row_array]
+            })
+        }
+
+        if(this.state.calendar_row_array !== prevState.calendar_row_array){
+            this.setState({
+                renderDaysInMonth : this.state.calendar_row_array.map((elements, index) => (
+                    <View 
+                        key={index}
+                        style={{
+                            flexDirection: 'row',
+                        }}
+                    >
+                        {elements}
+                    </View>
+                ))
+            })
+        }
+    }
 
     render(){
         return(
@@ -238,3 +308,33 @@ export default class CalendarDisplayHolder extends Component{
         )
     }
 }
+
+
+const styles = StyleSheet.create({
+    UnchosenDay: {
+        height: 25,
+        width: 25,
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 50,
+        backgroundColor: "white"
+    },
+
+    UnchosenDayText: {
+        color: 'black'
+    },
+
+    ChosenDay: {
+        height: 25,
+        width: 25,
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 50,
+        backgroundColor: "black"
+    },
+
+    ChosenDayText: {
+        color: 'white'
+    },
+})
+
