@@ -160,8 +160,6 @@ export default class CalendarDisplayHolder extends Component{
             }
         }
 
-        
-
         //Display the Calendar through state.
         this.setState({
             display_day_style_array: [... display_day_style_array],
@@ -183,10 +181,10 @@ export default class CalendarDisplayHolder extends Component{
                                 flex: 1,
                                 alignItems: "center",
                                 justifyContent: "center",
-                                marginVertical: 5,
                             }}
                             onPress={this.chooseDay.bind(this, i, display_day_array[i].day)}
                             key={"maindayholder "+i}
+                            underlayColor="transparent"
                         >   
                             <View
                                 style={this.state.display_day_style_array[i]}
@@ -312,8 +310,8 @@ export default class CalendarDisplayHolder extends Component{
 
 const styles = StyleSheet.create({
     UnchosenDay: {
-        height: 25,
-        width: 25,
+        height: 30,
+        width: 30,
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 50,
@@ -325,8 +323,8 @@ const styles = StyleSheet.create({
     },
 
     ChosenDay: {
-        height: 25,
-        width: 25,
+        height: 30,
+        width: 30,
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 50,
