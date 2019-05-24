@@ -17,12 +17,15 @@ import CalendarDisplayHolder from './calendar-display-holder/CalendarDisplayHold
 export default class DayAnnotationPanel extends Component{
 
     state = {
-        currentMonthInText: 'May',
-        currentYear: '2019',
-        renderDaysInMonth: null
+        renderDaysInMonth: null,
+        currentIndexOfTotalCalendarMonth: 0
     }
 
-    
+    chooseDiffCalendarMonth = (index) => {
+        this.setState({
+            currentIndexOfTotalCalendarMonth: index
+        })
+    }
 
     componentDidMount(){
         
@@ -116,7 +119,14 @@ export default class DayAnnotationPanel extends Component{
                         width: Dimensions.get('window').width - 50,
                         marginRight: (Dimensions.get('window').width - 50)
                     }} 
-                    month={new Date().getMonth()} year={new Date().getFullYear()}/>
+
+                    month={new Date().getMonth()} 
+                    year={new Date().getFullYear()}
+
+                    chooseDiffCalendarMonth = {this.chooseDiffCalendarMonth}
+                    currentIndexOfTotalCalendarMonth = {this.state.currentIndexOfTotalCalendarMonth}
+                    calendarIndex = {0}
+                    />
 
                     <CalendarDisplayHolder 
                     style={{
@@ -126,6 +136,10 @@ export default class DayAnnotationPanel extends Component{
                     }} 
                     month={(new Date().getMonth() + 1) > 11 ? 1 : new Date().getMonth() + 1 } 
                     year={(new Date().getMonth() + 1) > 11 ? new Date().getFullYear() + 1 : new Date().getFullYear()}
+
+                    chooseDiffCalendarMonth = {this.chooseDiffCalendarMonth}
+                    currentIndexOfTotalCalendarMonth = {this.state.currentIndexOfTotalCalendarMonth}
+                    calendarIndex = {1}
                     />
                     
                     <CalendarDisplayHolder 
@@ -135,6 +149,10 @@ export default class DayAnnotationPanel extends Component{
                     }} 
                     month={(new Date().getMonth() + 2) > 11 ? 1 : new Date().getMonth() + 2 } 
                     year={(new Date().getMonth() + 2) > 11 ? new Date().getFullYear() + 1 : new Date().getFullYear()}
+
+                    chooseDiffCalendarMonth = {this.chooseDiffCalendarMonth}
+                    currentIndexOfTotalCalendarMonth = {this.state.currentIndexOfTotalCalendarMonth}
+                    calendarIndex = {2}
                     />
 
                 </ScrollView>
