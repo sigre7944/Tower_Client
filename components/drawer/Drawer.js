@@ -2,8 +2,83 @@ import React, { Component } from 'react';
 import {NavigationActions} from 'react-navigation';
 import { Alert, TouchableOpacity, Text, View, StyleSheet, ImageBackground, Image, TextInput, ScrollView, Platform } from 'react-native'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import CollapsibleList from './../shared/layouts/CollapsibleList';
+
+const findAndToggle = (array, index) => {
+    array[index] = !array[index]
+    return array;
+}
 
 export default class Drawer extends Component {
+    state={
+        list: [
+            {
+                name: 'Folder 1',
+                items: [
+                    {
+                    name: 'List1',
+                    items: [
+                        {
+                            name: 'Item1'
+                        },
+                        {
+                            name: 'Item2'
+                        }
+                    ]
+                    },
+                    {
+                        name: 'List2',
+                        items: [
+                            {
+                                name: 'Item1'
+                            },
+                            {
+                                name: 'Item2'
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                name: 'Folder 2',
+                items: [
+                    {
+                        name: 'List1',
+                        items: [
+                            {
+                                name: 'Item1'
+                            },
+                            {
+                                name: 'Item2'
+                            }
+                        ]
+                        },
+                        {
+                            name: 'List2',
+                            items: [
+                                {
+                                    name: 'Item1'
+                                },
+                                {
+                                    name: 'Item2'
+                                }
+                            ]
+                        }
+                ]
+            },
+            {
+                name: 'Uncategory',
+                items: [
+                    {
+                        name: 'Item1'
+                    },
+                    {
+                        name: 'Item1'
+                    }
+                ]
+            }
+        ]
+    }
 
     navigateToScreen = ( route ) =>(
         () => {
@@ -15,6 +90,16 @@ export default class Drawer extends Component {
 
     componentDidMount(){
     
+    }
+
+    handleListClick=(index) => {
+        this.setState(prevState => ({toggleShow: findAndToggle(prevState.toggleShow, index)}))
+    }
+
+    handleAddList = () => {
+        this.setState(prevState => ({
+            list: prevState.list.concat([{name: 'Folder ' + (prevState.list.length), items: []}]), 
+        }))
     }
 
     render() {
@@ -45,10 +130,14 @@ export default class Drawer extends Component {
                         <Text style={styles.headerText}>User Name</Text>
                     </ImageBackground>
                 </View>
+                {
+                    bottom
+                }
                 <ScrollView style={styles.screenContainer} showsVerticalScrollIndicator={false}>
                     <View style={styles.screenTitle} onPress={this.navigateToScreen('TabNavigator')}>
                         
                         <Text>Inbox</Text>
+                        <Text>5</Text>
                         <FontAwesome5 name={'envelope'} style={styles.icon}/>
                     </View>
                     <View style={styles.screenTitle} onPress={this.navigateToScreen('TabNavigator')}>
@@ -57,51 +146,25 @@ export default class Drawer extends Component {
                         <FontAwesome5 name={'calendar'} style={styles.icon}/>
                     </View>
                     <View style={styles.blackBar}></View>
-                    <View style={styles.screenTitle} onPress={this.navigateToScreen('TabNavigator')}>
-                        
-                        <Text>Folder 1</Text>
-                        <FontAwesome5 name={'folder'} style={styles.icon}/>
-                    </View>
 
-                    <View style={styles.screenSection}>
-                        <TouchableOpacity activeOpacity={0.8} style={styles.screenTitle} onPress={() => console.log('clicked')}>   
-                            <Text>Folder 2 </Text>
-                            <FontAwesome5 name={'arrow-right'} style={styles.icon}/>
-                        </TouchableOpacity>
-                        <View style={styles.screenContent}>
-                
-                
-                            <TouchableOpacity style={styles.screenContentItem} >
-                
-                                <Text> Item 1 </Text>
-                
-                
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={styles.screenContentItem} >
-                
-                                <Text> Item 2 </Text>
-                
-                
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={styles.screenContentItem} >
-                
-                                <Text> Item 3 </Text>
-                
-                
-                            </TouchableOpacity>
-
-                        
-                
-                        </View>
-                    </View>
+                    {
+                        this.state.list && this.state.list.map((element, index) => (
+                            <View key={index}>
+                                <CollapsibleList
+                                    style={styles.screenSection}
+                                    name={element.name}
+                                    items={element.items}
+                                />
+                            </View> 
+                        ))
+                    }
+                    
                     <View style={styles.blackBar}></View>
-                    <View style={styles.screenTitle} onPress={this.navigateToScreen('TabNavigator')}>
+                    <TouchableOpacity style={styles.screenTitle} onPress={this.handleAddList}>
                         
                         <Text>Add list</Text>
                         <FontAwesome5 name={'plus'} style={styles.icon}/>
-                    </View>
+                    </TouchableOpacity>
                     <View style={styles.screenTitle} onPress={this.navigateToScreen('TabNavigator')}>
                         
                         <Text>Manage list</Text>
@@ -109,9 +172,6 @@ export default class Drawer extends Component {
                     </View>
                     
                 </ScrollView>
-                {
-                    bottom
-                }
             </View>
         
         )
@@ -196,6 +256,7 @@ const styles = StyleSheet.create({
       },
      
       screenTitle: {
+        zIndex: 10,
         alignSelf: "stretch",
         flexDirection: 'row',
         justifyContent: 'space-between',
