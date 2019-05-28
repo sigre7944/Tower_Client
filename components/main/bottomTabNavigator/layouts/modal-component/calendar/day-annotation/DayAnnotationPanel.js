@@ -31,88 +31,86 @@ export default class DayAnnotationPanel extends Component{
     centerlizeCurrentMonth = (currentMonth, currentYear) => {
         let monthsToDisplay_arr = []
 
-        //get the past 5 months and current month (6 in total)
-        //if current month is a month in between January - April
-        if(currentMonth - 5 < 0){
-            let monthsFromLastYear = 5 - currentMonth
+        //get the past 11 months and current month (12 in total)
+        let monthsFromLastYear = 11 - currentMonth
 
-            //Get the data of months from the last year
-            for(let i = 11 - (monthsFromLastYear) + 1; i <= 11; i++){
-                monthsToDisplay_arr.push({
-                    month: i,
-                    year: currentYear - 1
-                })
-            }
-
-            //Get the data of past months in the current year
-            for(let i = 0; i <= currentMonth; i ++){
-                monthsToDisplay_arr.push({
-                    month: i,
-                    year: currentYear
-                })
-            }
+        //Get the data of months from the last year
+        for(let i = 11 - (monthsFromLastYear); i <= 11; i++){
+            monthsToDisplay_arr.push({
+                month: i,
+                year: currentYear - 1
+            })
         }
 
-        else {
-            //Get the data of past months in the current year
-            for(let i = 0; i <= currentMonth; i ++){
-                monthsToDisplay_arr.push({
-                    month: i,
-                    year: currentYear
-                })
-            }
+        //Get the data of past months in the current year
+        for(let i = 0; i <= currentMonth; i ++){
+            monthsToDisplay_arr.push({
+                month: i,
+                year: currentYear
+            })
         }
 
-        //Get the next 6 months
-        //if current month is a month in between July - December
-        if(11 - currentMonth < 6){
-            let monthsInNextYear = 6 - (11 - currentMonth)
+        //Get the next 12 months
+        let monthsInNextYear = 12 - (11 - currentMonth)
 
-            //Get the data of next months in the current year
-            for(let i = currentMonth + 1; i <= 11; i++){
-                monthsToDisplay_arr.push({
-                    month: i,
-                    year: currentYear,
-                })
-            }
-
-            //Get the data of months in the next year
-            for(let i = 0; i < (monthsInNextYear - 1); i++){
-                monthsToDisplay_arr.push({
-                    month: i,
-                    year: currentYear + 1,
-                })
-            }
+        //Get the data of next months in the current year
+        for(let i = currentMonth + 1; i <= 11; i++){
+            monthsToDisplay_arr.push({
+                month: i,
+                year: currentYear,
+            })
         }
 
-        else {
-            //Get the data of next months in the current year
-            for(let i = currentMonth + 1; i <= 11; i++){
-                monthsToDisplay_arr.push({
-                    month: i,
-                    year: currentYear,
-                })
-            }
+        //Get the data of months in the next year
+        for(let i = 0; i < (monthsInNextYear); i++){
+            monthsToDisplay_arr.push({
+                month: i,
+                year: currentYear + 1,
+            })
         }
 
         this.setState({
-            monthComponent_arr: monthsToDisplay_arr.map((data, index) => (
-                <CalendarDisplayHolder 
-                key={'month-render-calendar' + index}
-                style={{
-                    flex: 1,
-                    width: Dimensions.get('window').width - 50,
-                    marginRight: (Dimensions.get('window').width - 50)
-                }} 
+            monthComponent_arr: monthsToDisplay_arr.map((data, index) => 
+                {
+                    if(index === monthsToDisplay_arr.length - 1){
+                        return(
+                            <CalendarDisplayHolder 
+                            key={'month-render-calendar' + index}
+                            style={{
+                                flex: 1,
+                                width: Dimensions.get('window').width - 50,
+                            }} 
+            
+                            month={data.month} 
+                            year={data.year}
+            
+                            chooseDiffCalendarMonth = {this.chooseDiffCalendarMonth}
+                            currentIndexOfTotalCalendarMonth = {this.state.currentIndexOfTotalCalendarMonth}
+                            calendarIndex = {index}
+                            />
+                        )
+                    }
 
-                month={data.month} 
-                year={data.year}
-
-                chooseDiffCalendarMonth = {this.chooseDiffCalendarMonth}
-                currentIndexOfTotalCalendarMonth = {this.state.currentIndexOfTotalCalendarMonth}
-                calendarIndex = {index}
-                />
-            ))
+                    else
+                        return(
+                            <CalendarDisplayHolder 
+                            key={'month-render-calendar' + index}
+                            style={{
+                                flex: 1,
+                                width: Dimensions.get('window').width - 50,
+                                marginRight: (Dimensions.get('window').width - 50)
+                            }} 
+            
+                            month={data.month} 
+                            year={data.year}
+            
+                            chooseDiffCalendarMonth = {this.chooseDiffCalendarMonth}
+                            currentIndexOfTotalCalendarMonth = {this.state.currentIndexOfTotalCalendarMonth}
+                            calendarIndex = {index}
+                            />
+                        )
+                }
+            )
         })
     }
 
@@ -207,6 +205,47 @@ export default class DayAnnotationPanel extends Component{
                 >
 
                     {this.state.monthComponent_arr}
+                    {/* <CalendarDisplayHolder 
+                    style={{
+                        flex: 1,
+                        width: Dimensions.get('window').width - 50,
+                        marginRight: (Dimensions.get('window').width - 50)
+                    }} 
+
+                    month={new Date().getMonth()} 
+                    year={new Date().getFullYear()}
+
+                    chooseDiffCalendarMonth = {this.chooseDiffCalendarMonth}
+                    currentIndexOfTotalCalendarMonth = {this.state.currentIndexOfTotalCalendarMonth}
+                    calendarIndex = {0}
+                    />
+
+                    <CalendarDisplayHolder 
+                    style={{
+                        flex: 1,
+                        width: Dimensions.get('window').width - 50,
+                        marginRight: (Dimensions.get('window').width - 50)
+                    }} 
+                    month={(new Date().getMonth() + 1) > 11 ? 1 : new Date().getMonth() + 1 } 
+                    year={(new Date().getMonth() + 1) > 11 ? new Date().getFullYear() + 1 : new Date().getFullYear()}
+
+                    chooseDiffCalendarMonth = {this.chooseDiffCalendarMonth}
+                    currentIndexOfTotalCalendarMonth = {this.state.currentIndexOfTotalCalendarMonth}
+                    calendarIndex = {1}
+                    />
+                    
+                    <CalendarDisplayHolder 
+                    style={{
+                        flex: 1,
+                        width: Dimensions.get('window').width - 50,
+                    }} 
+                    month={(new Date().getMonth() + 2) > 11 ? 1 : new Date().getMonth() + 2 } 
+                    year={(new Date().getMonth() + 2) > 11 ? new Date().getFullYear() + 1 : new Date().getFullYear()}
+
+                    chooseDiffCalendarMonth = {this.chooseDiffCalendarMonth}
+                    currentIndexOfTotalCalendarMonth = {this.state.currentIndexOfTotalCalendarMonth}
+                    calendarIndex = {2}
+                    /> */}
 
                 </ScrollView>
             </View>
