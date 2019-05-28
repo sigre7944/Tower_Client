@@ -7,6 +7,7 @@ import {
     TextInput,
     Dimensions,
     KeyboardAvoidingView,
+    Keyboard,
 } from 'react-native';
 
 
@@ -15,21 +16,26 @@ let dayAnnotationColor= '#b0b0b0',
     monthAnnotationColor= '#848484'
 
 export default class AddTaskPanel extends Component{
+    keyboardWillShowListener
 
-    constructor(props){
-        super(props)
+    taskTextInputRef = React.createRef()
 
-        taskTextInputRef = React.createRef()
-
-        this.state = {
-            dayAnnotationColor: dayAnnotationColor,
-            weekAnnotationColor: weekAnnotationColor,
-            monthAnnotationColor: monthAnnotationColor,
-        }
+    state = {
+        dayAnnotationColor: dayAnnotationColor,
+        weekAnnotationColor: weekAnnotationColor,
+        monthAnnotationColor: monthAnnotationColor,
+        AddTaskPanelDisplayProperty: 'flex',
+        keyboardHeight: 0,
     }
 
     setTaskTextInputRef = (ref) => {
         this.taskTextInputRef = ref
+    }
+
+    disableAddTaskPanel = () => {
+        this.setState({
+            AddTaskPanelDisplayProperty: 'none'
+        })
     }
 
     chooseAnnotation = (annotation) => {
@@ -56,12 +62,29 @@ export default class AddTaskPanel extends Component{
                 monthAnnotationColor: "black",
             })
         }
-
         this.props.setCurrentAnnotation(annotation)
+    }
+
+    toDoWhenWillShowKeyboard = (e) => {
+        this.setState({
+            keyboardHeight: e.endCoordinates.height
+        })
     }
 
     componentDidMount(){
         this.chooseAnnotation('day') //automatically choose day annotation when loaded as default
+
+        this.keyboardWillShowListener = Keyboard.addListener(
+            'keyboardWillShow',
+            this.toDoWhenWillShowKeyboard
+        )
+    }
+
+    componentDidUpdate(prevProps, prevState){
+    }
+
+    componentWillUnmount(){
+        Keyboard.removeListener('keyboardWillShow', this.toDoWhenWillShowKeyboard)
     }
 
     render(){
@@ -70,8 +93,8 @@ export default class AddTaskPanel extends Component{
             <View style={{
                 position: "absolute",
                 width: Dimensions.get('window').width,
-                bottom: this.props.keyboardHeight,
-                display: this.props.addTaskDisplayProperty,
+                bottom: this.state.keyboardHeight,
+                display: this.state.AddTaskPanelDisplayProperty,
                 height: 250,
             }}>
                 <View style={{
@@ -172,30 +195,35 @@ export default class AddTaskPanel extends Component{
                         <BottomOptionElement 
                             chooseOption = {this.props.chooseCalenderOption} 
                             taskTextInputRef = {this.taskTextInputRef}
+                            disableAddTaskPanel = {this.disableAddTaskPanel}
                             title = "Cal"
                         />
 
                         <BottomOptionElement 
                             chooseOption = {() => {console.log(true)}} 
                             taskTextInputRef = {this.taskTextInputRef}
+                            disableAddTaskPanel = {this.disableAddTaskPanel}
                             title = "Cat"
                         />
 
                         <BottomOptionElement 
                             chooseOption = {() => {console.log(true)}} 
                             taskTextInputRef = {this.taskTextInputRef}
+                            disableAddTaskPanel = {this.disableAddTaskPanel}
                             title = "Pri"
                         />
 
                         <BottomOptionElement 
                             chooseOption = {() => {console.log(true)}} 
                             taskTextInputRef = {this.taskTextInputRef}
+                            disableAddTaskPanel = {this.disableAddTaskPanel}
                             title = "Rep"
                         />
 
                         <BottomOptionElement 
                             chooseOption = {() => {console.log(true)}} 
                             taskTextInputRef = {this.taskTextInputRef}
+                            disableAddTaskPanel = {this.disableAddTaskPanel}
                             title = "Ok"
                         />
                     </View>
@@ -274,6 +302,7 @@ BottomOptionElement = (props) => (
         onPress={() => {
             props.chooseOption()
             props.taskTextInputRef.blur()
+            props.disableAddTaskPanel()
         }}
         activeOpacity={0.5}
         underlayColor="gainsboro"

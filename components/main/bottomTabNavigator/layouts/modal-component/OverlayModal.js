@@ -5,16 +5,17 @@ import {
     Text,
     Modal,
     TouchableWithoutFeedback,
+    Keyboard
 } from 'react-native';
 
 import AddTaskPanel from './add-task-panel/AddTaskPanel'
 import Calendar from './calendar/Calendar'
 
-
-DismissElement = (props) => (
+DismissElement = (props) => {
+    return(
     <TouchableWithoutFeedback
         onPress={() => {
-            props.dismissAddTaskProcessWhenClickOnUnderlayModal()
+            props.addTaskButtonActionProp()
         }}
     >
         <View style={{
@@ -24,29 +25,48 @@ DismissElement = (props) => (
         }}>
         </View>
     </TouchableWithoutFeedback>
-)
+    )
+}
 
 export default class UnderlayModal extends Component {
 
     state = {
-        currentAnnotation: 'day'
+        currentAnnotation: 'day',
+        addTaskClicked: false,
     }
 
+    
     setCurrentAnnotation = (annotation) => {
         this.setState({currentAnnotation: annotation})
     }
 
+    shouldComponentUpdate(nextProps, nextState){
+        return this.props.addTaskClicked !== nextProps.addTaskClicked
+    }
+
+    componentWillMount(){
+
+    }
+
+    componentDidMount(){
+        
+    }
+
+    componentDidUpdate(prevProps, prevState){
+    }
+
+    
     render(){
         return(
             <Modal
-                visible={true}
+                visible={this.props.addTaskClicked}
                 transparent={true}
             >   
-                <DismissElement dismissAddTaskProcessWhenClickOnUnderlayModal = {this.props.dismissAddTaskProcessWhenClickOnUnderlayModal}/>
+                <DismissElement 
+                addTaskButtonActionProp = {this.props.addTaskButtonActionProp} 
+                />
                 
                 <AddTaskPanel 
-                    addTaskDisplayProperty = {this.props.addTaskDisplayProperty}
-                    keyboardHeight = {this.props.keyboardHeight}
                     chooseCalenderOption = {this.props.chooseCalenderOption}
                     setCurrentAnnotation = {this.setCurrentAnnotation}
                     currentAnnotation = {this.state.currentAnnotation}

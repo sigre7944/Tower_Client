@@ -3,42 +3,31 @@ import React from 'react'
 import {
     View,
     Text,
-    ScrollView,
-    StyleSheet,
     TouchableHighlight,
     Keyboard,
-    TextInput,
-    Dimensions,
-    Modal,
-    TouchableWithoutFeedback,
-    KeyboardAvoidingView,
 } from 'react-native';
 
 import AddTaskButton from './layouts/AddTaskButton'
-import UnderlayModal from './layouts/modal-component/UnderlayModal'
-
+import OverlayModal from './layouts/modal-component/OverlayModal'
 
 export default class BottomTabNavigator extends React.Component{
 
-
-
     state = {
-        addClicked: false,
+        addTaskClicked: false,
         renderAddTaskUI: null,
         keyboardHeight: 0,
-        addTaskDisplayProperty: 'none',
-        calendarChosen: false
+        calendarChosen: false,
+        should_AddTaskButton_be_displayed: "flex"
     }
 
     //START of ./AddTaskButton.js
     addTaskButtonActionProp = () => {
         this.setState(prevState => ({
-            addClicked: !prevState.addClicked,
+            addTaskClicked: !prevState.addTaskClicked,
             calendarChosen: false
         }))
     }
     //END of ./AddTaskButton.js
-
 
 
     //START of /modal-component/UnderlayModal.js
@@ -46,14 +35,13 @@ export default class BottomTabNavigator extends React.Component{
         Keyboard.dismiss
         this.setState(prevState => ({
             keyboardHeight: 0,
-            addClicked: !prevState.addClicked
+            addTaskClicked: !prevState.addTaskClicked
         }))
     }
 
     chooseCalenderOption = () => {
         this.setState(prevState=> ({
             calendarChosen: !prevState.calendarChosen,
-            addTaskDisplayProperty: 'none'
         }))
 
         Keyboard.dismiss
@@ -61,29 +49,31 @@ export default class BottomTabNavigator extends React.Component{
     //END of /modal-component/UnderlayModal.js
 
 
+    chooseNewScreen = (routeName) => {
+        this.props.navigation.navigate({routeName})
+    }
+
+
     componentDidMount(){
-        this.keyboardWillShowListener = Keyboard.addListener(
-            'keyboardWillShow',
-            (e) => {
+    }
+
+    componentDidUpdate = (prevProps, prevState) => {
+        if(this.state.keyboardHeight !== prevState.keyboardHeight){
+            // console.log(this.state.keyboardHeight)
+        }
+
+        if(this.props.routeName !== prevProps.routeName){
+            if((this.props.routeName === "Daily" || this.props.routeName === "Weekly" || this.props.routeName === "Monthly"))
                 this.setState({
-                    keyboardHeight: e.endCoordinates.height,
+                    should_AddTaskButton_be_displayed: "flex"
+                })
+
+            else{
+                this.setState({
+                    should_AddTaskButton_be_displayed: "none"
                 })
             }
-        )
-
-        
-    }
-
-    componentDidUpdate = (prepProps, prevState) => {
-        if(this.state.addClicked && this.state.addClicked !== prevState.addClicked){
-            this.setState({
-                addTaskDisplayProperty: 'flex'
-            })
         }
-    }
-
-    componentWillUnmount(){
-        this.keyboardWillShowListener.remove();
     }
 
     render(){
@@ -94,31 +84,22 @@ export default class BottomTabNavigator extends React.Component{
                 display: "flex",
                 alignItems: "center",
             }}> 
-                {this.state.addClicked ?
+                <OverlayModal 
+                    dismissAddTaskProcessWhenClickOnUnderlayModal = {this.dismissAddTaskProcessWhenClickOnUnderlayModal}
+                    // keyboardHeight = {this.state.keyboardHeight}
+                    chooseCalenderOption = {this.chooseCalenderOption}
+                    calendarChosen = {this.state.calendarChosen}
+                    addTaskClicked = {this.state.addTaskClicked}
+
+                    addTaskButtonActionProp = {this.addTaskButtonActionProp}
+                />
+
+                <AddTaskButton 
+                addTaskButtonActionProp = {this.addTaskButtonActionProp}
+                should_AddTaskButton_be_displayed = {this.state.should_AddTaskButton_be_displayed}
+                />
+
                     
-                    <UnderlayModal 
-                        dismissAddTaskProcessWhenClickOnUnderlayModal = {this.dismissAddTaskProcessWhenClickOnUnderlayModal}
-                        addTaskDisplayProperty = {this.state.addTaskDisplayProperty}
-                        keyboardHeight = {this.state.keyboardHeight}
-                        chooseCalenderOption = {this.chooseCalenderOption}
-                        calendarChosen = {this.state.calendarChosen}
-                    />
-
-                    : 
-
-                    <></>
-                }
-                {this.props.routeName === "Daily" || this.props.routeName === "Weekly" || this.props.routeName === "Monthly" ?
-                    
-                    <AddTaskButton addTaskButtonActionProp = {this.addTaskButtonActionProp}/>
-
-                    : 
-
-                    <>
-                    </>
-                }
-                
-
                 <View
                     style={{
                         display: "flex",
@@ -129,7 +110,7 @@ export default class BottomTabNavigator extends React.Component{
                     }}
                 >
                     <TouchableHighlight
-                        onPress = {() => this.props.navigation.navigate({routeName: 'Journal'})}
+                        onPress = {this.chooseNewScreen.bind(this, 'Journal')}
                         style={{
                             flex: 1,
                             height: 60,
@@ -141,7 +122,7 @@ export default class BottomTabNavigator extends React.Component{
                     </TouchableHighlight>
 
                     <TouchableHighlight
-                        onPress = {() => this.props.navigation.navigate({routeName: 'Progress'})}
+                        onPress = {this.chooseNewScreen.bind(this, 'Progress')}
                         style={{
                             flex: 1,
                             height: 60,
@@ -153,7 +134,7 @@ export default class BottomTabNavigator extends React.Component{
                     </TouchableHighlight>
 
                     <TouchableHighlight
-                        onPress = {() => this.props.navigation.navigate({routeName: 'Reward'})}
+                        onPress = {this.chooseNewScreen.bind(this, 'Reward')}
                         style={{
                             flex: 1,
                             height: 60,
@@ -165,7 +146,7 @@ export default class BottomTabNavigator extends React.Component{
                     </TouchableHighlight>
 
                     <TouchableHighlight
-                        onPress = {() => this.props.navigation.navigate({routeName: 'Settings'})}
+                        onPress = {this.chooseNewScreen.bind(this, 'Settings')}
                         style={{
                             flex: 1,
                             height: 60,

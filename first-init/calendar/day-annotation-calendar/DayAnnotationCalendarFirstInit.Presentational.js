@@ -107,8 +107,6 @@ export default class DayAnnotationCalendarFirstInit extends React.Component {
     componentDidUpdate(prevProps, prevState){
         if(this.props.monthComponent_arr !== prevProps.monthComponent_arr){
             MonthComponent_arr = this.props.monthComponent_arr
-
-            console.log(MonthComponent_arr)
         }
     }
 
