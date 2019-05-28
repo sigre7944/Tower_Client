@@ -11,7 +11,7 @@ import {
     KeyboardAvoidingView,
 } from 'react-native';
 
-import DayAnnotationPanel from './day-annotation/DayAnnotationPanel'
+import DayAnnotationPanelContainer from './day-annotation/DayAnnotationPanel.Container'
 import WeekAnnotationPanel from './week-annotation/WeekAnnotationPanel'
 
 export default class Calendar extends Component{
@@ -36,7 +36,7 @@ export default class Calendar extends Component{
             >
 
             {this.props.currentAnnotation === 'day' ?
-                <DayAnnotationPanel />
+                <DayAnnotationPanelContainer />
                 
                 :
 
