@@ -19,6 +19,9 @@ export default class Calendar extends Component{
     state = {
     }
 
+    componentDidMount(){
+        console.log("calendar did mount")
+    }
 
     render(){
         return(

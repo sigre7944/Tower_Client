@@ -16,7 +16,6 @@ export default class BottomTabNavigator extends React.Component{
         addTaskClicked: false,
         renderAddTaskUI: null,
         keyboardHeight: 0,
-        calendarChosen: false,
         should_AddTaskButton_be_displayed: "flex"
     }
 
@@ -24,30 +23,9 @@ export default class BottomTabNavigator extends React.Component{
     addTaskButtonActionProp = () => {
         this.setState(prevState => ({
             addTaskClicked: !prevState.addTaskClicked,
-            calendarChosen: false
         }))
     }
     //END of ./AddTaskButton.js
-
-
-    //START of /modal-component/UnderlayModal.js
-    dismissAddTaskProcessWhenClickOnUnderlayModal = () => {
-        Keyboard.dismiss
-        this.setState(prevState => ({
-            keyboardHeight: 0,
-            addTaskClicked: !prevState.addTaskClicked
-        }))
-    }
-
-    chooseCalenderOption = () => {
-        this.setState(prevState=> ({
-            calendarChosen: !prevState.calendarChosen,
-        }))
-
-        Keyboard.dismiss
-    }
-    //END of /modal-component/UnderlayModal.js
-
 
     chooseNewScreen = (routeName) => {
         this.props.navigation.navigate({routeName})
@@ -58,10 +36,6 @@ export default class BottomTabNavigator extends React.Component{
     }
 
     componentDidUpdate = (prevProps, prevState) => {
-        if(this.state.keyboardHeight !== prevState.keyboardHeight){
-            // console.log(this.state.keyboardHeight)
-        }
-
         if(this.props.routeName !== prevProps.routeName){
             if((this.props.routeName === "Daily" || this.props.routeName === "Weekly" || this.props.routeName === "Monthly"))
                 this.setState({
@@ -85,12 +59,8 @@ export default class BottomTabNavigator extends React.Component{
                 alignItems: "center",
             }}> 
                 <OverlayModal 
-                    dismissAddTaskProcessWhenClickOnUnderlayModal = {this.dismissAddTaskProcessWhenClickOnUnderlayModal}
-                    // keyboardHeight = {this.state.keyboardHeight}
                     chooseCalenderOption = {this.chooseCalenderOption}
-                    calendarChosen = {this.state.calendarChosen}
                     addTaskClicked = {this.state.addTaskClicked}
-
                     addTaskButtonActionProp = {this.addTaskButtonActionProp}
                 />
 

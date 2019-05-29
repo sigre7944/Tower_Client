@@ -16,8 +16,6 @@ let dayAnnotationColor= '#b0b0b0',
     monthAnnotationColor= '#848484'
 
 export default class AddTaskPanel extends Component{
-    keyboardWillShowListener
-
     taskTextInputRef = React.createRef()
 
     state = {

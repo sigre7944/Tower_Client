@@ -16,6 +16,7 @@ DismissElement = (props) => {
     <TouchableWithoutFeedback
         onPress={() => {
             props.addTaskButtonActionProp()
+            props.disableCalendarOption()
         }}
     >
         <View style={{
@@ -33,15 +34,23 @@ export default class UnderlayModal extends Component {
     state = {
         currentAnnotation: 'day',
         addTaskClicked: false,
+        calendarChosen: false,
     }
 
-    
     setCurrentAnnotation = (annotation) => {
         this.setState({currentAnnotation: annotation})
     }
 
+    chooseCalenderOption = () => {
+        this.setState(prevState=> ({
+            calendarChosen: !prevState.calendarChosen,
+        }))
+
+        Keyboard.dismiss
+    }
+
     shouldComponentUpdate(nextProps, nextState){
-        return this.props.addTaskClicked !== nextProps.addTaskClicked
+        return this.props.addTaskClicked !== nextProps.addTaskClicked || this.state.calendarChosen !== nextState.calendarChosen
     }
 
     componentWillMount(){
@@ -49,13 +58,13 @@ export default class UnderlayModal extends Component {
     }
 
     componentDidMount(){
-        
     }
 
     componentDidUpdate(prevProps, prevState){
+        if(this.state.calendarChosen !== prevState.calendarChosen){
+        }
     }
 
-    
     render(){
         return(
             <Modal
@@ -64,16 +73,17 @@ export default class UnderlayModal extends Component {
             >   
                 <DismissElement 
                 addTaskButtonActionProp = {this.props.addTaskButtonActionProp} 
+                disableCalendarOption = {this.chooseCalenderOption}
                 />
                 
                 <AddTaskPanel 
-                    chooseCalenderOption = {this.props.chooseCalenderOption}
+                    chooseCalenderOption = {this.chooseCalenderOption}
                     setCurrentAnnotation = {this.setCurrentAnnotation}
                     currentAnnotation = {this.state.currentAnnotation}
                 />
                 
                 {/* Calendar View */}
-                {this.props.calendarChosen ?
+                {this.state.calendarChosen ?
                     <Calendar 
                         currentAnnotation = {this.state.currentAnnotation}
                     />
