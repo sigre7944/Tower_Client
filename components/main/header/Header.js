@@ -18,10 +18,6 @@ const styles = StyleSheet.create({
   },
 });
 
-import DayAnnotationCalendarFirstInitContainer from '../../../first-init/calendar/day-annotation-calendar/DayAnnotationCalendarFirstInit.Container'
-
-let MonthComponent_arr = []
-
 export default class Header extends React.Component {
 
     state = {
@@ -38,8 +34,6 @@ export default class Header extends React.Component {
       return (
         <>
         
-        <DayAnnotationCalendarFirstInitContainer />
-
         <View style={{
             paddingTop: 20,
             paddingHorizontal: 10,

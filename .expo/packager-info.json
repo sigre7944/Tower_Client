@@ -1,10 +1,10 @@
 {
-  "expoServerPort": 19000,
   "packagerPort": 19001,
-  "packagerPid": 19216,
+  "packagerPid": 5156,
+  "webpackServerPort": null,
   "expoServerNgrokUrl": "https://fn-29n.minhchinh97h.tower-client.exp.direct",
   "packagerNgrokUrl": "https://packager.fn-29n.minhchinh97h.tower-client.exp.direct",
-  "ngrokPid": 15776,
+  "ngrokPid": 12012,
   "devToolsPort": 19002,
-  "webpackServerPort": null
+  "expoServerPort": 19000
 }
