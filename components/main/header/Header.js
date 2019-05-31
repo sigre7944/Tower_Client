@@ -7,7 +7,9 @@ import {
     Modal,
     Alert,
     Text,
-    TouchableHighlight
+    TouchableHighlight,
+    TextInput,
+    TouchableOpacity
 } from 'react-native';
 import { DrawerActions } from 'react-navigation-drawer';
 
@@ -28,7 +30,11 @@ export default class Header extends React.Component {
 
     componentDidMount = () => {
     }
-    
+
+    setModalVisible = (visible) => {
+        this.setState({modalVisible: visible});
+    }
+
     render() {
       return (
 
@@ -41,7 +47,7 @@ export default class Header extends React.Component {
             justifyContent: 'space-between',
             backgroundColor: 'gray'
         }}>
-            <TouchableHighlight onPress={() => this.props.navigation.dispatch(DrawerActions.openDrawer())}>
+            <TouchableOpacity onPress={() => this.props.navigation.dispatch(DrawerActions.openDrawer())}>
                 <Image
                     source={require('./Hamburger_icon.png')}
                     style= {{
@@ -50,14 +56,14 @@ export default class Header extends React.Component {
                         tintColor: 'white'
                     }}
                 />
-            </TouchableHighlight>
+            </TouchableOpacity>
             <Text style= {{
                 color: 'white',
                 fontSize: 20,
                 fontWeight: '500',
             }}>Today</Text>
 
-            <TouchableHighlight >
+            <TouchableOpacity onPress={() => this.setModalVisible(true)}>
                 <Image 
                     source={require('./dots.png')}
                     style= {{
@@ -66,9 +72,36 @@ export default class Header extends React.Component {
                         tintColor: 'white'
                     }}
                 />
-            </TouchableHighlight>
+            </TouchableOpacity>
 
-            
+            <Modal
+                    animationType="slide"
+                    transparent={false}
+                    visible={this.state.modalVisible}
+                    presentationStyle='formSheet'
+                    onRequestClose={() => {
+                        Alert.alert('Modal has been closed.');
+                    }}>
+                    <View style={{marginTop: 22, height: 200}}>
+                        <TouchableOpacity onPress={() => this.setModalVisible(false)}>
+                            <Text>Close</Text>
+                        </TouchableOpacity>
+                        <View>
+                            <View>
+                                <Text>Add List</Text>
+                                <Text>Task Title</Text>
+                                <TextInput placeholder="Search"></TextInput>
+                                <Text>Task Title</Text>
+                                <TextInput placeholder="Search"></TextInput>
+                                <Text>Task Title</Text>
+                                <TextInput placeholder="Search"></TextInput>
+                                <Text>Task Title</Text>
+                                <TextInput placeholder="Search"></TextInput>
+                            </View>
+                        
+                        </View>
+                    </View>
+                </Modal>
         </View>
       );
     }

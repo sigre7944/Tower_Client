@@ -7,11 +7,10 @@ import {
 export default class Reward extends React.Component {
     render() {
       return (
-        <>
-        </>
-        // <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        //   <Text>Reward!</Text>
-        // </View>
+
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+           <Text>Reward!</Text>
+        </View>
       );
     }
 }

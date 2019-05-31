@@ -18,6 +18,13 @@ import AddTaskButton from './layouts/AddTaskButton'
 import UnderlayModal from './layouts/modal-component/UnderlayModal'
 
 
+const styles= {
+    text: {
+        fontSize: 12
+    }
+}
+
+
 export default class BottomTabNavigator extends React.Component{
 
 
@@ -109,8 +116,34 @@ export default class BottomTabNavigator extends React.Component{
                     <></>
                 }
                 {this.props.routeName === "Daily" || this.props.routeName === "Weekly" || this.props.routeName === "Monthly" ?
-                    
-                    <AddTaskButton addTaskButtonActionProp = {this.addTaskButtonActionProp}/>
+                    <TouchableHighlight
+                        onPress = {() => {
+                            this.setState(prevState => ({addClicked: !prevState.addClicked}))
+                        }}
+                        style= {{
+                            height: 64,
+                            width: 64,
+                            borderRadius: 50,
+                            backgroundColor: 'black',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            position: 'absolute',
+                            top: -50,
+                            zIndex: 10,
+                            shadowOffset:{  width: 50,  height: 50,  },
+                            shadowColor: 'black',
+                            shadowOpacity: 0.75,
+                            elevation: 5
+                        }}
+                    >
+                        <>
+                        <Text style={{
+                            color: 'white',
+                            fontSize: 24,
+                            fontWeight: "200"
+                        }}> + </Text>
+                        </>
+                    </TouchableHighlight>
 
                     : 
 
@@ -134,10 +167,10 @@ export default class BottomTabNavigator extends React.Component{
                             flex: 1,
                             height: 60,
                             alignItems: 'center',
-                            justifyContent: 'center',
+                            justifyContent: 'center'
                         }}
                     >
-                        <Text>Journal</Text>
+                        <Text style={styles.text}>Journal</Text>
                     </TouchableHighlight>
 
                     <TouchableHighlight
@@ -149,7 +182,7 @@ export default class BottomTabNavigator extends React.Component{
                             justifyContent: 'center',
                         }}
                     >
-                        <Text>Progress</Text>
+                        <Text style={styles.text}>Progress</Text>
                     </TouchableHighlight>
 
                     <TouchableHighlight
@@ -161,7 +194,7 @@ export default class BottomTabNavigator extends React.Component{
                             justifyContent: 'center',
                         }}
                     >
-                        <Text>Reward</Text>
+                        <Text style={styles.text}>Reward</Text>
                     </TouchableHighlight>
 
                     <TouchableHighlight
@@ -173,7 +206,7 @@ export default class BottomTabNavigator extends React.Component{
                             justifyContent: 'center',
                         }}
                     >
-                        <Text>Settings</Text>
+                        <Text style={styles.text}>Settings</Text>
                     </TouchableHighlight>
                 </View>
             </View>
