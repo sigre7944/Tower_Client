@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {NavigationActions} from 'react-navigation';
-import { Alert, TouchableOpacity, Text, View, StyleSheet, ImageBackground, Image, TextInput, ScrollView, Platform } from 'react-native'
+import { Alert, TouchableOpacity, Text, View, StyleSheet, ImageBackground, Modal, TouchableHighlight, Image, TextInput, ScrollView, Platform } from 'react-native'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import CollapsibleList from './../shared/layouts/CollapsibleList';
 
@@ -11,6 +11,7 @@ const findAndToggle = (array, index) => {
 
 export default class Drawer extends Component {
     state={
+        modalVisible: false,
         list: [
             {
                 name: 'Folder 1',
@@ -80,6 +81,10 @@ export default class Drawer extends Component {
         ]
     }
 
+    setModalVisible = (visible) => {
+        this.setState({modalVisible: visible});
+    }
+
     navigateToScreen = ( route ) =>(
         () => {
         const navigateAction = NavigationActions.navigate({
@@ -97,9 +102,12 @@ export default class Drawer extends Component {
     }
 
     handleAddList = () => {
+        /*
         this.setState(prevState => ({
             list: prevState.list.concat([{name: 'Folder ' + (prevState.list.length), items: []}]), 
         }))
+        */
+       this.setModalVisible(true)
     }
 
     render() {
@@ -134,16 +142,14 @@ export default class Drawer extends Component {
                     bottom
                 }
                 <ScrollView style={styles.screenContainer} showsVerticalScrollIndicator={false}>
-                    <View style={styles.screenTitle} onPress={this.navigateToScreen('TabNavigator')}>
-                        
-                        <Text>Inbox</Text>
-                        <Text>5</Text>
+                    <View style={styles.screenTitle} onPress={this.navigateToScreen('TabNavigator')}>                        
                         <FontAwesome5 name={'envelope'} style={styles.icon}/>
+                        <Text>Inbox</Text>
+                        <Text style={styles.amount}>5</Text>
                     </View>
                     <View style={styles.screenTitle} onPress={this.navigateToScreen('TabNavigator')}>
-                        
-                        <Text>Today</Text>
                         <FontAwesome5 name={'calendar'} style={styles.icon}/>
+                        <Text>Today</Text>
                     </View>
                     <View style={styles.blackBar}></View>
 
@@ -161,17 +167,55 @@ export default class Drawer extends Component {
                     
                     <View style={styles.blackBar}></View>
                     <TouchableOpacity style={styles.screenTitle} onPress={this.handleAddList}>
-                        
+                        <FontAwesome5 name={'plus'} style={styles.icon}/>                        
                         <Text>Add list</Text>
-                        <FontAwesome5 name={'plus'} style={styles.icon}/>
                     </TouchableOpacity>
                     <View style={styles.screenTitle} onPress={this.navigateToScreen('TabNavigator')}>
-                        
-                        <Text>Manage list</Text>
                         <FontAwesome5 name={'wrench'} style={styles.icon}/>
+                        <Text>Manage list</Text>
                     </View>
                     
                 </ScrollView>
+
+                <Modal
+                    animationType="slide"
+                    transparent={false}
+                    visible={this.state.modalVisible}
+                    onRequestClose={() => {
+                        Alert.alert('Modal has been closed.');
+                    }}>
+                    <View style={{marginTop: 22}}>
+                        <View>
+                            <View style={styles.modalHeader}>
+                                <TouchableHighlight
+                                    onPress={() => {
+                                    this.setModalVisible(!this.state.modalVisible);
+                                    }}>
+                                    <FontAwesome5 name={'times'} style={styles.icon}/>
+                                </TouchableHighlight>
+                                <TouchableHighlight
+                                    onPress={() => {
+                                    this.setModalVisible(!this.state.modalVisible);
+                                    }}>
+                                    <FontAwesome5 name={'check'} style={styles.icon}/>
+                                </TouchableHighlight>
+                            </View>
+
+                            <View>
+                                <Text>Add List</Text>
+                                <Text>Task Title</Text>
+                                <TextInput placeholder="Search"></TextInput>
+                                <Text>Task Title</Text>
+                                <TextInput placeholder="Search"></TextInput>
+                                <Text>Task Title</Text>
+                                <TextInput placeholder="Search"></TextInput>
+                                <Text>Task Title</Text>
+                                <TextInput placeholder="Search"></TextInput>
+                            </View>
+                        
+                        </View>
+                    </View>
+                </Modal>
             </View>
         
         )
@@ -259,11 +303,11 @@ const styles = StyleSheet.create({
         zIndex: 10,
         alignSelf: "stretch",
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        //justifyContent: 'space-between',
+        alignItems: 'flex-start',
         paddingLeft: 16,
         paddingRight: 16,
-        paddingBottom: 8
+        paddingBottom: 8,
       },
       screenContent:{
        
@@ -271,5 +315,20 @@ const styles = StyleSheet.create({
       Btn: {
         padding: 10,
         backgroundColor: '#FF6F00'
-      }
+      },
+    modal: {
+
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    modalBody: {
+
+    },
+    amount: {
+        flex: 1,
+        textAlign: 'right', alignSelf: 'stretch',
+        paddingRight: 8
+    }
 });

@@ -8,6 +8,7 @@ import {
     Alert,
     Text,
     TouchableHighlight,
+    TextInput,
     TouchableOpacity
 } from 'react-native';
 import { DrawerActions } from 'react-navigation-drawer';
@@ -29,7 +30,11 @@ export default class Header extends React.Component {
 
     componentDidMount = () => {
     }
-    
+
+    setModalVisible = (visible) => {
+        this.setState({modalVisible: visible});
+    }
+
     render() {
       return (
 
@@ -58,7 +63,7 @@ export default class Header extends React.Component {
                 fontWeight: '500',
             }}>Today</Text>
 
-            <TouchableOpacity >
+            <TouchableOpacity onPress={() => this.setModalVisible(true)}>
                 <Image 
                     source={require('./dots.png')}
                     style= {{
@@ -69,7 +74,34 @@ export default class Header extends React.Component {
                 />
             </TouchableOpacity>
 
-            
+            <Modal
+                    animationType="slide"
+                    transparent={false}
+                    visible={this.state.modalVisible}
+                    presentationStyle='formSheet'
+                    onRequestClose={() => {
+                        Alert.alert('Modal has been closed.');
+                    }}>
+                    <View style={{marginTop: 22, height: 200}}>
+                        <TouchableOpacity onPress={() => this.setModalVisible(false)}>
+                            <Text>Close</Text>
+                        </TouchableOpacity>
+                        <View>
+                            <View>
+                                <Text>Add List</Text>
+                                <Text>Task Title</Text>
+                                <TextInput placeholder="Search"></TextInput>
+                                <Text>Task Title</Text>
+                                <TextInput placeholder="Search"></TextInput>
+                                <Text>Task Title</Text>
+                                <TextInput placeholder="Search"></TextInput>
+                                <Text>Task Title</Text>
+                                <TextInput placeholder="Search"></TextInput>
+                            </View>
+                        
+                        </View>
+                    </View>
+                </Modal>
         </View>
       );
     }
