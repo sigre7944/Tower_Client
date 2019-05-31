@@ -14,19 +14,59 @@ import {
     KeyboardAvoidingView,
 } from 'react-native';
 
+import AddTaskButton from './layouts/AddTaskButton'
+import UnderlayModal from './layouts/modal-component/UnderlayModal'
+
 
 const styles= {
     text: {
         fontSize: 12
     }
 }
+
+
 export default class BottomTabNavigator extends React.Component{
+
+
 
     state = {
         addClicked: false,
         renderAddTaskUI: null,
         keyboardHeight: 0,
+        addTaskDisplayProperty: 'none',
+        calendarChosen: false
     }
+
+    //START of ./AddTaskButton.js
+    addTaskButtonActionProp = () => {
+        this.setState(prevState => ({
+            addClicked: !prevState.addClicked,
+            calendarChosen: false
+        }))
+    }
+    //END of ./AddTaskButton.js
+
+
+
+    //START of /modal-component/UnderlayModal.js
+    dismissAddTaskProcessWhenClickOnUnderlayModal = () => {
+        Keyboard.dismiss
+        this.setState(prevState => ({
+            keyboardHeight: 0,
+            addClicked: !prevState.addClicked
+        }))
+    }
+
+    chooseCalenderOption = () => {
+        this.setState(prevState=> ({
+            calendarChosen: !prevState.calendarChosen,
+            addTaskDisplayProperty: 'none'
+        }))
+
+        Keyboard.dismiss
+    }
+    //END of /modal-component/UnderlayModal.js
+
 
     componentDidMount(){
         this.keyboardWillShowListener = Keyboard.addListener(
@@ -42,7 +82,10 @@ export default class BottomTabNavigator extends React.Component{
     }
 
     componentDidUpdate = (prepProps, prevState) => {
-        if(this.state.keyboardHeight !== prevState.keyboardHeight && this.state.keyboardHeight > 0){
+        if(this.state.addClicked && this.state.addClicked !== prevState.addClicked){
+            this.setState({
+                addTaskDisplayProperty: 'flex'
+            })
         }
     }
 
@@ -59,95 +102,15 @@ export default class BottomTabNavigator extends React.Component{
                 alignItems: "center",
             }}> 
                 {this.state.addClicked ?
-                    <Modal
-                        visible={true}
-                        transparent={true}
-                    >   
-                        <TouchableWithoutFeedback
-                            onPress={() => {
-                                Keyboard.dismiss
-                                this.setState(prevState => ({
-                                    keyboardHeight: 0,
-                                    addClicked: !prevState.addClicked
-                                }))
-                            }}
-                        >
-                            <View style={{
-                                backgroundColor: "black",
-                                opacity: 0.5,
-                                flex: 1
-                            }}>
-                            </View>
-                        </TouchableWithoutFeedback>
-                        <KeyboardAvoidingView>
-                        <View style={{
-                            position: "absolute",
-                            bottom: this.state.keyboardHeight,
-                            backgroundColor: 'white',
-                            width: Dimensions.get('window').width,
-                            height: 200,
-                            borderTopRightRadius: 20,
-                            borderTopLeftRadius: 20,
-                            flexDirection: "column",
-                            justifyContent: "center",
-                            paddingHorizontal: 20,
-                            paddingTop: 10,
-                        }}>
-                            <View style={{
-                                flex: 1,
-                            }}>
-                                <Text 
-                                    style={{
-                                        fontSize: 12,
-                                        color: 'gainsboro',
-                                    }}
-                                >
-                                    Task Title
-                                </Text>
-                                <TextInput 
-                                    onLayout = {() => {setTimeout(() => {this.taskTextInput.focus()}, 200)}}
-                                    ref= {(ref) => {this.taskTextInput = ref}}
-                                    style={{
-                                        flex: 1,
-                                        fontSize: 16,
-                                        borderBottomColor: 'gainsboro',
-                                        borderBottomWidth: 1,
-                                        
-                                    }}
-                                    placeholder="Add a task here"
-                                />
-                            </View>
-                            
-                            <View style={{
-                                flex: 1,
-                                marginVertical: 20
-                            }}>
-                                <Text style={{
-                                    fontSize: 12,
-                                    color: 'gainsboro',
-                                }}>
-                                    Task Description
-                                </Text>
-                                <TextInput  
-                                    style={{
-                                        flex: 1,
-                                        fontSize: 16,
-                                        borderBottomColor: 'gainsboro',
-                                        borderBottomWidth: 1,
-                                    }}
+                    
+                    <UnderlayModal 
+                        dismissAddTaskProcessWhenClickOnUnderlayModal = {this.dismissAddTaskProcessWhenClickOnUnderlayModal}
+                        addTaskDisplayProperty = {this.state.addTaskDisplayProperty}
+                        keyboardHeight = {this.state.keyboardHeight}
+                        chooseCalenderOption = {this.chooseCalenderOption}
+                        calendarChosen = {this.state.calendarChosen}
+                    />
 
-                                    placeholder="Add task description"
-                                />
-                            </View>
-
-                            <View style={{
-                                flex: 1,
-
-                            }}>
-                            </View>
-                        </View>
-                        </KeyboardAvoidingView>
-                    </Modal>
                     : 
 
                     <></>
