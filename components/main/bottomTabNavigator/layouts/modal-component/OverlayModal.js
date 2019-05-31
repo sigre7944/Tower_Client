@@ -42,11 +42,15 @@ export default class UnderlayModal extends Component {
     }
 
     chooseCalenderOption = () => {
-        this.setState(prevState=> ({
-            calendarChosen: !prevState.calendarChosen,
+        this.setState(prevState => ({
+            calendarChosen: !prevState.calendarChosen
         }))
+    }
 
-        Keyboard.dismiss
+    disableCalendarOption = () => {
+        this.setState({
+            calendarChosen: false
+        })
     }
 
     shouldComponentUpdate(nextProps, nextState){
@@ -73,7 +77,7 @@ export default class UnderlayModal extends Component {
             >   
                 <DismissElement 
                 addTaskButtonActionProp = {this.props.addTaskButtonActionProp} 
-                disableCalendarOption = {this.chooseCalenderOption}
+                disableCalendarOption = {this.disableCalendarOption}
                 />
                 
                 <AddTaskPanel 
@@ -83,14 +87,17 @@ export default class UnderlayModal extends Component {
                 />
                 
                 {/* Calendar View */}
-                {this.state.calendarChosen ?
+                {this.state.calendarChosen ? 
                     <Calendar 
-                        currentAnnotation = {this.state.currentAnnotation}
+                    currentAnnotation = {this.state.currentAnnotation}
+                    calendarChosen = {this.state.calendarChosen}
                     />
-                :
+
+                    : 
 
                     <></>
                 }
+                
                     
             </Modal>
         )

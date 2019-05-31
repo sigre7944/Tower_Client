@@ -9,12 +9,16 @@ import {
     Modal,
     TouchableWithoutFeedback,
     KeyboardAvoidingView,
-    ScrollView
+    ScrollView,
+    FlatList
 } from 'react-native';
+
+import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
 
 import CalendarDisplayHolder from './calendar-display-holder/CalendarDisplayHolder'
 
 export default class DayAnnotationPanel extends Component{
+    month_order_array = []
 
     state = {
         renderDaysInMonth: null,
@@ -28,7 +32,75 @@ export default class DayAnnotationPanel extends Component{
         })
     }
 
+    initializeMonthsForCalendar = () => {
+        let currentMonth = new Date().getMonth(),
+            currentYear = new Date().getFullYear()
+
+        this.getNumberOfMonthsInTheFuture(currentMonth, currentYear, ((12 * 30) + 1)) //To fully display the current month and also all the next stated months, plus 1
+
+        this.setState({
+            monthComponent_arr: this.month_order_array.map((data, index) => {
+                if(index === this.month_order_array.length - 1)
+                    return(
+                        <CalendarDisplayHolder
+                            key={'month-render-calendar' + index}
+                            style={{
+                                flex: 1,
+                                width: Dimensions.get('window').width - 50,
+                            }} 
+
+                            month={data.month} 
+                            year={data.year}
+                            calendarIndex = {index}
+                        />
+                    )
+
+                else
+                    return(
+                        <CalendarDisplayHolder
+                            key={'month-render-calendar' + index}
+                            style={{
+                                flex: 1,
+                                width: Dimensions.get('window').width - 50,
+                                marginRight: Dimensions.get('window').width - 50
+                            }} 
+
+                            month={data.month} 
+                            year={data.year}
+                            calendarIndex = {index}
+                        />
+                    )
+            })
+        })
+    }
+
+    getNumberOfMonthsInTheFuture = (currentMonth, currentYear, numberOfMonths) => {
+        if(numberOfMonths === 0){
+            return
+        }
+
+        this.month_order_array.push({
+            month: currentMonth,
+            year: currentYear,
+        })
+
+        if(currentMonth === 11){
+            currentMonth= 0
+            currentYear += 1
+        }
+
+        else{
+            currentMonth += 1
+        }
+
+        numberOfMonths -= 1
+
+        this.getNumberOfMonthsInTheFuture(currentMonth, currentYear, numberOfMonths)
+    }
+
+
     componentDidMount(){
+        this.initializeMonthsForCalendar()
     }
 
     render(){
@@ -103,20 +175,18 @@ export default class DayAnnotationPanel extends Component{
                     flex: 1,
                 }}
             >
-                <ScrollView
+                <FlatList
                     horizontal={true}
                     decelerationRate={0}
                     snapToInterval={(Dimensions.get('window').width - 50) * 2}
                     snapToAlignment="start"
                     showsHorizontalScrollIndicator={false}
-                    onMomentumScrollEnd = {() => {
-
-                    }}
+                    data={this.state.monthComponent_arr}
+                    renderItem={({item}) => {return item}}
+                    initialNumToRender={1}
                 >
 
-                    {MonthComponent_arr}
-
-                </ScrollView>
+                </FlatList>
             </View>
             
 

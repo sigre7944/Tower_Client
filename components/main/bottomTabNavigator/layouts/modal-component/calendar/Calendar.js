@@ -20,7 +20,6 @@ export default class Calendar extends Component{
     }
 
     componentDidMount(){
-        console.log("calendar did mount")
     }
 
     render(){
@@ -34,23 +33,28 @@ export default class Calendar extends Component{
                     left: 25,
                     backgroundColor: 'white',
                     borderRadius: 10,
-
                 }}
             >
 
             {this.props.currentAnnotation === 'day' ?
-                <DayAnnotationPanelContainer />
+                <DayAnnotationPanelContainer
+                    calendarChosen = {this.props.calendarChosen}
+                />
                 
                 :
 
                 <>
                 {this.props.currentAnnotation === 'week' ?
-                    <WeekAnnotationPanel />
+                    <WeekAnnotationPanel 
+                        calendarChosen = {this.props.calendarChosen}
+                    />
 
                     :
 
                     <>
-                    <MonthAnnotationPanel />
+                    <MonthAnnotationPanel 
+                        calendarChosen = {this.props.calendarChosen}
+                    />
                     </>
                 
                 }
