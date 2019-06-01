@@ -2,16 +2,9 @@ import React, { Component } from 'react'
 
 import {
     View,
-    Text,
-    TouchableHighlight,
-    TextInput,
-    Dimensions,
-    Modal,
-    TouchableWithoutFeedback,
-    KeyboardAvoidingView,
 } from 'react-native';
 
-import DayAnnotationPanelContainer from './day-annotation/DayAnnotationPanel.Container'
+import DayAnnotationPanel from './day-annotation/DayAnnotationPanel'
 import WeekAnnotationPanel from './week-annotation/WeekAnnotationPanel'
 
 export default class Calendar extends Component{
@@ -37,7 +30,7 @@ export default class Calendar extends Component{
             >
 
             {this.props.currentAnnotation === 'day' ?
-                <DayAnnotationPanelContainer
+                <DayAnnotationPanel
                     calendarChosen = {this.props.calendarChosen}
                 />
                 

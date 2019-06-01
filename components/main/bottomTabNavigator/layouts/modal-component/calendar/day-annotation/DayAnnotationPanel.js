@@ -3,14 +3,9 @@ import React, { Component } from 'react'
 import {
     View,
     Text,
-    TouchableHighlight,
-    TextInput,
     Dimensions,
-    Modal,
-    TouchableWithoutFeedback,
-    KeyboardAvoidingView,
-    ScrollView,
-    FlatList
+    FlatList,
+    TouchableHighlight
 } from 'react-native';
 
 import CalendarDisplayHolder from './calendar-display-holder/CalendarDisplayHolder'
@@ -93,6 +88,10 @@ export default class DayAnnotationPanel extends Component{
     componentDidUpdate(prevProps, prevState){
     }
 
+    dummyFunction = () => {
+
+    }
+
     render(){
         return(
             <>
@@ -172,8 +171,10 @@ export default class DayAnnotationPanel extends Component{
                     snapToAlignment="start"
                     showsHorizontalScrollIndicator={false}
                     keyExtractor={(item, index) => 'month-render-calendar' + index}
-                    initialNumToRender={2}
+                    initialNumToRender={1}
+                    removeClippedSubviews={true}
                     data={this.state.month_order_array}
+                    extraData={this.state.currentIndexOfTotalCalendarMonth}
                     renderItem={({item, index}) => (
                         <CalendarDisplayHolder
                             key={'month-render-calendar' + index}
@@ -183,6 +184,7 @@ export default class DayAnnotationPanel extends Component{
                                 {
                                     flex: 1,
                                     width: Dimensions.get('window').width - 50,
+                                    width: 300,
                                 }
 
                                 :
@@ -214,28 +216,74 @@ export default class DayAnnotationPanel extends Component{
                     borderBottomWidth: 1,
                     borderBottomColor: 'gainsboro',
                     borderTopColor: 'gainsboro',
+                    justifyContent: "center"
                 }}
             >
                 <Text>
                     Add time
                 </Text>
             </View>
+
             <View
                 style={{
                     height: 50,
-                    backgroundColor: 'yellow'
+                    backgroundColor: 'white',
+                    justifyContent: "center"
                 }}
             >
-
+                <Text>
+                    Add reminder
+                </Text>
             </View>
             <View
                 style={{
                     height: 60,
-                    backgroundColor: 'black',
+                    backgroundColor: 'white',
                     marginBottom: 20,
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    alignItems: 'center'
                 }}
             >
+                <TouchableHighlight
+                    style={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: 50,
+                        width: 50,
+                        borderRadius: 25,
+                        backgroundColor: 'gray',
+                        marginRight: 20
+                    }}
+                >
+                    <Text
+                        style={{
+                            color: "white"
+                        }}
+                    >
+                        X
+                    </Text>
+                </TouchableHighlight>
 
+                <TouchableHighlight
+                    style={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: 50,
+                        width: 50,
+                        borderRadius: 25,
+                        backgroundColor: 'gray',
+                        marginRight: 10
+                    }}
+                >
+                    <Text
+                        style={{
+                            color: "white"
+                        }}
+                    >
+                        OK
+                    </Text>
+                </TouchableHighlight>
             </View>
             </>
         )

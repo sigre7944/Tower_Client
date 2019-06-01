@@ -55,6 +55,7 @@ export default class CalendarDisplayHolder extends Component{
             display_day_text_style_array: [],
             calendar_row_array: []
         }
+        
     }
 
     
@@ -82,7 +83,8 @@ export default class CalendarDisplayHolder extends Component{
 
         this.lastIndexOfDay = index
 
-        this.props.chooseDiffCalendarMonth(this.props.calendarIndex)
+        if(this.props.calendarIndex !== this.props.currentIndexOfTotalCalendarMonth)
+            this.props.chooseDiffCalendarMonth(this.props.calendarIndex)
     }
 
     getDaysInMonth = (month, year) => {
@@ -233,7 +235,7 @@ export default class CalendarDisplayHolder extends Component{
                         </View>
                     )
             }
-            
+
             this.setState({
                 renderDaysInMonth : this.calendar_row_array.map((elements, index) => (
                     <View 
@@ -364,4 +366,3 @@ const styles = StyleSheet.create({
         color: 'white'
     },
 })
-
