@@ -179,7 +179,6 @@ export default class CalendarDisplayHolder extends Component{
         }) 
     }
 
-
     componentDidUpdate(prevProps, prevState){
         if(this.state.display_day_style_array !== prevState.display_day_style_array){
             this.calendar_row_array = [new Array(7), new Array(7), new Array(7), new Array(7), new Array(7), new Array(7)] //6 rows in total
@@ -234,15 +233,9 @@ export default class CalendarDisplayHolder extends Component{
                         </View>
                     )
             }
-
+            
             this.setState({
-                calendar_row_array: [... this.calendar_row_array]
-            })
-        }
-
-        if(this.state.calendar_row_array !== prevState.calendar_row_array){
-            this.setState({
-                renderDaysInMonth : this.state.calendar_row_array.map((elements, index) => (
+                renderDaysInMonth : this.calendar_row_array.map((elements, index) => (
                     <View 
                         key={index}
                         style={{
@@ -277,17 +270,9 @@ export default class CalendarDisplayHolder extends Component{
     componentWillUnmount(){
     }
 
-    // shouldComponentUpdate(nextProps, nextState){
-    //     return this.state.renderDaysInMonth !== nextState.renderDaysInMonth 
-    //     || this.state.calendar_row_array !== nextState.calendar_row_array
-    //     || this.state.display_day_style_array !== nextState.display_day_style_array
-    //     || this.state.display_day_text_style_array !== nextState.display_day_text_style_array
-    // }
-
-
+    
 
     render(){
-        
         return(
             <View style={this.props.style}>
                 <View style={{

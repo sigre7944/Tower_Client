@@ -193,8 +193,6 @@ export default class DayAnnotationPanel extends Component{
                                     marginRight: Dimensions.get('window').width - 50
                                 }
                             } 
-                            
-            
                             month={item.month} 
                             year={item.year}
                             calendarIndex = {index}
