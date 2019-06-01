@@ -32,26 +32,6 @@ export default class DayAnnotationPanel extends Component{
         this.getNumberOfMonthsInTheFuture(currentMonth, currentYear, ((12 * 30) + 1)) //To fully display the current month and also all the next stated months, plus 1
     }
 
-    _renderItem = (item, index) => {
-        return(
-            <CalendarDisplayHolder
-                key={'month-render-calendar' + index}
-                style={{
-                    flex: 1,
-                    width: Dimensions.get('window').width - 50,
-                    marginLeft: Dimensions.get('window').width - 50
-                }} 
-                
-
-                month={item.month} 
-                year={item.year}
-                calendarIndex = {index}
-                chooseDiffCalendarMonth = {this.chooseDiffCalendarMonth}
-                currentIndexOfTotalCalendarMonth = {this.state.currentIndexOfTotalCalendarMonth}
-            />
-        )
-    }
-
     getNumberOfMonthsInTheFuture = (currentMonth, currentYear, numberOfMonths) => {
         if(numberOfMonths === 0){
             return
@@ -88,9 +68,35 @@ export default class DayAnnotationPanel extends Component{
     componentDidUpdate(prevProps, prevState){
     }
 
-    dummyFunction = () => {
+    _keyExtractor = (item, index) => `month-render-calendar-${index}`
 
-    }
+    _renderItem = ({item, index}) => (
+        <CalendarDisplayHolder
+            key={'month-render-calendar' + index}
+            
+            style={
+                index === this.state.month_order_array.length - 1 ? 
+                {
+                    flex: 1,
+                    width: Dimensions.get('window').width - 50,
+                    width: 300,
+                }
+
+                :
+
+                {
+                    flex: 1,
+                    width: Dimensions.get('window').width - 50,
+                    marginRight: Dimensions.get('window').width - 50
+                }
+            } 
+            month={item.month} 
+            year={item.year}
+            calendarIndex = {index}
+            chooseDiffCalendarMonth = {this.chooseDiffCalendarMonth}
+            currentIndexOfTotalCalendarMonth = {this.state.currentIndexOfTotalCalendarMonth}
+        />
+    )
 
     render(){
         return(
@@ -170,38 +176,12 @@ export default class DayAnnotationPanel extends Component{
                     snapToInterval={(Dimensions.get('window').width - 50) * 2}
                     snapToAlignment="start"
                     showsHorizontalScrollIndicator={false}
-                    keyExtractor={(item, index) => 'month-render-calendar' + index}
+                    keyExtractor={this._keyExtractor}
                     initialNumToRender={1}
                     removeClippedSubviews={true}
                     data={this.state.month_order_array}
                     extraData={this.state.currentIndexOfTotalCalendarMonth}
-                    renderItem={({item, index}) => (
-                        <CalendarDisplayHolder
-                            key={'month-render-calendar' + index}
-                            
-                            style={
-                                index === this.state.month_order_array.length - 1 ? 
-                                {
-                                    flex: 1,
-                                    width: Dimensions.get('window').width - 50,
-                                    width: 300,
-                                }
-
-                                :
-
-                                {
-                                    flex: 1,
-                                    width: Dimensions.get('window').width - 50,
-                                    marginRight: Dimensions.get('window').width - 50
-                                }
-                            } 
-                            month={item.month} 
-                            year={item.year}
-                            calendarIndex = {index}
-                            chooseDiffCalendarMonth = {this.chooseDiffCalendarMonth}
-                            currentIndexOfTotalCalendarMonth = {this.state.currentIndexOfTotalCalendarMonth}
-                        />
-                    )}
+                    renderItem={this._renderItem}
                 >
 
                 </FlatList>
