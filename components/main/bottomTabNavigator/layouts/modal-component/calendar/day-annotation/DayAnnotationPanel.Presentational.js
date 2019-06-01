@@ -13,8 +13,6 @@ import {
     FlatList
 } from 'react-native';
 
-import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
-
 import CalendarDisplayHolder from './calendar-display-holder/CalendarDisplayHolder'
 
 export default class DayAnnotationPanel extends Component{
@@ -23,7 +21,7 @@ export default class DayAnnotationPanel extends Component{
     state = {
         renderDaysInMonth: null,
         currentIndexOfTotalCalendarMonth: 0,
-        monthComponent_arr: null
+        month_order_array: []
     }
 
     chooseDiffCalendarMonth = (index) => {
@@ -37,41 +35,26 @@ export default class DayAnnotationPanel extends Component{
             currentYear = new Date().getFullYear()
 
         this.getNumberOfMonthsInTheFuture(currentMonth, currentYear, ((12 * 30) + 1)) //To fully display the current month and also all the next stated months, plus 1
+    }
 
-        this.setState({
-            monthComponent_arr: this.month_order_array.map((data, index) => {
-                if(index === this.month_order_array.length - 1)
-                    return(
-                        <CalendarDisplayHolder
-                            key={'month-render-calendar' + index}
-                            style={{
-                                flex: 1,
-                                width: Dimensions.get('window').width - 50,
-                            }} 
+    _renderItem = (item, index) => {
+        return(
+            <CalendarDisplayHolder
+                key={'month-render-calendar' + index}
+                style={{
+                    flex: 1,
+                    width: Dimensions.get('window').width - 50,
+                    marginLeft: Dimensions.get('window').width - 50
+                }} 
+                
 
-                            month={data.month} 
-                            year={data.year}
-                            calendarIndex = {index}
-                        />
-                    )
-
-                else
-                    return(
-                        <CalendarDisplayHolder
-                            key={'month-render-calendar' + index}
-                            style={{
-                                flex: 1,
-                                width: Dimensions.get('window').width - 50,
-                                marginRight: Dimensions.get('window').width - 50
-                            }} 
-
-                            month={data.month} 
-                            year={data.year}
-                            calendarIndex = {index}
-                        />
-                    )
-            })
-        })
+                month={item.month} 
+                year={item.year}
+                calendarIndex = {index}
+                chooseDiffCalendarMonth = {this.chooseDiffCalendarMonth}
+                currentIndexOfTotalCalendarMonth = {this.state.currentIndexOfTotalCalendarMonth}
+            />
+        )
     }
 
     getNumberOfMonthsInTheFuture = (currentMonth, currentYear, numberOfMonths) => {
@@ -101,6 +84,13 @@ export default class DayAnnotationPanel extends Component{
 
     componentDidMount(){
         this.initializeMonthsForCalendar()
+
+        this.setState({
+            month_order_array: [... this.month_order_array]
+        })
+    }
+
+    componentDidUpdate(prevProps, prevState){
     }
 
     render(){
@@ -181,9 +171,37 @@ export default class DayAnnotationPanel extends Component{
                     snapToInterval={(Dimensions.get('window').width - 50) * 2}
                     snapToAlignment="start"
                     showsHorizontalScrollIndicator={false}
-                    data={this.state.monthComponent_arr}
-                    renderItem={({item}) => {return item}}
-                    initialNumToRender={1}
+                    keyExtractor={(item, index) => 'month-render-calendar' + index}
+                    initialNumToRender={2}
+                    data={this.state.month_order_array}
+                    renderItem={({item, index}) => (
+                        <CalendarDisplayHolder
+                            key={'month-render-calendar' + index}
+                            
+                            style={
+                                index === this.state.month_order_array.length - 1 ? 
+                                {
+                                    flex: 1,
+                                    width: Dimensions.get('window').width - 50,
+                                }
+
+                                :
+
+                                {
+                                    flex: 1,
+                                    width: Dimensions.get('window').width - 50,
+                                    marginRight: Dimensions.get('window').width - 50
+                                }
+                            } 
+                            
+            
+                            month={item.month} 
+                            year={item.year}
+                            calendarIndex = {index}
+                            chooseDiffCalendarMonth = {this.chooseDiffCalendarMonth}
+                            currentIndexOfTotalCalendarMonth = {this.state.currentIndexOfTotalCalendarMonth}
+                        />
+                    )}
                 >
 
                 </FlatList>
