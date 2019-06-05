@@ -8,6 +8,7 @@ import {
     TouchableHighlight,
     Modal
 } from 'react-native';
+import TaskCard from './../../../../../shared/layouts/TaskCard'
 
 let scrollViewRef,
     dayHolderWidth = 60,
@@ -251,8 +252,7 @@ export default class Daily extends React.Component{
                         </View>
 
                         :
-
-                        <></>
+                        <TaskCard checked={false}/>  
                     }
                 </View>
             </View>
