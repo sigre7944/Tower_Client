@@ -4,12 +4,8 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { CheckBox } from 'react-native-elements'
 
 export default class TaskCard extends Component {
-    state = {
-        isOpened: false
-    }
-
-    handleListClick = () => {
-        this.setState(prevState => ({isOpened: !prevState.isOpened}))
+    state={
+        checked: false
     }
 
     render() {
@@ -20,11 +16,13 @@ export default class TaskCard extends Component {
                         center
                         checkedIcon='dot-circle-o'
                         uncheckedIcon='circle-o'
-                        checked={this.props.checked}
+                        checked={this.state.checked}
+                        onPress={() => this.setState({checked: !this.state.checked})}
                     />
                 </View>
                 <View style={styles.description}>
                     <Text style={styles.descriptionText}>Task 1</Text>
+                    <Text style={styles.descriptionAmount}>0/3</Text>
                 </View>
                 <View style={styles.share}>
                     <FontAwesome5 name={'link'} style={styles.icon}/>
@@ -39,33 +37,42 @@ export default class TaskCard extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: 'red',
         flexDirection: 'row',
-        height: 60
+        height: 60,
+        borderWidth: 1,
+        borderColor: 'grey',
+        borderLeftWidth: 3,
+        marginBottom: 4
     },
     checkBox: {
         width: 50,
         height: 60
     },
     description: {
-        flex: 1,
+        flex: 1
+    },
+    descriptionText:{
+        lineHeight: 25,
+        fontSize: 16
+    },
+    descriptionAmount: {
+        lineHeight: 25,
+        opacity: 0.5
     },
     share: {
         width: 50,
-        height: 60
+        height: 60,
     },
     colorBox: {
         width: 50,
         height: 60
-    },
-    descriptionText:{
-
     },
     icon: {
         flex: 1,
         alignSelf: 'center',
         justifyContent: 'center',
         alignItems: 'center',
-        fontSize: 24
+        fontSize: 24,
+        lineHeight: 60
     }
 });

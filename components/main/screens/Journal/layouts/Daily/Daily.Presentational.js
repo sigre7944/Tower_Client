@@ -252,7 +252,16 @@ export default class Daily extends React.Component{
                         </View>
 
                         :
-                        <TaskCard checked={false}/>  
+                        <ScrollView style={styles.scrollViewTasks}>
+                            <TaskCard checked={true}/>
+                            <TaskCard checked={false}/>
+                            <TaskCard checked={true}/>
+
+                            <Text style={styles.banner}>Completed</Text>
+                            <TaskCard checked={true}/>
+                            <TaskCard checked={false}/>
+                        </ScrollView>
+                          
                     }
                 </View>
             </View>
@@ -268,6 +277,20 @@ const styles = StyleSheet.create({
     scrollViewContainer: {
         flex: 0,
         height: 70,
+    },
+
+    banner:{
+        textAlign: 'left',
+        paddingLeft: 8,
+        fontSize: 16,
+        fontWeight: '600',
+        marginTop: 10,
+        marginBottom: 10
+    },  
+
+    scrollViewTasks: {
+        alignSelf: "stretch",
+        height:50
     },
 
     dayHolder: {

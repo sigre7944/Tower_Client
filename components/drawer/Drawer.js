@@ -102,12 +102,12 @@ export default class Drawer extends Component {
     }
 
     handleAddList = () => {
-        /*
+        
         this.setState(prevState => ({
             list: prevState.list.concat([{name: 'Folder ' + (prevState.list.length), items: []}]), 
         }))
-        */
-       this.setModalVisible(true)
+        
+       this.setModalVisible(false)
     }
 
     render() {
@@ -166,7 +166,11 @@ export default class Drawer extends Component {
                     }
                     
                     <View style={styles.blackBar}></View>
-                    <TouchableOpacity style={styles.screenTitle} onPress={this.handleAddList}>
+                    <TouchableOpacity 
+                        style={styles.screenTitle} 
+                        onPress={() => {
+                            this.setModalVisible(true);
+                        }}>
                         <FontAwesome5 name={'plus'} style={styles.icon}/>                        
                         <Text>Add list</Text>
                     </TouchableOpacity>
@@ -201,8 +205,7 @@ export default class Drawer extends Component {
                                 </TouchableHighlight>
                             </View>
 
-                            <View>
-                                <Text>Add List</Text>
+                            <View> 
                                 <Text>Task Title</Text>
                                 <TextInput placeholder="Search"></TextInput>
                                 <Text>Task Title</Text>
@@ -211,6 +214,11 @@ export default class Drawer extends Component {
                                 <TextInput placeholder="Search"></TextInput>
                                 <Text>Task Title</Text>
                                 <TextInput placeholder="Search"></TextInput>
+                                <TouchableHighlight
+                                    onPress={this.handleAddList}
+                                >
+                                    <Text>Add List</Text>
+                                </TouchableHighlight>
                             </View>
                         
                         </View>

@@ -76,30 +76,31 @@ export default class Header extends React.Component {
 
             <Modal
                     animationType="slide"
-                    transparent={false}
+                    transparent={true}
                     visible={this.state.modalVisible}
-                    presentationStyle='formSheet'
                     onRequestClose={() => {
                         Alert.alert('Modal has been closed.');
                     }}>
-                    <View style={{marginTop: 22, height: 200}}>
-                        <TouchableOpacity onPress={() => this.setModalVisible(false)}>
-                            <Text>Close</Text>
-                        </TouchableOpacity>
-                        <View>
-                            <View>
-                                <Text>Add List</Text>
-                                <Text>Task Title</Text>
-                                <TextInput placeholder="Search"></TextInput>
-                                <Text>Task Title</Text>
-                                <TextInput placeholder="Search"></TextInput>
-                                <Text>Task Title</Text>
-                                <TextInput placeholder="Search"></TextInput>
-                                <Text>Task Title</Text>
-                                <TextInput placeholder="Search"></TextInput>
+                    <View style={{
+                        flex: 1,
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                        }}
+                    >
+                        <TouchableOpacity style={{alignSelf: 'stretch', flex: 1, justifyContent: 'flex-end',}} onPress={() => this.setModalVisible(false)}>
+                            <View style={{marginTop: 22, height: 200, backgroundColor: 'grey'}}>
+                                <TouchableOpacity onPress={() => this.setModalVisible(false)}>
+                                    <Text>Close</Text>
+                                </TouchableOpacity>
+                                <View>
+                                    <Text>Edit Multiple Tasks</Text>
+                                    <Text>Sort</Text>
+                                    <Text>Share</Text>
+                                </View>
+                            
                             </View>
-                        
-                        </View>
+                        </TouchableOpacity>
                     </View>
                 </Modal>
         </View>

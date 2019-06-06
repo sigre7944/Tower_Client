@@ -2,9 +2,9 @@
   "webpackServerPort": null,
   "expoServerNgrokUrl": "https://q7-czj.anonymous.tower-client.exp.direct",
   "packagerNgrokUrl": "https://packager.q7-czj.anonymous.tower-client.exp.direct",
-  "ngrokPid": 13441,
+  "ngrokPid": 5420,
   "devToolsPort": 19002,
   "expoServerPort": 19000,
   "packagerPort": 19001,
-  "packagerPid": 13421
+  "packagerPid": 17468
 }
