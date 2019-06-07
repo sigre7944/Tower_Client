@@ -22,9 +22,10 @@ export default class DayAnnotationPanel extends Component{
     }
 
     chooseDiffCalendarMonth = (index) => {
-        this.setState({
-            currentIndexOfTotalCalendarMonth: index
-        })
+        if(index !== this.state.currentIndexOfTotalCalendarMonth)
+            this.setState({
+                currentIndexOfTotalCalendarMonth: index
+            })
     }
 
     initializeMonthsForCalendar = () => {
@@ -73,32 +74,6 @@ export default class DayAnnotationPanel extends Component{
     _keyExtractor = (item, index) => `month-render-calendar-${index}`
 
     _renderItem = ({item, index}) => (
-        // <CalendarDisplayHolder
-        //     key={'month-render-calendar' + index}
-            
-        //     style={
-        //         index === this.state.month_order_array.length - 1 ? 
-        //         {
-        //             flex: 1,
-        //             width: Dimensions.get('window').width - 50,
-        //             width: 300,
-        //         }
-
-        //         :
-
-        //         {
-        //             flex: 1,
-        //             width: Dimensions.get('window').width - 50,
-        //             marginRight: Dimensions.get('window').width - 50
-        //         }
-        //     } 
-        //     month={item.month} 
-        //     year={item.year}
-        //     calendarIndex = {index}
-        //     chooseDiffCalendarMonth = {this.chooseDiffCalendarMonth}
-        //     currentIndexOfTotalCalendarMonth = {this.state.currentIndexOfTotalCalendarMonth}
-        // />
-
         <PureCalendarDisplayHolder 
             key={'month-render-calendar' + index}
 
@@ -126,6 +101,11 @@ export default class DayAnnotationPanel extends Component{
             currentIndexOfTotalCalendarMonth = {this.state.currentIndexOfTotalCalendarMonth}
         /> 
     )
+
+    componentDidUpdate(prevProps, prevState){
+        if(this.state.currentIndexOfTotalCalendarMonth !== prevState.currentIndexOfTotalCalendarMonth){
+        }
+    }
 
     render(){
         return(
@@ -211,7 +191,7 @@ export default class DayAnnotationPanel extends Component{
                     data={this.state.month_order_array}
                     extraData={this.state.currentIndexOfTotalCalendarMonth}
                     renderItem={this._renderItem}
-                    windowSize={5}
+                    windowSize={10}
                 >
 
                 </FlatList>

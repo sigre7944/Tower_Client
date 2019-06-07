@@ -41,7 +41,7 @@ class DayInWeekHolder extends React.PureComponent{
     }
 }
 
-class RenderCalendar extends React.Component{
+class RenderCalendar extends React.PureComponent{
     state = {
         lastIndexOfDay: 0, //The last day's index in the calendar month
         currentIndexOfDay: 0 //The current day's index in the calendar month
@@ -72,6 +72,10 @@ class RenderCalendar extends React.Component{
                             data_arr = {data_arr}
                             changeIndexesOfDay = {this.changeIndexesOfDay}
                             lastIndexOfDay = {this.state.lastIndexOfDay}
+
+                            chooseDiffCalendarMonth = {this.props.chooseDiffCalendarMonth}
+                            calendarIndex = {this.props.calendarIndex}
+                            currentIndexOfTotalCalendarMonth = {this.props.currentIndexOfTotalCalendarMonth}
                         />
                     ))
                 }
@@ -80,14 +84,7 @@ class RenderCalendar extends React.Component{
     }
 }
 
-class CalendarRow extends React.Component{
-
-    componentDidMount(){
-        
-    }
-
-    componentDidUpdate(prevProps, prevState){
-    }
+class CalendarRow extends React.PureComponent{
     
     render(){
         return(
@@ -112,6 +109,10 @@ class CalendarRow extends React.Component{
                                 lastIndexOfDay = {this.props.lastIndexOfDay}
 
                                 changeIndexesOfDay = {this.props.changeIndexesOfDay}
+
+                                chooseDiffCalendarMonth = {this.props.chooseDiffCalendarMonth}
+                                calendarIndex = {this.props.calendarIndex}
+                                currentIndexOfTotalCalendarMonth = {this.props.currentIndexOfTotalCalendarMonth}
                             />
                         )
 
@@ -128,7 +129,7 @@ class CalendarRow extends React.Component{
 }
 
 
-class DayHolder extends React.Component{
+class DayHolder extends React.PureComponent{
 
     state = {
         dayStyle: {},
@@ -143,6 +144,8 @@ class DayHolder extends React.Component{
         })
 
         this.props.changeIndexesOfDay(index)
+
+        this.props.chooseDiffCalendarMonth(this.props.calendarIndex)
     }
 
 
@@ -155,6 +158,13 @@ class DayHolder extends React.Component{
 
     componentDidUpdate(prevProps, prevState){
         if(this.props.lastIndexOfDay !== prevProps.lastIndexOfDay && this.props.lastIndexOfDay === this.props.currentDayIndex){
+            this.setState({
+                dayStyle: this.props.UnchosenDay,
+                dayTextStyle: this.props.UnchosenDayText,
+            })
+        }
+
+        if(this.props.calendarIndex !== this.props.currentIndexOfTotalCalendarMonth && this.props.currentIndexOfTotalCalendarMonth !== prevProps.currentIndexOfTotalCalendarMonth){
             this.setState({
                 dayStyle: this.props.UnchosenDay,
                 dayTextStyle: this.props.UnchosenDayText,
@@ -313,22 +323,7 @@ export default class CalendarDisplayHolder extends Component{
 
     componentDidUpdate(prevProps, prevState){
 
-        if(this.props.calendarIndex !== this.props.currentIndexOfTotalCalendarMonth && this.props.currentIndexOfTotalCalendarMonth !== prevProps.currentIndexOfTotalCalendarMonth){
-            let display_day_style_array = this.state.display_day_style_array
-            display_day_style_array.forEach((style, i, arr) => {
-                arr[i] = styles.UnchosenDay
-            })
-
-            let display_day_text_style_array = this.state.display_day_text_style_array
-            display_day_text_style_array.forEach((style, i, arr) => {
-                arr[i] = styles.UnchosenDayText
-            })
-
-            this.setState({
-                display_day_style_array: [... display_day_style_array],
-                display_day_text_style_array: [... display_day_text_style_array]
-            })
-        }
+        
     }
 
 
@@ -395,6 +390,10 @@ export default class CalendarDisplayHolder extends Component{
 
                     <RenderCalendar 
                         calendar_row_array = {this.state.calendar_row_array}
+
+                        chooseDiffCalendarMonth = {this.props.chooseDiffCalendarMonth}
+                        calendarIndex = {this.props.calendarIndex}
+                        currentIndexOfTotalCalendarMonth = {this.props.currentIndexOfTotalCalendarMonth}
                     />
                 </View>
             </View>
