@@ -43,20 +43,23 @@ class DayInWeekHolder extends React.PureComponent{
 
 class RenderCalendar extends React.PureComponent{
     state = {
-        lastIndexOfDay: 0, //The last day's index in the calendar month
-        currentIndexOfDay: 0 //The current day's index in the calendar month
+        lastCalendarDayIndex: 0, //To keep track of the last chosen day in the month (for resetting its style)
+        currentCalendarDayIndex: 0, //Keeping track of the current chosen day in the month (for changing its style to proper one)
     }
 
-    changeIndexesOfDay = (index) => {
+    //If we choose a different day in the month, then this function will be called
+    changeCurrentCalendarDayIndex = (index) => {
         this.setState({
-            currentIndexOfDay: index
+            currentCalendarDayIndex: index
         })
     }
 
+    //After we get the currentCalendarDayIndex, we set the lastCalendarDayIndex to the previous currentCalendarDayIndex
     componentDidUpdate(prevProps, prevState){
-        if(this.state.currentIndexOfDay !== prevState.currentIndexOfDay){
+        if(this.state.currentCalendarDayIndex !== prevState.currentCalendarDayIndex){
+            // console.log(prevState.currentCalendarDayIndex)
             this.setState({
-                lastIndexOfDay: prevState.currentIndexOfDay
+                lastCalendarDayIndex: prevState.currentCalendarDayIndex
             })
         }
     }
@@ -66,16 +69,17 @@ class RenderCalendar extends React.PureComponent{
         return(
             <>
                 {
-                    this.props.calendar_row_array.map((data_arr, index) => (
+                    this.props.row_days_array.map((rowData, index) => (
                         <CalendarRow
-                            key={'calendar row ' + index}
-                            data_arr = {data_arr}
-                            changeIndexesOfDay = {this.changeIndexesOfDay}
-                            lastIndexOfDay = {this.state.lastIndexOfDay}
+                            key = {'calendar row ' + index}
+                            rowData = {rowData}
 
-                            chooseDiffCalendarMonth = {this.props.chooseDiffCalendarMonth}
-                            calendarIndex = {this.props.calendarIndex}
-                            currentIndexOfTotalCalendarMonth = {this.props.currentIndexOfTotalCalendarMonth}
+                            lastCalendarDayIndex = {this.state.lastCalendarDayIndex}
+                            changeCurrentCalendarDayIndex = {this.changeCurrentCalendarDayIndex}
+
+                            month_index = {this.props.month_index}
+                            current_month_index = {this.props.current_month_index}
+                            chooseDifferentMonth = {this.props.chooseDifferentMonth}
                         />
                     ))
                 }
@@ -93,26 +97,21 @@ class CalendarRow extends React.PureComponent{
                     flexDirection: 'row',
                 }}
             >
-                {this.props.data_arr.map((data, index) => {
+                {this.props.rowData.map((data, index) => {
                     if(data.dayData.main)
                         return (
                             <DayHolder 
                                 key={"day holder "+ data.calendarDayIndex}
 
-                                UnchosenDay = {styles.UnchosenDay}
-                                ChosenDay = {styles.ChosenDay}
-                                UnchosenDayText = {styles.UnchosenDayText}
-                                ChosenDayText = {styles.ChosenDayText}
                                 day = {data.dayData.day}
 
-                                currentDayIndex = {data.calendarDayIndex}
-                                lastIndexOfDay = {this.props.lastIndexOfDay}
+                                calendarDayIndex = {data.calendarDayIndex}
+                                lastCalendarDayIndex = {this.props.lastCalendarDayIndex}
+                                changeCurrentCalendarDayIndex = {this.props.changeCurrentCalendarDayIndex}
 
-                                changeIndexesOfDay = {this.props.changeIndexesOfDay}
-
-                                chooseDiffCalendarMonth = {this.props.chooseDiffCalendarMonth}
-                                calendarIndex = {this.props.calendarIndex}
-                                currentIndexOfTotalCalendarMonth = {this.props.currentIndexOfTotalCalendarMonth}
+                                month_index = {this.props.month_index}
+                                current_month_index = {this.props.current_month_index}
+                                chooseDifferentMonth = {this.props.chooseDifferentMonth}
                             />
                         )
 
@@ -120,6 +119,8 @@ class CalendarRow extends React.PureComponent{
                         return (
                             <DummyHolder 
                                 key={"dummy holder "+ data.calendarDayIndex}
+
+                                day = {data.dayData.day}
                             />
                         )
                 })}
@@ -132,42 +133,44 @@ class CalendarRow extends React.PureComponent{
 class DayHolder extends React.PureComponent{
 
     state = {
-        dayStyle: {},
+        dayHolderStyle: {},
         dayTextStyle: {},
-        calendar_row_array: []
     }
 
     chooseDay = (index) => {
         this.setState({
-            dayStyle: this.props.ChosenDay,
-            dayTextStyle: this.props.ChosenDayText
+            dayHolderStyle: styles.ChosenDayHolder,
+            dayTextStyle: styles.ChosenDayText
         })
 
-        this.props.changeIndexesOfDay(index)
+        this.props.changeCurrentCalendarDayIndex(index)
 
-        this.props.chooseDiffCalendarMonth(this.props.calendarIndex)
+        this.props.chooseDifferentMonth(this.props.month_index)
     }
 
 
     componentDidMount(){
         this.setState({
-            dayStyle: this.props.UnchosenDay,
-            dayTextStyle: this.props.UnchosenDayText,
+            dayHolderStyle: styles.UnchosenDayHolder,
+            dayTextStyle: styles.UnchosenDayText
         })
     }
 
+
     componentDidUpdate(prevProps, prevState){
-        if(this.props.lastIndexOfDay !== prevProps.lastIndexOfDay && this.props.lastIndexOfDay === this.props.currentDayIndex){
+        //If we choose another day then we reset the previous day's style
+        //This means if this day is the previous day then reset its style
+        if(this.props.lastCalendarDayIndex !== prevProps.lastCalendarDayIndex && this.props.lastCalendarDayIndex === this.props.calendarDayIndex){
             this.setState({
-                dayStyle: this.props.UnchosenDay,
-                dayTextStyle: this.props.UnchosenDayText,
+                dayHolderStyle: styles.UnchosenDayHolder,
+                dayTextStyle: styles.UnchosenDayText,
             })
         }
 
-        if(this.props.calendarIndex !== this.props.currentIndexOfTotalCalendarMonth && this.props.currentIndexOfTotalCalendarMonth !== prevProps.currentIndexOfTotalCalendarMonth){
+        if(this.props.month_index !== this.props.current_month_index && this.props.current_month_index !== prevProps.current_month_index){
             this.setState({
-                dayStyle: this.props.UnchosenDay,
-                dayTextStyle: this.props.UnchosenDayText,
+                dayHolderStyle: styles.UnchosenDayHolder,
+                dayTextStyle: styles.UnchosenDayText,
             })
         }
     }
@@ -183,10 +186,10 @@ class DayHolder extends React.PureComponent{
                 }}
                 underlayColor="transparent"
 
-                onPress={this.chooseDay.bind(this, this.props.currentDayIndex)}
+                onPress={this.chooseDay.bind(this, this.props.calendarDayIndex)}
             >   
                 <View
-                    style={this.state.dayStyle}
+                    style={this.state.dayHolderStyle}
                 >
                     <Text
                         style= {this.state.dayTextStyle}
@@ -221,103 +224,104 @@ export default class CalendarDisplayHolder extends Component{
     /*TO EXPLITCITLY USE GLOBAL VARIABLES WITHIN CLASS, ONE MUST DEFINE THOSE VARIABLES INSIDE CLASS*/
     /*IF DEFINING OUTSIDE, THOSE VARIABLES WILL BE UPDATED EVERY TIME THE SCRIPT THAT EXECUTES IT IS RAN*/
     
-    display_day_array = [] //Hold the data to display of each day in the current calendar month
-    calendar_row_array = [] //Hold all the row of React element to display the current calendar month
+    day_data_array = [] //Hold the data to display of each day in the current calendar month
+    row_days_array = [] //Hold all the row of React element to display the current calendar month
 
 
     state = {
-        monthInText: '',
-        year: '',
-        calendar_row_array: [],
+        row_days_array: [],
     }
 
     getDaysInMonth = (month, year) => {
-        return new Date(year, month, 0).getDate()
+        return new Date(year, (month + 1), 0).getDate()
+    }
+
+    getDataOfDaysLastMonthToDisplay = (daysLastMonthToDisplay, daysLastMonth) => {
+        for(let i = (daysLastMonth - daysLastMonthToDisplay + 1); i <= daysLastMonth; i++){
+            this.day_data_array.push({
+                day: i
+            })
+        }
+    }
+
+    getDataOfDaysThisMonthToDisplay = (daysThisMonth) => {
+        for(let i = 1; i <= daysThisMonth; i++){
+            this.day_data_array.push({
+                day: i,
+                main: true //To identify this object contains a day of the current month
+            })
+        }
+    }
+
+    getDataOfDaysNextMonthToDisplay = (daysNextMonthToDisplay) => {
+        for(let i = 1; i <= daysNextMonthToDisplay; i++){
+            this.day_data_array.push({
+                day: i
+            })
+        }
     }
 
     componentDidMount(){
         let month = this.props.month,
-            monthInText = monthNames[month],
             year = this.props.year 
 
-        this.setState({monthInText, year})  
-
-        let daysInMonth = this.getDaysInMonth(month + 1, year)
-
-        this.display_day_array = [] //length of 7*6 = 42
+        this.day_data_array = [] //length of 7*6 = 42
         
-        let daysInLastMonth
-        //To check the current month is January or not
-        if(month !== 0)
-            daysInLastMonth = this.getDaysInMonth(month, year)
+        let daysThisMonth = this.getDaysInMonth(month, year) //Number of days in this month
 
+        let daysLastMonth //Number of days in the last month
+
+        //To check if the current month is January or not
+        //If not, then we proceed finding the total days in the last month normally
+        if(month !== 0){
+            daysLastMonth = this.getDaysInMonth(month, year)
+        }
+
+
+        //If the case, we will find the last December's total days
         else
-            daysInLastMonth = this.getDaysInMonth(12, year - 1)
+            daysLastMonth = this.getDaysInMonth(11, (year - 1))
 
-        let firstDayOfCurrentMonthInWeek = new Date(year, month, 1).getDay() ,
-            numberOfDaysFromLastMonth
+        let firstDayOfCurrentMonthInWeek = new Date(year, month, 1).getDay(), //This is the first day in month, but with the index in a week (Sun, Mon, ... Sat to 0, 1, ..., 6)
+            daysLastMonthToDisplay = firstDayOfCurrentMonthInWeek !== 0 ? firstDayOfCurrentMonthInWeek - 1 : 6  //To be used to find how many days from last month should we 
+                                                                                                                //display in the month calendar (Optional)
 
-        //Find the number of days from last month to determine how many last month's days will be displayed in the calendar
-        if(firstDayOfCurrentMonthInWeek !== 0){
-            numberOfDaysFromLastMonth = firstDayOfCurrentMonthInWeek - 1
-        }
+        
+        //Push data of displaying days from last month to the array
+        this.getDataOfDaysLastMonthToDisplay(daysLastMonthToDisplay, daysLastMonth)
 
-        else{
-            numberOfDaysFromLastMonth = 6
-        }
+        //Push data of displaying days from current month to the array
+        this.getDataOfDaysThisMonthToDisplay(daysThisMonth)
 
-        //Get the days in last month based on the number of last month's days calculated above
-        for(let i = daysInLastMonth - numberOfDaysFromLastMonth + 1; i <= daysInLastMonth; i++){
+        let lastDayOfCurrentMonthInWeek = new Date(year, month, daysThisMonth).getDay(),
+            daysNextMonthToDisplay = lastDayOfCurrentMonthInWeek !== 0 ? 7 - lastDayOfCurrentMonthInWeek : 0 //To be used to find how many days from next month should we
+                                                                                                             //display in the month calendar (Optional)
 
-            this.display_day_array.push({
-                day: i
-            })
+        //Push data of displaying days from next month to the array
+        this.getDataOfDaysNextMonthToDisplay(daysNextMonthToDisplay)
 
-        }
 
-        //Get the days in current month (main context)
-        for(let i = 1; i <= daysInMonth; i++){
-            this.display_day_array.push({
-                day: i,
-                main: true
-            })
-        }
-
-        //Get the days will be displayed in the calendar from the next month
-        let lastDayInWeekOfCurrentMonth = new Date(year, month, daysInMonth).getDay(),
-            postDaysFromNextMonth = lastDayInWeekOfCurrentMonth !== 0 ? 7 - lastDayInWeekOfCurrentMonth : 0 //To determine displaying only when the last day in week of current month
-                                                                                                            // is not Sunday.
-
-        //Get the days in next month
-        for(let i = 1; i <= postDaysFromNextMonth; i++){
-
-            this.display_day_array.push({
-                day: i
-            })
-        }
-
-        //After we get all the information needed from 3 above loops, we need to fill up remaining indexes in display_day_array to complete 42 holders.
-        if(this.display_day_array.length < 42){
-            for(let i = this.display_day_array.length; i < 42; i++){
-                this.display_day_array.push({
+        //After we get all neccessary data from last, current and next months, we need to fill the rest indexes will dummy data
+        if(this.day_data_array.length < 42){
+            for(let i = this.day_data_array.length; i < 42; i++){
+                this.day_data_array.push({
                     day: 0
                 })
             }
         }
 
-        //Display the Calendar through state.
-        this.calendar_row_array = [new Array(7), new Array(7), new Array(7), new Array(7), new Array(7), new Array(7)] //6 rows in total
+        //This array will hold data of 7 days in a row for displaying the month calendar (there are 6 rows in total)
+        this.row_days_array = [new Array(7), new Array(7), new Array(7), new Array(7), new Array(7), new Array(7)]
 
-        //In calendar_row_array, each index is a row, containing all the neccessary React elements to form the Calendar.
-        for(let i = 0; i < this.display_day_array.length; i++){
-            this.calendar_row_array[parseInt((i) / 7)].push({
-                dayData:this.display_day_array[i],
+        for(let i = 0; i < this.day_data_array.length; i++){
+            this.row_days_array[parseInt(i / 7)].push({
+                dayData: this.day_data_array[i],
                 calendarDayIndex: i
             })
         }
 
         this.setState({
-            calendar_row_array: [... this.calendar_row_array]
+            row_days_array: [... this.row_days_array]
         })
     }
 
@@ -353,7 +357,7 @@ export default class CalendarDisplayHolder extends Component{
                                 fontWeight: "500"
                             }}
                         >
-                            {this.state.monthInText}
+                            {monthNames[this.props.month]}
                         </Text>
                         <Text
                             style={{
@@ -362,7 +366,7 @@ export default class CalendarDisplayHolder extends Component{
                                 marginLeft: 5
                             }}
                         >
-                            {this.state.year}
+                            {this.props.year}
                         </Text>
                     </View>
                     
@@ -389,11 +393,11 @@ export default class CalendarDisplayHolder extends Component{
                     </View>
 
                     <RenderCalendar 
-                        calendar_row_array = {this.state.calendar_row_array}
+                        row_days_array = {this.state.row_days_array}
 
-                        chooseDiffCalendarMonth = {this.props.chooseDiffCalendarMonth}
-                        calendarIndex = {this.props.calendarIndex}
-                        currentIndexOfTotalCalendarMonth = {this.props.currentIndexOfTotalCalendarMonth}
+                        month_index = {this.props.month_index}
+                        current_month_index = {this.props.current_month_index}
+                        chooseDifferentMonth = {this.props.chooseDifferentMonth}
                     />
                 </View>
             </View>
@@ -403,7 +407,7 @@ export default class CalendarDisplayHolder extends Component{
 
 
 const styles = StyleSheet.create({
-    UnchosenDay: {
+    UnchosenDayHolder: {
         height: 30,
         width: 30,
         alignItems: "center",
@@ -416,7 +420,7 @@ const styles = StyleSheet.create({
         color: 'black'
     },
 
-    ChosenDay: {
+    ChosenDayHolder: {
         height: 30,
         width: 30,
         alignItems: "center",

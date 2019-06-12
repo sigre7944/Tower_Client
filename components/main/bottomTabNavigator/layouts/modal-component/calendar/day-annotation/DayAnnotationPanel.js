@@ -9,38 +9,65 @@ import {
 } from 'react-native';
 
 import CalendarDisplayHolder from './calendar-display-holder/CalendarDisplayHolder'
-import PureCalendarDisplayHolder from './calendar-display-holder/PureCalendarDisplayHolder'
 
 
 export default class DayAnnotationPanel extends Component{
-    month_order_array = []
+    month_data_array = []
+    numberOfMonths = (12 * 30) + 1 //Number of months we want to display. (12 months in a year) * (number of year) + 1 (for current month)
 
     state = {
-        renderDaysInMonth: null,
-        currentIndexOfTotalCalendarMonth: 0,
-        month_order_array: []
+        current_month_index: 0,
+        month_data_array: []
     }
 
-    chooseDiffCalendarMonth = (index) => {
-        if(index !== this.state.currentIndexOfTotalCalendarMonth)
+    chooseDifferentMonth = (index) => {
+        if(index !== this.state.current_month_index)
             this.setState({
-                currentIndexOfTotalCalendarMonth: index
+                current_month_index: index
             })
     }
 
-    initializeMonthsForCalendar = () => {
+    _keyExtractor = (item, index) => `month-calendar-${index}`
+
+    _renderItem = ({item, index}) => (
+        <CalendarDisplayHolder 
+            style = {
+                index === this.state.month_data_array.length - 1 ? 
+                {
+                    flex: 1,
+                    width: Dimensions.get('window').width - 50,
+                }
+
+                :
+
+                {
+                    flex: 1,
+                    width: Dimensions.get('window').width - 50,
+                    marginRight: Dimensions.get('window').width - 50
+                }
+            }
+
+            month={item.month} 
+            year={item.year}
+            month_index = {index}
+            chooseDifferentMonth = {this.chooseDifferentMonth}
+            current_month_index = {this.state.current_month_index}
+        /> 
+    )
+
+    initializeMonths = () => {
         let currentMonth = new Date().getMonth(),
             currentYear = new Date().getFullYear()
 
-        this.getNumberOfMonthsInTheFuture(currentMonth, currentYear, ((12 * 30) + 1)) //To fully display the current month and also all the next stated months, plus 1
+        this.getFollowingMonths(currentMonth, currentYear, this.numberOfMonths)
     }
 
-    getNumberOfMonthsInTheFuture = (currentMonth, currentYear, numberOfMonths) => {
+    getFollowingMonths = (currentMonth, currentYear, numberOfMonths) => {
         if(numberOfMonths === 0){
             return
         }
 
-        this.month_order_array.push({
+        this.month_data_array.push({
             month: currentMonth,
             year: currentYear,
         })
@@ -56,56 +83,20 @@ export default class DayAnnotationPanel extends Component{
 
         numberOfMonths -= 1
 
-        this.getNumberOfMonthsInTheFuture(currentMonth, currentYear, numberOfMonths)
+        this.getFollowingMonths(currentMonth, currentYear, numberOfMonths)
     }
 
 
     componentDidMount(){
-        this.initializeMonthsForCalendar()
+        this.initializeMonths()
 
         this.setState({
-            month_order_array: [... this.month_order_array]
+            month_data_array: [... this.month_data_array]
         })
     }
 
-    componentDidUpdate(prevProps, prevState){
-    }
+    
 
-    _keyExtractor = (item, index) => `month-render-calendar-${index}`
-
-    _renderItem = ({item, index}) => (
-        <PureCalendarDisplayHolder 
-            key={'month-render-calendar' + index}
-
-            style = {
-                index === this.state.month_order_array.length - 1 ? 
-                {
-                    flex: 1,
-                    width: Dimensions.get('window').width - 50,
-                    width: 300,
-                }
-
-                :
-
-                {
-                    flex: 1,
-                    width: Dimensions.get('window').width - 50,
-                    marginRight: Dimensions.get('window').width - 50
-                }
-            }
-
-            month={item.month} 
-            year={item.year}
-            calendarIndex = {index}
-            chooseDiffCalendarMonth = {this.chooseDiffCalendarMonth}
-            currentIndexOfTotalCalendarMonth = {this.state.currentIndexOfTotalCalendarMonth}
-        /> 
-    )
-
-    componentDidUpdate(prevProps, prevState){
-        if(this.state.currentIndexOfTotalCalendarMonth !== prevState.currentIndexOfTotalCalendarMonth){
-        }
-    }
 
     render(){
         return(
@@ -173,7 +164,7 @@ export default class DayAnnotationPanel extends Component{
                 </View>
             </View> 
 
-            {/* Main content of calendar */}
+            {/* Main content of day calendar */}
             <View 
                 style = {{
                     flex: 1,
@@ -188,8 +179,8 @@ export default class DayAnnotationPanel extends Component{
                     keyExtractor={this._keyExtractor}
                     initialNumToRender={1}
                     removeClippedSubviews={true}
-                    data={this.state.month_order_array}
-                    extraData={this.state.currentIndexOfTotalCalendarMonth}
+                    data={this.state.month_data_array}
+                    extraData={this.state.current_month_index}
                     renderItem={this._renderItem}
                     windowSize={10}
                 >

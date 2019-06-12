@@ -3,12 +3,9 @@ import React, { Component } from 'react'
 import {
     View,
     Text,
-    TouchableHighlight,
-    TextInput,
     Dimensions,
-    Modal,
-    TouchableWithoutFeedback,
-    KeyboardAvoidingView,
+    FlatList,
+    TouchableHighlight
 } from 'react-native';
 
 export default class WeekAnnotationPanel extends Component{
@@ -20,8 +17,6 @@ export default class WeekAnnotationPanel extends Component{
         thisMonthColor: 'black',
         thisMonthTextColor: 'white'
     }
-
-    
 
     chooseMonthOption = (monthOption) => {
         if(monthOption === "This month"){
@@ -43,8 +38,13 @@ export default class WeekAnnotationPanel extends Component{
         }
     }
 
+    componentDidMount(){
+
+    }
+
     render(){
         return(
+            <>
             <View
                 style={{
                     height: 80,
@@ -98,6 +98,46 @@ export default class WeekAnnotationPanel extends Component{
                     </TouchableHighlight>
                 </View>
             </View>
+            
+
+            {/* Main content of week calendar */}
+            <View style={{
+                flex: 1,
+                position: "relative",
+                paddingHorizontal: 15,
+            }}> 
+                <View style={{
+                    width: 50,
+                    flex: 1,
+                    backgroundColor: 'gray',
+                    borderRadius: 25,
+                    marginTop: 100,
+                }}>
+
+                </View>
+
+                <View style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 15,
+                    right: 15,
+                    bottom: 0,
+                }}>
+                    <FlatList
+                        showsHorizontalScrollIndicator={false}
+                    >
+
+
+                    </FlatList>
+                </View>
+            </View>
+
+            <View style={{
+                height: 100,
+            }}>
+
+            </View>
+            </>
         )
     }
 }
