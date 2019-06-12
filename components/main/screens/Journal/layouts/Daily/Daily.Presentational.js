@@ -9,6 +9,7 @@ import {
     Modal
 } from 'react-native';
 import TaskCard from './../../../../../shared/layouts/TaskCard'
+import TaskDetailModal from './../../../../../shared/layouts/TaskDetailModal'
 
 let scrollViewRef,
     dayHolderWidth = 60,
@@ -29,7 +30,12 @@ export default class Daily extends React.Component{
         day_number_text_style_arr: [],
         days_arr: [],
 
-        taskTabOpened: false
+        taskTabOpened: false,
+        isModalOpened: false
+    }
+
+    toggleModal = (visible) => {
+        this.setState({isModalOpened: visible})
     }
 
     componentDidMount(){
@@ -253,17 +259,20 @@ export default class Daily extends React.Component{
 
                         :
                         <ScrollView style={styles.scrollViewTasks}>
-                            <TaskCard checked={true}/>
-                            <TaskCard checked={false}/>
-                            <TaskCard checked={true}/>
+                            <TaskCard checked={true} onPress={this.toggleModal}/>
+                            <TaskCard checked={false} onPress={this.toggleModal}/>
 
                             <Text style={styles.banner}>Completed</Text>
-                            <TaskCard checked={true}/>
-                            <TaskCard checked={false}/>
+                            <TaskCard checked={true} onPress={this.toggleModal}/>
                         </ScrollView>
                           
                     }
                 </View>
+
+                <TaskDetailModal 
+                    isOpened={this.state.isModalOpened}
+                    toggleModal={this.toggleModal}
+                />
             </View>
         )
     }

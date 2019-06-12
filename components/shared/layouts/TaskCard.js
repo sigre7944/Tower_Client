@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, TouchableOpacity, Text, View, StyleSheet, ImageBackground, Image, TextInput, ScrollView, Platform } from 'react-native'
+import { Alert, Modal, TouchableOpacity, Text, View, StyleSheet, ImageBackground, Image, TextInput, ScrollView, Platform } from 'react-native'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { CheckBox } from 'react-native-elements'
 
@@ -10,7 +10,7 @@ export default class TaskCard extends Component {
 
     render() {
         return (
-            <View style={styles.container}>
+            <TouchableOpacity style={styles.container} onPress={() => this.props.onPress(true)}>
                 <View style={styles.checkBox}>
                     <CheckBox 
                         center
@@ -30,7 +30,7 @@ export default class TaskCard extends Component {
                 <View style={styles.colorBox}>
                     <FontAwesome5 name={'dot-circle'} style={styles.icon}/>
                 </View>
-            </View> 
+            </TouchableOpacity> 
         )
     }
 }
