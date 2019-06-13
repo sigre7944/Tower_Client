@@ -39,7 +39,7 @@ export default class TaskDetailModal extends Component {
                     {
                         !this.state.isEditing ? 
                             <TouchableOpacity style={{alignSelf: 'stretch', flex: 1, justifyContent: 'flex-end',}}>
-                                <View style={{marginTop: 50, alignSelf: 'stretch', flex:1, backgroundColor: 'grey'}}>
+                                <View style={{marginTop: 25, alignSelf: 'stretch', flex:1, backgroundColor: 'grey'}}>
                                     <View style={{flexDirection: 'row-reverse', alignItems: 'flex-start'}}>
                                         <TouchableOpacity onPress={() => this.props.toggleModal(false)}>
                                             <FontAwesome5 name={'trash'} style={{width: 50, height: 50, fontSize: 24, lineHeight: 50}} />
@@ -49,9 +49,43 @@ export default class TaskDetailModal extends Component {
                                         </TouchableOpacity>  
                                     </View>
                                     <View>
-                                        <Text>color</Text>
-                                        <Text>text</Text>
-                                        <Text>deadline</Text>
+                                        <View style={styles.container}>
+                                            <View style={styles.head}>
+                                                <CheckBox 
+                                                    center
+                                                    checkedIcon='dot-circle-o'
+                                                    uncheckedIcon='circle-o'
+                                                    checked={this.props.checked}
+                                                />
+                                            </View>
+                                            <View style={styles.body}>
+                                                <Text>{this.props.name}</Text>
+                                            </View>
+                                        </View>
+                                        <View style={styles.container}>
+                                            <View style={styles.head}>
+                                                <FontAwesome5 name={'calendar'} style={styles.icon}/>
+                                            </View>
+                                            <View style={styles.body}>
+                                                <Text>{this.props.date}</Text>
+                                            </View>
+                                        </View>
+                                        <View style={styles.container}>
+                                            <View style={styles.head}>
+                                                <FontAwesome5 name={'dot-circle'} style={styles.icon}/>
+                                            </View>
+                                            <View style={styles.body}>
+                                                <Text>{this.props.category}</Text>
+                                            </View>
+                                        </View>
+                                        <View style={styles.container}>
+                                            <View style={styles.head}>
+                                                <FontAwesome5 name={'warning'} style={styles.icon}/>
+                                            </View>
+                                            <View style={styles.body}>
+                                                <Text>Do first</Text>
+                                            </View>
+                                        </View>
                                     </View> 
                                 </View>
                             </TouchableOpacity>
