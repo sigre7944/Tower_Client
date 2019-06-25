@@ -8,6 +8,8 @@ import {
     TouchableHighlight,
     Modal
 } from 'react-native';
+import TaskCard from './../../../../../shared/layouts/TaskCard'
+import TaskDetailModal from './../../../../../shared/layouts/TaskDetailModal'
 
 let scrollViewRef,
     dayHolderWidth = 60,
@@ -28,8 +30,10 @@ export default class Daily extends React.Component{
         day_number_text_style_arr: [],
         days_arr: [],
 
-        taskTabOpened: false
+        taskTabOpened: false,
+        isModalOpened: false
     }
+
 
     componentDidMount(){
         const didFocusScreen = this.props.navigation.addListener(
@@ -180,6 +184,15 @@ export default class Daily extends React.Component{
         }))
     }
 
+
+    openModal = () => {
+        this.setState({isModalOpened: true})
+    }
+
+    closeModal = () => {
+        this.setState({isModalOpened: false})
+    }
+
     render(){
         return(
             <View style={styles.container}>
@@ -251,10 +264,21 @@ export default class Daily extends React.Component{
                         </View>
 
                         :
+                        <ScrollView style={styles.scrollViewTasks}>
+                            <TaskCard checked={true} onPress={this.openModal}/>
+                            <TaskCard checked={false} onPress={this.openModal}/>
 
-                        <></>
+                            <Text style={styles.banner}>Completed</Text>
+                            <TaskCard checked={true} onPress={this.openModal}/>
+                        </ScrollView>
+                          
                     }
                 </View>
+
+                <TaskDetailModal 
+                    isOpened={this.state.isModalOpened}
+                    closeModal={this.closeModal}
+                />
             </View>
         )
     }
@@ -268,6 +292,20 @@ const styles = StyleSheet.create({
     scrollViewContainer: {
         flex: 0,
         height: 70,
+    },
+
+    banner:{
+        textAlign: 'left',
+        paddingLeft: 8,
+        fontSize: 16,
+        fontWeight: '600',
+        marginTop: 10,
+        marginBottom: 10
+    },  
+
+    scrollViewTasks: {
+        alignSelf: "stretch",
+        height:50
     },
 
     dayHolder: {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {NavigationActions} from 'react-navigation';
 import { Alert, TouchableOpacity, Text, View, StyleSheet, ImageBackground, Modal, TouchableHighlight, Image, TextInput, ScrollView, Platform } from 'react-native'
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import CollapsibleList from './../shared/layouts/CollapsibleList';
 
 const findAndToggle = (array, index) => {
@@ -102,12 +102,12 @@ export default class Drawer extends Component {
     }
 
     handleAddList = () => {
-        /*
+        
         this.setState(prevState => ({
             list: prevState.list.concat([{name: 'Folder ' + (prevState.list.length), items: []}]), 
         }))
-        */
-       this.setModalVisible(true)
+        
+       this.setModalVisible(false)
     }
 
     render() {
@@ -119,7 +119,7 @@ export default class Drawer extends Component {
                 alignSelf: "stretch",
             }}>
                 
-                <FontAwesome5 name={'search'} style={styles.icon}></FontAwesome5>
+                <FontAwesome name={'search'} style={styles.icon}></FontAwesome>
                 <TextInput style={{height: 32,  width: 260}} placeholder="Search"/>
             </View>
           )
@@ -143,12 +143,12 @@ export default class Drawer extends Component {
                 }
                 <ScrollView style={styles.screenContainer} showsVerticalScrollIndicator={false}>
                     <View style={styles.screenTitle} onPress={this.navigateToScreen('TabNavigator')}>                        
-                        <FontAwesome5 name={'envelope'} style={styles.icon}/>
+                        <FontAwesome name={'envelope'} style={styles.icon}/>
                         <Text>Inbox</Text>
                         <Text style={styles.amount}>5</Text>
                     </View>
                     <View style={styles.screenTitle} onPress={this.navigateToScreen('TabNavigator')}>
-                        <FontAwesome5 name={'calendar'} style={styles.icon}/>
+                        <FontAwesome name={'calendar'} style={styles.icon}/>
                         <Text>Today</Text>
                     </View>
                     <View style={styles.blackBar}></View>
@@ -166,12 +166,16 @@ export default class Drawer extends Component {
                     }
                     
                     <View style={styles.blackBar}></View>
-                    <TouchableOpacity style={styles.screenTitle} onPress={this.handleAddList}>
-                        <FontAwesome5 name={'plus'} style={styles.icon}/>                        
+                    <TouchableOpacity 
+                        style={styles.screenTitle} 
+                        onPress={() => {
+                            this.setModalVisible(true);
+                        }}>
+                        <FontAwesome name={'plus'} style={styles.icon}/>                        
                         <Text>Add list</Text>
                     </TouchableOpacity>
                     <View style={styles.screenTitle} onPress={this.navigateToScreen('TabNavigator')}>
-                        <FontAwesome5 name={'wrench'} style={styles.icon}/>
+                        <FontAwesome name={'wrench'} style={styles.icon}/>
                         <Text>Manage list</Text>
                     </View>
                     
@@ -191,18 +195,17 @@ export default class Drawer extends Component {
                                     onPress={() => {
                                     this.setModalVisible(!this.state.modalVisible);
                                     }}>
-                                    <FontAwesome5 name={'times'} style={styles.icon}/>
+                                    <FontAwesome name={'times'} style={styles.icon}/>
                                 </TouchableHighlight>
                                 <TouchableHighlight
                                     onPress={() => {
                                     this.setModalVisible(!this.state.modalVisible);
                                     }}>
-                                    <FontAwesome5 name={'check'} style={styles.icon}/>
+                                    <FontAwesome name={'check'} style={styles.icon}/>
                                 </TouchableHighlight>
                             </View>
 
-                            <View>
-                                <Text>Add List</Text>
+                            <View> 
                                 <Text>Task Title</Text>
                                 <TextInput placeholder="Search"></TextInput>
                                 <Text>Task Title</Text>
@@ -211,6 +214,11 @@ export default class Drawer extends Component {
                                 <TextInput placeholder="Search"></TextInput>
                                 <Text>Task Title</Text>
                                 <TextInput placeholder="Search"></TextInput>
+                                <TouchableHighlight
+                                    onPress={this.handleAddList}
+                                >
+                                    <Text>Add List</Text>
+                                </TouchableHighlight>
                             </View>
                         
                         </View>
