@@ -198,28 +198,28 @@ export default class AddTaskPanel extends Component{
                         />
 
                         <BottomOptionElement 
-                            chooseOption = {() => {console.log(true)}} 
+                            chooseOption = {() => {}} 
                             taskTextInputRef = {this.taskTextInputRef}
                             disableAddTaskPanel = {this.disableAddTaskPanel}
                             title = "Cat"
                         />
 
                         <BottomOptionElement 
-                            chooseOption = {() => {console.log(true)}} 
+                            chooseOption = {() => {}} 
                             taskTextInputRef = {this.taskTextInputRef}
                             disableAddTaskPanel = {this.disableAddTaskPanel}
                             title = "Pri"
                         />
 
                         <BottomOptionElement 
-                            chooseOption = {() => {console.log(true)}} 
+                            chooseOption = {() => {}} 
                             taskTextInputRef = {this.taskTextInputRef}
                             disableAddTaskPanel = {this.disableAddTaskPanel}
                             title = "Rep"
                         />
 
                         <BottomOptionElement 
-                            chooseOption = {() => {console.log(true)}} 
+                            chooseOption = {() => {}} 
                             taskTextInputRef = {this.taskTextInputRef}
                             disableAddTaskPanel = {this.disableAddTaskPanel}
                             title = "Ok"

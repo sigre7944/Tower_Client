@@ -11,10 +11,7 @@ import {
 import CalendarDisplayHolder from './calendar-display-holder/CalendarDisplayHolder'
 
 export default class WeekAnnotationPanel extends Component{
-
-    numberOfWeeksInAYear = 52
-    numberOfYears = 1
-    year_array = []
+    numberOfYears = 2
     week_data_array = []
 
     state = {
@@ -24,7 +21,6 @@ export default class WeekAnnotationPanel extends Component{
         thisMonthColor: 'black',
         thisMonthTextColor: 'white',
 
-        year_array: [],
         week_data_array: []
     }
 
@@ -52,14 +48,14 @@ export default class WeekAnnotationPanel extends Component{
 
     _renderItem = ({item, index}) => (
         <CalendarDisplayHolder 
-        year_array = {this.state.year_array}
+            weekData = {item}
         />
     )
     
     initWeeks = () => {
         let year = new Date().getFullYear()
 
-        this.getWeekData(new Date(year, 0, 1), new Date(year, 11, 31), 1)
+        this.getWeekData(new Date(year, 0, 1), new Date(year + this.numberOfYears, 11, 31), 1)
 
     }
 
@@ -81,9 +77,9 @@ export default class WeekAnnotationPanel extends Component{
             noWeek = 1
         }
 
-        //When firstDayOfWeek is not Monday
+        //When firstDayOfWeek is not Monday, meaning it starts the new year
         if(firstDayOfWeek.getDay() !== 1){
-            let firstDayOfWeekInWeekDay = firstDayOfWeek.getDay() === 0 ? 7 : firstDayOfWeek.getDay()
+            let firstDayOfWeekInWeekDay = firstDayOfWeek.getDay() === 0 ? 7 : firstDayOfWeek.getDay() //Sunday will have an index of 7 instead of 0
 
             weekData.noWeek = 1
             
@@ -96,7 +92,7 @@ export default class WeekAnnotationPanel extends Component{
             }
         }
 
-        //When firstDayOfWeek is Monday, we calculate by multiplying with 7
+        //When firstDayOfWeek is Monday, meaning it is still in the current year
         else{
             weekData.noWeek = noWeek
 
@@ -118,7 +114,7 @@ export default class WeekAnnotationPanel extends Component{
         this.initWeeks()
 
         this.setState({
-            year_array: [... this.year_array]
+            week_data_array: [... this.week_data_array]
         })
     }
 
@@ -188,15 +184,16 @@ export default class WeekAnnotationPanel extends Component{
             }}> 
                 {/* Left highlighting color bar for week */}
                 <View style={{
-                    width: 50,
+                    width: 40,
                     flex: 1,
                     backgroundColor: 'gray',
                     borderRadius: 25,
-                    marginTop: 100,
+                    marginTop: 40,
                 }}>
 
                 </View>
 
+                {/* Week Calendar */}
                 <View style={{
                     position: "absolute",
                     top: 0,
@@ -204,9 +201,29 @@ export default class WeekAnnotationPanel extends Component{
                     right: 15,
                     bottom: 0,
                 }}>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            height: 30,
+                            marginBottom: 10,
+                        }}
+                    >
+                        <DayInWeekHolder day='' />
+                        <DayInWeekHolder day='M' />
+                        <DayInWeekHolder day='T' />
+                        <DayInWeekHolder day='W' />
+                        <DayInWeekHolder day='T' />
+                        <DayInWeekHolder day='F' />
+                        <DayInWeekHolder day='S' />
+                        <DayInWeekHolder day='Su' />
+                    </View>
                     <FlatList
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={this._keyExtractor}
+                        data={this.week_data_array}
+                        removeClippedSubviews={true}
+                        windowSize={10}
+                        renderItem={this._renderItem}
                     >
 
                     </FlatList>
@@ -219,6 +236,28 @@ export default class WeekAnnotationPanel extends Component{
 
             </View>
             </>
+        )
+    }
+}
+
+class DayInWeekHolder extends React.PureComponent{
+    render(){
+        return(
+            <View
+                style={{
+                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+            >
+                <Text
+                    style={{
+                        color: "gray",
+                    }}
+                >
+                    {this.props.day}
+                </Text>
+            </View>
         )
     }
 }
