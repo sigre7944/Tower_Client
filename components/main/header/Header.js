@@ -4,14 +4,15 @@ import {
     Image,
     Button,
     StyleSheet,
-    Modal,
     Alert,
     Text,
     TouchableHighlight,
     TextInput,
     TouchableOpacity
 } from 'react-native';
+import Modal from 'react-native-modalbox';
 import { DrawerActions } from 'react-navigation-drawer';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const styles = StyleSheet.create({
   icon: {
@@ -37,7 +38,7 @@ export default class Header extends React.Component {
 
     render() {
       return (
-
+        <View>
         <View style={{
             paddingTop: 20,
             paddingHorizontal: 10,
@@ -63,7 +64,7 @@ export default class Header extends React.Component {
                 fontWeight: '500',
             }}>Today</Text>
 
-            <TouchableOpacity onPress={() => this.setModalVisible(true)}>
+            <TouchableOpacity onPress={() => this.refs.optionModal.open()}>
                 <Image 
                     source={require('./dots.png')}
                     style= {{
@@ -74,34 +75,33 @@ export default class Header extends React.Component {
                 />
             </TouchableOpacity>
 
+            </View> 
             <Modal
-                    animationType="slide"
-                    transparent={true}
-                    visible={this.state.modalVisible}
-                    onRequestClose={() => {
-                        Alert.alert('Modal has been closed.');
-                    }}>
-                    <View style={{
-                        flex: 1,
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center'
-                        }}
+                    //animationType="slide"
+                    //transparent={true}
+                    style={{marginTop: 300, borderRadius: 10}}
+                    backButtonClose={true}
+                    coverScreen={true}
+                    isOpen={this.state.modalVisible}
+                    ref={"optionModal"}
+                    swipeToClose={true}
+                    swipeArea={500}
                     >
-                        <TouchableOpacity style={{alignSelf: 'stretch', flex: 1, justifyContent: 'flex-end',}} onPress={() => this.setModalVisible(false)}>
-                            <View style={{marginTop: 22, height: 200, backgroundColor: 'grey'}}>
-                                <TouchableOpacity onPress={() => this.setModalVisible(false)}>
-                                    <Text>Close</Text>
-                                </TouchableOpacity>
-                                <View>
-                                    <Text>Edit Multiple Tasks</Text>
-                                    <Text>Sort</Text>
-                                    <Text>Share</Text>
-                                </View>
-                            
+                        <View 
+                            style={{flex: 1, alignSelf:"stretch"}}
+                        >
+                            <View>
+                                <Text style={{textAlign: 'center'}}><FontAwesome name="minus" style={{fontSize: 26, color:"grey"}}/></Text>
                             </View>
-                        </TouchableOpacity>
-                    </View>
+                            <View style={{flex: 1, alignSelf:"stretch"}}>
+                                <Text>Edit Multiple Tasks</Text>
+                                <Text>Sort</Text>
+                                <Text>Share</Text>
+                                <TouchableOpacity onPress={() => this.refs.optionModal.close()}>
+                                    <Text>CLOSE</Text>
+                                </TouchableOpacity>
+                            </View>     
+                        </View>
                 </Modal>
         </View>
       );

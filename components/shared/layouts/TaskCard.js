@@ -1,35 +1,43 @@
 import React, { Component } from 'react';
 import { Alert, Modal, TouchableOpacity, Text, View, StyleSheet, ImageBackground, Image, TextInput, ScrollView, Platform } from 'react-native'
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { CheckBox } from 'react-native-elements'
+import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 export default class TaskCard extends Component {
     state={
         checked: false
     }
 
+    renderLeftActions = (progress, dragX) => {
+        const trans = dragX.interpolate({
+            inputRange: [0, 50, 100, 101],
+            outputRange: [-20, 0, 0, 1],
+        });
+    }
+
     render() {
         return (
             <TouchableOpacity style={styles.container} onPress={() => this.props.onPress(true)}>
-                <View style={styles.checkBox}>
-                    <CheckBox 
-                        center
-                        checkedIcon='dot-circle-o'
-                        uncheckedIcon='circle-o'
-                        checked={this.state.checked}
-                        onPress={() => this.setState({checked: !this.state.checked})}
-                    />
-                </View>
-                <View style={styles.description}>
-                    <Text style={styles.descriptionText}>Task 1</Text>
-                    <Text style={styles.descriptionAmount}>0/3</Text>
-                </View>
-                <View style={styles.share}>
-                    <FontAwesome5 name={'link'} style={styles.icon}/>
-                </View>
-                <View style={styles.colorBox}>
-                    <FontAwesome5 name={'dot-circle'} style={styles.icon}/>
-                </View>
+                    <View style={styles.checkBox}>
+                        <CheckBox 
+                            center
+                            checkedIcon='dot-circle-o'
+                            uncheckedIcon='circle-o'
+                            checked={this.state.checked}
+                            onPress={() => this.setState({checked: !this.state.checked})}
+                        />
+                    </View>
+                    <View style={styles.description}>
+                        <Text style={styles.descriptionText}>Task 1</Text>
+                        <Text style={styles.descriptionAmount}>0/3</Text>
+                    </View>
+                    <View style={styles.share}>
+                        <FontAwesome name={'link'} style={styles.icon}/>
+                    </View>
+                    <View style={styles.colorBox}>
+                        <FontAwesome name={'circle'} style={styles.icon}/>
+                    </View>
             </TouchableOpacity> 
         )
     }

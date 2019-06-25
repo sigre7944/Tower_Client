@@ -34,9 +34,6 @@ export default class Daily extends React.Component{
         isModalOpened: false
     }
 
-    toggleModal = (visible) => {
-        this.setState({isModalOpened: visible})
-    }
 
     componentDidMount(){
         const didFocusScreen = this.props.navigation.addListener(
@@ -187,6 +184,15 @@ export default class Daily extends React.Component{
         }))
     }
 
+
+    openModal = () => {
+        this.setState({isModalOpened: true})
+    }
+
+    closeModal = () => {
+        this.setState({isModalOpened: false})
+    }
+
     render(){
         return(
             <View style={styles.container}>
@@ -259,11 +265,11 @@ export default class Daily extends React.Component{
 
                         :
                         <ScrollView style={styles.scrollViewTasks}>
-                            <TaskCard checked={true} onPress={this.toggleModal}/>
-                            <TaskCard checked={false} onPress={this.toggleModal}/>
+                            <TaskCard checked={true} onPress={this.openModal}/>
+                            <TaskCard checked={false} onPress={this.openModal}/>
 
                             <Text style={styles.banner}>Completed</Text>
-                            <TaskCard checked={true} onPress={this.toggleModal}/>
+                            <TaskCard checked={true} onPress={this.openModal}/>
                         </ScrollView>
                           
                     }
@@ -271,7 +277,7 @@ export default class Daily extends React.Component{
 
                 <TaskDetailModal 
                     isOpened={this.state.isModalOpened}
-                    toggleModal={this.toggleModal}
+                    closeModal={this.closeModal}
                 />
             </View>
         )
