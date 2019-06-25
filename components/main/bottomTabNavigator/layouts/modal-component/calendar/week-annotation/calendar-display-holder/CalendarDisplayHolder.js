@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 
 export default class CalendarDisplayHolder extends React.PureComponent{
-    
 
     render(){
         return(
@@ -34,6 +33,7 @@ export default class CalendarDisplayHolder extends React.PureComponent{
         )
     }
 }
+
 
 class WeekNumberHolder extends React.PureComponent{
 

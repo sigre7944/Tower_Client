@@ -9,10 +9,19 @@ import {
 } from 'react-native';
 
 import CalendarDisplayHolder from './calendar-display-holder/CalendarDisplayHolder'
+import MonthYearHolder from './calendar-display-holder/MonthYearHolder'
+
+const monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
 
 export default class WeekAnnotationPanel extends Component{
     numberOfYears = 2
     week_data_array = []
+
+    currentDisplayingMonth = 0
+    currentDisplayingYear = 0
 
     state = {
         currentMonth: 'This month',
@@ -46,11 +55,26 @@ export default class WeekAnnotationPanel extends Component{
 
     _keyExtractor = (item, index) => `week-calendar-${index}`
 
-    _renderItem = ({item, index}) => (
-        <CalendarDisplayHolder 
-            weekData = {item}
-        />
-    )
+    _renderItem = ({item, index}) => {
+        if(item.month !== this.currentDisplayingMonth){
+            this.currentDisplayingMonth = item.month
+
+            return(
+                <>
+                <MonthYearHolder monthAndYear = {item.month + " " + item.year} />
+                <CalendarDisplayHolder weekData = {item} />
+                </>
+            )
+        }
+
+        else{
+            return (
+                <CalendarDisplayHolder 
+                    weekData = {item}
+                />
+            )
+        }
+    }
     
     initWeeks = () => {
         let year = new Date().getFullYear()
@@ -68,7 +92,7 @@ export default class WeekAnnotationPanel extends Component{
         let weekData = {
             noWeek: 0,
             week_day_array : new Array(7),
-            month: firstDayOfWeek.getMonth(),
+            month: monthNames[firstDayOfWeek.getMonth()],
             year: firstDayOfWeek.getFullYear()
         }
 
@@ -186,7 +210,7 @@ export default class WeekAnnotationPanel extends Component{
                 <View style={{
                     width: 40,
                     flex: 1,
-                    backgroundColor: 'gray',
+                    backgroundColor: '#E2E3E4',
                     borderRadius: 25,
                     marginTop: 40,
                 }}>
@@ -222,8 +246,9 @@ export default class WeekAnnotationPanel extends Component{
                         keyExtractor={this._keyExtractor}
                         data={this.week_data_array}
                         removeClippedSubviews={true}
-                        windowSize={10}
                         renderItem={this._renderItem}
+                        initialNumToRender={13}
+                        windowSize={52}
                     >
 
                     </FlatList>
