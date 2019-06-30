@@ -13,7 +13,7 @@ import CalendarDisplayHolder from './calendar-display-holder/CalendarDisplayHold
 
 export default class DayAnnotationPanel extends Component{
     month_data_array = []
-    numberOfMonths = (12 * 30) + 1 //Number of months we want to display. (12 months in a year) * (number of year) + 1 (for current month)
+    numberOfMonths = (12 * 10) + 1 //Number of months we want to display. (12 months in a year) * (number of year) + 1 (for current month)
 
     state = {
         current_month_index: 0,

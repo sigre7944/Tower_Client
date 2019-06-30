@@ -39,7 +39,7 @@ class WeekNumberHolder extends React.PureComponent{
 
     render(){
         return(
-            <View style={{
+            <TouchableHighlight style={{
                 flex: 1,
                 alignItems: "center",
                 justifyContent: "center"
@@ -47,7 +47,7 @@ class WeekNumberHolder extends React.PureComponent{
                 <Text>
                     {this.props.noWeek}
                 </Text>
-            </View>
+            </TouchableHighlight>
         )
     }
 }

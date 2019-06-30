@@ -17,11 +17,13 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
 
 
 export default class WeekAnnotationPanel extends Component{
-    numberOfYears = 2
+    numberOfYears = 5
     week_data_array = []
 
     currentDisplayingMonth = 0
     currentDisplayingYear = 0
+
+    currentMonthWeekIndex = 0
 
     state = {
         currentMonth: 'This month',
@@ -56,6 +58,7 @@ export default class WeekAnnotationPanel extends Component{
     _keyExtractor = (item, index) => `week-calendar-${index}`
 
     _renderItem = ({item, index}) => {
+        
         if(item.month !== this.currentDisplayingMonth){
             this.currentDisplayingMonth = item.month
 
@@ -76,11 +79,36 @@ export default class WeekAnnotationPanel extends Component{
         }
     }
     
+    _getItemLayout = (data, index) => {
+        console.log(data.length)
+        let height = (data.length + 2) * 40 + (this.numberOfYears + 1) * 12 * 40
+
+        return({
+            length: height,
+            offset: 40 * index,
+            index
+        })
+    }
+
+
+    scrollToWeekRow = (index) => {
+    }
+
     initWeeks = () => {
         let year = new Date().getFullYear()
 
         this.getWeekData(new Date(year, 0, 1), new Date(year + this.numberOfYears, 11, 31), 1)
 
+    }
+
+    trimPastWeeks = () => {
+        let currentYear = new Date().getFullYear(),
+            currentMonth = new Date().getMonth()
+
+        
+        let startTrimmingIndex = this.week_data_array.findIndex((data) =>  data.year === currentYear && data.month === monthNames[currentMonth])
+
+        this.week_data_array = [... this.week_data_array.slice(startTrimmingIndex, this.week_data_array.length) ]
     }
 
     getWeekData = (firstDayOfWeek, endDay, noWeek) => {
@@ -137,9 +165,16 @@ export default class WeekAnnotationPanel extends Component{
     componentDidMount(){
         this.initWeeks()
 
+        this.trimPastWeeks()
+
         this.setState({
             week_data_array: [... this.week_data_array]
         })
+    }
+
+    componentDidUpdate(prevProps, prevState){
+        if(this.state.week_data_array !== prevState.week_data_array){
+        }
     }
 
     render(){
@@ -232,23 +267,25 @@ export default class WeekAnnotationPanel extends Component{
                             marginBottom: 10,
                         }}
                     >
-                        <DayInWeekHolder day='' />
+                        <DayInWeekHolder day='Week' />
                         <DayInWeekHolder day='M' />
                         <DayInWeekHolder day='T' />
                         <DayInWeekHolder day='W' />
                         <DayInWeekHolder day='T' />
                         <DayInWeekHolder day='F' />
                         <DayInWeekHolder day='S' />
-                        <DayInWeekHolder day='Su' />
+                        <DayInWeekHolder day='S' />
                     </View>
                     <FlatList
+                        getItemLayout = {this._getItemLayout}
                         showsHorizontalScrollIndicator={false}
                         keyExtractor={this._keyExtractor}
                         data={this.week_data_array}
                         removeClippedSubviews={true}
                         renderItem={this._renderItem}
-                        initialNumToRender={13}
+                        initialNumToRender={26}
                         windowSize={52}
+                        ref = {(c) => this._flatListRef = c}
                     >
 
                     </FlatList>
