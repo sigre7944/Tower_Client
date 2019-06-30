@@ -17,7 +17,7 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
 
 
 export default class WeekAnnotationPanel extends Component{
-    numberOfYears = 5
+    numberOfYears = 30
     week_data_array = []
 
     currentDisplayingMonth = 0
@@ -64,7 +64,7 @@ export default class WeekAnnotationPanel extends Component{
 
             return(
                 <>
-                <MonthYearHolder monthAndYear = {item.month + " " + item.year} />
+                {/* <MonthYearHolder monthAndYear = {item.month + " " + item.year} /> */}
                 <CalendarDisplayHolder weekData = {item} />
                 </>
             )
@@ -77,19 +77,18 @@ export default class WeekAnnotationPanel extends Component{
                 />
             )
         }
-    }
-    
-    _getItemLayout = (data, index) => {
-        console.log(data.length)
-        let height = (data.length + 2) * 40 + (this.numberOfYears + 1) * 12 * 40
+    } 
 
-        return({
-            length: height,
-            offset: 40 * index,
-            index
-        })
-    }
+    //getItemLayout prop is not working properly, avoid using it for large lists.
+    // _getItemLayout = (data, index) => {
+    //     let height = (data.length) * 40 + (this.numberOfYears + 1) * 12 * 40
 
+    //     return({
+    //         length: height,
+    //         offset: 40 * index,
+    //         index
+    //     })
+    // }
 
     scrollToWeekRow = (index) => {
     }
@@ -277,14 +276,13 @@ export default class WeekAnnotationPanel extends Component{
                         <DayInWeekHolder day='S' />
                     </View>
                     <FlatList
-                        getItemLayout = {this._getItemLayout}
-                        showsHorizontalScrollIndicator={false}
+                        // getItemLayout = {this._getItemLayout}
                         keyExtractor={this._keyExtractor}
                         data={this.week_data_array}
                         removeClippedSubviews={true}
                         renderItem={this._renderItem}
                         initialNumToRender={26}
-                        windowSize={52}
+                        windowSize={104}
                         ref = {(c) => this._flatListRef = c}
                     >
 
