@@ -29,7 +29,10 @@ export default class WeekAnnotationPanel extends Component{
         thisMonthColor: 'black',
         thisMonthTextColor: 'white',
 
-        week_data_array: []
+        week_data_array: [],
+
+        currentWeekIndex: 0,
+        lastWeekIndex: 0
     }
 
     chooseMonthOption = (monthOption) => {
@@ -72,6 +75,8 @@ export default class WeekAnnotationPanel extends Component{
                     weekData = {item}
                     index = {index}
                     scrollToWeekRow = {this.scrollToWeekRow}
+                    currentWeekIndex = {this.state.currentWeekIndex}
+                    lastWeekIndex = {this.state.lastWeekIndex}
                 />
             )
         }
@@ -90,6 +95,10 @@ export default class WeekAnnotationPanel extends Component{
 
     scrollToWeekRow = (index) => {
         this._flatListRef.scrollToOffset({animated: true, offset: index * 40 - 40*2})
+        this.setState((state, props) => ({
+            lastWeekIndex: state.currentWeekIndex,
+            currentWeekIndex: index
+        }))
     }
 
     initWeeks = () => {
@@ -290,8 +299,10 @@ export default class WeekAnnotationPanel extends Component{
                         data={this.week_data_array}
                         removeClippedSubviews={true}
                         renderItem={this._renderItem}
-                        initialNumToRender={26}
-                        windowSize={104}
+                        extraData={this.state.currentWeekIndex}
+                        initialNumToRender={13}
+                        maxToRenderPerBatch={52}
+                        windowSize={5}
                         ref = {(c) => this._flatListRef = c}
                     >
 
