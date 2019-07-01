@@ -20,10 +20,7 @@ export default class WeekAnnotationPanel extends Component{
     numberOfYears = 30
     week_data_array = []
 
-    currentDisplayingMonth = 0
-    currentDisplayingYear = 0
-
-    currentMonthWeekIndex = 0
+    currentDisplayingMonth = -1 //January's index is 0
 
     state = {
         currentMonth: 'This month',
@@ -54,19 +51,18 @@ export default class WeekAnnotationPanel extends Component{
             })
         }
     }
-
+    
     _keyExtractor = (item, index) => `week-calendar-${index}`
 
     _renderItem = ({item, index}) => {
         
-        if(item.month !== this.currentDisplayingMonth){
-            this.currentDisplayingMonth = item.month
+        if(item.monthAndYear){
 
+            //Do not render item with dynamic heights, or else FlatList will have difficult in rendering items.
             return(
-                <>
-                {/* <MonthYearHolder monthAndYear = {item.month + " " + item.year} /> */}
-                <CalendarDisplayHolder weekData = {item} />
-                </>
+                <MonthYearHolder 
+                    monthAndYear = {item.monthAndYear} 
+                />
             )
         }
 
@@ -74,6 +70,8 @@ export default class WeekAnnotationPanel extends Component{
             return (
                 <CalendarDisplayHolder 
                     weekData = {item}
+                    index = {index}
+                    scrollToWeekRow = {this.scrollToWeekRow}
                 />
             )
         }
@@ -91,13 +89,13 @@ export default class WeekAnnotationPanel extends Component{
     // }
 
     scrollToWeekRow = (index) => {
+        this._flatListRef.scrollToOffset({animated: true, offset: index * 40 - 40*2})
     }
 
     initWeeks = () => {
         let year = new Date().getFullYear()
 
         this.getWeekData(new Date(year, 0, 1), new Date(year + this.numberOfYears, 11, 31), 1)
-
     }
 
     trimPastWeeks = () => {
@@ -107,7 +105,10 @@ export default class WeekAnnotationPanel extends Component{
         
         let startTrimmingIndex = this.week_data_array.findIndex((data) =>  data.year === currentYear && data.month === monthNames[currentMonth])
 
-        this.week_data_array = [... this.week_data_array.slice(startTrimmingIndex, this.week_data_array.length) ]
+        //startTrimmingIndex - 1 means we will get the monthAndYear text, since startTrimmingIndex will be the
+        //very first day of the first week of the month. So before that index, is the monthAndYear text's object.
+        this.week_data_array = [... this.week_data_array.slice(startTrimmingIndex - 1, this.week_data_array.length) ]
+                                                                                                                        
     }
 
     getWeekData = (firstDayOfWeek, endDay, noWeek) => {
@@ -126,6 +127,14 @@ export default class WeekAnnotationPanel extends Component{
         //If noWeek = 53 meaning turn to the new year => reset to 1
         if(noWeek === 53){
             noWeek = 1
+        }
+
+        //Get monthAndYear text to seperate months
+        if(firstDayOfWeek.getMonth() !== this.currentDisplayingMonth){
+            this.currentDisplayingMonth = firstDayOfWeek.getMonth()
+            this.week_data_array.push({
+                monthAndYear: monthNames[firstDayOfWeek.getMonth()] + " " + firstDayOfWeek.getFullYear()
+            })
         }
 
         //When firstDayOfWeek is not Monday, meaning it starts the new year

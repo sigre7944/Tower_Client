@@ -10,16 +10,23 @@ import {
 
 export default class CalendarDisplayHolder extends React.PureComponent{
 
+    _scrollToWeekRow = () => {
+        this.props.scrollToWeekRow(this.props.index)
+    }
+
     render(){
         return(
             <>
-                <View
+                <TouchableHighlight
                     style={{
                         flex: 1,
                         flexDirection: 'row',
                         height: 40,
                     }}
+
+                    onPress={this._scrollToWeekRow}
                 >
+                    <>
                     <WeekNumberHolder noWeek = {this.props.weekData.noWeek}/>
                     <DayHolder dayTimeInMili = {this.props.weekData.week_day_array[0]} />
                     <DayHolder dayTimeInMili = {this.props.weekData.week_day_array[1]} />
@@ -28,7 +35,8 @@ export default class CalendarDisplayHolder extends React.PureComponent{
                     <DayHolder dayTimeInMili = {this.props.weekData.week_day_array[4]} />
                     <DayHolder dayTimeInMili = {this.props.weekData.week_day_array[5]} />
                     <DayHolder dayTimeInMili = {this.props.weekData.week_day_array[6]} />
-                </View>
+                    </>
+                </TouchableHighlight>
             </>
         )
     }
@@ -39,7 +47,7 @@ class WeekNumberHolder extends React.PureComponent{
 
     render(){
         return(
-            <TouchableHighlight style={{
+            <View style={{
                 flex: 1,
                 alignItems: "center",
                 justifyContent: "center"
@@ -47,7 +55,7 @@ class WeekNumberHolder extends React.PureComponent{
                 <Text>
                     {this.props.noWeek}
                 </Text>
-            </TouchableHighlight>
+            </View>
         )
     }
 }
