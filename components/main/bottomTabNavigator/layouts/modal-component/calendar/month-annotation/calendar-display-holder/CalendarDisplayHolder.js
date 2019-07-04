@@ -135,6 +135,7 @@ class DisplayYear extends Component {
 class MonthHolder extends Component {
 
     state = {
+        monthIndex: this.props.monthIndex,
         monthStyle: styles.unchosenMonth
     }
 
@@ -174,21 +175,21 @@ class MonthHolder extends Component {
     //     }
     // }
 
-    // static getDerivedStateFromProps(props, state){
-    //     if(props.current_month_index === -1 || props.monthIndex === props.last_month_index){
-    //         return ({
-    //             monthStyle: styles.unchosenMonth
-    //         })
-    //     }
+    static getDerivedStateFromProps(nextProps, prevState){
+        if(nextProps.current_month_index === -1 || prevState.monthIndex === nextProps.last_month_index){
+            return ({
+                monthStyle: styles.unchosenMonth
+            })
+        }
 
-    //     else if (props.monthIndex === props.current_month_index){
-    //         return ({
-    //             monthStyle: styles.chosenMonth
-    //         })
-    //     }
+        else if (prevState.monthIndex === nextProps.current_month_index){
+            return ({
+                monthStyle: styles.chosenMonth
+            })
+        }
 
-    //     return null
-    // }
+        return null
+    }
 
     shouldComponentUpdate(nextProps, nextState){
         return this.props.monthIndex === nextProps.current_month_index 
@@ -197,15 +198,18 @@ class MonthHolder extends Component {
     }
 
     render(){
-        let monthStyle = styles.unchosenMonth
 
-        if(this.props.monthIndex === this.props.last_month_index || this.props.current_month_index === -1){
-            monthStyle = styles.unchosenMonth
-        }
+        // We can do simple equality checks inside render()
+        // If want to do complex logic, head out to memoize.
+        // let monthStyle = styles.unchosenMonth
 
-        else if(this.props.monthIndex === this.props.current_month_index){
-            monthStyle = styles.chosenMonth
-        }
+        // if(this.props.monthIndex === this.props.last_month_index || this.props.current_month_index === -1){
+        //     monthStyle = styles.unchosenMonth
+        // }
+
+        // else if(this.props.monthIndex === this.props.current_month_index){
+        //     monthStyle = styles.chosenMonth
+        // }
 
         return(
             <TouchableHighlight 
@@ -219,7 +223,7 @@ class MonthHolder extends Component {
                 onPress={this.chooseMonth}
                 underlayColor={"gainsboro"}
             >
-                <View style={monthStyle}>
+                <View style={this.state.monthStyle}>
                     <Text
                         style={{
                             fontSize: 18,
