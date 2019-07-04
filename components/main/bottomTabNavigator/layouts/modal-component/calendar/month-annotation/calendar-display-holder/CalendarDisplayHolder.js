@@ -12,6 +12,7 @@ import {
 export default class CalendarDisplayHolder extends Component{
 
     state = {
+        yearIndex: this.props.yearIndex,
         current_month_index: -1,
         last_month_index: -1,
     }
@@ -32,14 +33,29 @@ export default class CalendarDisplayHolder extends Component{
         })
     }
 
-    componentWillReceiveProps(nextProps, nextState){
-        // When the currently chosen year becomes the previously chosen year,
-        // we reset the state to the initia => MonthHolder will be updated too.
-        // This condition prevents re-rendering on many CalendarDisplayHolder, only
-        // re-render the needed one.
-        if(this.props.yearIndex === nextProps.last_year_index){
-            this.resetCurrentAndLastMonthIndexes()
+
+    // AVOID USING componentWillReceiveProps, use getDerivedStateFromProps and componentDidMount to replace logic
+    // or apply logic directly into render()
+
+    // UNSAFE_componentWillReceiveProps(nextProps){
+    //     // When the currently chosen year becomes the previously chosen year,
+    //     // we reset the state to the initia => MonthHolder will be updated too.
+    //     // This condition prevents re-rendering on many CalendarDisplayHolder, only
+    //     // re-render the needed one.
+    //     if(this.props.yearIndex === nextProps.last_year_index){
+    //         this.resetCurrentAndLastMonthIndexes()
+    //     }
+    // }
+
+    static getDerivedStateFromProps(nextProps, prevState){
+        if(prevState.yearIndex === nextProps.last_year_index){
+            return ({
+                current_month_index: -1,
+                last_month_index: -1
+            })
         }
+
+        return null
     }
 
     shouldComponentUpdate(nextProps, nextState){
@@ -132,27 +148,47 @@ class MonthHolder extends Component {
         this.props.changeCurrentMonthIndex(this.props.monthIndex)
     }
 
-    componentWillReceiveProps(nextProps, nextState){
-        // When monthIndex is not equal to last_month_index, meaning 
-        // the locally chosen month in the currently chosen calendar was changed 
-        // to previously chosen month.
-        // When current_month_index equals to -1, meaning the calendar becomes the
-        // previously chosen calendar, we reset the style.
-        if(this.props.monthIndex === nextProps.last_month_index || nextProps.current_month_index === -1){
-            this.setState({
-                monthStyle: styles.unchosenMonth
-            })
-        }
 
-        // When monthIndex equals to current_month_index, meaning the locally chosen
-        // month in the currently chosen calendar was changed to the currently chosen month,
-        // we change its style to the accordingly chosen styles.
-        else if(this.props.monthIndex === nextProps.current_month_index){
-            this.setState({
-                monthStyle: styles.chosenMonth
-            })
-        }
-    }
+    // AVOID USING componentWillReceiveProps, use getDerivedStateFromProps and componentDidMount to replace logic
+    // or apply logic directly into render()
+
+    // UNSAFE_componentWillReceiveProps(nextProps){
+    //     // When monthIndex is not equal to last_month_index, meaning 
+    //     // the locally chosen month in the currently chosen calendar was changed 
+    //     // to previously chosen month.
+    //     // When current_month_index equals to -1, meaning the calendar becomes the
+    //     // previously chosen calendar, we reset the style.
+    //     if(this.props.monthIndex === nextProps.last_month_index || nextProps.current_month_index === -1){
+    //         this.setState({
+    //             monthStyle: styles.unchosenMonth
+    //         })
+    //     }
+
+    //     // When monthIndex equals to current_month_index, meaning the locally chosen
+    //     // month in the currently chosen calendar was changed to the currently chosen month,
+    //     // we change its style to the accordingly chosen styles.
+    //     else if(this.props.monthIndex === nextProps.current_month_index){
+    //         this.setState({
+    //             monthStyle: styles.chosenMonth
+    //         })
+    //     }
+    // }
+
+    // static getDerivedStateFromProps(props, state){
+    //     if(props.current_month_index === -1 || props.monthIndex === props.last_month_index){
+    //         return ({
+    //             monthStyle: styles.unchosenMonth
+    //         })
+    //     }
+
+    //     else if (props.monthIndex === props.current_month_index){
+    //         return ({
+    //             monthStyle: styles.chosenMonth
+    //         })
+    //     }
+
+    //     return null
+    // }
 
     shouldComponentUpdate(nextProps, nextState){
         return this.props.monthIndex === nextProps.current_month_index 
@@ -161,6 +197,15 @@ class MonthHolder extends Component {
     }
 
     render(){
+        let monthStyle = styles.unchosenMonth
+
+        if(this.props.monthIndex === this.props.last_month_index || this.props.current_month_index === -1){
+            monthStyle = styles.unchosenMonth
+        }
+
+        else if(this.props.monthIndex === this.props.current_month_index){
+            monthStyle = styles.chosenMonth
+        }
 
         return(
             <TouchableHighlight 
@@ -174,7 +219,7 @@ class MonthHolder extends Component {
                 onPress={this.chooseMonth}
                 underlayColor={"gainsboro"}
             >
-                <View style={this.state.monthStyle}>
+                <View style={monthStyle}>
                     <Text
                         style={{
                             fontSize: 18,
