@@ -12,7 +12,6 @@ import {
 export default class CalendarDisplayHolder extends Component{
 
     state = {
-        yearIndex: this.props.yearIndex,
         current_month_index: -1,
         last_month_index: -1,
     }
@@ -48,7 +47,7 @@ export default class CalendarDisplayHolder extends Component{
     // }
 
     static getDerivedStateFromProps(nextProps, prevState){
-        if(prevState.yearIndex === nextProps.last_year_index){
+        if(nextProps.yearIndex === nextProps.last_year_index){
             return ({
                 current_month_index: -1,
                 last_month_index: -1
@@ -135,7 +134,6 @@ class DisplayYear extends Component {
 class MonthHolder extends Component {
 
     state = {
-        monthIndex: this.props.monthIndex,
         monthStyle: styles.unchosenMonth
     }
 
@@ -176,13 +174,13 @@ class MonthHolder extends Component {
     // }
 
     static getDerivedStateFromProps(nextProps, prevState){
-        if(nextProps.current_month_index === -1 || prevState.monthIndex === nextProps.last_month_index){
+        if(nextProps.current_month_index === -1 || nextProps.monthIndex === nextProps.last_month_index){
             return ({
                 monthStyle: styles.unchosenMonth
             })
         }
 
-        else if (prevState.monthIndex === nextProps.current_month_index){
+        else if (nextProps.monthIndex === nextProps.current_month_index){
             return ({
                 monthStyle: styles.chosenMonth
             })
