@@ -17,7 +17,7 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
 
 
 export default class WeekAnnotationPanel extends Component{
-    numberOfYears = 30
+    numberOfYears = 10
     week_data_array = []
 
     currentDisplayingMonth = -1 //January's index is 0

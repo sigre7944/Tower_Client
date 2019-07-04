@@ -182,8 +182,8 @@ export default class DayAnnotationPanel extends Component{
                     data={this.state.month_data_array}
                     extraData={this.state.current_month_index}
                     renderItem={this._renderItem}
-                    maxToRenderPerBatch={30}
-                    windowSize={21}
+                    maxToRenderPerBatch={10}
+                    windowSize={15}
                 >
 
                 </FlatList>

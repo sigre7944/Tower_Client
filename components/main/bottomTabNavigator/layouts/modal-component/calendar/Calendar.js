@@ -6,6 +6,7 @@ import {
 
 import DayAnnotationPanel from './day-annotation/DayAnnotationPanel'
 import WeekAnnotationPanel from './week-annotation/WeekAnnotationPanel'
+import MonthAnnotationPanel from './month-annotation/MonthAnnotationPanel'
 
 export default class Calendar extends Component{
 
