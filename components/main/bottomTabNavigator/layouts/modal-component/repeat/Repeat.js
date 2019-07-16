@@ -6,16 +6,37 @@ import {
     TouchableHighlight,
     StyleSheet,
     TextInput,
-    Picker,
+    DatePickerIOS,
     Keyboard,
-    KeyboardAvoidingView
+    KeyboardAvoidingView,
+    Modal,
+
+    TouchableWithoutFeedback
 } from 'react-native';
+
+const monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
+const shortMonthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
 
 export default class Repeat extends Component {
 
     state = {
         bottomStyleProperty: 100,
         topStyleProperty: 100,
+
+        datePickerHeight: 0,
+        chosenDate: new Date(),
+
+        endOnDateClicked: false,
+
+    }
+
+    toggleEndOnDate = () => {
+        this.setState(prevState => ({
+            endOnDateClicked: !prevState.endOnDateClicked
+        }))
     }
 
     setStyleToTransit = () => {
@@ -32,14 +53,13 @@ export default class Repeat extends Component {
         })
     }
 
-    componentDidMount(){
+    setDate = (newDate) => {
+        this.setState({
+            chosenDate: newDate
+        })
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        
-    }
-
-    componentWillUnmount(){
+    componentWillUnmount() {
         Keyboard.removeListener('keyboardWillShow', this.toDoWhenWillShowKeyboard)
         Keyboard.removeListener('keyboardWillHide', this.toDoWhenWillHideKB)
     }
@@ -48,47 +68,93 @@ export default class Repeat extends Component {
         return (
             <>
                 {this.props.repeatClicked ?
-                    <KeyboardAvoidingView
-                        style={{
-                            position: 'absolute',
-                            top: this.state.topStyleProperty,
-                            bottom: this.state.bottomStyleProperty,
-                            right: 25,
-                            left: 25,
-                            backgroundColor: 'white',
-                            borderRadius: 10,
-                        }}
-                        enabled
-                    >
-                        <RepeatTitle />
+                    <>
+                        <KeyboardAvoidingView
+                            style={{
+                                position: 'absolute',
+                                top: this.state.topStyleProperty,
+                                bottom: this.state.bottomStyleProperty,
+                                right: 25,
+                                left: 25,
+                                backgroundColor: 'white',
+                                borderRadius: 10,
+                            }}
+                            enabled
+                        >
+                            <RepeatTitle />
 
-                        {this.props.currentAnnotation === "day" ?
+                            {this.props.currentAnnotation === "day" ?
 
-                            <DayRepeatEveryHolder />
+                                <DayRepeatEveryHolder />
+
+                                :
+
+                                <>
+                                    {this.props.currentAnnotation === "week" ?
+                                        <></>
+
+                                        :
+
+                                        <></>
+                                    }
+                                </>
+                            }
+
+                            <SeparateLine />
+
+                            <EndRepeatTitle />
+
+                            <EndRepeatHolder
+                                setStyleToTransit={this.setStyleToTransit}
+                                resetStyle={this.resetStyle}
+                                toggleEndOnDate={this.toggleEndOnDate}
+                                chosenDate = {this.state.chosenDate}
+                            />
+
+                        </KeyboardAvoidingView>
+
+                        {this.state.endOnDateClicked ?
+                            <Modal
+                                transparent={true}
+                            >
+                                <TouchableWithoutFeedback
+                                    onPress={this.toggleEndOnDate}
+                                >
+                                    <View
+                                        style={{
+                                            flex: 1,
+                                            backgroundColor: "black",
+                                            opacity: 0.5,
+                                        }}
+                                    >
+
+                                    </View>
+                                </TouchableWithoutFeedback>
+
+                                <View style={{
+                                    position: "absolute",
+                                    bottom: 0,
+                                    height: 250,
+                                    right: 0,
+                                    left: 0,
+                                    justifyContent: "center",
+                                    backgroundColor: "#EFEFEF"
+                                }}>
+                                    <DatePickerIOS
+                                        date={this.state.chosenDate}
+                                        mode="date"
+                                        onDateChange={this.setDate}
+                                    />
+                                </View>
+
+                            </Modal>
 
                             :
 
-                            <>
-                                {this.props.currentAnnotation === "week" ?
-                                    <></>
-
-                                    :
-
-                                    <></>
-                                }
-                            </>
+                            <></>
                         }
 
-                        <SeparateLine />
-
-                        <EndRepeatTitle />
-
-                        <EndRepeatHolder 
-                            setStyleToTransit = {this.setStyleToTransit}
-                            resetStyle = {this.resetStyle}
-                        />
-
-                    </KeyboardAvoidingView>
+                    </>
                     :
 
                     <></>
@@ -373,10 +439,11 @@ class DailyRepeatOption extends Component {
     }
 }
 
-class EndRepeatHolder extends Component {
+export class EndRepeatHolder extends Component {
 
     state = {
-        afterOccurranceValue: ""
+        afterOccurranceValue: "",
+        chosenDate: ""
     }
 
     _onChange = (e) => {
@@ -410,9 +477,31 @@ class EndRepeatHolder extends Component {
         this.props.resetStyle()
     }
 
+    openDatePickerIOS = () => {
+        this.props.toggleEndOnDate()
+    }
 
-    componentWillUnmount(){
+    converDateString = (date) => {
+        let dateTime = new Date(date)
+        return dateTime.getDate() + " " + shortMonthNames[dateTime.getMonth()] + " " + dateTime.getFullYear()
+    }
+
+    componentDidMount(){
+        this.setState({
+            chosenDate: this.converDateString(this.props.chosenDate)
+        })
+    }
+
+    componentWillUnmount() {
         this._onBlur()
+    }
+
+    componentDidUpdate(prevProps, prevState){
+        if(this.props.chosenDate !== prevProps.chosenDate){
+            this.setState({
+                chosenDate: this.converDateString(this.props.chosenDate)
+            })
+        }
     }
 
     render() {
@@ -457,6 +546,20 @@ class EndRepeatHolder extends Component {
                             On
                         </Text>
 
+                        <TouchableHighlight
+                            style={{
+                                width: 150,
+                                marginLeft: 20,
+                                height: 20,
+                                borderBottomWidth: 1,
+                                borderBottomColor: "gainsboro",
+                                alignItems: "center"
+                            }}
+
+                            onPress={this.openDatePickerIOS}
+                        >
+                            <Text>{this.state.chosenDate}</Text>
+                        </TouchableHighlight>
                     </View>
 
 
