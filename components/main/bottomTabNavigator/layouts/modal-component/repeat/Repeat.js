@@ -14,10 +14,6 @@ import {
     TouchableWithoutFeedback
 } from 'react-native';
 
-const monthNames = ["January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-];
-
 const shortMonthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
 
 export default class Repeat extends Component {
@@ -69,6 +65,8 @@ export default class Repeat extends Component {
             <>
                 {this.props.repeatClicked ?
                     <>
+                        {/* Using KeyboardAvoidingView to generate smooth transitions for keyboard listeners */}
+                        {/* Avoid using its prop of 'behavior' because it will cause unwanted results in transitting */}
                         <KeyboardAvoidingView
                             style={{
                                 position: 'absolute',
@@ -108,11 +106,14 @@ export default class Repeat extends Component {
                                 setStyleToTransit={this.setStyleToTransit}
                                 resetStyle={this.resetStyle}
                                 toggleEndOnDate={this.toggleEndOnDate}
-                                chosenDate = {this.state.chosenDate}
+                                chosenDate={this.state.chosenDate}
                             />
 
                         </KeyboardAvoidingView>
-
+                        
+                        {/* Date picker IOS implementation */}
+                        {/* When user click on date option of 'On', we toggle the modal covering */}
+                        {/* The modal's gray transparently area will be used as switche off button to get rid of date picker */}
                         {this.state.endOnDateClicked ?
                             <Modal
                                 transparent={true}
@@ -164,38 +165,44 @@ export default class Repeat extends Component {
     }
 }
 
-RepeatTitle = (props) => (
-    <View style={{
-        height: 24,
-        marginTop: 30,
-        marginLeft: 30,
-        justifyContent: "center"
-    }}>
-        <Text>Repeat</Text>
-    </View>
-)
+function RepeatTitle(props) {
+    return (
+        <View style={{
+            height: 24,
+            marginTop: 30,
+            marginLeft: 30,
+            justifyContent: "center"
+        }}>
+            <Text>Repeat</Text>
+        </View>
+    )
+}
 
-SeparateLine = (props) => (
-    <View style={{
-        height: 1,
-        backgroundColor: "gainsboro",
-        marginHorizontal: 27,
-        marginTop: 25,
-    }}>
+function SeparateLine(props) {
+    return (
+        <View style={{
+            height: 1,
+            backgroundColor: "gainsboro",
+            marginHorizontal: 27,
+            marginTop: 25,
+        }}>
 
-    </View>
-)
+        </View>
+    )
+}
 
-EndRepeatTitle = (props) => (
-    <View style={{
-        height: 24,
-        marginTop: 26,
-        marginLeft: 30,
-        justifyContent: "center"
-    }}>
-        <Text>End</Text>
-    </View>
-)
+function EndRepeatTitle(props) {
+    return (
+        <View style={{
+            height: 24,
+            marginTop: 26,
+            marginLeft: 30,
+            justifyContent: "center"
+        }}>
+            <Text>End</Text>
+        </View>
+    )
+}
 
 
 
@@ -226,6 +233,7 @@ class DayRepeatEveryHolder extends Component {
         }
     })
 
+    //To keep track of current/last chosen options
     currentIndex = -1
     lastIndex = -1
 
@@ -274,6 +282,9 @@ class DayRepeatEveryHolder extends Component {
         this.handleChoosing(3)
     }
 
+
+    //To intially set the styles for holders to avoid a second re-rendering
+    //(This is optional because the number of components to rerender is not big(4))
     static getDerivedStateFromProps(nextProps, prevState) {
         if (prevState.holderStyle_arr.length === 0) {
             let holderStyle_arr = [],
@@ -302,6 +313,7 @@ class DayRepeatEveryHolder extends Component {
                 marginTop: 25,
                 alignItems: "center"
             }}>
+                {/* Option bar at the top holding Daily, Weekly, Monthly, Custom*/}
                 <View style={{
                     flexDirection: "row",
                     marginHorizontal: 25,
@@ -383,7 +395,7 @@ class DayRepeatEveryHolder extends Component {
 
 }
 
-
+// Render 'Every 1 days'
 class DailyRepeatOption extends Component {
     styles = StyleSheet.create({
         container: {
@@ -407,7 +419,7 @@ class DailyRepeatOption extends Component {
         return (
             <View
                 style={this.styles.container}
-            >
+            >   
                 <Text>Every</Text>
 
                 <TextInput
@@ -441,9 +453,40 @@ class DailyRepeatOption extends Component {
 
 export class EndRepeatHolder extends Component {
 
+    styles = StyleSheet.create({
+        unChosenRadioStyle: {
+            height: 16,
+            width: 16,
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: "black"
+        },
+
+        chosenRadioStyle: {
+            height: 16,
+            width: 16,
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: "black",
+            backgroundColor: "black"
+        }
+    })
+
+    currentIndex = -1
+    lastIndex = -1
+
+    convertDateString = (date) => {
+        let dateTime = new Date(date)
+        return dateTime.getDate() + " " + shortMonthNames[dateTime.getMonth()] + " " + dateTime.getFullYear()
+    }
+
+    //We can initialize values directly inside state to avoid a second render.
+    //For this to work, need to put used functions and variables before declaring state or they will be undefined.
     state = {
         afterOccurranceValue: "",
-        chosenDate: ""
+        chosenDate: this.convertDateString(this.props.chosenDate),
+
+        radio_style_arr: Array.from(Array(3), (value, index) => this.styles.unChosenRadioStyle), //value will be undefine because Array(3) has 3 undefined values
     }
 
     _onChange = (e) => {
@@ -469,6 +512,24 @@ export class EndRepeatHolder extends Component {
         Keyboard.removeListener('keyboardWillHide', this.doWhenKeyboardWillHide)
     }
 
+    chooseOptionRadio = (index) => {
+        this.lastIndex = this.currentIndex
+        this.currentIndex = index
+
+        if(this.lastIndex === this.currentIndex){
+            this.lastIndex = -1
+        }
+
+        let radio_style_arr = [... this.state.radio_style_arr]
+
+        radio_style_arr[this.currentIndex] = this.styles.chosenRadioStyle
+        radio_style_arr[this.lastIndex] = this.styles.unChosenRadioStyle
+
+        this.setState({
+            radio_style_arr: [... radio_style_arr]
+        })
+    }
+
     doWhenKeyboardWillShow = () => {
         this.props.setStyleToTransit()
     }
@@ -481,36 +542,32 @@ export class EndRepeatHolder extends Component {
         this.props.toggleEndOnDate()
     }
 
-    converDateString = (date) => {
-        let dateTime = new Date(date)
-        return dateTime.getDate() + " " + shortMonthNames[dateTime.getMonth()] + " " + dateTime.getFullYear()
-    }
+    
 
-    componentDidMount(){
-        this.setState({
-            chosenDate: this.converDateString(this.props.chosenDate)
-        })
+    componentDidMount() {
     }
 
     componentWillUnmount() {
         this._onBlur()
     }
 
-    componentDidUpdate(prevProps, prevState){
-        if(this.props.chosenDate !== prevProps.chosenDate){
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.chosenDate !== prevProps.chosenDate) {
             this.setState({
-                chosenDate: this.converDateString(this.props.chosenDate)
+                chosenDate: this.convertDateString(this.props.chosenDate)
             })
         }
     }
 
     render() {
+        console.log("render")
         return (
             <View style={{
                 marginLeft: 30,
                 marginTop: 25,
                 marginRight: 27,
             }}>
+                {/* Render the row of 'Never' */}
                 <View style={{
                     flexDirection: "row",
                     height: 24,
@@ -521,18 +578,15 @@ export class EndRepeatHolder extends Component {
                     </Text>
 
                     <TouchableHighlight
-                        style={{
-                            height: 16,
-                            width: 16,
-                            borderRadius: 16,
-                            borderWidth: 1,
-                            borderColor: "black"
-                        }}
+                        style={this.state.radio_style_arr[0]}
+
+                        onPress={this.chooseOptionRadio.bind(this, 0)}
                     >
                         <></>
                     </TouchableHighlight>
                 </View>
 
+                {/* Render the row of 'On' */}
                 <View style={{
                     flexDirection: "row",
                     height: 24,
@@ -564,18 +618,16 @@ export class EndRepeatHolder extends Component {
 
 
                     <TouchableHighlight
-                        style={{
-                            height: 16,
-                            width: 16,
-                            borderRadius: 16,
-                            borderWidth: 1,
-                            borderColor: "black"
-                        }}
+                        style={this.state.radio_style_arr[1]}
+
+                        onPress={this.chooseOptionRadio.bind(this, 1)}
                     >
                         <></>
                     </TouchableHighlight>
                 </View>
 
+
+                {/* Render the row of 'After' */}
                 <View style={{
                     flexDirection: "row",
                     height: 24,
@@ -617,13 +669,9 @@ export class EndRepeatHolder extends Component {
 
 
                     <TouchableHighlight
-                        style={{
-                            height: 16,
-                            width: 16,
-                            borderRadius: 16,
-                            borderWidth: 1,
-                            borderColor: "black"
-                        }}
+                        style={this.state.radio_style_arr[2]}
+
+                        onPress={this.chooseOptionRadio.bind(this, 2)}
                     >
                         <></>
                     </TouchableHighlight>
