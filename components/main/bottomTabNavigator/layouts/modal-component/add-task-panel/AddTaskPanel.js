@@ -11,11 +11,11 @@ import {
 } from 'react-native';
 
 
-let dayAnnotationColor= '#b0b0b0',
-    weekAnnotationColor= '#9a9a9a',
-    monthAnnotationColor= '#848484'
+let dayAnnotationColor = '#b0b0b0',
+    weekAnnotationColor = '#9a9a9a',
+    monthAnnotationColor = '#848484'
 
-export default class AddTaskPanel extends Component{
+export default class AddTaskPanel extends Component {
     taskTextInputRef = React.createRef()
 
     state = {
@@ -37,7 +37,7 @@ export default class AddTaskPanel extends Component{
     }
 
     chooseAnnotation = (annotation) => {
-        if(annotation === "day"){
+        if (annotation === "day") {
             this.setState({
                 dayAnnotationColor: "black",
                 weekAnnotationColor: weekAnnotationColor,
@@ -45,7 +45,7 @@ export default class AddTaskPanel extends Component{
             })
         }
 
-        else if(annotation === "week"){
+        else if (annotation === "week") {
             this.setState({
                 dayAnnotationColor: dayAnnotationColor,
                 weekAnnotationColor: "black",
@@ -53,7 +53,7 @@ export default class AddTaskPanel extends Component{
             })
         }
 
-        else{
+        else {
             this.setState({
                 dayAnnotationColor: dayAnnotationColor,
                 weekAnnotationColor: weekAnnotationColor,
@@ -69,7 +69,7 @@ export default class AddTaskPanel extends Component{
         })
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.chooseAnnotation('day') //automatically choose day annotation when loaded as default
 
         this.keyboardWillShowListener = Keyboard.addListener(
@@ -78,156 +78,155 @@ export default class AddTaskPanel extends Component{
         )
     }
 
-    componentDidUpdate(prevProps, prevState){
+    componentDidUpdate(prevProps, prevState) {
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         Keyboard.removeListener('keyboardWillShow', this.toDoWhenWillShowKeyboard)
     }
 
-    render(){
-        return(
-            <KeyboardAvoidingView>
-            <View style={{
-                position: "absolute",
-                width: Dimensions.get('window').width,
-                bottom: this.state.keyboardHeight,
-                display: this.state.AddTaskPanelDisplayProperty,
-                height: 250,
-            }}>
-                <View style={{
-                    height: 100,
-                    position: 'relative',
-                    flexDirection: "row",
-                }}>
-                    <TouchableHighlight 
-                    style={{
-                        position: 'absolute',
-                        height: 100,
-                        width: Dimensions.get('window').width,
-                        backgroundColor: this.state.dayAnnotationColor,
-                        borderTopLeftRadius: 20,
-                    }}
-                    
-                    onPress = {this.chooseAnnotation.bind(this, 'day')}
-                    underlayColor = "transparent"
-                    >
-                        <Text style={{
-                            color: "white",
-                            marginTop: 10,
-                            marginLeft: 50,
-                            fontSize: 20,
-                            fontWeight: "500",
-                        }}>Day</Text>
-                    </TouchableHighlight>
-
-                    <TouchableHighlight 
-                    style={{
-                        position: 'absolute',
-                        width: Dimensions.get('window').width * 2/3,
-                        left: Dimensions.get('window').width * 1/3,
-                        height: 100,
-                        backgroundColor: this.state.weekAnnotationColor,
-                        borderTopLeftRadius: 20,
-                    }}
-
-                    onPress = {this.chooseAnnotation.bind(this, 'week')}
-                    underlayColor = "transparent"
-                    >
-                        <Text style={{
-                            color: "white",
-                            marginTop: 10,
-                            marginLeft: 50,
-                            fontSize: 20,
-                            fontWeight: "500",
-                        }}>Week</Text>
-                    </TouchableHighlight>
-
-                    <TouchableHighlight 
-                    style={{
-                        width: Dimensions.get('window').width * 1/3,
-                        left: Dimensions.get('window').width * 2/3,
-                        height: 100,
-                        backgroundColor: this.state.monthAnnotationColor,
-                        borderTopLeftRadius: 20,
-                    }}
-
-                    onPress = {this.chooseAnnotation.bind(this, 'month')}
-                    underlayColor = "transparent"
-                    >
-                        <Text style={{
-                            color: "white",
-                            marginTop: 10,
-                            marginLeft: 50,
-                            fontSize: 20,
-                            fontWeight: "500",
-                        }}>Month</Text>
-                    </TouchableHighlight>
-                </View>
-
-                <View style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    height: 200,
+    render() {
+        return (
+            
+                <KeyboardAvoidingView style={{
+                    position: "absolute",
                     width: Dimensions.get('window').width,
-                    backgroundColor: 'white',
-                    borderTopRightRadius: 20,
-                    borderTopLeftRadius: 20,
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    paddingTop: 10,
+                    bottom: this.state.keyboardHeight,
+                    display: this.state.AddTaskPanelDisplayProperty,
+                    height: 250,
                 }}>
-                    
-                    <TaskTitleElement 
-                        setTaskTextInputRef = {this.setTaskTextInputRef} 
-                        taskTextInputRef = {this.taskTextInputRef}
-                    />
+                    <View style={{
+                        height: 100,
+                        position: 'relative',
+                        flexDirection: "row",
+                    }}>
+                        <TouchableHighlight
+                            style={{
+                                position: 'absolute',
+                                height: 100,
+                                width: Dimensions.get('window').width,
+                                backgroundColor: this.state.dayAnnotationColor,
+                                borderTopLeftRadius: 20,
+                            }}
 
-                    <TaskDescriptionElement />
+                            onPress={this.chooseAnnotation.bind(this, 'day')}
+                            underlayColor="transparent"
+                        >
+                            <Text style={{
+                                color: "white",
+                                marginTop: 10,
+                                marginLeft: 50,
+                                fontSize: 20,
+                                fontWeight: "500",
+                            }}>Day</Text>
+                        </TouchableHighlight>
+
+                        <TouchableHighlight
+                            style={{
+                                position: 'absolute',
+                                width: Dimensions.get('window').width * 2 / 3,
+                                left: Dimensions.get('window').width * 1 / 3,
+                                height: 100,
+                                backgroundColor: this.state.weekAnnotationColor,
+                                borderTopLeftRadius: 20,
+                            }}
+
+                            onPress={this.chooseAnnotation.bind(this, 'week')}
+                            underlayColor="transparent"
+                        >
+                            <Text style={{
+                                color: "white",
+                                marginTop: 10,
+                                marginLeft: 50,
+                                fontSize: 20,
+                                fontWeight: "500",
+                            }}>Week</Text>
+                        </TouchableHighlight>
+
+                        <TouchableHighlight
+                            style={{
+                                width: Dimensions.get('window').width * 1 / 3,
+                                left: Dimensions.get('window').width * 2 / 3,
+                                height: 100,
+                                backgroundColor: this.state.monthAnnotationColor,
+                                borderTopLeftRadius: 20,
+                            }}
+
+                            onPress={this.chooseAnnotation.bind(this, 'month')}
+                            underlayColor="transparent"
+                        >
+                            <Text style={{
+                                color: "white",
+                                marginTop: 10,
+                                marginLeft: 50,
+                                fontSize: 20,
+                                fontWeight: "500",
+                            }}>Month</Text>
+                        </TouchableHighlight>
+                    </View>
 
                     <View style={{
-                        flex: 1,
-                        flexDirection: 'row'
+                        position: 'absolute',
+                        bottom: 0,
+                        height: 200,
+                        width: Dimensions.get('window').width,
+                        backgroundColor: 'white',
+                        borderTopRightRadius: 20,
+                        borderTopLeftRadius: 20,
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        paddingTop: 10,
                     }}>
-                        
-                        <BottomOptionElement 
-                            chooseOption = {this.props.chooseCalenderOption} 
-                            taskTextInputRef = {this.taskTextInputRef}
-                            disableAddTaskPanel = {this.disableAddTaskPanel}
-                            title = "Cal"
+
+                        <TaskTitleElement
+                            setTaskTextInputRef={this.setTaskTextInputRef}
+                            taskTextInputRef={this.taskTextInputRef}
                         />
 
-                        <BottomOptionElement 
-                            chooseOption = {() => {}} 
-                            taskTextInputRef = {this.taskTextInputRef}
-                            disableAddTaskPanel = {this.disableAddTaskPanel}
-                            title = "Cat"
-                        />
+                        <TaskDescriptionElement />
 
-                        <BottomOptionElement 
-                            chooseOption = {() => {}} 
-                            taskTextInputRef = {this.taskTextInputRef}
-                            disableAddTaskPanel = {this.disableAddTaskPanel}
-                            title = "Pri"
-                        />
+                        <View style={{
+                            flex: 1,
+                            flexDirection: 'row'
+                        }}>
 
-                        <BottomOptionElement 
-                            chooseOption = {() => {}} 
-                            taskTextInputRef = {this.taskTextInputRef}
-                            disableAddTaskPanel = {this.disableAddTaskPanel}
-                            title = "Rep"
-                        />
+                            <BottomOptionElement
+                                chooseOption={this.props.chooseCalenderOption}
+                                taskTextInputRef={this.taskTextInputRef}
+                                disableAddTaskPanel={this.disableAddTaskPanel}
+                                title="Cal"
+                            />
 
-                        <BottomOptionElement 
-                            chooseOption = {() => {}} 
-                            taskTextInputRef = {this.taskTextInputRef}
-                            disableAddTaskPanel = {this.disableAddTaskPanel}
-                            title = "Ok"
-                        />
+                            <BottomOptionElement
+                                chooseOption={() => { }}
+                                taskTextInputRef={this.taskTextInputRef}
+                                disableAddTaskPanel={this.disableAddTaskPanel}
+                                title="Cat"
+                            />
+
+                            <BottomOptionElement
+                                chooseOption={() => { }}
+                                taskTextInputRef={this.taskTextInputRef}
+                                disableAddTaskPanel={this.disableAddTaskPanel}
+                                title="Pri"
+                            />
+
+                            <BottomOptionElement
+                                chooseOption={() => { }}
+                                taskTextInputRef={this.taskTextInputRef}
+                                disableAddTaskPanel={this.disableAddTaskPanel}
+                                title="Rep"
+                            />
+
+                            <BottomOptionElement
+                                chooseOption={() => { }}
+                                taskTextInputRef={this.taskTextInputRef}
+                                disableAddTaskPanel={this.disableAddTaskPanel}
+                                title="Ok"
+                            />
+                        </View>
                     </View>
-                </View>
-            </View>
-            </KeyboardAvoidingView>
+                </KeyboardAvoidingView>
         )
     }
 }
@@ -239,7 +238,7 @@ TaskTitleElement = (props) => (
         marginHorizontal: 20,
         marginTop: 10,
     }}>
-        <Text 
+        <Text
             style={{
                 fontSize: 12,
                 color: 'gainsboro',
@@ -247,17 +246,17 @@ TaskTitleElement = (props) => (
         >
             Task Title
         </Text>
-        <TextInput 
-            ref= {(ref) => {props.setTaskTextInputRef(ref)}}
-            onLayout = {() => {
-                setTimeout(() => {props.taskTextInputRef.focus()}, 50)
+        <TextInput
+            ref={(ref) => { props.setTaskTextInputRef(ref) }}
+            onLayout={() => {
+                setTimeout(() => { props.taskTextInputRef.focus() }, 50)
             }}
             style={{
                 flex: 1,
                 fontSize: 16,
                 borderBottomColor: 'gainsboro',
                 borderBottomWidth: 1,
-                
+
             }}
             placeholder="Add a task here"
         />
@@ -275,7 +274,7 @@ TaskDescriptionElement = (props) => (
         }}>
             Task Description
         </Text>
-        <TextInput  
+        <TextInput
             style={{
                 flex: 1,
                 fontSize: 16,
@@ -288,24 +287,32 @@ TaskDescriptionElement = (props) => (
     </View>
 )
 
-BottomOptionElement = (props) => (
-    <TouchableHighlight
-        style= {{
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: 10,  
-        }}
 
-        onPress={() => {
-            props.chooseOption()
-            props.taskTextInputRef.blur()
-            props.disableAddTaskPanel()
-        }}
-        activeOpacity={0.5}
-        underlayColor="gainsboro"
-    >
-        <Text>{props.title}</Text>
-    </TouchableHighlight>
-)
+class BottomOptionElement extends React.Component {
+
+    _onPress = () => {
+        this.props.chooseOption()
+        this.props.taskTextInputRef.blur()
+        this.props.disableAddTaskPanel()
+    }
+
+    render() {
+        return (
+            <TouchableHighlight
+                style={{
+                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 10,
+                }}
+
+                onPress={this._onPress}
+                activeOpacity={0.5}
+                underlayColor="gainsboro"
+            >
+                <Text>{this.props.title}</Text>
+            </TouchableHighlight>
+        )
+    }
+}
 

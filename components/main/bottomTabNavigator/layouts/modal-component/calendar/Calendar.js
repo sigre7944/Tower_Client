@@ -1,60 +1,72 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 
 import {
     View,
+
 } from 'react-native';
 
 import DayAnnotationPanel from './day-annotation/DayAnnotationPanel'
 import WeekAnnotationPanel from './week-annotation/WeekAnnotationPanel'
 import MonthAnnotationPanel from './month-annotation/MonthAnnotationPanel'
 
-export default class Calendar extends Component{
+export default class Calendar extends Component {
 
-    state = {
-    }
-
-    componentDidMount(){
-    }
-
-    render(){
-        return(
-            <View 
-                style={{
-                    position: 'absolute',
-                    top: 100,
-                    bottom: 100,
-                    right: 25,
-                    left: 25,
-                    backgroundColor: 'white',
-                    borderRadius: 10,
-                }}
-            >
-
-            {this.props.currentAnnotation === 'day' ?
-                <DayAnnotationPanel
-                    calendarChosen = {this.props.calendarChosen}
-                />
-                
-                :
-
-                <>
-                {this.props.currentAnnotation === 'week' ?
-                    <WeekAnnotationPanel 
-                        calendarChosen = {this.props.calendarChosen}
-                    />
+    render() {
+        return (
+            <Fragment>
+                {this.props.currentAnnotation === 'day' ?
+                    <View
+                        style={{
+                            position: 'absolute',
+                            top: 75,
+                            bottom: 75,
+                            right: 25,
+                            left: 25,
+                            backgroundColor: 'white',
+                            borderRadius: 10,
+                        }}
+                    >
+                        <DayAnnotationPanel
+                            chooseRepeatOption = {this.props.chooseRepeatOption}
+                        />
+                    </View>
 
                     :
 
-                    <>
-                    <MonthAnnotationPanel 
-                        calendarChosen = {this.props.calendarChosen}
-                    />
-                    </>
-                
+                    <Fragment>
+                        {this.props.currentAnnotation === 'week' ?
+                            <View
+                                style={{
+                                    position: 'absolute',
+                                    top: 100,
+                                    bottom: 100,
+                                    right: 25,
+                                    left: 25,
+                                    backgroundColor: 'white',
+                                    borderRadius: 10,
+                                }}
+                            >
+                                <WeekAnnotationPanel />
+                            </View>
+
+                            :
+
+                            <View style={{
+                                position: 'absolute',
+                                top: 100,
+                                bottom: 100,
+                                right: 25,
+                                left: 25,
+                                backgroundColor: 'white',
+                                borderRadius: 10,
+                            }}>
+                                <MonthAnnotationPanel />
+                            </View>
+
+                        }
+                    </Fragment>
                 }
-                </>
-            }
-            </View>
+            </Fragment>
         )
     }
 }

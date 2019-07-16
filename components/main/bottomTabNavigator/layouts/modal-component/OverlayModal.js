@@ -10,23 +10,30 @@ import {
 
 import AddTaskPanel from './add-task-panel/AddTaskPanel'
 import Calendar from './calendar/Calendar'
+import Repeat from './repeat/Repeat'
 
-DismissElement = (props) => {
-    return(
-    <TouchableWithoutFeedback
-        onPress={() => {
-            props.addTaskButtonActionProp()
-            props.disableCalendarOption()
-        }}
-    >
-        <View style={{
-            flex: 1,
-            backgroundColor: "black",
-            opacity: 0.5,
-        }}>
-        </View>
-    </TouchableWithoutFeedback>
-    )
+
+class DismissElement extends Component {
+    _onPress = () => {
+        this.props.addTaskButtonActionProp()
+        this.props.disableAllTabs()
+    }
+
+    render(){
+        return(
+            <TouchableWithoutFeedback
+                onPress={this._onPress}
+            >
+                <View style={{
+                    flex: 1,
+                    backgroundColor: "black",
+                    opacity: 0.5,
+                }}>
+                </View>
+            </TouchableWithoutFeedback>
+            )
+    }
+    
 }
 
 export default class UnderlayModal extends Component {
@@ -35,7 +42,10 @@ export default class UnderlayModal extends Component {
         currentAnnotation: 'day',
         addTaskClicked: false,
         calendarChosen: false,
+        repeatClicked: false,
     }
+
+    
 
     setCurrentAnnotation = (annotation) => {
         this.setState({currentAnnotation: annotation})
@@ -47,10 +57,18 @@ export default class UnderlayModal extends Component {
         }))
     }
 
-    disableCalendarOption = () => {
+    disableAllTabs = () => {
         this.setState({
-            calendarChosen: false
+            calendarChosen: false,
+            repeatClicked: false,
         })
+    }
+
+    chooseRepeatOption = () => {
+        this.setState(prevState => ({
+            repeatClicked: !prevState.repeatClicked,
+            calendarChosen: !prevState.calendarChosen
+        }))
     }
 
     shouldComponentUpdate(nextProps, nextState){
@@ -69,6 +87,8 @@ export default class UnderlayModal extends Component {
         }
     }
 
+    
+
     render(){
         return(
             <Modal
@@ -77,7 +97,7 @@ export default class UnderlayModal extends Component {
             >   
                 <DismissElement 
                 addTaskButtonActionProp = {this.props.addTaskButtonActionProp} 
-                disableCalendarOption = {this.disableCalendarOption}
+                disableAllTabs = {this.disableAllTabs}
                 />
                 
                 <AddTaskPanel 
@@ -89,8 +109,9 @@ export default class UnderlayModal extends Component {
                 {/* Calendar View */}
                 {this.state.calendarChosen ? 
                     <Calendar 
-                    currentAnnotation = {this.state.currentAnnotation}
-                    calendarChosen = {this.state.calendarChosen}
+                        currentAnnotation = {this.state.currentAnnotation}
+                        calendarChosen = {this.state.calendarChosen}
+                        chooseRepeatOption = {this.chooseRepeatOption}
                     />
 
                     : 
@@ -99,6 +120,17 @@ export default class UnderlayModal extends Component {
                 }
                 
                     
+                {this.state.repeatClicked ? 
+                    <Repeat 
+                        repeatClicked = {this.state.repeatClicked}
+                        currentAnnotation = {this.state.currentAnnotation}
+                    />
+                    
+                    :
+
+                    <></>
+                }
+
             </Modal>
         )
     }

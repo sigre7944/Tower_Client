@@ -86,6 +86,9 @@ export default class DayAnnotationPanel extends Component{
         this.getFollowingMonths(currentMonth, currentYear, numberOfMonths)
     }
 
+    _chooseRepeatOption = () => {
+        this.props.chooseRepeatOption()
+    }
 
     componentDidMount(){
         this.initializeMonths()
@@ -192,11 +195,9 @@ export default class DayAnnotationPanel extends Component{
 
             <View
                 style={{
-                    height: 50,
+                    height: 40,
                     backgroundColor: 'white',
                     borderTopWidth: 1,
-                    borderBottomWidth: 1,
-                    borderBottomColor: 'gainsboro',
                     borderTopColor: 'gainsboro',
                     justifyContent: "center"
                 }}
@@ -208,20 +209,38 @@ export default class DayAnnotationPanel extends Component{
 
             <View
                 style={{
-                    height: 50,
+                    height: 40,
                     backgroundColor: 'white',
-                    justifyContent: "center"
+                    justifyContent: "center",
+                    borderTopWidth: 1,
+                    borderTopColor: 'gainsboro',
                 }}
             >
                 <Text>
                     Add reminder
                 </Text>
             </View>
+            <TouchableHighlight
+                style={{
+                    height: 40,
+                    backgroundColor: "white",
+                    justifyContent: "center",
+                    borderTopWidth: 1,
+                    borderTopColor: 'gainsboro',
+                }}
+
+                onPress = {this._chooseRepeatOption}
+                underlayColor = "gainsboro"
+            >
+                <Text>
+                    Add repeat
+                </Text>
+            </TouchableHighlight>
             <View
                 style={{
                     height: 60,
+                    marginBottom: 10,
                     backgroundColor: 'white',
-                    marginBottom: 20,
                     flexDirection: "row",
                     justifyContent: "flex-end",
                     alignItems: 'center'
