@@ -77,9 +77,11 @@ class RenderCalendar extends React.PureComponent{
                             lastCalendarDayIndex = {this.state.lastCalendarDayIndex}
                             changeCurrentCalendarDayIndex = {this.changeCurrentCalendarDayIndex}
 
-                            month_index = {this.props.month_index}
-                            current_month_index = {this.props.current_month_index}
-                            chooseDifferentMonth = {this.props.chooseDifferentMonth}
+                            // month_index = {this.props.month_index}
+                            // current_month_index = {this.props.current_month_index}
+                            // chooseDifferentMonth = {this.props.chooseDifferentMonth}
+                            
+                            {... this.props}
                         />
                     ))
                 }
@@ -106,12 +108,14 @@ class CalendarRow extends React.PureComponent{
                                 day = {data.dayData.day}
 
                                 calendarDayIndex = {data.calendarDayIndex}
-                                lastCalendarDayIndex = {this.props.lastCalendarDayIndex}
-                                changeCurrentCalendarDayIndex = {this.props.changeCurrentCalendarDayIndex}
+                                // lastCalendarDayIndex = {this.props.lastCalendarDayIndex}
+                                // changeCurrentCalendarDayIndex = {this.props.changeCurrentCalendarDayIndex}
 
-                                month_index = {this.props.month_index}
-                                current_month_index = {this.props.current_month_index}
-                                chooseDifferentMonth = {this.props.chooseDifferentMonth}
+                                // month_index = {this.props.month_index}
+                                // current_month_index = {this.props.current_month_index}
+                                // chooseDifferentMonth = {this.props.chooseDifferentMonth}
+
+                                {... this.props}
                             />
                         )
 
@@ -154,6 +158,10 @@ class DayHolder extends React.PureComponent{
             dayHolderStyle: styles.UnchosenDayHolder,
             dayTextStyle: styles.UnchosenDayText
         })
+
+        if(this.props.currentMonth === this.props.month && this.props.currentYear === this.props.year && this.props.calendarDayIndex === this.props.currentDayInMonth -1){
+            this.chooseDay(this.props.calendarDayIndex)
+        }
     }
 
 
@@ -185,7 +193,8 @@ class DayHolder extends React.PureComponent{
                     marginTop: 2,
                 }}
                 underlayColor="transparent"
-
+                
+                //Need to optimize this
                 onPress={this.chooseDay.bind(this, this.props.calendarDayIndex)}
             >   
                 <View
@@ -261,7 +270,12 @@ export default class CalendarDisplayHolder extends Component{
         }
     }
 
+    _scrollToCurrentMonth = () => {
+        this.props.scrollToCurrentMonth()
+    }
+
     componentDidMount(){
+
         let month = this.props.month,
             year = this.props.year 
 
@@ -339,11 +353,13 @@ export default class CalendarDisplayHolder extends Component{
     render(){
         return(
             <View style={this.props.style}>
-                <View style={{
+                <TouchableHighlight style={{
                     height: 50,
                     alignItems: "center",
                     justifyContent: "center",
-                }}>
+                }}
+                onPress = {this._scrollToCurrentMonth}
+                >
                     <View
                         style={{
                             flexDirection: 'row',
@@ -370,7 +386,7 @@ export default class CalendarDisplayHolder extends Component{
                         </Text>
                     </View>
                     
-                </View>
+                </TouchableHighlight>
 
                 <View
                     style={{
@@ -395,9 +411,11 @@ export default class CalendarDisplayHolder extends Component{
                     <RenderCalendar 
                         row_days_array = {this.state.row_days_array}
 
-                        month_index = {this.props.month_index}
-                        current_month_index = {this.props.current_month_index}
-                        chooseDifferentMonth = {this.props.chooseDifferentMonth}
+                        // month_index = {this.props.month_index}
+                        // current_month_index = {this.props.current_month_index}
+                        // chooseDifferentMonth = {this.props.chooseDifferentMonth}
+
+                        {... this.props}
                     />
                 </View>
             </View>

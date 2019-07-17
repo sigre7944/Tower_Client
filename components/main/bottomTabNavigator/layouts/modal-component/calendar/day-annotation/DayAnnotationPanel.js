@@ -10,7 +10,7 @@ import {
 
 import CalendarDisplayHolder from './calendar-display-holder/CalendarDisplayHolder'
 
-
+// Need to optimize DayAnnotationPanel component and its child components
 export default class DayAnnotationPanel extends Component{
     month_data_array = []
     numberOfMonths = (12 * 10) + 1 //Number of months we want to display. (12 months in a year) * (number of year) + 1 (for current month)
@@ -25,6 +25,10 @@ export default class DayAnnotationPanel extends Component{
             this.setState({
                 current_month_index: index
             })
+    }
+
+    scrollToCurrentMonth = (month_index) => {
+        this._flatlistRef.scrollToOffset({animated: true, offset: 0})
     }
 
     _keyExtractor = (item, index) => `month-calendar-${index}`
@@ -52,6 +56,12 @@ export default class DayAnnotationPanel extends Component{
             month_index = {index}
             chooseDifferentMonth = {this.chooseDifferentMonth}
             current_month_index = {this.state.current_month_index}
+
+            currentDayInMonth = {new Date().getDate()}
+            currentMonth = {new Date().getMonth()}
+            currentYear = {new Date().getFullYear()}
+
+            scrollToCurrentMonth = {this.scrollToCurrentMonth}
         /> 
     )
 
@@ -187,6 +197,8 @@ export default class DayAnnotationPanel extends Component{
                     renderItem={this._renderItem}
                     maxToRenderPerBatch={10}
                     windowSize={15}
+
+                    ref = {(c) => this._flatlistRef = c}
                 >
 
                 </FlatList>

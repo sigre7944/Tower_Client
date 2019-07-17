@@ -110,7 +110,7 @@ export default class Repeat extends Component {
                             />
 
                         </KeyboardAvoidingView>
-                        
+
                         {/* Date picker IOS implementation */}
                         {/* When user click on date option of 'On', we toggle the modal covering */}
                         {/* The modal's gray transparently area will be used as switche off button to get rid of date picker */}
@@ -206,7 +206,7 @@ function EndRepeatTitle(props) {
 
 
 
-
+// Holder for top option bars of Daily, Weekly, Monthly, Custom
 class DayRepeatEveryHolder extends Component {
     static styles = StyleSheet.create({
         unChosenOption: {
@@ -385,7 +385,23 @@ class DayRepeatEveryHolder extends Component {
 
                     :
 
-                    <></>
+                    <>
+                        {this.currentIndex === 1 ?
+                            <WeeklyRepeatOption />
+
+                            :
+
+                            <>
+                                {this.currentIndex === 2 ?
+                                    <MonthlyRepeatOption />
+
+                                    :
+                                    <></>
+                                }
+                            </>
+
+                        }
+                    </>
 
                 }
 
@@ -419,7 +435,7 @@ class DailyRepeatOption extends Component {
         return (
             <View
                 style={this.styles.container}
-            >   
+            >
                 <Text>Every</Text>
 
                 <TextInput
@@ -451,6 +467,317 @@ class DailyRepeatOption extends Component {
     }
 }
 
+// Render days in a week
+class WeeklyRepeatOption extends Component {
+    styles = StyleSheet.create({
+        container: {
+            flexDirection: "row",
+            justifyContent: "center",
+            marginTop: 24,
+            marginHorizontal: 25,
+            height: 26,
+            borderRadius: 30,
+            borderWidth: 1,
+            borderColor: "#CCCCCC"
+        }
+    })
+
+
+
+    state = {
+        currentIndex: -1,
+        lastIndex: -1,
+
+        value: ""
+    }
+
+    _onChange = (e) => {
+        this.setState({
+            value: e.nativeEvent.text.replace(/[^0-9]/g, '')
+        })
+    }
+
+    changeCurrentIndex = (index) => {
+        this.setState(prevState => ({
+            currentIndex: index,
+            lastIndex: prevState.currentIndex
+        }))
+    }
+
+    componentDidMount() {
+    }
+
+    render() {
+        return (
+            <>
+                <View
+                    style={this.styles.container}
+                >
+                    <WeeklyOption
+                        day="Mon"
+                        noLeftBorder={true}
+                        currentIndex={this.state.currentIndex}
+                        lastIndex={this.state.lastIndex}
+                        index={0}
+                        changeCurrentIndex={this.changeCurrentIndex} />
+
+                    <WeeklyOption
+                        day="Tue"
+                        currentIndex={this.state.currentIndex}
+                        lastIndex={this.state.lastIndex}
+                        index={1}
+                        changeCurrentIndex={this.changeCurrentIndex} />
+
+                    <WeeklyOption
+                        day="Wed"
+                        currentIndex={this.state.currentIndex}
+                        lastIndex={this.state.lastIndex}
+                        index={2}
+                        changeCurrentIndex={this.changeCurrentIndex} />
+
+                    <WeeklyOption
+                        day="Thu"
+                        currentIndex={this.state.currentIndex}
+                        lastIndex={this.state.lastIndex}
+                        index={3}
+                        changeCurrentIndex={this.changeCurrentIndex} />
+
+                    <WeeklyOption
+                        day="Fri"
+                        currentIndex={this.state.currentIndex}
+                        lastIndex={this.state.lastIndex}
+                        index={4}
+                        changeCurrentIndex={this.changeCurrentIndex} />
+
+                    <WeeklyOption
+                        day="Sat"
+                        currentIndex={this.state.currentIndex}
+                        lastIndex={this.state.lastIndex}
+                        index={5}
+                        changeCurrentIndex={this.changeCurrentIndex} />
+
+                    <WeeklyOption
+                        day="Sun"
+                        currentIndex={this.state.currentIndex}
+                        lastIndex={this.state.lastIndex}
+                        index={6}
+                        changeCurrentIndex={this.changeCurrentIndex} />
+                </View>
+
+                <View
+                    style={{
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        marginTop: 24,
+                    }}
+                >
+                    <Text>Every</Text>
+
+                    <TextInput
+                        keyboardType="numbers-and-punctuation"
+                        placeholder="1"
+                        onChange={this._onChange}
+                        value={this.state.value}
+                        maxLength={2}
+                        style={{
+                            width: 27,
+                            height: 20,
+                            borderBottomWidth: 1,
+                            borderStyle: "solid",
+                            borderBottomColor: "gainsboro",
+                            textAlign: "center",
+                            marginLeft: 10
+                        }}
+                    />
+
+                    <Text
+                        style={{
+                            marginLeft: 10,
+                        }}
+                    >
+                        weeks
+                    </Text>
+                </View>
+            </>
+        )
+    }
+}
+
+// A day in a week such as Mon, Tue, Thu, etc
+class WeeklyOption extends Component {
+    static styles = StyleSheet.create({
+        holderStyle: {
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center"
+        },
+        textStyle: {
+            color: "black"
+        }
+    })
+
+    state = {
+        holderStyle: WeeklyOption.styles.holderStyle,
+        textStyle: WeeklyOption.styles.textStyle,
+        chosen: false
+    }
+
+    _onPress = () => {
+        // this.props.changeCurrentIndex(this.props.index)
+        this.setState(prevState => ({
+            chosen: !prevState.chosen,
+        }))
+
+        if (this.state.holderStyle.hasOwnProperty("backgroundColor")) {
+            if (this.state.holderStyle["backgroundColor"] === "black") {
+                this.setState({
+                    holderStyle: { ...WeeklyOption.styles.holderStyle },
+                    textStyle: { ...WeeklyOption.styles.textStyle }
+                })
+            }
+        }
+
+        else {
+            this.setState({
+                holderStyle: { ...WeeklyOption.styles.holderStyle, backgroundColor: "black" },
+                textStyle: { ...WeeklyOption.styles.textStyle, color: "white" }
+            })
+        }
+    }
+
+    // // Use to only update 2 components at a time when want to use componentDidUpdate
+    // shouldComponentUpdate(nextProps, nextState){
+    //     return (this.props.currentIndex !== nextProps.currentIndex && (nextProps.currentIndex === this.props.index || this.props.currentIndex === this.props.index))
+    //             || (this.state.holderStyle !== nextState.holderStyle && this.state.textStyle !== nextState.textStyle)
+    // }
+
+    // Use to only update 2 components at a time for getDerivedStateFromProp
+    // shouldComponentUpdate(nextProps, nextState) {
+    //     return (this.props.index === nextProps.currentIndex) || (this.props.index === nextProps.lastIndex)
+    // }
+
+    // static getDerivedStateFromProps(nextProps, prevState) {
+    //     //nextProps.index is fixed
+    //     if (nextProps.currentIndex === nextProps.index) {
+    //         return ({
+    //             holderStyle: { ... WeeklyOption.styles.holderStyle, backgroundColor: "black" },
+    //             textStyle: { ... WeeklyOption.styles.textStyle, color: "white" }
+    //         })
+    //     }
+
+    //     else if(nextProps.lastIndex === nextProps.index){
+    //         return ({
+    //             holderStyle: WeeklyOption.styles.holderStyle,
+    //             textStyle: WeeklyOption.styles.textStyle
+    //         })
+    //     }
+
+    //     return null
+    // }
+
+    componentDidMount() {
+    }
+
+    // // Will render a second rerendering and require additional condition for state updating in shouldComponentUpdate
+    // componentDidUpdate(prevProps, prevState){
+    //     // When choosing this option - being the currentIndex
+    //     if(this.props.index === this.props.currentIndex && this.props.currentIndex !== prevProps.currentIndex){
+    //         this.setState({
+    //             holderStyle: {... this.styles.holderStyle, backgroundColor: "black"},
+    //             textStyle: {... this.styles.textStyle, color: "white"}
+    //         })
+    //     }
+
+    //     // When this is the last chosen one - being the previous prop of currentIndex
+    //     else if(this.props.index === prevProps.currentIndex && this.props.currentIndex !== prevProps.currentIndex){
+    //         this.setState({
+    //             holderStyle: this.styles.holderStyle,
+    //             textStyle: this.styles.textStyle
+    //         })
+    //     }
+    // }
+
+    render() {
+        return (
+            <>
+                {this.props.noLeftBorder ?
+                    <TouchableHighlight
+                        style={this.state.holderStyle}
+                        onPress={this._onPress}
+                    >
+                        <Text style={this.state.textStyle}>{this.props.day}</Text>
+                    </TouchableHighlight>
+                    :
+
+                    <TouchableHighlight
+                        style={{ ...this.state.holderStyle, ... { borderLeftWidth: 1, borderColor: "#CCCCCC" } }}
+                        onPress={this._onPress}
+                    >
+                        <Text style={this.state.textStyle}>{this.props.day}</Text>
+                    </TouchableHighlight>
+                }
+            </>
+        )
+    }
+}
+
+// 'Every 1 months'
+class MonthlyRepeatOption extends Component {
+    styles = StyleSheet.create({
+        container: {
+            flexDirection: "row",
+            justifyContent: "center",
+            marginTop: 24,
+        }
+    })
+
+    state = {
+        value: ""
+    }
+
+    _onChange = (e) => {
+        this.setState({
+            value: e.nativeEvent.text.replace(/[^0-9]/g, '')
+        })
+    }
+
+    render() {
+        return (
+            <View
+                style={this.styles.container}
+            >
+                <Text>Every</Text>
+
+                <TextInput
+                    keyboardType="numbers-and-punctuation"
+                    placeholder="1"
+                    onChange={this._onChange}
+                    value={this.state.value}
+                    maxLength={2}
+                    style={{
+                        width: 27,
+                        height: 20,
+                        borderBottomWidth: 1,
+                        borderStyle: "solid",
+                        borderBottomColor: "gainsboro",
+                        textAlign: "center",
+                        marginLeft: 10
+                    }}
+                />
+
+                <Text
+                    style={{
+                        marginLeft: 10,
+                    }}
+                >
+                    months
+                </Text>
+            </View>
+        )
+    }
+}
+
+// 'End' holder
 export class EndRepeatHolder extends Component {
 
     styles = StyleSheet.create({
@@ -516,7 +843,7 @@ export class EndRepeatHolder extends Component {
         this.lastIndex = this.currentIndex
         this.currentIndex = index
 
-        if(this.lastIndex === this.currentIndex){
+        if (this.lastIndex === this.currentIndex) {
             this.lastIndex = -1
         }
 
@@ -526,7 +853,7 @@ export class EndRepeatHolder extends Component {
         radio_style_arr[this.lastIndex] = this.styles.unChosenRadioStyle
 
         this.setState({
-            radio_style_arr: [... radio_style_arr]
+            radio_style_arr: [...radio_style_arr]
         })
     }
 
@@ -542,9 +869,10 @@ export class EndRepeatHolder extends Component {
         this.props.toggleEndOnDate()
     }
 
-    
+
 
     componentDidMount() {
+        this.chooseOptionRadio(0)
     }
 
     componentWillUnmount() {
@@ -560,7 +888,6 @@ export class EndRepeatHolder extends Component {
     }
 
     render() {
-        console.log("render")
         return (
             <View style={{
                 marginLeft: 30,
