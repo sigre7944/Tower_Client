@@ -10,7 +10,7 @@ import {
     Keyboard,
     KeyboardAvoidingView,
     Modal,
-
+    Picker,
     TouchableWithoutFeedback
 } from 'react-native';
 
@@ -26,12 +26,28 @@ export default class Repeat extends Component {
         chosenDate: new Date(),
 
         endOnDateClicked: false,
+        week_option_in_weekly_task_clicked: false,
 
+
+        weekly_repeat_picker_value: "weeks"
+    }
+
+    setWeeklyRepeatPickerValue = (value) => {
+        this.setState({
+            weekly_repeat_picker_value: value
+        })
     }
 
     toggleEndOnDate = () => {
         this.setState(prevState => ({
             endOnDateClicked: !prevState.endOnDateClicked
+        }))
+    }
+
+    //To active Modal for choosing 'Every ... weeks/months'
+    toggleWeekOptionInWeeklyTask = () => {
+        this.setState(prevState => ({
+            week_option_in_weekly_task_clicked: !prevState.week_option_in_weekly_task_clicked
         }))
     }
 
@@ -89,7 +105,10 @@ export default class Repeat extends Component {
 
                                 <>
                                     {this.props.currentAnnotation === "week" ?
-                                        <></>
+                                        <WeeklyRepeatOption
+                                            toggleWeekOptionInWeeklyTask={this.toggleWeekOptionInWeeklyTask}
+                                            weekly_repeat_picker_value={this.state.weekly_repeat_picker_value}
+                                        />
 
                                         :
 
@@ -151,8 +170,20 @@ export default class Repeat extends Component {
                             </Modal>
 
                             :
+                            <>
+                                {this.state.week_option_in_weekly_task_clicked ?
+                                    <WeeklyRepeatWeekMonthModal
+                                        toggleWeekOptionInWeeklyTask={this.toggleWeekOptionInWeeklyTask}
+                                        setWeeklyRepeatPickerValue={this.setWeeklyRepeatPickerValue}
+                                        weekly_repeat_picker_value={this.state.weekly_repeat_picker_value}
+                                    />
 
-                            <></>
+                                    :
+
+                                    <></>
+                                }
+
+                            </>
                         }
 
                     </>
@@ -165,49 +196,57 @@ export default class Repeat extends Component {
     }
 }
 
-function RepeatTitle(props) {
-    return (
-        <View style={{
-            height: 24,
-            marginTop: 30,
-            marginLeft: 30,
-            justifyContent: "center"
-        }}>
-            <Text>Repeat</Text>
-        </View>
-    )
+class RepeatTitle extends React.PureComponent {
+
+    render() {
+        return (
+            <View style={{
+                height: 24,
+                marginTop: 30,
+                marginLeft: 30,
+                justifyContent: "center"
+            }}>
+                <Text>Repeat</Text>
+            </View>
+        )
+    }
 }
 
-function SeparateLine(props) {
-    return (
-        <View style={{
-            height: 1,
-            backgroundColor: "gainsboro",
-            marginHorizontal: 27,
-            marginTop: 25,
-        }}>
+class SeparateLine extends React.PureComponent {
+    render() {
+        return (
+            <View style={{
+                height: 1,
+                backgroundColor: "gainsboro",
+                marginHorizontal: 27,
+                marginTop: 25,
+            }}>
 
-        </View>
-    )
+            </View>
+        )
+    }
 }
 
-function EndRepeatTitle(props) {
-    return (
-        <View style={{
-            height: 24,
-            marginTop: 26,
-            marginLeft: 30,
-            justifyContent: "center"
-        }}>
-            <Text>End</Text>
-        </View>
-    )
+class EndRepeatTitle extends React.PureComponent {
+
+    render() {
+        return (
+            <View style={{
+                height: 24,
+                marginTop: 26,
+                marginLeft: 30,
+                justifyContent: "center"
+            }}>
+                <Text>End</Text>
+            </View>
+        )
+    }
 }
 
 
 
-// Holder for top option bars of Daily, Weekly, Monthly, Custom
-class DayRepeatEveryHolder extends Component {
+// Holder for top option bars of Daily, Weekly, Monthly (Creating Daily Task)
+class DayRepeatEveryHolder extends React.PureComponent {
     static styles = StyleSheet.create({
         unChosenOption: {
             flex: 1,
@@ -278,11 +317,6 @@ class DayRepeatEveryHolder extends Component {
         this.handleChoosing(2)
     }
 
-    chooseCustom = () => {
-        this.handleChoosing(3)
-    }
-
-
     //To intially set the styles for holders to avoid a second re-rendering
     //(This is optional because the number of components to rerender is not big(4))
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -313,7 +347,7 @@ class DayRepeatEveryHolder extends Component {
                 marginTop: 25,
                 alignItems: "center"
             }}>
-                {/* Option bar at the top holding Daily, Weekly, Monthly, Custom*/}
+                {/* Option bar at the top holding Daily, Weekly, Monthly*/}
                 <View style={{
                     flexDirection: "row",
                     marginHorizontal: 25,
@@ -365,19 +399,6 @@ class DayRepeatEveryHolder extends Component {
 
                     </TouchableHighlight>
 
-                    <TouchableHighlight
-                        style={this.state.holderStyle_arr[3]}
-
-                        underlayColor="black"
-                        onPress={this.chooseCustom}
-                    >
-                        <Text
-                            style={this.state.textStyle_arr[3]}
-                        >
-                            Custom
-                    </Text>
-
-                    </TouchableHighlight>
                 </View>
 
                 {this.currentIndex === 0 ?
@@ -387,7 +408,7 @@ class DayRepeatEveryHolder extends Component {
 
                     <>
                         {this.currentIndex === 1 ?
-                            <WeeklyRepeatOption />
+                            <DayWeeklyRepeatOption />
 
                             :
 
@@ -411,8 +432,8 @@ class DayRepeatEveryHolder extends Component {
 
 }
 
-// Render 'Every 1 days'
-class DailyRepeatOption extends Component {
+// Render 'Every 1 days' (Creating Daily Task)
+class DailyRepeatOption extends React.PureComponent {
     styles = StyleSheet.create({
         container: {
             flexDirection: "row",
@@ -467,8 +488,8 @@ class DailyRepeatOption extends Component {
     }
 }
 
-// Render days in a week
-class WeeklyRepeatOption extends Component {
+// Render days in a week (Creating Daily Task)
+class DayWeeklyRepeatOption extends React.PureComponent {
     styles = StyleSheet.create({
         container: {
             flexDirection: "row",
@@ -603,8 +624,8 @@ class WeeklyRepeatOption extends Component {
     }
 }
 
-// A day in a week such as Mon, Tue, Thu, etc
-class WeeklyOption extends Component {
+// A day in a week such as Mon, Tue, Thu, etc (Creating Daily Task)
+class WeeklyOption extends React.PureComponent {
     static styles = StyleSheet.create({
         holderStyle: {
             flex: 1,
@@ -721,8 +742,8 @@ class WeeklyOption extends Component {
     }
 }
 
-// 'Every 1 months'
-class MonthlyRepeatOption extends Component {
+// 'Every 1 months' (Creating Daily Task)
+class MonthlyRepeatOption extends React.PureComponent {
     styles = StyleSheet.create({
         container: {
             flexDirection: "row",
@@ -777,8 +798,136 @@ class MonthlyRepeatOption extends Component {
     }
 }
 
+
+class WeeklyRepeatOption extends React.PureComponent {
+    styles = StyleSheet.create({
+        container: {
+            marginTop: 24,
+        }
+    })
+
+    state = {
+        value: ""
+    }
+
+    _onChange = (e) => {
+        this.setState({
+            value: e.nativeEvent.text.replace(/[^0-9]/g, "")
+        })
+    }
+
+    _toggleWeekOptionInWeeklyTask = () => {
+        this.props.toggleWeekOptionInWeeklyTask()
+    }
+
+    render() {
+        return (
+            <View
+                style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center"
+                }}
+            >
+                <Text>
+                    Every
+                </Text>
+
+                <TextInput
+                    style={{
+                        height: 20,
+                        width: 27,
+                        textAlign: "center",
+                        borderColor: "gainsboro",
+                        borderBottomWidth: 1,
+                        marginLeft: 10,
+                    }}
+
+                    placeholder="1"
+                    keyboardType="numbers-and-punctuation"
+                    maxLength={2}
+
+                    value={this.state.value}
+                    onChange={this._onChange}
+                />
+
+                <TouchableHighlight
+                    style={{
+                        marginLeft: 10,
+                        height: 20,
+                        width: 60,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderColor: "gainsboro",
+                        borderBottomWidth: 1,
+
+                    }}
+
+                    onPress={this._toggleWeekOptionInWeeklyTask}
+                >
+                    <Text>{this.props.weekly_repeat_picker_value}</Text>
+                </TouchableHighlight>
+            </View>
+        )
+    }
+}
+
+class WeeklyRepeatWeekMonthModal extends React.PureComponent {
+
+    _toggleWeekOptionInWeeklyTask = () => {
+        this.props.toggleWeekOptionInWeeklyTask()
+    }
+
+    _onValueChange = (itemValue, itemIndex) => {
+        this.props.setWeeklyRepeatPickerValue(itemValue)
+    }
+
+    render() {
+        return (
+            <Modal
+                transparent={true}
+            >
+                <TouchableWithoutFeedback
+                    onPress={this._toggleWeekOptionInWeeklyTask}
+                >
+                    <View
+                        style={{
+                            flex: 1,
+                            backgroundColor: "black",
+                            opacity: 0.5,
+                        }}
+                    >
+
+                    </View>
+                </TouchableWithoutFeedback>
+
+                <View
+                    style={{
+                        position: "absolute",
+                        bottom: 0,
+                        height: 250,
+                        right: 0,
+                        left: 0,
+                        justifyContent: "center",
+                        backgroundColor: "#EFEFEF"
+                    }}
+                >
+                    <Picker
+                        selectedValue={this.props.weekly_repeat_picker_value}
+                        onValueChange={this._onValueChange}
+                    >
+                        <Picker.Item label="weeks" value="weeks" />
+                        <Picker.Item label="months" value="months" />
+                    </Picker>
+                </View>
+
+            </Modal>
+        )
+    }
+}
+
 // 'End' holder
-export class EndRepeatHolder extends Component {
+export class EndRepeatHolder extends React.PureComponent {
 
     styles = StyleSheet.create({
         unChosenRadioStyle: {

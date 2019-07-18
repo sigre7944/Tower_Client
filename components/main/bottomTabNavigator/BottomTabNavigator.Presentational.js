@@ -29,6 +29,8 @@ export default class BottomTabNavigator extends React.Component{
 
     chooseNewScreen = (routeName) => {
         this.props.navigation.navigate({routeName})
+
+        // this.props.changeRouteAction(routeName)
     }
 
 

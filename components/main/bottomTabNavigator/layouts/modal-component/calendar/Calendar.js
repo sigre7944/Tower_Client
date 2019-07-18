@@ -46,7 +46,9 @@ export default class Calendar extends Component {
                                     borderRadius: 10,
                                 }}
                             >
-                                <WeekAnnotationPanel />
+                                <WeekAnnotationPanel 
+                                    chooseRepeatOption = {this.props.chooseRepeatOption}
+                                />
                             </View>
 
                             :

@@ -9,7 +9,7 @@ import {
     TouchableHighlight
 } from 'react-native';
 
-export default class CalendarDisplayHolder extends Component{
+export default class CalendarDisplayHolder extends Component {
 
     state = {
         current_month_index: -1,
@@ -17,7 +17,7 @@ export default class CalendarDisplayHolder extends Component{
     }
 
     changeCurrentMonthIndex = (index) => {
-        if(this.state.current_month_index !== index){
+        if (this.state.current_month_index !== index) {
             this.setState((state, props) => ({
                 current_month_index: index,
                 last_month_index: state.current_month_index
@@ -46,8 +46,8 @@ export default class CalendarDisplayHolder extends Component{
     //     }
     // }
 
-    static getDerivedStateFromProps(nextProps, prevState){
-        if(nextProps.yearIndex === nextProps.last_year_index){
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.yearIndex === nextProps.last_year_index) {
             return ({
                 current_month_index: -1,
                 last_month_index: -1
@@ -57,7 +57,7 @@ export default class CalendarDisplayHolder extends Component{
         return null
     }
 
-    shouldComponentUpdate(nextProps, nextState){
+    shouldComponentUpdate(nextProps, nextState) {
         // we only re-render when yearIndex equals to last_year_index, meaning
         // the case that the current calendar was the previously chosen calendar => to
         // update its style to origin.
@@ -68,65 +68,80 @@ export default class CalendarDisplayHolder extends Component{
             || this.props.yearIndex === nextProps.current_year_index
     }
 
-    render(){
-        return(
+    render() {
+        return (
             <>
-            <View style={{
-                width: Dimensions.get("window").width - 80,
-                marginLeft: this.props.marginLeft
-            }}>
-                <DisplayYear year={this.props.monthData.year}/>
-
-                <View style = {{
-                    flexDirection: "row",
-                    flexWrap: "wrap",
-                    height: 400,
-                    alignItems: "center",
-                    justifyContent:"center",
-                    flex: 1,
-                    marginTop: 30,
+                <View style={{
+                    width: Dimensions.get("window").width - 80,
+                    marginLeft: this.props.marginLeft
                 }}>
-                    {this.props.monthData.month_value_array.map((data, index) => (
-                        <MonthHolder 
-                            key = {"month-" + index + "-year-" + this.props.monthData.year}
+                    <DisplayYear 
+                    year={this.props.monthData.year} 
+                    returnToCurrentYear = {this.props.returnToCurrentYear}
+                    />
 
-                            {... this.props}
+                    <View style={{
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                        height: 400,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flex: 1,
+                        marginTop: 30,
+                    }}>
+                        {this.props.monthData.month_value_array.map((data, index) => (
+                            <MonthHolder
+                                key={"month-" + index + "-year-" + this.props.monthData.year}
 
-                            data = {data}
-                            monthIndex = {index}
-                            current_month_index = {this.state.current_month_index}
-                            last_month_index = {this.state.last_month_index}
-                            changeCurrentMonthIndex = {this.changeCurrentMonthIndex}
-                            resetCurrentAndLastMonthIndexes = {this.resetCurrentAndLastMonthIndexes}
-                        />
-                    ))}
+                                {... this.props}
+
+                                data={data}
+                                monthIndex={index}
+                                current_month_index={this.state.current_month_index}
+                                last_month_index={this.state.last_month_index}
+                                changeCurrentMonthIndex={this.changeCurrentMonthIndex}
+                                resetCurrentAndLastMonthIndexes={this.resetCurrentAndLastMonthIndexes}
+
+                                currentMonth = {this.props.currentMonth}
+                                currentYear = {this.props.currentYear}
+                                year={this.props.monthData.year} 
+                            />
+                        ))}
+                    </View>
+
                 </View>
-
-            </View>
             </>
         )
     }
 }
 
-class DisplayYear extends Component {
-    shouldComponentUpdate(nextProps, nextState){
-        return this.props.year !== nextProps.year
+class DisplayYear extends React.PureComponent {
+    // shouldComponentUpdate(nextProps, nextState){
+    //     return this.props.year !== nextProps.year
+    // }
+
+    _onPress = () => {
+        this.props.returnToCurrentYear()
     }
 
-    render(){
+    render() {
         return (
-            <View style = {{
-                height: 50,
-                alignItems: "center",
-                justifyContent: "center"
-            }}>
+            <TouchableHighlight
+                style={{
+                    height: 50,
+                    alignItems: "center",
+                    justifyContent: "center"
+                }}
+
+                onPress={this._onPress}
+            >
                 <Text style={{
                     fontSize: 24,
-                    
+
                 }}>
                     {this.props.year}
                 </Text>
-            </View>
+            </TouchableHighlight>
         )
     }
 }
@@ -173,14 +188,14 @@ class MonthHolder extends Component {
     //     }
     // }
 
-    static getDerivedStateFromProps(nextProps, prevState){
-        if(nextProps.current_month_index === -1 || nextProps.monthIndex === nextProps.last_month_index){
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.current_month_index === -1 || nextProps.monthIndex === nextProps.last_month_index) {
             return ({
                 monthStyle: styles.unchosenMonth
             })
         }
 
-        else if (nextProps.monthIndex === nextProps.current_month_index){
+        else if (nextProps.monthIndex === nextProps.current_month_index) {
             return ({
                 monthStyle: styles.chosenMonth
             })
@@ -189,13 +204,19 @@ class MonthHolder extends Component {
         return null
     }
 
-    shouldComponentUpdate(nextProps, nextState){
-        return this.props.monthIndex === nextProps.current_month_index 
-        || this.props.monthIndex === nextProps.last_month_index
-        || nextProps.current_month_index === -1
+    shouldComponentUpdate(nextProps, nextState) {
+        return this.props.monthIndex === nextProps.current_month_index
+            || this.props.monthIndex === nextProps.last_month_index
+            || nextProps.current_month_index === -1
     }
 
-    render(){
+    componentDidMount(){
+        if(this.props.data.monthNumber === this.props.currentMonth && this.props.year === this.props.currentYear){
+            this.chooseMonth()
+        }
+    }
+
+    render() {
 
         // We can do simple equality checks inside render()
         // If want to do complex logic, head out to memoize.
@@ -209,8 +230,8 @@ class MonthHolder extends Component {
         //     monthStyle = styles.chosenMonth
         // }
 
-        return(
-            <TouchableHighlight 
+        return (
+            <TouchableHighlight
                 style={{
                     width: (Dimensions.get("window").width - 80) / 4,
                     height: 100,
@@ -243,7 +264,7 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         borderRadius: 7,
     },
-    chosenMonth : {
+    chosenMonth: {
         width: ((Dimensions.get("window").width - 80) / 4) - 10,
         height: 80,
         alignItems: "center",

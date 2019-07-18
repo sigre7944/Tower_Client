@@ -39,6 +39,10 @@ export default class WeekAnnotationPanel extends Component{
         displaying_text_of_current_week: ''
     }
 
+    _chooseRepeatOption = () => {
+        this.props.chooseRepeatOption()
+    }
+
     chooseMonthOption = (monthOption) => {
         if(monthOption === "This month"){
             this.setState({
@@ -373,10 +377,71 @@ export default class WeekAnnotationPanel extends Component{
                 </View>
             </View>
 
-            <View style={{
-                height: 100,
-            }}>
+            <TouchableHighlight
+                style={{
+                    height: 40,
+                    backgroundColor: "white",
+                    justifyContent: "center",
+                    borderTopWidth: 1,
+                    borderTopColor: 'gainsboro',
+                }}
 
+                onPress = {this._chooseRepeatOption}
+                underlayColor = "gainsboro"
+            >
+                <Text>
+                    Add repeat
+                </Text>
+            </TouchableHighlight>
+            <View
+                style={{
+                    height: 60,
+                    marginBottom: 10,
+                    backgroundColor: 'white',
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    alignItems: 'center'
+                }}
+            >
+                <TouchableHighlight
+                    style={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: 50,
+                        width: 50,
+                        borderRadius: 25,
+                        backgroundColor: 'gray',
+                        marginRight: 20
+                    }}
+                >
+                    <Text
+                        style={{
+                            color: "white"
+                        }}
+                    >
+                        X
+                    </Text>
+                </TouchableHighlight>
+
+                <TouchableHighlight
+                    style={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: 50,
+                        width: 50,
+                        borderRadius: 25,
+                        backgroundColor: 'gray',
+                        marginRight: 10
+                    }}
+                >
+                    <Text
+                        style={{
+                            color: "white"
+                        }}
+                    >
+                        OK
+                    </Text>
+                </TouchableHighlight>
             </View>
             </>
         )
