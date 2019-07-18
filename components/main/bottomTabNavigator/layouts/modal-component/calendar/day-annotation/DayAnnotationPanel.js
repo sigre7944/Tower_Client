@@ -115,7 +115,7 @@ export default class DayAnnotationPanel extends Component{
         return(
             <>
             {/* Today Tommorow Next Monday */}
-            <View style={{
+            {/* <View style={{
                 height: 80,
                 paddingHorizontal: 30,
                 paddingTop: 30,
@@ -175,7 +175,7 @@ export default class DayAnnotationPanel extends Component{
                         >Next Monday</Text>
                     </View>
                 </View>
-            </View> 
+            </View>  */}
 
             {/* Main content of day calendar */}
             <View 

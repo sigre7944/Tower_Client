@@ -5,7 +5,7 @@ import {
     Text,
     Dimensions,
     FlatList,
-    TouchableHighlight
+    TouchableHighlight,
 } from 'react-native';
 
 import CalendarDisplayHolder from './calendar-display-holder/CalendarDisplayHolder'
@@ -22,6 +22,8 @@ export default class WeekAnnotationPanel extends Component{
 
     currentDisplayingMonth = -1 //January's index is 0
 
+    currentTimeInMili = new Date().getTime()
+
     state = {
         currentMonth: 'This month',
         nextMonthColor: 'white',
@@ -32,7 +34,9 @@ export default class WeekAnnotationPanel extends Component{
         week_data_array: [],
 
         currentWeekIndex: 0,
-        lastWeekIndex: 0
+        lastWeekIndex: 0,
+
+        displaying_text_of_current_week: ''
     }
 
     chooseMonthOption = (monthOption) => {
@@ -94,11 +98,28 @@ export default class WeekAnnotationPanel extends Component{
     // }
 
     scrollToWeekRow = (index) => {
-        this._flatListRef.scrollToOffset({animated: true, offset: index * 40 - 40*2})
+        // To initialize the first week, we need to make sure that the reference of FlatList 
+        // is initialized before calling the function scrollToWeekRow. (Because FlatList will render items faster 
+        // than creating its reference)
+        if(this._flatListRef){
+            this._flatListRef.scrollToOffset({animated: true, offset: index * 40 - 40*2})
+        }
+
+        let week_data =  this.week_data_array[index],
+            displaying_text_of_current_week = 'Week ' + week_data.noWeek + ' - ' + week_data.month + ' ' + week_data.year
+
         this.setState((state, props) => ({
             lastWeekIndex: state.currentWeekIndex,
-            currentWeekIndex: index
+            currentWeekIndex: index,
+            displaying_text_of_current_week: displaying_text_of_current_week
         }))
+    }
+
+    returnToCurrentMonth = () => {
+        if(this._flatListRef){
+            this._flatListRef.scrollToOffset({animated: true, offset: 2 * 40 - 40*2})
+        }
+
     }
 
     initWeeks = () => {
@@ -106,6 +127,8 @@ export default class WeekAnnotationPanel extends Component{
 
         this.getWeekData(new Date(year, 0, 1), new Date(year + this.numberOfYears, 11, 31), 1)
     }
+
+
 
     trimPastWeeks = () => {
         let currentYear = new Date().getFullYear(),
@@ -179,10 +202,37 @@ export default class WeekAnnotationPanel extends Component{
         this.getWeekData(nextMondayTime, endDay, weekData.noWeek + 1)
     }
 
+    markCurrentWeek = () => {
+        this.week_data_array.every((data, index, arr) => {
+            if(data.week_day_array){
+                let found = false
+
+                data.week_day_array.every((day) => {
+                    if(new Date(day).getTime() > this.currentTimeInMili){
+                        arr[index].isCurrentWeek = true
+                        found = true
+                        return false
+                    }
+
+                    return true
+                })
+
+                if(found){
+                    return false
+                }
+            }
+
+            return true
+        })
+
+    }
+
     componentDidMount(){
         this.initWeeks()
 
         this.trimPastWeeks()
+
+        this.markCurrentWeek()
 
         this.setState({
             week_data_array: [... this.week_data_array]
@@ -197,7 +247,7 @@ export default class WeekAnnotationPanel extends Component{
     render(){
         return(
             <>
-            <View
+            {/* <View
                 style={{
                     height: 80,
                     paddingHorizontal: 30,
@@ -249,14 +299,27 @@ export default class WeekAnnotationPanel extends Component{
                         >Next month</Text>
                     </TouchableHighlight>
                 </View>
-            </View>
+            </View> */}
             
+            <TouchableHighlight
+                style={{
+                    marginTop: 20,
+                    justifyContent: "center",
+                    alignItems: "center"
+                }}
+
+                underlayColor="gainsboro"
+                onPress={this.returnToCurrentMonth}
+            >
+                <Text style={{fontSize: 18}}>{this.state.displaying_text_of_current_week}</Text>
+            </TouchableHighlight>
 
             {/* Main content of week calendar */}
             <View style={{
                 flex: 1,
                 position: "relative",
                 paddingHorizontal: 15,
+                marginTop: 20,
             }}> 
                 {/* Left highlighting color bar for week */}
                 <View style={{

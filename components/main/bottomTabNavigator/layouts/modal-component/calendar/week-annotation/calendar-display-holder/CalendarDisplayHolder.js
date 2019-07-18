@@ -19,6 +19,13 @@ export default class CalendarDisplayHolder extends React.Component{
         this.props.scrollToWeekRow(this.props.index)
     }
 
+    componentDidMount(){
+        if(this.props.weekData.isCurrentWeek){
+            this._scrollToWeekRow()
+            // console.log(this.props.weekData)
+        }
+    }
+
     render(){
         return(
             <>
@@ -60,7 +67,7 @@ class WeekNumberHolder extends React.Component{
         style: styles.unchosenWeek
     }
 
-    componentWillReceiveProps(nextProps, nextState){
+    UNSAFE_componentWillReceiveProps(nextProps, nextState){
 
         if(this.props.index === nextProps.currentWeekIndex){
             this.setState({
