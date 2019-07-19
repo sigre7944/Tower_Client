@@ -10,6 +10,13 @@ import {
 import AddTaskButton from './layouts/AddTaskButton'
 import OverlayModal from './layouts/modal-component/OverlayModal'
 
+const styles= {
+    text: {
+        fontSize: 12
+    }
+}
+
+
 export default class BottomTabNavigator extends React.Component{
 
     state = {
@@ -87,10 +94,10 @@ export default class BottomTabNavigator extends React.Component{
                             flex: 1,
                             height: 60,
                             alignItems: 'center',
-                            justifyContent: 'center',
+                            justifyContent: 'center'
                         }}
                     >
-                        <Text>Journal</Text>
+                        <Text style={styles.text}>Journal</Text>
                     </TouchableHighlight>
 
                     <TouchableHighlight
@@ -102,7 +109,7 @@ export default class BottomTabNavigator extends React.Component{
                             justifyContent: 'center',
                         }}
                     >
-                        <Text>Progress</Text>
+                        <Text style={styles.text}>Progress</Text>
                     </TouchableHighlight>
 
                     <TouchableHighlight
@@ -114,7 +121,7 @@ export default class BottomTabNavigator extends React.Component{
                             justifyContent: 'center',
                         }}
                     >
-                        <Text>Reward</Text>
+                        <Text style={styles.text}>Reward</Text>
                     </TouchableHighlight>
 
                     <TouchableHighlight
@@ -126,7 +133,7 @@ export default class BottomTabNavigator extends React.Component{
                             justifyContent: 'center',
                         }}
                     >
-                        <Text>Settings</Text>
+                        <Text style={styles.text}>Settings</Text>
                     </TouchableHighlight>
                 </View>
             </View>

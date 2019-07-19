@@ -1,10 +1,10 @@
 {
-  "packagerPort": 19001,
-  "packagerPid": 17736,
   "webpackServerPort": null,
-  "expoServerNgrokUrl": "https://fn-29n.minhchinh97h.tower-client.exp.direct",
-  "packagerNgrokUrl": "https://packager.fn-29n.minhchinh97h.tower-client.exp.direct",
-  "ngrokPid": 4932,
+  "expoServerNgrokUrl": "https://q7-czj.anonymous.tower-client.exp.direct",
+  "packagerNgrokUrl": "https://packager.q7-czj.anonymous.tower-client.exp.direct",
+  "ngrokPid": 17808,
+  "devToolsPort": 19002,
   "expoServerPort": 19000,
-  "devToolsPort": 19002
+  "packagerPort": 19001,
+  "packagerPid": 4196
 }
