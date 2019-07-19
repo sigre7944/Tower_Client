@@ -19,7 +19,8 @@ export default AddTaskButton = (props) => (
             justifyContent: 'center',
             position: 'absolute',
             top: -35,
-            zIndex: 10
+            zIndex: 10,
+            display: props.should_AddTaskButton_be_displayed
         }}
     >
         <>

@@ -30,6 +30,7 @@ export default class Header extends React.Component {
   
 
     componentDidMount = () => {
+
     }
 
     setModalVisible = (visible) => {
@@ -38,7 +39,7 @@ export default class Header extends React.Component {
 
     render() {
       return (
-        <View>
+        <>
         <View style={{
             paddingTop: 20,
             paddingHorizontal: 10,
@@ -104,6 +105,8 @@ export default class Header extends React.Component {
                         </View>
                 </Modal>
         </View>
+
+        </>
       );
     }
 }
