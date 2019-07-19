@@ -10,7 +10,7 @@ import {
 
 import AddTaskPanel from './add-task-panel/AddTaskPanel'
 import Calendar from './calendar/Calendar'
-import Repeat from './repeat/Repeat'
+import Repeat from './repeat/Repeat.Container'
 
 
 class DismissElement extends Component {

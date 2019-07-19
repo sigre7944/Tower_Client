@@ -24,11 +24,16 @@ export default class MonthAnnotationPanel extends Component {
 
     currentMonth = new Date().getMonth()
     currentYear = new Date().getFullYear()
+    
     state = {
         month_array_data: [],
 
         current_year_index: -1,
         last_year_index: -1,
+    }
+
+    _chooseRepeatOption = () => {
+        this.props.chooseRepeatOption()
     }
 
     returnToCurrentYear = () => {
@@ -140,11 +145,73 @@ export default class MonthAnnotationPanel extends Component {
 
                     </FlatList>
                 </View>
-                <View style={{
-                    height: 100,
 
-                }}>
+                {/* Add Repeat */}
+                <TouchableHighlight
+                    style={{
+                        height: 40,
+                        backgroundColor: "white",
+                        justifyContent: "center",
+                        borderTopWidth: 1,
+                        borderTopColor: 'gainsboro',
+                    }}
 
+                    onPress={this._chooseRepeatOption}
+                    underlayColor="gainsboro"
+                >
+                    <Text>
+                        Add repeat
+                    </Text>
+                </TouchableHighlight>
+                <View
+                    style={{
+                        height: 60,
+                        marginBottom: 10,
+                        backgroundColor: 'white',
+                        flexDirection: "row",
+                        justifyContent: "flex-end",
+                        alignItems: 'center'
+                    }}
+                >
+                    <TouchableHighlight
+                        style={{
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: 50,
+                            width: 50,
+                            borderRadius: 25,
+                            backgroundColor: 'gray',
+                            marginRight: 20
+                        }}
+                    >
+                        <Text
+                            style={{
+                                color: "white"
+                            }}
+                        >
+                            X
+                    </Text>
+                    </TouchableHighlight>
+
+                    <TouchableHighlight
+                        style={{
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: 50,
+                            width: 50,
+                            borderRadius: 25,
+                            backgroundColor: 'gray',
+                            marginRight: 10
+                        }}
+                    >
+                        <Text
+                            style={{
+                                color: "white"
+                            }}
+                        >
+                            OK
+                    </Text>
+                    </TouchableHighlight>
                 </View>
             </>
         )

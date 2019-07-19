@@ -117,6 +117,8 @@ export default class WeekAnnotationPanel extends Component{
             currentWeekIndex: index,
             displaying_text_of_current_week: displaying_text_of_current_week
         }))
+
+        this.props.updateCurrentWeekInMonth(week_data)
     }
 
     returnToCurrentMonth = () => {
@@ -147,7 +149,7 @@ export default class WeekAnnotationPanel extends Component{
                                                                                                                         
     }
 
-    getWeekData = (firstDayOfWeek, endDay, noWeek) => {
+    getWeekData = (firstDayOfWeek, endDay, noWeek, noWeekInMonth) => {
         
         if(firstDayOfWeek.getTime() > endDay.getTime()){
             return
@@ -157,7 +159,8 @@ export default class WeekAnnotationPanel extends Component{
             noWeek: 0,
             week_day_array : new Array(7),
             month: monthNames[firstDayOfWeek.getMonth()],
-            year: firstDayOfWeek.getFullYear()
+            year: firstDayOfWeek.getFullYear(),
+            noWeekInMonth: 0
         }
 
         //If noWeek = 53 meaning turn to the new year => reset to 1
@@ -169,8 +172,9 @@ export default class WeekAnnotationPanel extends Component{
         if(firstDayOfWeek.getMonth() !== this.currentDisplayingMonth){
             this.currentDisplayingMonth = firstDayOfWeek.getMonth()
             this.week_data_array.push({
-                monthAndYear: monthNames[firstDayOfWeek.getMonth()] + " " + firstDayOfWeek.getFullYear()
+                monthAndYear: monthNames[firstDayOfWeek.getMonth()] + " " + firstDayOfWeek.getFullYear(),
             })
+            noWeekInMonth = 1
         }
 
         //When firstDayOfWeek is not Monday, meaning it starts the new year
@@ -191,6 +195,7 @@ export default class WeekAnnotationPanel extends Component{
         //When firstDayOfWeek is Monday, meaning it is still in the current year
         else{
             weekData.noWeek = noWeek
+            weekData.noWeekInMonth = noWeekInMonth
 
             for(let i = firstDayOfWeek.getDay(); i <= 7; i++){
                 weekData.week_day_array[i-1] = new Date( firstDayOfWeek.getTime() + (60 * 60 * 24 * 1000) * (i - 1) )
@@ -203,7 +208,7 @@ export default class WeekAnnotationPanel extends Component{
         let nextMondayTime = new Date(weekData.week_day_array[6].getTime() + (60 * 60 * 24 * 1000) )
 
 
-        this.getWeekData(nextMondayTime, endDay, weekData.noWeek + 1)
+        this.getWeekData(nextMondayTime, endDay, weekData.noWeek + 1, weekData.noWeekInMonth + 1)
     }
 
     markCurrentWeek = () => {
@@ -377,6 +382,7 @@ export default class WeekAnnotationPanel extends Component{
                 </View>
             </View>
 
+            {/* Add Repeat */}
             <TouchableHighlight
                 style={{
                     height: 40,

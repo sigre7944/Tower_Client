@@ -71,6 +71,12 @@ export default class Repeat extends Component {
         })
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.weekly_repeat_picker_value !== prevState.weekly_repeat_picker_value && this.state.weekly_repeat_picker_value === "months") {
+
+        }
+    }
+
     componentWillUnmount() {
         Keyboard.removeListener('keyboardWillShow', this.toDoWhenWillShowKeyboard)
         Keyboard.removeListener('keyboardWillHide', this.toDoWhenWillHideKB)
@@ -108,11 +114,12 @@ export default class Repeat extends Component {
                                         <WeeklyRepeatOption
                                             toggleWeekOptionInWeeklyTask={this.toggleWeekOptionInWeeklyTask}
                                             weekly_repeat_picker_value={this.state.weekly_repeat_picker_value}
+                                            noWeekInMonth={this.props.currentWeekInMonth.noWeekInMonth}
                                         />
 
                                         :
 
-                                        <></>
+                                        <MonthlyRepeatOption />
                                     }
                                 </>
                             }
@@ -197,6 +204,7 @@ export default class Repeat extends Component {
 }
 
 class RepeatTitle extends React.PureComponent {
+
 
     render() {
         return (
@@ -414,7 +422,7 @@ class DayRepeatEveryHolder extends React.PureComponent {
 
                             <>
                                 {this.currentIndex === 2 ?
-                                    <MonthlyRepeatOption />
+                                    <DayMonthlyRepeatOption />
 
                                     :
                                     <></>
@@ -743,7 +751,7 @@ class WeeklyOption extends React.PureComponent {
 }
 
 // 'Every 1 months' (Creating Daily Task)
-class MonthlyRepeatOption extends React.PureComponent {
+class DayMonthlyRepeatOption extends React.PureComponent {
     styles = StyleSheet.create({
         container: {
             flexDirection: "row",
@@ -798,13 +806,15 @@ class MonthlyRepeatOption extends React.PureComponent {
     }
 }
 
-
+// 'Every 1 weeks/months' (Creating Weekly Task)
 class WeeklyRepeatOption extends React.PureComponent {
     styles = StyleSheet.create({
         container: {
             marginTop: 24,
         }
     })
+
+    number_nth_convensions = ["first", "second", "third", "last"]
 
     state = {
         value: ""
@@ -822,56 +832,76 @@ class WeeklyRepeatOption extends React.PureComponent {
 
     render() {
         return (
-            <View
-                style={{
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    alignItems: "center"
-                }}
-            >
-                <Text>
-                    Every
+            <>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center"
+                    }}
+                >
+                    <Text>
+                        Every
                 </Text>
 
-                <TextInput
-                    style={{
-                        height: 20,
-                        width: 27,
-                        textAlign: "center",
-                        borderColor: "gainsboro",
-                        borderBottomWidth: 1,
-                        marginLeft: 10,
-                    }}
+                    <TextInput
+                        style={{
+                            height: 20,
+                            width: 27,
+                            textAlign: "center",
+                            borderColor: "gainsboro",
+                            borderBottomWidth: 1,
+                            marginLeft: 10,
+                        }}
 
-                    placeholder="1"
-                    keyboardType="numbers-and-punctuation"
-                    maxLength={2}
+                        placeholder="1"
+                        keyboardType="numbers-and-punctuation"
+                        maxLength={2}
 
-                    value={this.state.value}
-                    onChange={this._onChange}
-                />
+                        value={this.state.value}
+                        onChange={this._onChange}
+                    />
 
-                <TouchableHighlight
-                    style={{
-                        marginLeft: 10,
-                        height: 20,
-                        width: 60,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        borderColor: "gainsboro",
-                        borderBottomWidth: 1,
+                    <TouchableHighlight
+                        style={{
+                            marginLeft: 10,
+                            height: 20,
+                            width: 60,
+                            justifyContent: "center",
+                            alignItems: "center",
+                            borderColor: "gainsboro",
+                            borderBottomWidth: 1,
 
-                    }}
+                        }}
 
-                    onPress={this._toggleWeekOptionInWeeklyTask}
-                >
-                    <Text>{this.props.weekly_repeat_picker_value}</Text>
-                </TouchableHighlight>
-            </View>
+                        onPress={this._toggleWeekOptionInWeeklyTask}
+                    >
+                        <Text>{this.props.weekly_repeat_picker_value}</Text>
+                    </TouchableHighlight>
+                </View>
+
+                {this.props.weekly_repeat_picker_value === "months" ?
+                    <View
+                        style={{
+                            marginTop: 15,
+                            alignItems: "center"
+                        }}
+                    >
+                        <Text>Every {this.number_nth_convensions[this.props.noWeekInMonth - 1]} week of the month</Text>
+                    </View>
+
+                    :
+
+                    <></>
+
+                }
+
+            </>
         )
     }
 }
 
+// Modal that carries Picker for choosing weeks or months in 'Every ... weeks/months' (Creating Weekly Task)
 class WeeklyRepeatWeekMonthModal extends React.PureComponent {
 
     _toggleWeekOptionInWeeklyTask = () => {
@@ -925,6 +955,63 @@ class WeeklyRepeatWeekMonthModal extends React.PureComponent {
         )
     }
 }
+
+// 'Every 1 months' (Creating Monthly Task)
+class MonthlyRepeatOption extends React.PureComponent{
+    styles = StyleSheet.create({
+        container: {
+            flexDirection: "row",
+            justifyContent: "center",
+            marginTop: 24,
+        }
+    })
+
+    state = {
+        value: ""
+    }
+
+    _onChange = (e) => {
+        this.setState({
+            value: e.nativeEvent.text.replace(/[^0-9]/g, '')
+        })
+    }
+
+    render() {
+        return (
+            <View
+                style={this.styles.container}
+            >
+                <Text>Every</Text>
+
+                <TextInput
+                    keyboardType="numbers-and-punctuation"
+                    placeholder="1"
+                    onChange={this._onChange}
+                    value={this.state.value}
+                    maxLength={2}
+                    style={{
+                        width: 27,
+                        height: 20,
+                        borderBottomWidth: 1,
+                        borderStyle: "solid",
+                        borderBottomColor: "gainsboro",
+                        textAlign: "center",
+                        marginLeft: 10
+                    }}
+                />
+
+                <Text
+                    style={{
+                        marginLeft: 10,
+                    }}
+                >
+                    months
+                </Text>
+            </View>
+        )
+    }
+}
+
 
 // 'End' holder
 export class EndRepeatHolder extends React.PureComponent {

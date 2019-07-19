@@ -6,8 +6,9 @@ import {
 } from 'react-native';
 
 import DayAnnotationPanel from './day-annotation/DayAnnotationPanel'
-import WeekAnnotationPanel from './week-annotation/WeekAnnotationPanel'
 import MonthAnnotationPanel from './month-annotation/MonthAnnotationPanel'
+
+import WeekAnnotationPanel from './week-annotation/WeekAnnotationPanel.Container'
 
 export default class Calendar extends Component {
 
@@ -62,7 +63,9 @@ export default class Calendar extends Component {
                                 backgroundColor: 'white',
                                 borderRadius: 10,
                             }}>
-                                <MonthAnnotationPanel />
+                                <MonthAnnotationPanel 
+                                    chooseRepeatOption = {this.props.chooseRepeatOption}
+                                />
                             </View>
 
                         }
