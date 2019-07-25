@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Alert, Modal, TouchableOpacity, Text, View, StyleSheet, ImageBackground, Image, TextInput, ScrollView, Platform } from 'react-native'
+import { Alert, Modal, TouchableOpacity, Text, View, StyleSheet, Button, Image, TextInput, ScrollView, Platform } from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { CheckBox } from 'react-native-elements'
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { RectButton } from 'react-native-gesture-handler';
 
 export default class TaskCard extends Component {
     state={
@@ -11,14 +12,21 @@ export default class TaskCard extends Component {
 
     renderLeftActions = (progress, dragX) => {
         const trans = dragX.interpolate({
-            inputRange: [0, 50, 100, 101],
-            outputRange: [-20, 0, 0, 1],
+          inputRange: [0, 50, 100, 101],
+          outputRange: [-20, 0, 0, 1],
         });
-    }
+        return (
+            <View style={{height:60, zIndex: 20, marginBottom: 4, marginTop: 4, backgroundColor:'blue'}}>
+                <Text>Log time >>></Text>
+            </View>
+        );
+    };
 
     render() {
         return (
+        <Swipeable renderLeftActions={this.renderLeftActions} >
             <TouchableOpacity style={styles.container} onPress={() => this.props.onPress(true)}>
+                
                     <View style={styles.checkBox}>
                         <CheckBox 
                             center
@@ -38,7 +46,9 @@ export default class TaskCard extends Component {
                     <View style={styles.colorBox}>
                         <FontAwesome name={'circle'} style={styles.icon}/>
                     </View>
+                
             </TouchableOpacity> 
+            </Swipeable>
         )
     }
 }
@@ -50,7 +60,10 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'grey',
         borderLeftWidth: 3,
-        marginBottom: 4
+        marginBottom: 4,
+        marginTop: 4,
+        backgroundColor: 'white',
+        zIndex:30
     },
     checkBox: {
         width: 50,
