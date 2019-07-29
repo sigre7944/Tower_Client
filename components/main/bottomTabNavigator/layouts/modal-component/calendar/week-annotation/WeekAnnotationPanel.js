@@ -238,6 +238,16 @@ export default class WeekAnnotationPanel extends Component {
     }
 
     _onLayout = () => {
+        
+    }
+
+    componentDidMount() {
+        this.initWeeks()
+
+        this.trimPastWeeks()
+
+        this.markCurrentWeek()
+
         this.week_data_array.every((data, index) => {
             if (data.isCurrentWeek) {
                 this.scrollToWeekRow(index)
@@ -247,14 +257,6 @@ export default class WeekAnnotationPanel extends Component {
 
             return true
         })
-    }
-
-    componentDidMount() {
-        this.initWeeks()
-
-        this.trimPastWeeks()
-
-        this.markCurrentWeek()
     }
 
     render() {

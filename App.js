@@ -1,6 +1,4 @@
 import React from 'react';
-import Login from './components/login/Login' //Login screen
-import SignUp from './components/signup/SignUp' //Sign Up screen
 import MainNavigator from './components/main/Main' //Main screen
 import {createStackNavigator, createAppContainer, createDrawerNavigator} from 'react-navigation'
 import {createStore} from 'redux'
@@ -23,12 +21,6 @@ export default class App extends React.Component {
 
 const ContentNavigator = createStackNavigator(
   { //Stack navigator works as a history object in a web browser, which helps popping out in pushing in screen to proceed navigations
-    Login: {
-      screen: Login
-    },
-    SignUp: {
-      screen: SignUp
-    },
     Main: MainNavigator
   }, 
   {
