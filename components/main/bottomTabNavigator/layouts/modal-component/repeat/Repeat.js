@@ -8,10 +8,10 @@ import {
     TextInput,
     DatePickerIOS,
     Keyboard,
-    KeyboardAvoidingView,
     Modal,
     Picker,
-    TouchableWithoutFeedback
+    TouchableWithoutFeedback,
+    Animated
 } from 'react-native';
 
 const shortMonthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
@@ -19,8 +19,7 @@ const shortMonthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG",
 export default class Repeat extends Component {
 
     state = {
-        bottomStyleProperty: 100,
-        topStyleProperty: 100,
+        translateYValue: new Animated.Value(0),
 
         datePickerHeight: 0,
         chosenDate: new Date(),
@@ -29,7 +28,7 @@ export default class Repeat extends Component {
         week_option_in_weekly_task_clicked: false,
 
 
-        weekly_repeat_picker_value: "weeks"
+        weekly_repeat_picker_value: "weeks",
     }
 
     setWeeklyRepeatPickerValue = (value) => {
@@ -52,17 +51,23 @@ export default class Repeat extends Component {
     }
 
     setStyleToTransit = () => {
-        this.setState({
-            bottomStyleProperty: 150,
-            topStyleProperty: 50,
-        })
+        Animated.timing(
+            this.state.translateYValue,
+            {
+                toValue: -100,
+                duration: 200
+            }
+        ).start()
     }
 
     resetStyle = () => {
-        this.setState({
-            bottomStyleProperty: 100,
-            topStyleProperty: 100,
-        })
+        Animated.timing(
+            this.state.translateYValue,
+            {
+                toValue: 0,
+                duration: 200
+            }
+        ).start()
     }
 
     setDate = (newDate) => {
@@ -72,9 +77,7 @@ export default class Repeat extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.state.weekly_repeat_picker_value !== prevState.weekly_repeat_picker_value && this.state.weekly_repeat_picker_value === "months") {
 
-        }
     }
 
     componentWillUnmount() {
@@ -85,118 +88,167 @@ export default class Repeat extends Component {
     render() {
         return (
             <>
-                {this.props.repeatClicked ?
-                    <>
-                        {/* Using KeyboardAvoidingView to generate smooth transitions for keyboard listeners */}
-                        {/* Avoid using its prop of 'behavior' because it will cause unwanted results in transitting */}
-                        <KeyboardAvoidingView
-                            style={{
-                                position: 'absolute',
-                                top: this.state.topStyleProperty,
-                                bottom: this.state.bottomStyleProperty,
-                                right: 25,
-                                left: 25,
-                                backgroundColor: 'white',
-                                borderRadius: 10,
-                            }}
-                            enabled
-                        >
-                            <RepeatTitle />
+                {/* Using KeyboardAvoidingView to generate smooth transitions for keyboard listeners */}
+                {/* Avoid using its prop of 'behavior' because it will cause unwanted results in transitting */}
+                <Animated.View
+                    style={{
+                        position: 'absolute',
+                        width: 338,
+                        height: 484,
+                        transform: [{ translateY: this.state.translateYValue }],
+                        backgroundColor: 'white',
+                        borderRadius: 10,
+                    }}
+                    enabled
+                >
+                    <RepeatTitle />
 
-                            {this.props.currentAnnotation === "day" ?
+                    {this.props.currentAnnotation === "day" ?
 
-                                <DayRepeatEveryHolder />
+                        <DayRepeatEveryHolder
+                            updateRepetition={this.props.updateRepetition}
+                        />
+
+                        :
+
+                        <>
+                            {this.props.currentAnnotation === "week" ?
+                                <WeeklyRepeatOption
+                                    toggleWeekOptionInWeeklyTask={this.toggleWeekOptionInWeeklyTask}
+                                    weekly_repeat_picker_value={this.state.weekly_repeat_picker_value}
+                                    noWeekInMonth={this.props.currentWeekInMonth.noWeekInMonth}
+
+                                    updateRepetition={this.props.updateRepetition}
+                                />
 
                                 :
 
-                                <>
-                                    {this.props.currentAnnotation === "week" ?
-                                        <WeeklyRepeatOption
-                                            toggleWeekOptionInWeeklyTask={this.toggleWeekOptionInWeeklyTask}
-                                            weekly_repeat_picker_value={this.state.weekly_repeat_picker_value}
-                                            noWeekInMonth={this.props.currentWeekInMonth.noWeekInMonth}
-                                        />
-
-                                        :
-
-                                        <MonthlyRepeatOption />
-                                    }
-                                </>
+                                <MonthlyRepeatOption
+                                    updateRepetition={this.props.updateRepetition}
+                                />
                             }
+                        </>
+                    }
 
-                            <SeparateLine />
+                    <SeparateLine />
 
-                            <EndRepeatTitle />
+                    <EndRepeatTitle />
 
-                            <EndRepeatHolder
-                                setStyleToTransit={this.setStyleToTransit}
-                                resetStyle={this.resetStyle}
-                                toggleEndOnDate={this.toggleEndOnDate}
-                                chosenDate={this.state.chosenDate}
+                    <EndRepeatHolder
+                        setStyleToTransit={this.setStyleToTransit}
+                        resetStyle={this.resetStyle}
+                        toggleEndOnDate={this.toggleEndOnDate}
+                        chosenDate={this.state.chosenDate}
+
+                        updateEnd = {this.props.updateEnd}
+                    />
+
+                    <View
+                        style={{
+                            height: 60,
+                            marginBottom: 10,
+                            backgroundColor: 'white',
+                            flexDirection: "row",
+                            justifyContent: "flex-end",
+                            alignItems: 'center'
+                        }}
+                    >
+                        <TouchableHighlight
+                            style={{
+                                alignItems: "center",
+                                justifyContent: "center",
+                                height: 50,
+                                width: 50,
+                                borderRadius: 25,
+                                backgroundColor: 'gray',
+                                marginRight: 20
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    color: "white"
+                                }}
+                            >
+                                X
+                            </Text>
+                        </TouchableHighlight>
+
+                        <TouchableHighlight
+                            style={{
+                                alignItems: "center",
+                                justifyContent: "center",
+                                height: 50,
+                                width: 50,
+                                borderRadius: 25,
+                                backgroundColor: 'gray',
+                                marginRight: 10
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    color: "white"
+                                }}
+                            >
+                                OK
+                            </Text>
+                        </TouchableHighlight>
+                    </View>
+                </Animated.View>
+
+                {/* Date picker IOS implementation */}
+                {/* When user click on date option of 'On', we toggle the modal covering */}
+                {/* The modal's gray transparently area will be used as switche off button to get rid of date picker */}
+                {this.state.endOnDateClicked ?
+                    <Modal
+                        transparent={true}
+                    >
+                        <TouchableWithoutFeedback
+                            onPress={this.toggleEndOnDate}
+                        >
+                            <View
+                                style={{
+                                    flex: 1,
+                                    backgroundColor: "black",
+                                    opacity: 0.5,
+                                }}
+                            >
+
+                            </View>
+                        </TouchableWithoutFeedback>
+
+                        <View style={{
+                            position: "absolute",
+                            bottom: 0,
+                            height: 250,
+                            right: 0,
+                            left: 0,
+                            justifyContent: "center",
+                            backgroundColor: "#EFEFEF"
+                        }}>
+                            <DatePickerIOS
+                                date={this.state.chosenDate}
+                                mode="date"
+                                onDateChange={this.setDate}
+                            />
+                        </View>
+
+                    </Modal>
+
+                    :
+                    <>
+                        {this.state.week_option_in_weekly_task_clicked ?
+                            <WeeklyRepeatWeekMonthModal
+                                toggleWeekOptionInWeeklyTask={this.toggleWeekOptionInWeeklyTask}
+                                setWeeklyRepeatPickerValue={this.setWeeklyRepeatPickerValue}
+                                weekly_repeat_picker_value={this.state.weekly_repeat_picker_value}
                             />
 
-                        </KeyboardAvoidingView>
-
-                        {/* Date picker IOS implementation */}
-                        {/* When user click on date option of 'On', we toggle the modal covering */}
-                        {/* The modal's gray transparently area will be used as switche off button to get rid of date picker */}
-                        {this.state.endOnDateClicked ?
-                            <Modal
-                                transparent={true}
-                            >
-                                <TouchableWithoutFeedback
-                                    onPress={this.toggleEndOnDate}
-                                >
-                                    <View
-                                        style={{
-                                            flex: 1,
-                                            backgroundColor: "black",
-                                            opacity: 0.5,
-                                        }}
-                                    >
-
-                                    </View>
-                                </TouchableWithoutFeedback>
-
-                                <View style={{
-                                    position: "absolute",
-                                    bottom: 0,
-                                    height: 250,
-                                    right: 0,
-                                    left: 0,
-                                    justifyContent: "center",
-                                    backgroundColor: "#EFEFEF"
-                                }}>
-                                    <DatePickerIOS
-                                        date={this.state.chosenDate}
-                                        mode="date"
-                                        onDateChange={this.setDate}
-                                    />
-                                </View>
-
-                            </Modal>
-
                             :
-                            <>
-                                {this.state.week_option_in_weekly_task_clicked ?
-                                    <WeeklyRepeatWeekMonthModal
-                                        toggleWeekOptionInWeeklyTask={this.toggleWeekOptionInWeeklyTask}
-                                        setWeeklyRepeatPickerValue={this.setWeeklyRepeatPickerValue}
-                                        weekly_repeat_picker_value={this.state.weekly_repeat_picker_value}
-                                    />
 
-                                    :
-
-                                    <></>
-                                }
-
-                            </>
+                            <></>
                         }
 
                     </>
-                    :
-
-                    <></>
                 }
             </>
         )
@@ -410,19 +462,25 @@ class DayRepeatEveryHolder extends React.PureComponent {
                 </View>
 
                 {this.currentIndex === 0 ?
-                    <DailyRepeatOption />
+                    <DailyRepeatOption
+                        updateRepetition={this.props.updateRepetition}
+                    />
 
                     :
 
                     <>
                         {this.currentIndex === 1 ?
-                            <DayWeeklyRepeatOption />
+                            <DayWeeklyRepeatOption
+                                updateRepetition={this.props.updateRepetition}
+                            />
 
                             :
 
                             <>
                                 {this.currentIndex === 2 ?
-                                    <DayMonthlyRepeatOption />
+                                    <DayMonthlyRepeatOption
+                                        updateRepetition={this.props.updateRepetition}
+                                    />
 
                                     :
                                     <></>
@@ -450,6 +508,8 @@ class DailyRepeatOption extends React.PureComponent {
         }
     })
 
+    regExp = new RegExp(/^\d+$/)
+
     state = {
         value: ""
     }
@@ -458,6 +518,19 @@ class DailyRepeatOption extends React.PureComponent {
         this.setState({
             value: e.nativeEvent.text.replace(/[^0-9]/g, '')
         })
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.value !== prevState.value && this.regExp.test(this.state.value)) {
+            let data = {
+                type: "daily",
+                interval: {
+                    value: 86400 * parseInt(this.state.value)
+                }
+            }
+
+            this.props.updateRepetition(data)
+        }
     }
 
     render() {
@@ -511,12 +584,12 @@ class DayWeeklyRepeatOption extends React.PureComponent {
         }
     })
 
+    regExp = new RegExp(/^\d+$/)
+
+    chosenDaysInWeek = [false, false, false, false, false, false, false]
 
 
     state = {
-        currentIndex: -1,
-        lastIndex: -1,
-
         value: ""
     }
 
@@ -526,14 +599,31 @@ class DayWeeklyRepeatOption extends React.PureComponent {
         })
     }
 
-    changeCurrentIndex = (index) => {
-        this.setState(prevState => ({
-            currentIndex: index,
-            lastIndex: prevState.currentIndex
-        }))
+    updateDaysInWeek = (index) => {
+        this.chosenDaysInWeek[index] = !this.chosenDaysInWeek[index]
     }
 
-    componentDidMount() {
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.value !== prevState.value && this.regExp.test(this.state.value)) {
+            let daysInWeek = []
+
+            this.chosenDaysInWeek.forEach((bool, index) => {
+                if (bool) {
+                    daysInWeek.push(index)
+                }
+            })
+
+            let data = {
+                type: "weekly",
+                interval: {
+                    value: 86400 * 7 * parseInt(this.state.value),
+                    daysInWeek
+                }
+            }
+
+            this.props.updateRepetition(data)
+        }
     }
 
     render() {
@@ -547,50 +637,50 @@ class DayWeeklyRepeatOption extends React.PureComponent {
                         noLeftBorder={true}
                         currentIndex={this.state.currentIndex}
                         lastIndex={this.state.lastIndex}
-                        index={0}
-                        changeCurrentIndex={this.changeCurrentIndex} />
+                        index={1}
+                        updateDaysInWeek={this.updateDaysInWeek} />
 
                     <WeeklyOption
                         day="Tue"
                         currentIndex={this.state.currentIndex}
                         lastIndex={this.state.lastIndex}
-                        index={1}
-                        changeCurrentIndex={this.changeCurrentIndex} />
+                        index={2}
+                        updateDaysInWeek={this.updateDaysInWeek} />
 
                     <WeeklyOption
                         day="Wed"
                         currentIndex={this.state.currentIndex}
                         lastIndex={this.state.lastIndex}
-                        index={2}
-                        changeCurrentIndex={this.changeCurrentIndex} />
+                        index={3}
+                        updateDaysInWeek={this.updateDaysInWeek} />
 
                     <WeeklyOption
                         day="Thu"
                         currentIndex={this.state.currentIndex}
                         lastIndex={this.state.lastIndex}
-                        index={3}
-                        changeCurrentIndex={this.changeCurrentIndex} />
+                        index={4}
+                        updateDaysInWeek={this.updateDaysInWeek} />
 
                     <WeeklyOption
                         day="Fri"
                         currentIndex={this.state.currentIndex}
                         lastIndex={this.state.lastIndex}
-                        index={4}
-                        changeCurrentIndex={this.changeCurrentIndex} />
+                        index={5}
+                        updateDaysInWeek={this.updateDaysInWeek} />
 
                     <WeeklyOption
                         day="Sat"
                         currentIndex={this.state.currentIndex}
                         lastIndex={this.state.lastIndex}
-                        index={5}
-                        changeCurrentIndex={this.changeCurrentIndex} />
+                        index={6}
+                        updateDaysInWeek={this.updateDaysInWeek} />
 
                     <WeeklyOption
                         day="Sun"
                         currentIndex={this.state.currentIndex}
                         lastIndex={this.state.lastIndex}
-                        index={6}
-                        changeCurrentIndex={this.changeCurrentIndex} />
+                        index={0}
+                        updateDaysInWeek={this.updateDaysInWeek} />
                 </View>
 
                 <View
@@ -652,7 +742,8 @@ class WeeklyOption extends React.PureComponent {
     }
 
     _onPress = () => {
-        // this.props.changeCurrentIndex(this.props.index)
+        this.props.updateDaysInWeek(this.props.index)
+
         this.setState(prevState => ({
             chosen: !prevState.chosen,
         }))
@@ -760,6 +851,8 @@ class DayMonthlyRepeatOption extends React.PureComponent {
         }
     })
 
+    regExp = new RegExp(/^\d+$/)
+
     state = {
         value: ""
     }
@@ -768,6 +861,21 @@ class DayMonthlyRepeatOption extends React.PureComponent {
         this.setState({
             value: e.nativeEvent.text.replace(/[^0-9]/g, '')
         })
+
+
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.value !== prevState.value && this.regExp.test(this.state.value)) {
+            let data = {
+                type: "monthly",
+                interval: {
+                    value: parseInt(this.state.value)
+                }
+            }
+
+            this.props.updateRepetition(data)
+        }
     }
 
     render() {
@@ -814,6 +922,8 @@ class WeeklyRepeatOption extends React.PureComponent {
         }
     })
 
+    regExp = new RegExp(/^\d+$/)
+
     number_nth_convensions = ["first", "second", "third", "last"]
 
     state = {
@@ -828,6 +938,26 @@ class WeeklyRepeatOption extends React.PureComponent {
 
     _toggleWeekOptionInWeeklyTask = () => {
         this.props.toggleWeekOptionInWeeklyTask()
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.value !== prevState.value && this.regExp.test(this.state.value)) {
+            let data = this.props.weekly_repeat_picker_value === "weeks" ?
+                {
+                    type: "weekly",
+                    interval: {
+                        value: 86400 * 7 * parseInt(this.state.value)
+                    }
+                } : {
+                    type: "monthly",
+                    interval: {
+                        value: parseInt(this.state.value)
+                    }
+                }
+
+
+            this.props.updateRepetition(data)
+        }
     }
 
     render() {
@@ -957,7 +1087,7 @@ class WeeklyRepeatWeekMonthModal extends React.PureComponent {
 }
 
 // 'Every 1 months' (Creating Monthly Task)
-class MonthlyRepeatOption extends React.PureComponent{
+class MonthlyRepeatOption extends React.PureComponent {
     styles = StyleSheet.create({
         container: {
             flexDirection: "row",
@@ -966,14 +1096,30 @@ class MonthlyRepeatOption extends React.PureComponent{
         }
     })
 
+    regExp = new RegExp(/^\d+$/)
+
     state = {
         value: ""
     }
+
 
     _onChange = (e) => {
         this.setState({
             value: e.nativeEvent.text.replace(/[^0-9]/g, '')
         })
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.value !== prevState.value && this.regExp.test(this.state.value)) {
+            let data = {
+                type: "monthly",
+                interval: {
+                    value: parseInt(this.state.value)
+                }
+            }
+
+            this.props.updateRepetition(data)
+        }
     }
 
     render() {
@@ -1038,6 +1184,10 @@ export class EndRepeatHolder extends React.PureComponent {
     currentIndex = -1
     lastIndex = -1
 
+    data = {}
+
+    regExp = new RegExp(/^\d+$/)
+
     convertDateString = (date) => {
         let dateTime = new Date(date)
         return dateTime.getDate() + " " + shortMonthNames[dateTime.getMonth()] + " " + dateTime.getFullYear()
@@ -1046,8 +1196,7 @@ export class EndRepeatHolder extends React.PureComponent {
     //We can initialize values directly inside state to avoid a second render.
     //For this to work, need to put used functions and variables before declaring state or they will be undefined.
     state = {
-        afterOccurranceValue: "",
-        chosenDate: this.convertDateString(this.props.chosenDate),
+        afterOccurranceValue: "1",
 
         radio_style_arr: Array.from(Array(3), (value, index) => this.styles.unChosenRadioStyle), //value will be undefine because Array(3) has 3 undefined values
     }
@@ -1091,6 +1240,30 @@ export class EndRepeatHolder extends React.PureComponent {
         this.setState({
             radio_style_arr: [...radio_style_arr]
         })
+
+        if (this.currentIndex === 0) {
+            this.data = { ... this.data, type: "never" }
+        }
+
+        else if (this.currentIndex === 1) {
+            this.data = {
+                ... this.data, ... {
+                    type: "on",
+                    endAt: this.props.chosenDate.getTime(),
+                }
+            }
+        }
+
+        else {
+            this.data = {
+                ... this.data, ... {
+                    type: "after",
+                    occurance: parseInt(this.state.afterOccurranceValue)
+                }
+            }
+        }
+
+        this.props.updateEnd(this.data)
     }
 
     doWhenKeyboardWillShow = () => {
@@ -1099,13 +1272,17 @@ export class EndRepeatHolder extends React.PureComponent {
 
     doWhenKeyboardWillHide = () => {
         this.props.resetStyle()
+
+        if(this.state.afterOccurranceValue === "" || this.state.afterOccurranceValue === "0"){
+            this.setState({
+                afterOccurranceValue: "1"
+            })
+        }
     }
 
     openDatePickerIOS = () => {
         this.props.toggleEndOnDate()
     }
-
-
 
     componentDidMount() {
         this.chooseOptionRadio(0)
@@ -1116,10 +1293,27 @@ export class EndRepeatHolder extends React.PureComponent {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.props.chosenDate !== prevProps.chosenDate) {
-            this.setState({
-                chosenDate: this.convertDateString(this.props.chosenDate)
-            })
+        if (this.props.chosenDate !== prevProps.chosenDate && this.currentIndex === 1) {
+            this.data = {
+                ... this.data, ... {
+                    type: "on",
+                    endAt: this.props.chosenDate.getTime(),
+                }
+            }
+
+            this.props.updateEnd(this.data)
+        }
+
+        else if (this.state.afterOccurranceValue !== prevProps.afterOccurranceValue && this.regExp.test(this.state.afterOccurranceValue) && this.currentIndex === 2) {
+            this.data = {
+                ... this.data,
+                ... {
+                    type: "after",
+                    occurance: parseInt(this.state.afterOccurranceValue)
+                }
+            }
+
+            this.props.updateEnd(this.data)
         }
     }
 
@@ -1175,7 +1369,7 @@ export class EndRepeatHolder extends React.PureComponent {
 
                             onPress={this.openDatePickerIOS}
                         >
-                            <Text>{this.state.chosenDate}</Text>
+                            <Text>{this.convertDateString(this.props.chosenDate)}</Text>
                         </TouchableHighlight>
                     </View>
 
