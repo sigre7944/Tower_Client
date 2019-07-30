@@ -4,7 +4,8 @@ import {createCategory} from './actions/createCategory'
 import {updateCategory} from './actions/updateCategory'
 
 const mapStateToProps = (state) => ({
-    categories: state.categories
+    categories: state.categories,
+    currentTask: state.currentTask,
 })
 
 const mapDispatchToProps = (dispatch) => ({

@@ -111,8 +111,6 @@ export default class DayAnnotationPanel extends Component {
     }
 
 
-
-
     render() {
         return (
             <>

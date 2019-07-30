@@ -10,13 +10,7 @@ import Header from './components/main/header/Header'
 import * as FileSystem from 'expo-file-system';
 
 let categories = {},
-  filePath = FileSystem.documentDirectory + "categories.json",
-  store
-
-
-
-
-// const store = createStore(rootReducer)
+  filePath = FileSystem.documentDirectory + "categories.json"
 
 export default class App extends React.Component {
 

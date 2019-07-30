@@ -17,20 +17,6 @@ export default class CalendarDisplayHolder extends React.Component{
 
     _scrollToWeekRow = () => {
         this.props.scrollToWeekRow(this.props.index)
-
-        let startTime = trackingTime = new Date(
-            new Date(
-                new Date(
-                    new Date().setDate(this.props.weekData.day)).setMonth(this.props.weekData.monthIndex)).setFullYear(this.props.weekData.year))
-        .getTime()
-
-        this.props.updateStartingDate({
-            week: this.props.weekData.noWeek,
-            month: this.props.weekData.monthIndex,
-            year: this.props.weekData.year,
-            startTime,
-            trackingTime,
-        })
     }
 
     render(){

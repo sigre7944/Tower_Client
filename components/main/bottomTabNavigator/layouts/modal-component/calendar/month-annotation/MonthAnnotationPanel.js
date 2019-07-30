@@ -120,7 +120,7 @@ export default class MonthAnnotationPanel extends Component {
     componentDidMount() {
         this.initMonths()
     }
-
+    
     render() {
         return (
             <>

@@ -76,10 +76,6 @@ export default class Repeat extends Component {
         })
     }
 
-    componentDidUpdate(prevProps, prevState) {
-
-    }
-
     componentWillUnmount() {
         Keyboard.removeListener('keyboardWillShow', this.toDoWhenWillShowKeyboard)
         Keyboard.removeListener('keyboardWillHide', this.toDoWhenWillHideKB)
@@ -140,7 +136,7 @@ export default class Repeat extends Component {
                         toggleEndOnDate={this.toggleEndOnDate}
                         chosenDate={this.state.chosenDate}
 
-                        updateEnd = {this.props.updateEnd}
+                        updateEnd={this.props.updateEnd}
                     />
 
                     <View
@@ -510,8 +506,10 @@ class DailyRepeatOption extends React.PureComponent {
 
     regExp = new RegExp(/^\d+$/)
 
+    data = {}
+
     state = {
-        value: ""
+        value: "1"
     }
 
     _onChange = (e) => {
@@ -520,17 +518,42 @@ class DailyRepeatOption extends React.PureComponent {
         })
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.state.value !== prevState.value && this.regExp.test(this.state.value)) {
-            let data = {
-                type: "daily",
-                interval: {
-                    value: 86400 * parseInt(this.state.value)
-                }
+    _updateRepetition = (value) => {
+        this.data = {
+            type: "daily",
+            interval: {
+                value: 86400 * parseInt(value)
             }
-
-            this.props.updateRepetition(data)
         }
+
+        this.props.updateRepetition(this.data)
+    }
+
+    toDoWillHide = () => {
+        if (this.state.value === "" || this.state.value === "0") {
+            this.setState({
+                value: "1"
+            })
+        }
+    }
+
+    componentDidMount() {
+        this._updateRepetition(this.state.value)
+
+        this.willHideListener = Keyboard.addListener(
+            "keyboardWillHide",
+            this.toDoWillHide
+        )
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.value !== prevState.value && this.regExp.test(this.state.value) && parseInt(this.state.value) > 0) {
+            this._updateRepetition(this.state.value)
+        }
+    }
+
+    componentWillUnmount() {
+        Keyboard.removeListener("keyboardWillHide", this.toDoWillHide)
     }
 
     render() {
@@ -588,9 +611,12 @@ class DayWeeklyRepeatOption extends React.PureComponent {
 
     chosenDaysInWeek = [false, false, false, false, false, false, false]
 
+    data = {}
+
+    daysInWeek = []
 
     state = {
-        value: ""
+        value: "1"
     }
 
     _onChange = (e) => {
@@ -603,27 +629,51 @@ class DayWeeklyRepeatOption extends React.PureComponent {
         this.chosenDaysInWeek[index] = !this.chosenDaysInWeek[index]
     }
 
+    _updateRepetition = (value) => {
+        this.daysInWeek = []
+
+        this.chosenDaysInWeek.forEach((bool, index) => {
+            if (bool) {
+                this.daysInWeek.push(index)
+            }
+        })
+
+        this.data = {
+            type: "weekly",
+            interval: {
+                value: 86400 * 7 * parseInt(value),
+                daysInWeek: this.daysInWeek
+            }
+        }
+
+        this.props.updateRepetition(this.data)
+    }
+
+    toDoWillHide = () => {
+        if (this.state.value === "" || this.state.value === "0") {
+            this.setState({
+                value: "1"
+            })
+        }
+    }
+
+    componentDidMount() {
+        this._updateRepetition(this.state.value)
+
+        this.willHideListener = Keyboard.addListener(
+            "keyboardWillHide",
+            this.toDoWillHide
+        )
+    }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.state.value !== prevState.value && this.regExp.test(this.state.value)) {
-            let daysInWeek = []
-
-            this.chosenDaysInWeek.forEach((bool, index) => {
-                if (bool) {
-                    daysInWeek.push(index)
-                }
-            })
-
-            let data = {
-                type: "weekly",
-                interval: {
-                    value: 86400 * 7 * parseInt(this.state.value),
-                    daysInWeek
-                }
-            }
-
-            this.props.updateRepetition(data)
+        if (this.state.value !== prevState.value && this.regExp.test(this.state.value) && parseInt(this.state.value) > 0) {
+            this._updateRepetition(this.state.value)
         }
+    }
+
+    componentWillUnmount() {
+        Keyboard.removeListener("keyboardWillHide", this.toDoWillHide)
     }
 
     render() {
@@ -853,29 +903,54 @@ class DayMonthlyRepeatOption extends React.PureComponent {
 
     regExp = new RegExp(/^\d+$/)
 
+    data = {}
+
     state = {
-        value: ""
+        value: "1"
     }
 
     _onChange = (e) => {
         this.setState({
             value: e.nativeEvent.text.replace(/[^0-9]/g, '')
         })
+    }
 
+    _updateRepetition = (value) => {
+        this.data = {
+            type: "monthly",
+            interval: {
+                value: parseInt(this.state.value)
+            }
+        }
 
+        this.props.updateRepetition(this.data)
+    }
+
+    toDoWillHide = () => {
+        if (this.state.value === "" || this.state.value === "0") {
+            this.setState({
+                value: "1"
+            })
+        }
+    }
+
+    componentDidMount() {
+        this._updateRepetition(this.state.value)
+
+        this.willHideListener = Keyboard.addListener(
+            "keyboardWillHide",
+            this.toDoWillHide
+        )
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.state.value !== prevState.value && this.regExp.test(this.state.value)) {
-            let data = {
-                type: "monthly",
-                interval: {
-                    value: parseInt(this.state.value)
-                }
-            }
-
-            this.props.updateRepetition(data)
+        if (this.state.value !== prevState.value && this.regExp.test(this.state.value) && parseInt(this.state.value) > 0) {
+            this._updateRepetition(this.state.value)
         }
+    }
+
+    componentWillUnmount() {
+        Keyboard.removeListener("keyboardWillHide", this.toDoWillHide)
     }
 
     render() {
@@ -924,10 +999,12 @@ class WeeklyRepeatOption extends React.PureComponent {
 
     regExp = new RegExp(/^\d+$/)
 
+    data = {}
+
     number_nth_convensions = ["first", "second", "third", "last"]
 
     state = {
-        value: ""
+        value: "1"
     }
 
     _onChange = (e) => {
@@ -940,24 +1017,49 @@ class WeeklyRepeatOption extends React.PureComponent {
         this.props.toggleWeekOptionInWeeklyTask()
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.state.value !== prevState.value && this.regExp.test(this.state.value)) {
-            let data = this.props.weekly_repeat_picker_value === "weeks" ?
-                {
-                    type: "weekly",
-                    interval: {
-                        value: 86400 * 7 * parseInt(this.state.value)
-                    }
-                } : {
-                    type: "monthly",
-                    interval: {
-                        value: parseInt(this.state.value)
-                    }
+    _updateRepetition = (value) => {
+        this.data = this.props.weekly_repeat_picker_value === "weeks" ?
+            {
+                type: "weekly",
+                interval: {
+                    value: 86400 * 7 * parseInt(value)
                 }
+            } : {
+                type: "monthly",
+                interval: {
+                    value: parseInt(value)
+                }
+            }
 
 
-            this.props.updateRepetition(data)
+        this.props.updateRepetition(this.data)
+    }
+
+    toDoWillHide = () => {
+        if (this.state.value === "" || this.state.value === "0") {
+            this.setState({
+                value: "1"
+            })
         }
+    }
+
+    componentDidMount() {
+        this._updateRepetition(this.state.value)
+
+        this.willHideListener = Keyboard.addListener(
+            "keyboardWillHide",
+            this.toDoWillHide
+        )
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.value !== prevState.value && this.regExp.test(this.state.value) && parseInt(this.state.value) > 0) {
+            this._updateRepetition(this.state.value)
+        }
+    }
+
+    componentWillUnmount() {
+        Keyboard.removeListener("keyboardWillHide", this.toDoWillHide)
     }
 
     render() {
@@ -1098,8 +1200,10 @@ class MonthlyRepeatOption extends React.PureComponent {
 
     regExp = new RegExp(/^\d+$/)
 
+    data = {}
+
     state = {
-        value: ""
+        value: "1"
     }
 
 
@@ -1109,17 +1213,42 @@ class MonthlyRepeatOption extends React.PureComponent {
         })
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.state.value !== prevState.value && this.regExp.test(this.state.value)) {
-            let data = {
-                type: "monthly",
-                interval: {
-                    value: parseInt(this.state.value)
-                }
+    _updateRepetition = (value) => {
+        this.data = {
+            type: "monthly",
+            interval: {
+                value: parseInt(value)
             }
-
-            this.props.updateRepetition(data)
         }
+
+        this.props.updateRepetition(this.data)
+    }
+
+    toDoWillHide = () => {
+        if (this.state.value === "" || this.state.value === "0") {
+            this.setState({
+                value: "1"
+            })
+        }
+    }
+
+    componentDidMount() {
+        this._updateRepetition(this.state.value)
+
+        this.willHideListener = Keyboard.addListener(
+            "keyboardWillHide",
+            this.toDoWillHide
+        )
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.value !== prevState.value && this.regExp.test(this.state.value) && parseInt(this.state.value) > 0) {
+            this._updateRepetition(this.state.value)
+        }
+    }
+
+    componentWillUnmount() {
+        Keyboard.removeListener("keyboardWillHide", this.toDoWillHide)
     }
 
     render() {
@@ -1241,29 +1370,8 @@ export class EndRepeatHolder extends React.PureComponent {
             radio_style_arr: [...radio_style_arr]
         })
 
-        if (this.currentIndex === 0) {
-            this.data = { ... this.data, type: "never" }
-        }
 
-        else if (this.currentIndex === 1) {
-            this.data = {
-                ... this.data, ... {
-                    type: "on",
-                    endAt: this.props.chosenDate.getTime(),
-                }
-            }
-        }
-
-        else {
-            this.data = {
-                ... this.data, ... {
-                    type: "after",
-                    occurance: parseInt(this.state.afterOccurranceValue)
-                }
-            }
-        }
-
-        this.props.updateEnd(this.data)
+        // this.props.updateEnd(this.data)
     }
 
     doWhenKeyboardWillShow = () => {
@@ -1273,7 +1381,7 @@ export class EndRepeatHolder extends React.PureComponent {
     doWhenKeyboardWillHide = () => {
         this.props.resetStyle()
 
-        if(this.state.afterOccurranceValue === "" || this.state.afterOccurranceValue === "0"){
+        if (this.state.afterOccurranceValue === "" || this.state.afterOccurranceValue === "0") {
             this.setState({
                 afterOccurranceValue: "1"
             })
@@ -1293,27 +1401,55 @@ export class EndRepeatHolder extends React.PureComponent {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.props.chosenDate !== prevProps.chosenDate && this.currentIndex === 1) {
-            this.data = {
-                ... this.data, ... {
+
+        if (this.state.radio_style_arr !== prevState.radio_style_arr) {
+            if (this.currentIndex === 0) {
+                this.data = {
+                    type: "never"
+                }
+
+                this.props.updateEnd(this.data)
+            }
+
+            else if (this.currentIndex === 1) {
+                this.data = {
                     type: "on",
                     endAt: this.props.chosenDate.getTime(),
                 }
+
+                this.props.updateEnd(this.data)
             }
 
-            this.props.updateEnd(this.data)
+            else {
+                if (this.regExp.test(this.state.afterOccurranceValue)) {
+                    this.data = {
+                        type: "after",
+                        occurance: parseInt(this.state.afterOccurranceValue)
+                    }
+
+                    this.props.updateEnd(this.data)
+                }
+            }
         }
 
-        else if (this.state.afterOccurranceValue !== prevProps.afterOccurranceValue && this.regExp.test(this.state.afterOccurranceValue) && this.currentIndex === 2) {
-            this.data = {
-                ... this.data,
-                ... {
+        else {
+            if (this.props.chosenDate !== prevProps.chosenDate && this.currentIndex === 1) {
+                this.data = {
+                    type: "on",
+                    endAt: this.props.chosenDate.getTime(),
+                }
+
+                this.props.updateEnd(this.data)
+            }
+
+            else if (this.state.afterOccurranceValue !== prevState.afterOccurranceValue && this.regExp.test(this.state.afterOccurranceValue) && this.currentIndex === 2) {
+                this.data = {
                     type: "after",
                     occurance: parseInt(this.state.afterOccurranceValue)
                 }
-            }
 
-            this.props.updateEnd(this.data)
+                this.props.updateEnd(this.data)
+            }
         }
     }
 

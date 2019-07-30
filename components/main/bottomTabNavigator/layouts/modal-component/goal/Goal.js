@@ -4,23 +4,17 @@ import {
     View,
     Text,
     TouchableHighlight,
-    StyleSheet,
     TextInput,
-    Keyboard,
-    KeyboardAvoidingView,
-    Modal,
-    TouchableWithoutFeedback,
-    FlatList,
-    Picker,
-    Switch,
-    Dimensions,
-    Animated,
-    LayoutAnimation,
-    UIManager,
-    Platform
+    Keyboard
 } from 'react-native';
 
 export default class Goal extends React.Component {
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.currentTask !== prevProps.currentTask) {
+            console.log(this.props.currentTask)
+        }
+    }
 
     render() {
         return (
@@ -39,7 +33,8 @@ export default class Goal extends React.Component {
 
                 <GoalPerTimesRow
                     currentAnnotation={this.props.currentAnnotation}
-                    updateGoal = {this.props.updateGoal}
+                    updateGoal={this.props.updateGoal}
+                    currentTask={this.props.currentTask}
                 />
             </View>
         )
@@ -52,14 +47,32 @@ class GoalPerTimesRow extends React.PureComponent {
 
     state = {
         interval: "",
-        value: ""
+        value: "1"
     }
 
+    data = {}
 
     _onChange = (e) => {
         this.setState({
             value: e.nativeEvent.text.replace(/[^0-9]/g, "")
         })
+    }
+
+    toDoWillHide = () => {
+        if (this.state.value === "" || this.state.value === "0") {
+            this.setState({
+                value: "1"
+            })
+        }
+    }
+
+    _updateGoal = (value) => {
+        this.data = {
+            max: parseInt(value),
+            current: 0,
+        }
+
+        this.props.updateGoal(this.data)
     }
 
     componentDidMount() {
@@ -80,15 +93,23 @@ class GoalPerTimesRow extends React.PureComponent {
                 interval: " times per month",
             }))
         }
+
+        this._updateGoal(this.state.value)
+
+        this.willHideListener = Keyboard.addListener(
+            "keyboardWillHide",
+            this.toDoWillHide
+        )
     }
 
-    componentDidUpdate(prevProps, prevState){
-        if(this.state.value !== prevState.value && this.regExp.test(this.state.value)){
-            this.props.updateGoal({
-                max: parseInt(this.state.value),
-                current: 0,
-            })
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.value !== prevState.value && this.regExp.test(this.state.value) && parseInt(this.state.value) > 0) {
+            this._updateGoal(this.state.value)
         }
+    }
+
+    componentWillUnmount(){
+        Keyboard.removeListener("keyboardWillHide", this.toDoWillHide)
     }
 
     render() {
@@ -116,6 +137,7 @@ class GoalPerTimesRow extends React.PureComponent {
                         placeholder={"0"}
                         keyboardType={"numbers-and-punctuation"}
                         autoCorrect={false}
+                        maxLength={2}
                     />
 
                     <Text

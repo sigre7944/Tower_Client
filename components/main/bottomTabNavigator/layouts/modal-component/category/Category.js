@@ -222,6 +222,7 @@ export default class Category extends React.Component {
         if(this.props.categories !== prevProps.categories){
             this.initializeCategoryArr()
         }
+
     }
 
     render() {

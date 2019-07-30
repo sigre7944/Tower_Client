@@ -39,11 +39,15 @@ export default class Priority extends React.Component {
         }
     }
 
+    regExp = new RegExp(/^\d+$/)
+
     state = {
         translateYAnim: new Animated.Value(0),
         priority_value: "Do First",
         priority_picker_chosen: false,
         matrix_helper_chosen: false,
+
+        reward_value: "0"
     }
 
     changeViewToMatrix = () => {
@@ -60,6 +64,11 @@ export default class Priority extends React.Component {
         }))
     }
 
+    changeRewardValue = (value) => {
+        this.setState({
+            reward_value: value.replace(/[^0-9]/g, "")
+        })
+    }
 
     changePriorityValue = (value) => {
         this.setState({
@@ -70,23 +79,40 @@ export default class Priority extends React.Component {
             this.importance_index = 1
             this.urgency_index = 1
 
+            this.props.updatePriority({
+                value: Object.keys(this.props.priorities)[0],
+                reward: parseInt(this.state.reward_value)
+            })
         }
 
         else if (value === "Plan") {
             this.importance_index = 1
             this.urgency_index = 0
+
+            this.props.updatePriority({
+                value: Object.keys(this.props.priorities)[1],
+                reward: parseInt(this.state.reward_value)
+            })
         }
 
         else if (value === "Delay") {
             this.importance_index = 0
             this.urgency_index = 1
 
+            this.props.updatePriority({
+                value: Object.keys(this.props.priorities)[2],
+                reward: parseInt(this.state.reward_value)
+            })
         }
 
         else if (value === "Delegate") {
             this.importance_index = 0
             this.urgency_index = 0
 
+            this.props.updatePriority({
+                value: Object.keys(this.props.priorities)[3],
+                reward: parseInt(this.state.reward_value)
+            })
         }
     }
 
@@ -136,6 +162,38 @@ export default class Priority extends React.Component {
         )
     }
 
+    componentDidUpdate(prevProps, prevState){
+        if(this.state.reward_value !== prevState.reward_value && this.regExp.test(this.state.reward_value)){
+            if (this.state.priority_value === "Do First") {
+                this.props.updatePriority({
+                    value: Object.keys(this.props.priorities)[0],
+                    reward: parseInt(this.state.reward_value)
+                })
+            }
+    
+            else if (this.state.priority_value === "Plan") {
+                this.props.updatePriority({
+                    value: Object.keys(this.props.priorities)[1],
+                    reward: parseInt(this.state.reward_value)
+                })
+            }
+    
+            else if (this.state.priority_value === "Delay") {
+                this.props.updatePriority({
+                    value: Object.keys(this.props.priorities)[2],
+                    reward: parseInt(this.state.reward_value)
+                })
+            }
+    
+            else if (this.state.priority_value === "Delegate") {
+                this.props.updatePriority({
+                    value: Object.keys(this.props.priorities)[3],
+                    reward: parseInt(this.state.reward_value)
+                })
+            }
+        }
+    }
+
     componentWillUnmount() {
         Keyboard.removeListener("keyboardWillShow", this.toDoWhenKeyBoardWillShow)
         Keyboard.removeListener("keyboardWillHide", this.toDoWhenKeyboardWillHide)
@@ -177,8 +235,8 @@ export default class Priority extends React.Component {
                         />
 
                         <Reward
-                            priority_value = {this.state.priority_value}
-                            priorities = {this.props.priorities}
+                            changeRewardValue = {this.changeRewardValue}
+                            reward_value = {this.state.reward_value}
                         />
 
                         <View
@@ -463,48 +521,8 @@ class ImportanceUrgencyRow extends React.PureComponent {
 
 class Reward extends React.PureComponent {
 
-    regExp = new RegExp(/^\d+$/)
-
-    state = {
-        value: ""
-    }
-
     _onChange = (e) => {
-        this.setState({
-            value: e.nativeEvent.text.replace(/[^0-9]/g, "")
-        })
-    }
-
-    componentDidUpdate(prevProps, prevState){
-        if(this.state.value !== prevState.value && this.regExp.test(this.state.value)){
-            if (value === "Do First") {
-                this.props.updatePriority({
-                    value: this.props.priorities.keys()[0],
-                    reward: parseInt(this.state.value)
-                })
-            }
-    
-            else if (value === "Plan") {
-                this.props.updatePriority({
-                    value: this.props.priorities.keys()[1],
-                    reward: parseInt(this.state.value)
-                })
-            }
-    
-            else if (value === "Delay") {
-                this.props.updatePriority({
-                    value: this.props.priorities.keys()[2],
-                    reward: parseInt(this.state.value)
-                })
-            }
-    
-            else if (value === "Delegate") {
-                this.props.updatePriority({
-                    value: this.props.priorities.keys()[3],
-                    reward: parseInt(this.state.value)
-                })
-            }
-        }
+        this.props.changeRewardValue(e.nativeEvent.text)
     }
 
     render() {
@@ -531,7 +549,7 @@ class Reward extends React.PureComponent {
                     }}
 
                     keyboardType={"numbers-and-punctuation"}
-                    value={this.state.value}
+                    value={this.props.reward_value}
                     onChange={this._onChange}
                     maxLength={4}
                     placeholder={"0"}

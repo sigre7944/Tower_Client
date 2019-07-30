@@ -181,7 +181,7 @@ export default class AddTaskPanel extends Component {
                         updateTitle={this.props.updateTitle}
                     />
 
-                    <TaskDescriptionElement 
+                    <TaskDescriptionElement
                         updateDescription={this.props.updateDescription}
                     />
 
@@ -235,7 +235,7 @@ export default class AddTaskPanel extends Component {
 
 
 class TaskTitleElement extends React.PureComponent {
-    constructor(props){
+    constructor(props) {
         super(props)
 
         this.textInputRef = React.createRef()
@@ -247,10 +247,9 @@ class TaskTitleElement extends React.PureComponent {
 
     _onChange = (e) => {
         this.setState({
-            value: e.nativeEvent.value
+            value: e.nativeEvent.text
         })
 
-        this.props.updateTitle({title: this.state.value})
     }
 
     setTaskTextInputRef = (ref) => {
@@ -258,8 +257,14 @@ class TaskTitleElement extends React.PureComponent {
         this.textInputRef = ref
     }
 
-    componentDidMount(){
+    componentDidMount() {
         setTimeout(() => { this.textInputRef.focus() }, 50)
+    }
+
+    componentDidUpdate(prevProps, prevState){
+        if(this.state.value !== prevState.value){
+            this.props.updateTitle(this.state.value)
+        }
     }
 
     render() {
@@ -303,10 +308,14 @@ class TaskDescriptionElement extends React.PureComponent {
 
     _onChange = (e) => {
         this.setState({
-            value: e.nativeEvent.value
+            value: e.nativeEvent.text
         })
+    }
 
-        this.props.updateDescription({description: this.state.value})
+    componentDidUpdate(prevProps, prevState){
+        if(this.state.value !== prevState.value){
+            this.props.updateDescription(this.state.value)
+        }
     }
 
     render() {

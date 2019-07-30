@@ -33,7 +33,9 @@ export default class WeekAnnotationPanel extends Component {
         currentWeekIndex: 0,
         lastWeekIndex: 0,
 
-        displaying_text_of_current_week: ''
+        displaying_text_of_current_week: '',
+
+        week_data_array: []
     }
 
     _chooseRepeatOption = () => {
@@ -103,6 +105,7 @@ export default class WeekAnnotationPanel extends Component {
         // To initialize the first week, we need to make sure that the reference of FlatList 
         // is initialized before calling the function scrollToWeekRow. (Because FlatList will render items faster 
         // than creating its reference)
+
         if (this._flatListRef) {
             this._flatListRef.scrollToOffset({ animated: true, offset: index * 40 - 40 * 2 })
         }
@@ -110,14 +113,27 @@ export default class WeekAnnotationPanel extends Component {
         let week_data = this.week_data_array[index],
             displaying_text_of_current_week = 'Week ' + week_data.noWeek + ' - ' + week_data.month + ' ' + week_data.year
 
-        this.setState((state, props) => ({
-            lastWeekIndex: state.currentWeekIndex,
+        this.setState(prevState => ({
+            lastWeekIndex: prevState.currentWeekIndex,
             currentWeekIndex: index,
             displaying_text_of_current_week: displaying_text_of_current_week
         }))
 
         this.props.updateCurrentWeekInMonth(week_data)
 
+        let startTime = trackingTime = new Date(
+            new Date(
+                new Date(
+                    new Date().setDate(week_data.day)).setMonth(week_data.monthIndex)).setFullYear(week_data.year))
+        .getTime()
+
+        this.props.updateStartingDate({
+            week: week_data.noWeek,
+            month: week_data.monthIndex,
+            year: week_data.year,
+            startTime,
+            trackingTime,
+        })
     }
 
     returnToCurrentMonth = () => {
@@ -131,21 +147,6 @@ export default class WeekAnnotationPanel extends Component {
         let year = new Date().getFullYear()
 
         this.getWeekData(new Date(year, 0, 1), new Date(year + this.numberOfYears, 11, 31), 1)
-    }
-
-
-
-    trimPastWeeks = () => {
-        let currentYear = new Date().getFullYear(),
-            currentMonth = new Date().getMonth()
-
-
-        let startTrimmingIndex = this.week_data_array.findIndex((data) => data.year === currentYear && data.month === monthNames[currentMonth])
-
-        //startTrimmingIndex - 1 means we will get the monthAndYear text, since startTrimmingIndex will be the
-        //very first day of the first week of the month. So before that index, is the monthAndYear text's object.
-        this.week_data_array = [... this.week_data_array.slice(startTrimmingIndex - 1, this.week_data_array.length)]
-
     }
 
     getWeekData = (firstDayOfWeek, endDay, noWeek, noWeekInMonth) => {
@@ -212,6 +213,19 @@ export default class WeekAnnotationPanel extends Component {
         this.getWeekData(nextMondayTime, endDay, weekData.noWeek + 1, weekData.noWeekInMonth + 1)
     }
 
+    trimPastWeeks = () => {
+        let currentYear = new Date().getFullYear(),
+            currentMonth = new Date().getMonth()
+
+
+        let startTrimmingIndex = this.week_data_array.findIndex((data) => data.year === currentYear && data.month === monthNames[currentMonth])
+
+        //startTrimmingIndex - 1 means we will get the monthAndYear text, since startTrimmingIndex will be the
+        //very first day of the first week of the month. So before that index, is the monthAndYear text's object.
+        this.week_data_array = [... this.week_data_array.slice(startTrimmingIndex - 1, this.week_data_array.length)]
+
+    }
+
     markCurrentWeek = () => {
         this.week_data_array.every((data, index, arr) => {
             if (data.week_day_array) {
@@ -238,7 +252,15 @@ export default class WeekAnnotationPanel extends Component {
     }
 
     _onLayout = () => {
-        
+        this.week_data_array.every((data, index) => {
+            if (data.isCurrentWeek) {
+                this.scrollToWeekRow(index)
+
+                return false
+            }
+
+            return true
+        })
     }
 
     componentDidMount() {
@@ -248,14 +270,8 @@ export default class WeekAnnotationPanel extends Component {
 
         this.markCurrentWeek()
 
-        this.week_data_array.every((data, index) => {
-            if (data.isCurrentWeek) {
-                this.scrollToWeekRow(index)
-
-                return false
-            }
-
-            return true
+        this.setState({
+            week_data_array: [... this.week_data_array]
         })
     }
 
@@ -329,7 +345,7 @@ export default class WeekAnnotationPanel extends Component {
                             <FlatList
                                 // getItemLayout = {this._getItemLayout}
                                 keyExtractor={this._keyExtractor}
-                                data={this.week_data_array}
+                                data={this.state.week_data_array}
                                 removeClippedSubviews={true}
                                 renderItem={this._renderItem}
                                 extraData={this.state.currentWeekIndex}

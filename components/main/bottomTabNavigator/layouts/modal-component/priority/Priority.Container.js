@@ -3,7 +3,8 @@ import Priority from './Priority'
 import {updatePriority} from './actions/updatePriority'
 
 const mapStateToProps = (state) => ({
-    priorities: state.priorities
+    priorities: state.priorities,
+    currentTask: state.currentTask
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

@@ -4,6 +4,11 @@ import {updateDescription} from './actions/updateDescription'
 import AddTaskPanel from './AddTaskPanel'
 
 
+const mapStateToProps = (state) => ({
+    currentTask: state.currentTask
+})
+
+
 const mapDispatchToProps = (dispatch, ownProps) => ({
     updateTitle: (data) => {
         dispatch(updateTitle(data))
@@ -15,6 +20,6 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 })
 
 export default connect(
-    null,
+    mapStateToProps,
     mapDispatchToProps
 )(AddTaskPanel)

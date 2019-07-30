@@ -25,7 +25,7 @@ let initialState = {
 
 }
 
-export const categories = (state = initialState, action) => {
+export const priorities = (state = initialState, action) => {
     switch (action.type) {
         default:
             return state

@@ -4,7 +4,8 @@ import {updateRepetition} from './actions/updateRepetition'
 import {updateEnd} from './actions/updateEnd'
 
 const mapStateToProps = (state) => ({
-    currentWeekInMonth: state.currentWeekInMonth
+    currentWeekInMonth: state.currentWeekInMonth,
+    currentTask: state.currentTask
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

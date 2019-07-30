@@ -1,4 +1,6 @@
 export const updateCategory = (category) => ({
     type: "UPDATE_NEW_TASK",
-    category //the category's id
+    data: {
+        category //the category's id
+    } 
 })
