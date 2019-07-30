@@ -10,14 +10,7 @@ import {
 import AddTaskButton from './layouts/AddTaskButton'
 import OverlayModal from './layouts/modal-component/OverlayModal'
 
-const styles= {
-    text: {
-        fontSize: 12
-    }
-}
-
-
-export default class BottomTabNavigator extends React.Component{
+export default class BottomTabNavigator extends React.Component {
 
     state = {
         addTaskClicked: false,
@@ -35,23 +28,21 @@ export default class BottomTabNavigator extends React.Component{
     //END of ./AddTaskButton.js
 
     chooseNewScreen = (routeName) => {
-        this.props.navigation.navigate({routeName})
+        this.props.navigation.navigate({ routeName })
 
         // this.props.changeRouteAction(routeName)
     }
 
-
-    componentDidMount(){
-    }
-
     componentDidUpdate = (prevProps, prevState) => {
-        if(this.props.routeName !== prevProps.routeName){
-            if((this.props.routeName === "Daily" || this.props.routeName === "Weekly" || this.props.routeName === "Monthly"))
+        if (this.props.routeName !== prevProps.routeName) {
+            if ((this.props.routeName === "Daily" || this.props.routeName === "Weekly" || this.props.routeName === "Monthly")) {
                 this.setState({
                     should_AddTaskButton_be_displayed: "flex"
                 })
+            }
 
-            else{
+
+            else {
                 this.setState({
                     should_AddTaskButton_be_displayed: "none"
                 })
@@ -59,85 +50,90 @@ export default class BottomTabNavigator extends React.Component{
         }
     }
 
-    render(){
-        return(
+    render() {
+        return (
             <>
-            <View style={{
-                height: 60,
-                display: "flex",
-                alignItems: "center",
-            }}> 
-                <OverlayModal 
-                    chooseCalenderOption = {this.chooseCalenderOption}
-                    addTaskClicked = {this.state.addTaskClicked}
-                    addTaskButtonActionProp = {this.addTaskButtonActionProp}
-                />
+                <View style={{
+                    height: 60,
+                    display: "flex",
+                    alignItems: "center",
+                }}>
+                    {
+                        this.state.addTaskClicked ?
+                            <OverlayModal
+                                addTaskButtonActionProp={this.addTaskButtonActionProp}
+                            />
 
-                <AddTaskButton 
-                addTaskButtonActionProp = {this.addTaskButtonActionProp}
-                should_AddTaskButton_be_displayed = {this.state.should_AddTaskButton_be_displayed}
-                />
+                            :
 
-                    
-                <View
-                    style={{
-                        display: "flex",
-                        backgroundColor: 'gainsboro',
-                        flexDirection: "row",
-                        justifyContent: "space-around",
-                        height: 60,
-                    }}
-                >
-                    <TouchableHighlight
-                        onPress = {this.chooseNewScreen.bind(this, 'Journal')}
+                            <></>
+                    }
+
+
+                    <AddTaskButton
+                        addTaskButtonActionProp={this.addTaskButtonActionProp}
+                        should_AddTaskButton_be_displayed={this.state.should_AddTaskButton_be_displayed}
+                    />
+
+
+                    <View
                         style={{
-                            flex: 1,
+                            display: "flex",
+                            backgroundColor: 'gainsboro',
+                            flexDirection: "row",
+                            justifyContent: "space-around",
                             height: 60,
-                            alignItems: 'center',
-                            justifyContent: 'center'
                         }}
                     >
-                        <Text style={styles.text}>Journal</Text>
-                    </TouchableHighlight>
+                        <ScreenComponent
+                            chooseNewScreen={this.chooseNewScreen}
+                            screen_route_name={"Journal"}
+                        />
 
-                    <TouchableHighlight
-                        onPress = {this.chooseNewScreen.bind(this, 'Progress')}
-                        style={{
-                            flex: 1,
-                            height: 60,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <Text style={styles.text}>Progress</Text>
-                    </TouchableHighlight>
+                        <ScreenComponent
+                            chooseNewScreen={this.chooseNewScreen}
+                            screen_route_name={"Progress"}
+                        />
 
-                    <TouchableHighlight
-                        onPress = {this.chooseNewScreen.bind(this, 'Reward')}
-                        style={{
-                            flex: 1,
-                            height: 60,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <Text style={styles.text}>Reward</Text>
-                    </TouchableHighlight>
+                        <ScreenComponent
+                            chooseNewScreen={this.chooseNewScreen}
+                            screen_route_name={"Reward"}
+                        />
 
-                    <TouchableHighlight
-                        onPress = {this.chooseNewScreen.bind(this, 'Settings')}
-                        style={{
-                            flex: 1,
-                            height: 60,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <Text style={styles.text}>Settings</Text>
-                    </TouchableHighlight>
+                        <ScreenComponent
+                            chooseNewScreen={this.chooseNewScreen}
+                            screen_route_name={"Settings"}
+                        />
+                    </View>
                 </View>
-            </View>
             </>
+        )
+    }
+}
+
+class ScreenComponent extends React.PureComponent {
+
+    _onPress = () => {
+        this.props.chooseNewScreen(this.props.screen_route_name)
+    }
+
+    render() {
+        return (
+            <TouchableHighlight
+                onPress={this._onPress}
+                style={{
+                    flex: 1,
+                    height: 60,
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}
+            >
+                <Text style={{
+                    fontSize: 12
+                }}>
+                    {this.props.screen_route_name}
+                </Text>
+            </TouchableHighlight>
         )
     }
 }

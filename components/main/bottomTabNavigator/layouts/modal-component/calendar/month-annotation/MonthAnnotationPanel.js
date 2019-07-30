@@ -59,6 +59,8 @@ export default class MonthAnnotationPanel extends Component {
 
                     currentMonth={this.currentMonth}
                     currentYear={this.currentYear}
+
+                    updateStartingDate = {this.props.updateStartingDate}
                 />
             )
         }
@@ -67,7 +69,7 @@ export default class MonthAnnotationPanel extends Component {
             <CalendarDisplayHolder
                 monthData={item}
                 yearIndex={index}
-                marginLeft={Dimensions.get("window").width - 80}
+                marginLeft={338}
                 changeCurrentYearIndex={this.changeCurrentYearIndex}
                 last_year_index={this.state.last_year_index}
                 current_year_index={this.state.current_year_index}
@@ -76,6 +78,8 @@ export default class MonthAnnotationPanel extends Component {
 
                 currentMonth={this.currentMonth}
                 currentYear={this.currentYear}
+                
+                updateStartingDate = {this.props.updateStartingDate}
             />
         )
     }
@@ -113,17 +117,20 @@ export default class MonthAnnotationPanel extends Component {
         })
     }
 
+    _disableAllTabs = () => {
+        this.props.disableAllTabs()
+    }
+
     componentDidMount() {
         this.initMonths()
     }
-
+    
     render() {
         return (
             <>
                 <View style={{
                     flex: 1,
                     paddingTop: 30,
-                    paddingHorizontal: 15,
                     paddingBottom: 20,
                 }}>
                     <FlatList
@@ -135,7 +142,7 @@ export default class MonthAnnotationPanel extends Component {
                         showsHorizontalScrollIndicator={false}
                         decelerationRate={0}
                         snapToAlignment="start"
-                        snapToInterval={(Dimensions.get("window").width - 80) * 2}
+                        snapToInterval={338 * 2}
                         initialNumToRender={1}
                         maxToRenderPerBatch={10}
                         windowSize={11}
@@ -203,6 +210,8 @@ export default class MonthAnnotationPanel extends Component {
                             backgroundColor: 'gray',
                             marginRight: 10
                         }}
+
+                        onPress={this._disableAllTabs}
                     >
                         <Text
                             style={{

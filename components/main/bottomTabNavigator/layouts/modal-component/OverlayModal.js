@@ -5,131 +5,197 @@ import {
     Text,
     Modal,
     TouchableWithoutFeedback,
-    Keyboard
+    Keyboard,
+    Dimensions
 } from 'react-native';
 
-import AddTaskPanel from './add-task-panel/AddTaskPanel'
+import AddTaskPanel from './add-task-panel/AddTaskPanel.Container'
 import Calendar from './calendar/Calendar'
-import Repeat from './repeat/Repeat.Container'
+import Category from './category/Category.Container'
+import Priority from './priority/Priority.Container'
+import Goal from './goal/Goal.Container'
 
-
-class DismissElement extends Component {
+class DismissElement extends React.PureComponent {
     _onPress = () => {
-        this.props.addTaskButtonActionProp()
+        if (this.props.addTaskMenuChosen) {
+            this.props.addTaskButtonActionProp()
+        }
+
         this.props.disableAllTabs()
     }
 
-    render(){
-        return(
+    render() {
+        return (
             <TouchableWithoutFeedback
                 onPress={this._onPress}
             >
                 <View style={{
                     flex: 1,
+                    width: Dimensions.get("window").width,
                     backgroundColor: "black",
                     opacity: 0.5,
                 }}>
                 </View>
             </TouchableWithoutFeedback>
-            )
+        )
     }
-    
+
 }
 
 export default class UnderlayModal extends Component {
 
     state = {
         currentAnnotation: 'day',
-        addTaskClicked: false,
         calendarChosen: false,
-        repeatClicked: false,
-    }
+        categoryChosen: false,
+        priorityChosen: false,
+        goalChosen: false,
+        addTaskMenuChosen: true,
 
-    
+        shouldCallBackKeyboard: false
+    }
 
     setCurrentAnnotation = (annotation) => {
-        this.setState({currentAnnotation: annotation})
-    }
-
-    chooseCalenderOption = () => {
-        this.setState(prevState => ({
-            calendarChosen: !prevState.calendarChosen
-        }))
+        this.setState({ currentAnnotation: annotation })
     }
 
     disableAllTabs = () => {
         this.setState({
             calendarChosen: false,
-            repeatClicked: false,
+            categoryChosen: false,
+            priorityChosen: false,
+            goalChosen: false,
+            addTaskMenuChosen: true,
         })
     }
 
-    chooseRepeatOption = () => {
+    chooseCalenderOption = () => {
         this.setState(prevState => ({
-            repeatClicked: !prevState.repeatClicked,
-            calendarChosen: !prevState.calendarChosen
+            calendarChosen: !prevState.calendarChosen,
+            categoryChosen: false,
+            priorityChosen: false,
+            goalChosen: false,
+            addTaskMenuChosen: false,
         }))
     }
 
-    shouldComponentUpdate(nextProps, nextState){
-        return this.props.addTaskClicked !== nextProps.addTaskClicked || this.state.calendarChosen !== nextState.calendarChosen
+    chooseGoalOption = () => {
+        this.setState(prevState => ({
+            calendarChosen: false,
+            goalChosen: !prevState.goalChosen,
+            categoryChosen: false,
+            priorityChosen: false,
+            addTaskMenuChosen: false,
+        }))
     }
 
-    componentWillMount(){
-
+    chosenCategoryOption = () => {
+        this.setState(prevState => ({
+            calendarChosen: false,
+            goalChosen: false,
+            priorityChosen: false,
+            categoryChosen: !prevState.categoryChosen,
+            addTaskMenuChosen: false,
+        }))
     }
 
-    componentDidMount(){
+    choosePriorityOption = () => {
+        this.setState(prevState => ({
+            calendarChosen: false,
+            categoryChosen: false,
+            priorityChosen: !prevState.priorityChosen,
+            goalChosen: false,
+            addTaskMenuChosen: false,
+        }))
     }
 
-    componentDidUpdate(prevProps, prevState){
-        if(this.state.calendarChosen !== prevState.calendarChosen){
-        }
-    }
-
-    
-
-    render(){
-        return(
+    render() {
+        return (
             <Modal
-                visible={this.props.addTaskClicked}
                 transparent={true}
-            >   
-                <DismissElement 
-                addTaskButtonActionProp = {this.props.addTaskButtonActionProp} 
-                disableAllTabs = {this.disableAllTabs}
-                />
-                
-                <AddTaskPanel 
-                    chooseCalenderOption = {this.chooseCalenderOption}
-                    setCurrentAnnotation = {this.setCurrentAnnotation}
-                    currentAnnotation = {this.state.currentAnnotation}
-                />
-                
-                {/* Calendar View */}
-                {this.state.calendarChosen ? 
-                    <Calendar 
-                        currentAnnotation = {this.state.currentAnnotation}
-                        calendarChosen = {this.state.calendarChosen}
-                        chooseRepeatOption = {this.chooseRepeatOption}
+            >
+                <View
+                    style={{
+                        flex: 1,
+                        position: "relative",
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                >
+
+                    <DismissElement
+                        addTaskButtonActionProp={this.props.addTaskButtonActionProp}
+                        disableAllTabs={this.disableAllTabs}
+                        addTaskMenuChosen={this.state.addTaskMenuChosen}
+
                     />
 
-                    : 
+                    {
+                        this.state.addTaskMenuChosen ?
+                            <AddTaskPanel
+                                chooseCalenderOption={this.chooseCalenderOption}
+                                chosenCategoryOption={this.chosenCategoryOption}
+                                chooseGoalOption={this.chooseGoalOption}
+                                choosePriorityOption={this.choosePriorityOption}
 
-                    <></>
-                }
-                
-                    
-                {this.state.repeatClicked ? 
-                    <Repeat 
-                        repeatClicked = {this.state.repeatClicked}
-                        currentAnnotation = {this.state.currentAnnotation}
-                    />
-                    
-                    :
+                                setCurrentAnnotation={this.setCurrentAnnotation}
+                                currentAnnotation={this.state.currentAnnotation}
+                            />
 
-                    <></>
-                }
+                            :
+
+                            <>
+                                {/* Calendar Panel */}
+                                {this.state.calendarChosen ?
+                                    <Calendar
+                                        currentAnnotation={this.state.currentAnnotation}
+                                        calendarChosen={this.state.calendarChosen}
+
+                                        disableAllTabs={this.disableAllTabs}
+                                    />
+
+                                    :
+
+                                    <>
+                                        {/* Category Panel */}
+                                        {this.state.categoryChosen ?
+                                            <Category
+                                                disableAllTabs={this.disableAllTabs}
+                                            />
+
+                                            :
+
+                                            <>
+                                                {/* Repeat Panel */}
+                                                {this.state.goalChosen ?
+                                                    <Goal
+                                                        currentAnnotation={this.state.currentAnnotation}
+                                                        disableAllTabs={this.disableAllTabs}
+                                                    />
+
+                                                    :
+
+                                                    <>
+                                                        {/* Priority Panel */}
+                                                        {this.state.priorityChosen ?
+                                                            <Priority
+                                                                disableAllTabs={this.disableAllTabs}
+                                                            />
+
+                                                            :
+
+                                                            <></>
+                                                        }
+                                                    </>
+                                                }
+
+                                            </>
+                                        }
+                                    </>
+                                }
+                            </>
+                    }
+                </View>
 
             </Modal>
         )

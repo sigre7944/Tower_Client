@@ -49,20 +49,24 @@ class RenderCalendar extends React.PureComponent{
 
     //If we choose a different day in the month, then this function will be called
     changeCurrentCalendarDayIndex = (index) => {
-        this.setState({
-            currentCalendarDayIndex: index
-        })
-    }
-
-    //After we get the currentCalendarDayIndex, we set the lastCalendarDayIndex to the previous currentCalendarDayIndex
-    componentDidUpdate(prevProps, prevState){
-        if(this.state.currentCalendarDayIndex !== prevState.currentCalendarDayIndex){
-            // console.log(prevState.currentCalendarDayIndex)
-            this.setState({
-                lastCalendarDayIndex: prevState.currentCalendarDayIndex
-            })
+        if(this.state.currentCalendarDayIndex !== index){
+            this.setState(prevState => ({
+                lastCalendarDayIndex: prevState.currentCalendarDayIndex,
+                currentCalendarDayIndex: index
+            }))
         }
     }
+
+
+
+    //After we get the currentCalendarDayIndex, we set the lastCalendarDayIndex to the previous currentCalendarDayIndex
+    // componentDidUpdate(prevProps, prevState){
+    //     if(this.state.currentCalendarDayIndex !== prevState.currentCalendarDayIndex){
+    //         this.setState({
+    //             lastCalendarDayIndex: prevState.currentCalendarDayIndex
+    //         })
+    //     }
+    // }
 
 
     render(){
@@ -77,10 +81,6 @@ class RenderCalendar extends React.PureComponent{
                             lastCalendarDayIndex = {this.state.lastCalendarDayIndex}
                             changeCurrentCalendarDayIndex = {this.changeCurrentCalendarDayIndex}
 
-                            // month_index = {this.props.month_index}
-                            // current_month_index = {this.props.current_month_index}
-                            // chooseDifferentMonth = {this.props.chooseDifferentMonth}
-                            
                             {... this.props}
                         />
                     ))
@@ -108,12 +108,6 @@ class CalendarRow extends React.PureComponent{
                                 day = {data.dayData.day}
 
                                 calendarDayIndex = {data.calendarDayIndex}
-                                // lastCalendarDayIndex = {this.props.lastCalendarDayIndex}
-                                // changeCurrentCalendarDayIndex = {this.props.changeCurrentCalendarDayIndex}
-
-                                // month_index = {this.props.month_index}
-                                // current_month_index = {this.props.current_month_index}
-                                // chooseDifferentMonth = {this.props.chooseDifferentMonth}
 
                                 {... this.props}
                             />
@@ -137,28 +131,33 @@ class CalendarRow extends React.PureComponent{
 class DayHolder extends React.PureComponent{
 
     state = {
-        dayHolderStyle: {},
-        dayTextStyle: {},
+        dayHolderStyle: styles.UnchosenDayHolder,
+        dayTextStyle: styles.UnchosenDayText,
     }
 
-    chooseDay = (index) => {
+    chooseDay = () => {
         this.setState({
             dayHolderStyle: styles.ChosenDayHolder,
             dayTextStyle: styles.ChosenDayText
         })
 
-        this.props.changeCurrentCalendarDayIndex(index)
+        this.props.changeCurrentCalendarDayIndex(this.props.calendarDayIndex)
 
         this.props.chooseDifferentMonth(this.props.month_index)
+
+        let startTime = trackingTime = new Date(new Date(new Date((new Date().setMonth(this.props.month))).setDate(this.props.day)).setFullYear(this.props.year)).getTime()
+
+        this.props.updateStartingDate({
+            day: this.props.day,
+            month: this.props.month,
+            year: this.props.year,
+            startTime,
+            trackingTime
+        })
     }
 
 
     componentDidMount(){
-        this.setState({
-            dayHolderStyle: styles.UnchosenDayHolder,
-            dayTextStyle: styles.UnchosenDayText
-        })
-
         if(this.props.currentMonth === this.props.month && this.props.currentYear === this.props.year && this.props.calendarDayIndex === this.props.currentDayInMonth -1){
             this.chooseDay(this.props.calendarDayIndex)
         }
@@ -195,7 +194,7 @@ class DayHolder extends React.PureComponent{
                 underlayColor="transparent"
                 
                 //Need to optimize this
-                onPress={this.chooseDay.bind(this, this.props.calendarDayIndex)}
+                onPress={this.chooseDay}
             >   
                 <View
                     style={this.state.dayHolderStyle}
@@ -229,7 +228,7 @@ class DummyHolder extends React.PureComponent{
 }
 
 
-export default class CalendarDisplayHolder extends Component{
+export default class CalendarDisplayHolder extends React.PureComponent{
     /*TO EXPLITCITLY USE GLOBAL VARIABLES WITHIN CLASS, ONE MUST DEFINE THOSE VARIABLES INSIDE CLASS*/
     /*IF DEFINING OUTSIDE, THOSE VARIABLES WILL BE UPDATED EVERY TIME THE SCRIPT THAT EXECUTES IT IS RAN*/
     
@@ -338,17 +337,6 @@ export default class CalendarDisplayHolder extends Component{
             row_days_array: [... this.row_days_array]
         })
     }
-
-    componentDidUpdate(prevProps, prevState){
-
-        
-    }
-
-
-    componentWillUnmount(){
-    }
-
-    
 
     render(){
         return(

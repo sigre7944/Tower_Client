@@ -72,7 +72,7 @@ export default class CalendarDisplayHolder extends Component {
         return (
             <>
                 <View style={{
-                    width: Dimensions.get("window").width - 80,
+                    width: 338,
                     marginLeft: this.props.marginLeft
                 }}>
                     <DisplayYear 
@@ -105,6 +105,8 @@ export default class CalendarDisplayHolder extends Component {
                                 currentMonth = {this.props.currentMonth}
                                 currentYear = {this.props.currentYear}
                                 year={this.props.monthData.year} 
+
+                                updateStartingDate = {this.props.updateStartingDate}
                             />
                         ))}
                     </View>
@@ -160,6 +162,20 @@ class MonthHolder extends Component {
         this.props.changeCurrentYearIndex(this.props.yearIndex)
 
         this.props.changeCurrentMonthIndex(this.props.monthIndex)
+
+        let startTime = trackingTime = new Date(
+            new Date(
+                new Date(
+                    new Date().setDate(1)).setMonth(this.props.data.monthNumber)).setFullYear(this.props.year))
+        .getTime()
+
+        this.props.updateStartingDate({
+            month: this.props.data.monthNumber,
+            year: this.props.year,
+            startTime,
+            trackingTime
+        })
+
     }
 
 
@@ -233,7 +249,7 @@ class MonthHolder extends Component {
         return (
             <TouchableHighlight
                 style={{
-                    width: (Dimensions.get("window").width - 80) / 4,
+                    width: 338 / 4,
                     height: 100,
                     alignItems: "center",
                     justifyContent: "center",
@@ -257,7 +273,7 @@ class MonthHolder extends Component {
 
 const styles = StyleSheet.create({
     unchosenMonth: {
-        width: ((Dimensions.get("window").width - 80) / 4) - 10,
+        width: (338 / 4) - 10,
         height: 80,
         alignItems: "center",
         justifyContent: "center",
@@ -265,7 +281,7 @@ const styles = StyleSheet.create({
         borderRadius: 7,
     },
     chosenMonth: {
-        width: ((Dimensions.get("window").width - 80) / 4) - 10,
+        width: (338 / 4) - 10,
         height: 80,
         alignItems: "center",
         justifyContent: "center",

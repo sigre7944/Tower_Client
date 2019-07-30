@@ -19,13 +19,6 @@ export default class CalendarDisplayHolder extends React.Component{
         this.props.scrollToWeekRow(this.props.index)
     }
 
-    componentDidMount(){
-        if(this.props.weekData.isCurrentWeek){
-            this._scrollToWeekRow()
-            // console.log(this.props.weekData)
-        }
-    }
-
     render(){
         return(
             <>
