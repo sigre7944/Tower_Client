@@ -263,6 +263,10 @@ export default class WeekAnnotationPanel extends Component {
         })
     }
 
+    _disableAllTabs = () => {
+        this.props.disableAllTabs()
+    }
+
     componentDidMount() {
         this.initWeeks()
 
@@ -418,6 +422,8 @@ export default class WeekAnnotationPanel extends Component {
                             backgroundColor: 'gray',
                             marginRight: 10
                         }}
+
+                        onPress={this._disableAllTabs}
                     >
                         <Text
                             style={{

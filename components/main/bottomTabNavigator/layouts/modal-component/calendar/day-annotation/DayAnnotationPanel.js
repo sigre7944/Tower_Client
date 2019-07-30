@@ -102,6 +102,10 @@ export default class DayAnnotationPanel extends Component {
         this.props.chooseRepeatOption()
     }
 
+    _disableAllTabs = () => {
+        this.props.disableAllTabs()
+    }
+
     componentDidMount() {
         this.initializeMonths()
 
@@ -198,6 +202,8 @@ export default class DayAnnotationPanel extends Component {
                             backgroundColor: 'gray',
                             marginRight: 10
                         }}
+
+                        onPress={this._disableAllTabs}
                     >
                         <Text
                             style={{

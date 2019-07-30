@@ -150,6 +150,10 @@ export default class Priority extends React.Component {
         ).start()
     }
 
+    _disableAllTabs = () => {
+        this.props.disableAllTabs()
+    }
+
     componentDidMount() {
         this.keyboardWillShowListener = Keyboard.addListener(
             "keyboardWillShow",
@@ -279,6 +283,8 @@ export default class Priority extends React.Component {
                                     backgroundColor: 'gray',
                                     marginRight: 10
                                 }}
+
+                                onPress={this._disableAllTabs}
                             >
                                 <Text
                                     style={{

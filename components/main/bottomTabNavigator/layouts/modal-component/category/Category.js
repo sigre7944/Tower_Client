@@ -205,6 +205,10 @@ export default class Category extends React.Component {
         })
     }
 
+    _disableAllTabs = () => {
+        this.props.disableAllTabs()
+    }
+
     componentDidMount(){
         this.initializeCategoryArr()
     }
@@ -319,6 +323,8 @@ export default class Category extends React.Component {
                                 backgroundColor: 'gray',
                                 marginRight: 10
                             }}
+
+                            onPress={this._disableAllTabs}
                         >
                             <Text
                                 style={{

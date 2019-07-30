@@ -150,7 +150,8 @@ export default class UnderlayModal extends Component {
                                     <Calendar
                                         currentAnnotation={this.state.currentAnnotation}
                                         calendarChosen={this.state.calendarChosen}
-                                        chooseRepeatOption={this.chooseRepeatOption}
+
+                                        disableAllTabs={this.disableAllTabs}
                                     />
 
                                     :
@@ -158,7 +159,9 @@ export default class UnderlayModal extends Component {
                                     <>
                                         {/* Category Panel */}
                                         {this.state.categoryChosen ?
-                                            <Category />
+                                            <Category
+                                                disableAllTabs={this.disableAllTabs}
+                                            />
 
                                             :
 
@@ -167,6 +170,7 @@ export default class UnderlayModal extends Component {
                                                 {this.state.goalChosen ?
                                                     <Goal
                                                         currentAnnotation={this.state.currentAnnotation}
+                                                        disableAllTabs={this.disableAllTabs}
                                                     />
 
                                                     :
@@ -175,7 +179,7 @@ export default class UnderlayModal extends Component {
                                                         {/* Priority Panel */}
                                                         {this.state.priorityChosen ?
                                                             <Priority
-
+                                                                disableAllTabs={this.disableAllTabs}
                                                             />
 
                                                             :

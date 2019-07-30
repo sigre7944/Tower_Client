@@ -10,12 +10,6 @@ import {
 
 export default class Goal extends React.Component {
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.props.currentTask !== prevProps.currentTask) {
-            console.log(this.props.currentTask)
-        }
-    }
-
     render() {
         return (
             <View
@@ -73,6 +67,10 @@ class GoalPerTimesRow extends React.PureComponent {
         }
 
         this.props.updateGoal(this.data)
+    }
+
+    _disableAllTabs = () => {
+        this.props.disableAllTabs()
     }
 
     componentDidMount() {
@@ -190,6 +188,8 @@ class GoalPerTimesRow extends React.PureComponent {
                             backgroundColor: 'gray',
                             marginRight: 10
                         }}
+
+                        onPress={this._disableAllTabs}
                     >
                         <Text
                             style={{

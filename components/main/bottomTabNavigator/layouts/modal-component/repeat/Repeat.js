@@ -76,6 +76,10 @@ export default class Repeat extends Component {
         })
     }
 
+    _chooseCalendarOption = () => {
+        this.props.chooseRepeatOption()
+    }
+
     componentWillUnmount() {
         Keyboard.removeListener('keyboardWillShow', this.toDoWhenWillShowKeyboard)
         Keyboard.removeListener('keyboardWillHide', this.toDoWhenWillHideKB)
@@ -179,6 +183,8 @@ export default class Repeat extends Component {
                                 backgroundColor: 'gray',
                                 marginRight: 10
                             }}
+
+                            onPress={this._chooseCalendarOption}
                         >
                             <Text
                                 style={{

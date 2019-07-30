@@ -117,6 +117,10 @@ export default class MonthAnnotationPanel extends Component {
         })
     }
 
+    _disableAllTabs = () => {
+        this.props.disableAllTabs()
+    }
+
     componentDidMount() {
         this.initMonths()
     }
@@ -206,6 +210,8 @@ export default class MonthAnnotationPanel extends Component {
                             backgroundColor: 'gray',
                             marginRight: 10
                         }}
+
+                        onPress={this._disableAllTabs}
                     >
                         <Text
                             style={{

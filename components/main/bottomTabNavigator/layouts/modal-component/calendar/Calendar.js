@@ -30,6 +30,7 @@ export default class Calendar extends Component {
                 {this.state.repeatChosen ?
                     <Repeat
                         currentAnnotation={this.props.currentAnnotation}
+                        chooseRepeatOption={this.chooseRepeatOption}
                     />
 
                     :
@@ -47,6 +48,8 @@ export default class Calendar extends Component {
                             >
                                 <DayAnnotationPanel
                                     chooseRepeatOption={this.chooseRepeatOption}
+
+                                    disableAllTabs={this.props.disableAllTabs}
                                 />
                             </View>
 
@@ -65,6 +68,8 @@ export default class Calendar extends Component {
                                     >
                                         <WeekAnnotationPanel
                                             chooseRepeatOption={this.chooseRepeatOption}
+
+                                            disableAllTabs={this.props.disableAllTabs}
                                         />
                                     </View>
 
@@ -79,6 +84,8 @@ export default class Calendar extends Component {
                                     }}>
                                         <MonthAnnotationPanel
                                             chooseRepeatOption={this.chooseRepeatOption}
+
+                                            disableAllTabs={this.props.disableAllTabs}
                                         />
                                     </View>
 

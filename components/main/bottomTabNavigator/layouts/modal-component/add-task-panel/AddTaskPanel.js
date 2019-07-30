@@ -257,8 +257,9 @@ class TaskTitleElement extends React.PureComponent {
         this.textInputRef = ref
     }
 
-    componentDidMount() {
+    _onLayout = () => {
         setTimeout(() => { this.textInputRef.focus() }, 50)
+
     }
 
     componentDidUpdate(prevProps, prevState){
@@ -295,6 +296,7 @@ class TaskTitleElement extends React.PureComponent {
                     autoCorrect={false}
                     value={this.state.value}
                     onChange={this._onChange}
+                    onLayout={this._onLayout}
                 />
             </View>
         )
