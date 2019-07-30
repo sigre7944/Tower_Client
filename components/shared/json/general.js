@@ -17,7 +17,7 @@ const task = {
     startTime: 1111111, //timestamp used to return the original starting date
     endTime: 2222222,
     trackingTime: 3333333, // used to track the current time with of the task and compare it with the defined repeated time
-    type: 'Day', // 'Week', 'Month'
+    type: 'day', // 'week', 'month'
     total: 30,
     value: 100,
     category: 'inbox_123', //using category id
