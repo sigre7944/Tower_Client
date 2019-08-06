@@ -27,13 +27,13 @@ const task = {
         // these properties are used for 'Day' type task
         type: "daily", //weekly, monthly for 'day' type task. Used for editting task components
         interval: {
-            value: 86400 * 2 // timestamp for repetition. 86400 = miliseconds in a day, 2 = number of repetitive days
+            value: 86400 * 1000 * 2 // timestamp for repetition. 86400 * 1000 = miliseconds in a day, 2 = number of repetitive days
         },
 
         // these properties are used for 'Day' type task
         type: "weekly",
         interval: {
-            value: 86400 * 7 * 2, // timestamp for weekly repetition. 86400 * 7 = miliseconds in a week, 2 = number of repetitive weeks
+            value: 86400 * 1000 * 7 * 2, // timestamp for weekly repetition. 86400 * 1000 * 7 = miliseconds in a week, 2 = number of repetitive weeks
             daysInWeek: [0, 1, 2, 3] // indexes for days in a week. Sunday = 0, Monday = 1, Tuesday = 2
         },
 
@@ -49,13 +49,13 @@ const task = {
         // these properties are used for 'Week' type task
         type: "weekly",
         interval: {
-            value: 86400 * 7 * 2
+            value: 86400 * 1000 * 7 * 2
         },
 
         // these properties are used for 'Month' type task
         type: "monthly",
         interval: {
-            value: 86400 * 7 * 5 // this value will be calculated as this: task for January, repeat every 2 months => 
+            value: 86400 * 1000 * 7 * 5 // this value will be calculated as this: task for January, repeat every 2 months => 
             // January, March, May, July, etc will have the task displayed.
         }
     },

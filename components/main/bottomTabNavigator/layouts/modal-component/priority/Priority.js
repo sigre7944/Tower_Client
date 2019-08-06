@@ -164,6 +164,11 @@ export default class Priority extends React.Component {
             "keyboardWillHide",
             this.toDoWhenKeyboardWillHide
         )
+
+        let {priority} = this.props.currentTask,
+            priorities = this.props.priorities
+        
+        this.changePriorityValue(priorities[priority.value].name)
     }
 
     componentDidUpdate(prevProps, prevState){

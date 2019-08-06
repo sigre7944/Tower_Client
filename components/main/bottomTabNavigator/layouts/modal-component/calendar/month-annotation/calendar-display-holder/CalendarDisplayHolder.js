@@ -227,9 +227,25 @@ class MonthHolder extends Component {
     }
 
     componentDidMount(){
-        if(this.props.data.monthNumber === this.props.currentMonth && this.props.year === this.props.currentYear){
-            this.chooseMonth()
+        let {type, schedule} = this.props.currentTask
+
+        if(type === "month"){
+            if(this.props.data.monthNumber === schedule.month && this.props.year === schedule.year){
+                this.chooseMonth()
+            }
+
+            else{
+                if(this.props.data.monthNumber === this.props.currentMonth && this.props.year === this.props.currentYear){
+                    this.chooseMonth()
+                }
+            }
         }
+        else{
+            if(this.props.data.monthNumber === this.props.currentMonth && this.props.year === this.props.currentYear){
+                this.chooseMonth()
+            }
+        }
+        
     }
 
     render() {

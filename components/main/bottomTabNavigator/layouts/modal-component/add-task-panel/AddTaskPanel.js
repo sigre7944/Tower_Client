@@ -219,7 +219,8 @@ export default class AddTaskPanel extends Component {
                         />
 
                         <BottomOptionElement
-                            chooseOption={() => { }}
+                            chooseOption={this.props.addTaskButtonActionProp}
+                            currentTask = {this.props.currentTask}
                             taskTextInputRef={this.taskTextInputRef}
                             disableAddTaskPanel={this.disableAddTaskPanel}
                             title="Ok"
@@ -357,6 +358,10 @@ class BottomOptionElement extends React.Component {
         this.props.chooseOption()
         this.props.taskTextInputRef.blur()
         this.props.disableAddTaskPanel()
+
+        if(this.props.currentTask){
+            console.log(this.props.currentTask)
+        }
     }
 
     render() {

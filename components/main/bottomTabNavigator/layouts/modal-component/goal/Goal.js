@@ -74,21 +74,25 @@ class GoalPerTimesRow extends React.PureComponent {
     }
 
     componentDidMount() {
+        let {goal, type} = this.props.currentTask
         if (this.props.currentAnnotation === "day") {
             this.setState(prevState => ({
                 interval: "times per day",
+                // value: parseInt(goal.max) > 0 && type === "day" ? `${goal.max}` : "1"
             }))
         }
 
         else if (this.props.currentAnnotation === "week") {
             this.setState(prevState => ({
                 interval: "times per week",
+                // value: parseInt(goal.max) > 0 && type === "week" ? `${goal.max}` : "1"
             }))
         }
 
         else {
             this.setState(prevState => ({
                 interval: " times per month",
+                // value: parseInt(goal.max) > 0 && type === "month" ? `${goal.max}` : "1"
             }))
         }
 

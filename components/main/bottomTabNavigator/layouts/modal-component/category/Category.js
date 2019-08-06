@@ -64,6 +64,8 @@ export default class Category extends React.Component {
                     selectCategory={this.selectCategory}
 
                     updateCategory={this.props.updateCategory}
+
+                    currentTask = {this.props.currentTask}
                 />
             )
 
@@ -407,6 +409,16 @@ class CategoryRow extends React.Component {
 
     shouldComponentUpdate(nextProps, nextState) {
         return nextState !== this.state || nextProps.currentIndex !== this.props.currentIndex || nextProps.lastIndex !== this.props.lastIndex
+    }
+
+    componentDidMount(){
+        let {category} = this.props.currentTask
+
+        if(category && category.length > 0){
+            if(this.props.data.id === category){
+                this._onPress()
+            }
+        }
     }
 
     render() {

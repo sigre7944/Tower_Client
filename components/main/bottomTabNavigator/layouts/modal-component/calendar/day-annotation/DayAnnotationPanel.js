@@ -64,6 +64,8 @@ export default class DayAnnotationPanel extends Component {
             scrollToCurrentMonth={this.scrollToCurrentMonth}
 
             updateStartingDate={this.props.updateStartingDate}
+
+            currentTask = {this.props.currentTask}
         />
     )
 

@@ -140,6 +140,10 @@ export default class UnderlayModal extends Component {
 
                                 setCurrentAnnotation={this.setCurrentAnnotation}
                                 currentAnnotation={this.state.currentAnnotation}
+
+                                addTaskButtonActionProp = {this.props.addTaskButtonActionProp}
+
+                                currentTask = {this.props.currentTask}
                             />
 
                             :

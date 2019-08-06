@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 import AddTaskButton from './layouts/AddTaskButton'
-import OverlayModal from './layouts/modal-component/OverlayModal'
+import OverlayModal from './layouts/modal-component/OverlayModal.Container'
 
 export default class BottomTabNavigator extends React.Component {
 

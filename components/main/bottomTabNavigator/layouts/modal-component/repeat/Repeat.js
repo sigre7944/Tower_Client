@@ -528,7 +528,7 @@ class DailyRepeatOption extends React.PureComponent {
         this.data = {
             type: "daily",
             interval: {
-                value: 86400 * parseInt(value)
+                value: 86400 * 1000 * parseInt(value)
             }
         }
 
@@ -1028,7 +1028,7 @@ class WeeklyRepeatOption extends React.PureComponent {
             {
                 type: "weekly",
                 interval: {
-                    value: 86400 * 7 * parseInt(value)
+                    value: 86400 * 1000 * 7 * parseInt(value)
                 }
             } : {
                 type: "monthly",

@@ -61,6 +61,8 @@ export default class MonthAnnotationPanel extends Component {
                     currentYear={this.currentYear}
 
                     updateStartingDate = {this.props.updateStartingDate}
+
+                    currentTask = {this.props.currentTask}
                 />
             )
         }
@@ -80,6 +82,7 @@ export default class MonthAnnotationPanel extends Component {
                 currentYear={this.currentYear}
                 
                 updateStartingDate = {this.props.updateStartingDate}
+                currentTask = {this.props.currentTask}
             />
         )
     }

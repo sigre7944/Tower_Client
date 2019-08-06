@@ -85,6 +85,8 @@ export default class WeekAnnotationPanel extends Component {
                     currentWeekIndex={this.state.currentWeekIndex}
                     lastWeekIndex={this.state.lastWeekIndex}
                     updateStartingDate={this.props.updateStartingDate}
+
+                    currentTask = {this.props.currentTask}
                 />
             )
         }
@@ -252,15 +254,45 @@ export default class WeekAnnotationPanel extends Component {
     }
 
     _onLayout = () => {
-        this.week_data_array.every((data, index) => {
-            if (data.isCurrentWeek) {
-                this.scrollToWeekRow(index)
+        let {type, schedule} = this.props.currentTask
 
-                return false
+        if(type === "week"){
+            let found = false
+
+            this.week_data_array.every((data, index) => {
+                if(data.noWeek === schedule.week && data.monthIndex === schedule.month && data.year === schedule.year){
+                    this.scrollToWeekRow(index)
+                    found = true
+                    return false
+                }
+
+                return true
+            })
+
+            if(!found){
+                this.week_data_array.every((data, index) => {
+                    if (data.isCurrentWeek) {
+                        this.scrollToWeekRow(index)
+        
+                        return false
+                    }
+        
+                    return true
+                })
             }
+        }
 
-            return true
-        })
+        else{
+            this.week_data_array.every((data, index) => {
+                if (data.isCurrentWeek) {
+                    this.scrollToWeekRow(index)
+    
+                    return false
+                }
+    
+                return true
+            })
+        }
     }
 
     _disableAllTabs = () => {
