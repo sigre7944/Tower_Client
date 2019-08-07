@@ -78,7 +78,7 @@ const task = {
         type: "on",
         endAt: 1212121212, // timestamp of ending date.
 
-        
+
         // after occurances
         type: "after",
         occurance: 5 // If users set the repetition of a task to be repeated every 2 days. This value will determine
@@ -89,6 +89,7 @@ const task = {
         year: 2019, // Calendar component will use this for displaying and styling
         month: 6, // Calendar component will use this for displaying and styling
         day: 26, // Calendar component will use this for displaying and styling
+
     },
 
     priority: {

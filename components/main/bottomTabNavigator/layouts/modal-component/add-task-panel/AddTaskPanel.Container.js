@@ -6,7 +6,9 @@ import AddTaskPanel from './AddTaskPanel'
 
 
 const mapStateToProps = (state) => ({
-    currentTask: state.currentTask
+    currentTask: state.currentTask,
+    categories: state.categories,
+    priorities: state.priorities
 })
 
 

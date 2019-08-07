@@ -8,6 +8,7 @@ import {
     Dimensions,
     KeyboardAvoidingView,
     Keyboard,
+    ScrollView
 } from 'react-native';
 
 
@@ -18,12 +19,22 @@ let dayAnnotationColor = '#b0b0b0',
 export default class AddTaskPanel extends Component {
     taskTextInputRef = React.createRef()
 
+    daysInWeekText = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+    monthNames = ["January", "Febuary", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ]
+
+    month_names_in_short = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
     state = {
         dayAnnotationColor: dayAnnotationColor,
         weekAnnotationColor: weekAnnotationColor,
         monthAnnotationColor: monthAnnotationColor,
         AddTaskPanelDisplayProperty: 'flex',
         keyboardHeight: 0,
+
+        tag_data: []
     }
 
     setTaskTextInputRef = (ref) => {
@@ -84,6 +95,158 @@ export default class AddTaskPanel extends Component {
         })
     }
 
+    addTagDataToRender = ({ type, startTime, schedule, repeat, category, priority, goal }) => {
+        let tag_data = []
+        if (type) {
+            tag_data.push(
+                <TagElement
+                    key="tag-type"
+                    content={`${type}`}
+                />
+            )
+        }
+
+        if (schedule) {
+            let date = new Date(startTime)
+            //Schedule for day type
+            if (!schedule.week && schedule.day) {
+                tag_data.push(
+                    <TagElement
+                        key="tag-start-time"
+                        content={`${this.daysInWeekText[date.getDay()]} ${date.getDate()} ${this.monthNames[date.getMonth()]}`}
+                    />
+                )
+            }
+
+            //Schedule for week type
+            else if (schedule.week) {
+                let end_day_of_week = new Date(startTime + 86400 * 1000 * 6)
+                tag_data.push(
+                    <TagElement
+                        key="tag-start-time"
+                        content={`Week ${schedule.week} (${date.getDate()} ${this.month_names_in_short[date.getMonth()]} - ${end_day_of_week.getDate()} ${this.month_names_in_short[end_day_of_week.getMonth()]})`}
+                    />
+                )
+            }
+
+            //Schedule for month type
+            else if (!schedule.week && !schedule.day){
+                tag_data.push(
+                    <TagElement
+                        key="tag-start-time"
+                        content={`${this.monthNames[schedule.month]} ${schedule.year}`}
+                    />
+                )
+            }
+        }
+
+        if (repeat) {
+            if (repeat.type === "daily" && type === "day") {
+                let value = repeat.interval.value / 86400 / 1000
+                tag_data.push(
+                    <TagElement
+                        key="tag-repeat"
+                        content={`every ${value} day(s)`}
+                    />
+                )
+            }
+
+            else if (repeat.type === "weekly" && type === "day") {
+                let value = repeat.interval.value / 86400 / 1000 / 7
+                tag_data.push(
+                    <TagElement
+                        key="tag-repeat"
+                        content={`every ${value} week(s)`}
+                    />
+                )
+            }
+
+            else if (repeat.type === "monthly" && type === "day") {
+                let value = repeat.interval.value
+                tag_data.push(
+                    <TagElement
+                        key="tag-repeat"
+                        content={`every ${value} month(s)`}
+                    />
+                )
+            }
+
+            else if (repeat.type === "weekly-w" && type === "week") {
+                let value = repeat.interval.value / 86400 / 1000 / 7
+                tag_data.push(
+                    <TagElement
+                        key="tag-repeat"
+                        content={`every ${value} week(s)`}
+                    />
+                )
+            }
+
+            else if (repeat.type === "monthly-w" && type === "week") {
+                let value = repeat.interval.value
+                tag_data.push(
+                    <TagElement
+                        key="tag-repeat"
+                        content={`every ${value} month(s)`}
+                    />
+                )
+            }
+
+            else if (repeat.type === "monthly-m" && type === "month") {
+                let value = repeat.interval.value
+                tag_data.push(
+                    <TagElement
+                        key="tag-repeat"
+                        content={`every ${value} month(s)`}
+                    />
+                )
+            }
+        }
+
+        if (category) {
+            let cate = this.props.categories[category].name
+            tag_data.push(
+                <TagElement
+                    key="tag-category"
+                    content={`${cate}`}
+                />
+            )
+        }
+
+        if (priority) {
+            let prio = this.props.priorities[priority.value].name
+            tag_data.push(
+                <TagElement
+                    key="tag-priority"
+                    content={`${prio}`}
+                />
+            )
+
+            if (parseInt(priority.reward) > 0) {
+                let { reward } = priority
+                tag_data.push(
+                    <TagElement
+                        key="tag-reward"
+                        content={`${reward}`}
+                    />
+                )
+            }
+        }
+
+        if (goal) {
+            let value = goal.max
+            tag_data.push(
+                <TagElement
+                    key="tag-goal"
+                    content={`${value} time(s) per ${type}(s)`}
+                />
+            )
+        }
+
+        this.setState({
+            tag_data: [...tag_data]
+        })
+    }
+
     componentDidMount() {
         let { type } = this.props.currentTask
 
@@ -95,10 +258,20 @@ export default class AddTaskPanel extends Component {
             this.chooseAnnotation('day')
         }
 
+        console.log(this.props.currentTask)
+
+        this.addTagDataToRender(this.props.currentTask)
+
         this.keyboardWillShowListener = Keyboard.addListener(
             'keyboardWillShow',
             this.toDoWhenWillShowKeyboard
         )
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.currentTask !== prevProps.currentTask) {
+            this.addTagDataToRender(this.props.currentTask)
+        }
     }
 
     componentWillUnmount() {
@@ -112,7 +285,7 @@ export default class AddTaskPanel extends Component {
                 width: Dimensions.get('window').width,
                 bottom: this.state.keyboardHeight,
                 display: this.state.AddTaskPanelDisplayProperty,
-                height: 250,
+                height: 300,
             }}>
                 <View style={{
                     height: 100,
@@ -187,7 +360,7 @@ export default class AddTaskPanel extends Component {
                 <View style={{
                     position: 'absolute',
                     bottom: 0,
-                    height: 200,
+                    height: 250,
                     width: Dimensions.get('window').width,
                     backgroundColor: 'white',
                     borderTopRightRadius: 20,
@@ -195,21 +368,42 @@ export default class AddTaskPanel extends Component {
                     flexDirection: "column",
                     justifyContent: "center",
                     paddingTop: 10,
+                    paddingBottom: 50,
+                    overflow: "scroll"
                 }}>
+                    <ScrollView>
+                        <TaskTitleElement
+                            setTaskTextInputRef={this.setTaskTextInputRef}
+                            taskTextInputRef={this.taskTextInputRef}
 
-                    <TaskTitleElement
-                        setTaskTextInputRef={this.setTaskTextInputRef}
-                        taskTextInputRef={this.taskTextInputRef}
+                            updateTitle={this.props.updateTitle}
+                        />
 
-                        updateTitle={this.props.updateTitle}
-                    />
+                        <TaskDescriptionElement
+                            updateDescription={this.props.updateDescription}
+                        />
 
-                    <TaskDescriptionElement
-                        updateDescription={this.props.updateDescription}
-                    />
+                        <View
+                            style={{
+                                flexWrap: "wrap",
+                                flexDirection: "row",
+                                paddingHorizontal: 33,
+                                paddingBottom: 20,
+                            }}
+                        >
+                            {this.state.tag_data}
+                        </View>
+
+                    </ScrollView>
 
                     <View style={{
-                        flex: 1,
+                        position: "absolute",
+                        bottom: 0,
+                        height: 50,
+                        width: Dimensions.get("window").width,
+                        borderTopWidth: 1,
+                        borderTopColor: "black",
+                        backgroundColor: "gainsboro",
                         flexDirection: 'row'
                     }}>
 
@@ -374,17 +568,44 @@ class TaskDescriptionElement extends React.PureComponent {
     }
 }
 
+class TagElement extends React.PureComponent {
 
-class BottomOptionElement extends React.Component {
+    render() {
+        return (
+            <View
+                style={{
+                    height: 37,
+                    paddingHorizontal: 25,
+                    marginRight: 11,
+                    marginTop: 26,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    backgroundColor: "black",
+                    borderRadius: 30,
+                }}
+            >
+                <Text
+                    style={{
+                        color: "white",
+                        fontSize: 16
+                    }}
+                >
+                    {this.props.content}
+                </Text>
+            </View>
+        )
+    }
+}
+
+
+class BottomOptionElement extends React.PureComponent {
 
     _onPress = () => {
         this.props.chooseOption()
         this.props.taskTextInputRef.blur()
         this.props.disableAddTaskPanel()
 
-        if (this.props.currentTask) {
-            console.log(this.props.currentTask)
-        }
     }
 
     render() {

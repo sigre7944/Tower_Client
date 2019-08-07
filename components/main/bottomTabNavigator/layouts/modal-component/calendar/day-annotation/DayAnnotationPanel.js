@@ -127,7 +127,7 @@ export default class DayAnnotationPanel extends Component {
     }
 
     _updateStartingDate = (day, month, year) => {
-        let startTime = trackingTime = new Date(new Date(new Date((new Date().setMonth(this.props.month))).setDate(this.props.day)).setFullYear(this.props.year)).getTime()
+        let startTime = trackingTime = new Date(new Date(new Date((new Date().setMonth(month))).setDate(day)).setFullYear(year)).getTime()
 
         this.props.updateStartingDate({
             day,
