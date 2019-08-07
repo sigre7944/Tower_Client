@@ -36,6 +36,18 @@ export default class AddTaskPanel extends Component {
         })
     }
 
+    chooseDayAnno = () => {
+        this.chooseAnnotation("day")
+    }
+
+    chooseWeekAnno = () => {
+        this.chooseAnnotation("week")
+    }
+
+    chooseMonthAnno = () => {
+        this.chooseAnnotation("month")
+    }
+
     chooseAnnotation = (annotation) => {
         if (annotation === "day") {
             this.setState({
@@ -51,6 +63,7 @@ export default class AddTaskPanel extends Component {
                 weekAnnotationColor: "black",
                 monthAnnotationColor: monthAnnotationColor,
             })
+
         }
 
         else {
@@ -60,6 +73,8 @@ export default class AddTaskPanel extends Component {
                 monthAnnotationColor: "black",
             })
         }
+
+        this.props.updateType(annotation)
         this.props.setCurrentAnnotation(annotation)
     }
 
@@ -70,7 +85,15 @@ export default class AddTaskPanel extends Component {
     }
 
     componentDidMount() {
-        this.chooseAnnotation('day') //automatically choose day annotation when loaded as default
+        let { type } = this.props.currentTask
+
+        //automatically choose saved annotation when loaded as default
+        if (type.length > 0) {
+            this.chooseAnnotation(type)
+        }
+        else {
+            this.chooseAnnotation('day')
+        }
 
         this.keyboardWillShowListener = Keyboard.addListener(
             'keyboardWillShow',
@@ -105,7 +128,7 @@ export default class AddTaskPanel extends Component {
                             borderTopLeftRadius: 20,
                         }}
 
-                        onPress={this.chooseAnnotation.bind(this, 'day')}
+                        onPress={this.chooseDayAnno}
                         underlayColor="transparent"
                     >
                         <Text style={{
@@ -127,7 +150,7 @@ export default class AddTaskPanel extends Component {
                             borderTopLeftRadius: 20,
                         }}
 
-                        onPress={this.chooseAnnotation.bind(this, 'week')}
+                        onPress={this.chooseWeekAnno}
                         underlayColor="transparent"
                     >
                         <Text style={{
@@ -148,7 +171,7 @@ export default class AddTaskPanel extends Component {
                             borderTopLeftRadius: 20,
                         }}
 
-                        onPress={this.chooseAnnotation.bind(this, 'month')}
+                        onPress={this.chooseMonthAnno}
                         underlayColor="transparent"
                     >
                         <Text style={{
@@ -220,7 +243,7 @@ export default class AddTaskPanel extends Component {
 
                         <BottomOptionElement
                             chooseOption={this.props.addTaskButtonActionProp}
-                            currentTask = {this.props.currentTask}
+                            currentTask={this.props.currentTask}
                             taskTextInputRef={this.taskTextInputRef}
                             disableAddTaskPanel={this.disableAddTaskPanel}
                             title="Ok"
@@ -263,8 +286,8 @@ class TaskTitleElement extends React.PureComponent {
 
     }
 
-    componentDidUpdate(prevProps, prevState){
-        if(this.state.value !== prevState.value){
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.value !== prevState.value) {
             this.props.updateTitle(this.state.value)
         }
     }
@@ -315,8 +338,8 @@ class TaskDescriptionElement extends React.PureComponent {
         })
     }
 
-    componentDidUpdate(prevProps, prevState){
-        if(this.state.value !== prevState.value){
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.value !== prevState.value) {
             this.props.updateDescription(this.state.value)
         }
     }
@@ -359,7 +382,7 @@ class BottomOptionElement extends React.Component {
         this.props.taskTextInputRef.blur()
         this.props.disableAddTaskPanel()
 
-        if(this.props.currentTask){
+        if (this.props.currentTask) {
             console.log(this.props.currentTask)
         }
     }

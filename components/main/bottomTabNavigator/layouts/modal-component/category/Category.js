@@ -16,7 +16,6 @@ import {
     Animated
 } from 'react-native';
 
-
 export default class Category extends React.Component {
 
     constructor(props) {
@@ -24,6 +23,8 @@ export default class Category extends React.Component {
 
         this.addNewCateRef = React.createRef()
     }
+
+    chosen_category = ""
 
     state = {
         //mock data for category, the unmock one will be saved in Redux store
@@ -62,8 +63,6 @@ export default class Category extends React.Component {
                     currentIndex={this.state.currentIndex}
                     lastIndex={this.state.lastIndex}
                     selectCategory={this.selectCategory}
-
-                    updateCategory={this.props.updateCategory}
 
                     currentTask = {this.props.currentTask}
                 />
@@ -181,9 +180,6 @@ export default class Category extends React.Component {
         }
 
         this.props.createCategory(data)
-
-        // automatically select the newly created task
-        this.props.updateCategory(key)
     }
 
     initializeCategoryArr = () => {
@@ -207,7 +203,8 @@ export default class Category extends React.Component {
         })
     }
 
-    _disableAllTabs = () => {
+    save = () => {
+        this.props.updateCategory(Object.keys(this.props.categories)[this.state.currentIndex])
         this.props.disableAllTabs()
     }
 
@@ -326,7 +323,7 @@ export default class Category extends React.Component {
                                 marginRight: 10
                             }}
 
-                            onPress={this._disableAllTabs}
+                            onPress={this.save}
                         >
                             <Text
                                 style={{
@@ -387,8 +384,6 @@ class CategoryRow extends React.Component {
 
     _onPress = () => {
         this.props.selectCategory(this.props.index)
-
-        this.props.updateCategory(this.props.data.id)
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {

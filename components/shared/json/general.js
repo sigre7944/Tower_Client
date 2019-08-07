@@ -47,13 +47,13 @@ const task = {
         },
 
         // these properties are used for 'Week' type task
-        type: "weekly",
+        type: "weekly-w",
         interval: {
             value: 86400 * 1000 * 7 * 2
         },
 
         // these properties are used for 'Month' type task
-        type: "monthly",
+        type: "monthly-m",
         interval: {
             value: 86400 * 1000 * 7 * 5 // this value will be calculated as this: task for January, repeat every 2 months => 
             // January, March, May, July, etc will have the task displayed.

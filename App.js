@@ -84,7 +84,7 @@ export default class App extends React.Component {
           repeat: {
             type: "daily",
             interval: {
-              value: 86400
+              value: 86400 * 1000
             }
           },
           end: {

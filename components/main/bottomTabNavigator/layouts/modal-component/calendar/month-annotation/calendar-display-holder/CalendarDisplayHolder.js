@@ -106,7 +106,6 @@ export default class CalendarDisplayHolder extends Component {
                                 currentYear = {this.props.currentYear}
                                 year={this.props.monthData.year} 
 
-                                updateStartingDate = {this.props.updateStartingDate}
                             />
                         ))}
                     </View>
@@ -163,19 +162,7 @@ class MonthHolder extends Component {
 
         this.props.changeCurrentMonthIndex(this.props.monthIndex)
 
-        let startTime = trackingTime = new Date(
-            new Date(
-                new Date(
-                    new Date().setDate(1)).setMonth(this.props.data.monthNumber)).setFullYear(this.props.year))
-        .getTime()
-
-        this.props.updateStartingDate({
-            month: this.props.data.monthNumber,
-            year: this.props.year,
-            startTime,
-            trackingTime
-        })
-
+        this.props.setChosenDate(this.props.data.monthNumber, this.props.year)
     }
 
 

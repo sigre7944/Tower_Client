@@ -15,6 +15,10 @@ export default class DayAnnotationPanel extends Component {
     month_data_array = []
     numberOfMonths = (12 * 10) + 1 //Number of months we want to display. (12 months in a year) * (number of year) + 1 (for current month)
 
+    chosen_day = -1
+    chosen_month = -1
+    chosen_year = -1
+
     state = {
         current_month_index: 0,
         month_data_array: []
@@ -63,7 +67,7 @@ export default class DayAnnotationPanel extends Component {
 
             scrollToCurrentMonth={this.scrollToCurrentMonth}
 
-            updateStartingDate={this.props.updateStartingDate}
+            setChosenDate = {this.setChosenDate}
 
             currentTask = {this.props.currentTask}
         />
@@ -104,8 +108,34 @@ export default class DayAnnotationPanel extends Component {
         this.props.chooseRepeatOption()
     }
 
-    _disableAllTabs = () => {
+    save = () => {
+        if(this.chosen_day > 0 && this.chosen_month > 0 && this.chosen_year > 0){
+            if(this.chosen_day < new Date().getDate() && this.chosen_month === new Date().getMonth() && this.chosen_year === new Date().getFullYear())
+                this._updateStartingDate(new Date().getDate(), this.chosen_month, this.chosen_year)
+
+            else
+                this._updateStartingDate(this.chosen_day, this.chosen_month, this.chosen_year)
+        }
+
         this.props.disableAllTabs()
+    }
+
+    setChosenDate = (day, month, year) => {
+        this.chosen_day = day
+        this.chosen_month = month
+        this.chosen_year = year
+    }
+
+    _updateStartingDate = (day, month, year) => {
+        let startTime = trackingTime = new Date(new Date(new Date((new Date().setMonth(this.props.month))).setDate(this.props.day)).setFullYear(this.props.year)).getTime()
+
+        this.props.updateStartingDate({
+            day,
+            month,
+            year,
+            startTime,
+            trackingTime
+        })
     }
 
     componentDidMount() {
@@ -205,7 +235,7 @@ export default class DayAnnotationPanel extends Component {
                             marginRight: 10
                         }}
 
-                        onPress={this._disableAllTabs}
+                        onPress={this.save}
                     >
                         <Text
                             style={{

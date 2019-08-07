@@ -1,6 +1,7 @@
 import {connect} from 'react-redux'
 import {updateTitle} from './actions/updateTitle'
 import {updateDescription} from './actions/updateDescription'
+import {updateType} from './actions/updateType'
 import AddTaskPanel from './AddTaskPanel'
 
 
@@ -16,6 +17,10 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 
     updateDescription: (data) => {
         dispatch(updateDescription(data))
+    },
+
+    updateType: (data) => {
+        dispatch(updateType(data))
     }
 })
 

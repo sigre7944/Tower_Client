@@ -145,15 +145,8 @@ class DayHolder extends React.PureComponent {
 
         this.props.chooseDifferentMonth(this.props.month_index)
 
-        let startTime = trackingTime = new Date(new Date(new Date((new Date().setMonth(this.props.month))).setDate(this.props.day)).setFullYear(this.props.year)).getTime()
+        this.props.setChosenDate(this.props.day, this.props.month, this.props.year)
 
-        this.props.updateStartingDate({
-            day: this.props.day,
-            month: this.props.month,
-            year: this.props.year,
-            startTime,
-            trackingTime
-        })
     }
 
 
@@ -161,18 +154,18 @@ class DayHolder extends React.PureComponent {
         let { type, schedule } = this.props.currentTask
         if (type === "day") {
             if (this.props.month === schedule.month && this.props.year === schedule.year && this.props.day === schedule.day) {
-                this.chooseDay(this.props.calendarDayIndex)
+                this.chooseDay()
             }
 
             else {
                 if (this.props.currentMonth === this.props.month && this.props.currentYear === this.props.year && this.props.day === this.props.currentDayInMonth) {
-                    this.chooseDay(this.props.calendarDayIndex)
+                    this.chooseDay()
                 }
             }
         }
         else {
             if (this.props.currentMonth === this.props.month && this.props.currentYear === this.props.year && this.props.day === this.props.currentDayInMonth) {
-                this.chooseDay(this.props.calendarDayIndex)
+                this.chooseDay()
             }
         }
 

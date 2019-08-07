@@ -22,9 +22,11 @@ export default class MonthAnnotationPanel extends Component {
 
     month_value_array = []
 
+    chosen_month = chosen_year = -1
+
     currentMonth = new Date().getMonth()
     currentYear = new Date().getFullYear()
-    
+
     state = {
         month_array_data: [],
 
@@ -60,9 +62,9 @@ export default class MonthAnnotationPanel extends Component {
                     currentMonth={this.currentMonth}
                     currentYear={this.currentYear}
 
-                    updateStartingDate = {this.props.updateStartingDate}
+                    setChosenDate={this.setChosenDate}
 
-                    currentTask = {this.props.currentTask}
+                    currentTask={this.props.currentTask}
                 />
             )
         }
@@ -80,9 +82,9 @@ export default class MonthAnnotationPanel extends Component {
 
                 currentMonth={this.currentMonth}
                 currentYear={this.currentYear}
-                
-                updateStartingDate = {this.props.updateStartingDate}
-                currentTask = {this.props.currentTask}
+
+                setChosenDate={this.setChosenDate}
+                currentTask={this.props.currentTask}
             />
         )
     }
@@ -120,14 +122,41 @@ export default class MonthAnnotationPanel extends Component {
         })
     }
 
-    _disableAllTabs = () => {
+    save = () => {
+        if (this.chosen_month > 0 && this.chosen_year > 0) {
+            if (this.chosen_month < new Date().getMonth() && this.chosen_year === new Date().getFullYear())
+                this._updateStartingDate(new Date().getMonth(), this.chosen_year)
+
+            else
+                this._updateStartingDate(this.chosen_month, this.chosen_year)
+        }
         this.props.disableAllTabs()
+    }
+
+    setChosenDate = (month, year) => {
+        this.chosen_month = month
+        this.chosen_year = year
+    }
+
+    _updateStartingDate = (month, year) => {
+        let startTime = trackingTime = new Date(
+            new Date(
+                new Date(
+                    new Date().setDate(1)).setMonth(month)).setFullYear(year))
+            .getTime()
+
+        this.props.updateStartingDate({
+            month,
+            year,
+            startTime,
+            trackingTime
+        })
     }
 
     componentDidMount() {
         this.initMonths()
     }
-    
+
     render() {
         return (
             <>
@@ -214,7 +243,7 @@ export default class MonthAnnotationPanel extends Component {
                             marginRight: 10
                         }}
 
-                        onPress={this._disableAllTabs}
+                        onPress={this.save}
                     >
                         <Text
                             style={{
