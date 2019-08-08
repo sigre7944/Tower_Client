@@ -4,7 +4,6 @@ import {
     View,
     Text,
     TouchableHighlight,
-    Keyboard,
 } from 'react-native';
 
 import AddTaskButton from './layouts/AddTaskButton'

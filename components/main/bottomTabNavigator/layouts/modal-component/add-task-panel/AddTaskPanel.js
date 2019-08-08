@@ -588,6 +588,7 @@ export default class AddTaskPanel extends Component {
                             chooseOption={this.props.addTaskButtonActionProp}
                             taskTextInputRef={this.taskTextInputRef}
                             disableAddTaskPanel={this.disableAddTaskPanel}
+                            {... this.props}
                             title="Ok"
                         />
                     </View>
@@ -770,10 +771,22 @@ class TagElement extends React.PureComponent {
 class BottomOptionElement extends React.PureComponent {
 
     _onPress = () => {
+        if(this.props.addTask){
+            if(this.props.currentAnnotation === "day"){
+                this.props.addTask(this.props.currentDayTask)
+            }
+
+            else if(this.props.currentAnnotation === "week"){
+                this.props.addTask(this.props.currentWeekTask)
+            }
+
+            else if(this.props.currentAnnotation === "month"){
+                this.props.addTask(this.props.currentMonthTask)
+            }
+        }
         this.props.chooseOption()
         this.props.taskTextInputRef.blur()
         this.props.disableAddTaskPanel()
-
     }
 
     render() {

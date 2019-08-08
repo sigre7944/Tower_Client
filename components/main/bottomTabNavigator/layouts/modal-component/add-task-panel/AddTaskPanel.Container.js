@@ -3,6 +3,7 @@ import { updateTitle } from './actions/updateTitle'
 import { updateDescription } from './actions/updateDescription'
 import { updateType } from './actions/updateType'
 import { changeAnnotation } from './actions/changeAnnotation'
+import { addTask } from './actions/addTask'
 import AddTaskPanel from './AddTaskPanel'
 
 
@@ -25,12 +26,16 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
         dispatch(updateDescription(type, data))
     },
 
-    updateType: (data) => {
-        dispatch(updateType(data))
+    updateType: (type, data) => {
+        dispatch(updateType(type, data))
     },
 
     changeAnnotation: (annotation) => {
         dispatch(changeAnnotation(annotation))
+    },
+
+    addTask: (data) => {
+        dispatch(addTask(data))
     }
 })
 
