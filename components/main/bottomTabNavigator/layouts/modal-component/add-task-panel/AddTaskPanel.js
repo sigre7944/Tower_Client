@@ -100,21 +100,12 @@ export default class AddTaskPanel extends Component {
         })
     }
 
-    addTagDataToRender = ({ type, startTime, schedule, repeat, category, priority, goal }) => {
+    addTagDataToRender = (type, { startTime, schedule, repeat, end, category, priority, goal }) => {
         let tag_data = []
-        if (type) {
-            tag_data.push(
-                <TagElement
-                    key="tag-type"
-                    content={`${type}`}
-                />
-            )
-        }
 
-        if (schedule) {
-            let date = new Date(startTime)
-            //Schedule for day type
-            if (!schedule.week && schedule.day) {
+        if (type === "day") {
+            if (schedule && startTime) {
+                let date = new Date(startTime)
                 tag_data.push(
                     <TagElement
                         key="tag-start-time"
@@ -123,9 +114,115 @@ export default class AddTaskPanel extends Component {
                 )
             }
 
-            //Schedule for week type
-            else if (schedule.week) {
-                let end_day_of_week = new Date(startTime + 86400 * 1000 * 6)
+            if (repeat) {
+                if (repeat.type === "daily") {
+                    let value = repeat.interval.value / 86400 / 1000
+                    tag_data.push(
+                        <TagElement
+                            key="tag-repeat"
+                            content={`every ${value} day(s)`}
+                        />
+                    )
+                }
+
+                else if (repeat.type === "weekly") {
+                    let value = repeat.interval.value / 86400 / 1000 / 7
+                    tag_data.push(
+                        <TagElement
+                            key="tag-repeat"
+                            content={`every ${value} week(s)`}
+                        />
+                    )
+                }
+
+                else if (repeat.type === "monthly") {
+                    let value = repeat.interval.value
+                    tag_data.push(
+                        <TagElement
+                            key="tag-repeat"
+                            content={`every ${value} month(s)`}
+                        />
+                    )
+                }
+
+
+            }
+
+            if(end){
+                if(end.type === "never"){
+                    tag_data.push(
+                        <TagElement
+                            key="tag-end"
+                            content={`never end`}
+                        />
+                    )
+                }
+
+                else if (end.type === "on"){
+                    let end_date = new Date(end.endAt)
+                    tag_data.push(
+                        <TagElement
+                            key="tag-end"
+                            content={`end at ${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]}`}
+                        />
+                    )
+                }
+
+                else if (end.type === "after"){
+                    tag_data.push(
+                        <TagElement
+                            key="tag-end"
+                            content={`end after ${end.occurrence} occurrences`}
+                        />
+                    )
+                }
+            }
+
+            if (category) {
+                let cate = this.props.categories[category].name
+                tag_data.push(
+                    <TagElement
+                        key="tag-category"
+                        content={`${cate}`}
+                    />
+                )
+            }
+
+            if (priority) {
+                let prio = this.props.priorities[priority.value].name
+                tag_data.push(
+                    <TagElement
+                        key="tag-priority"
+                        content={`${prio}`}
+                    />
+                )
+
+                if (parseInt(priority.reward) > 0) {
+                    let { reward } = priority
+                    tag_data.push(
+                        <TagElement
+                            key="tag-reward"
+                            content={`${reward}`}
+                        />
+                    )
+                }
+            }
+
+            if (goal) {
+                let value = goal.max
+                tag_data.push(
+                    <TagElement
+                        key="tag-goal"
+                        content={`${value} time(s) per ${type}(s)`}
+                    />
+                )
+            }
+        }
+
+        else if (type === "week") {
+            if (schedule && startTime) {
+                let end_day_of_week = new Date(startTime + 86400 * 1000 * 6),
+                    date = new Date(startTime)
                 tag_data.push(
                     <TagElement
                         key="tag-start-time"
@@ -134,8 +231,71 @@ export default class AddTaskPanel extends Component {
                 )
             }
 
-            //Schedule for month type
-            else if (!schedule.week && !schedule.day){
+            if (repeat) {
+                if (repeat.type === "weekly-w") {
+                    let value = repeat.interval.value / 86400 / 1000 / 7
+                    tag_data.push(
+                        <TagElement
+                            key="tag-repeat"
+                            content={`every ${value} week(s)`}
+                        />
+                    )
+                }
+
+                else if (repeat.type === "monthly-w") {
+                    let value = repeat.interval.value
+                    tag_data.push(
+                        <TagElement
+                            key="tag-repeat"
+                            content={`every ${value} month(s)`}
+                        />
+                    )
+                }
+            }
+
+            if (category) {
+                let cate = this.props.categories[category].name
+                tag_data.push(
+                    <TagElement
+                        key="tag-category"
+                        content={`${cate}`}
+                    />
+                )
+            }
+
+            if (priority) {
+                let prio = this.props.priorities[priority.value].name
+                tag_data.push(
+                    <TagElement
+                        key="tag-priority"
+                        content={`${prio}`}
+                    />
+                )
+
+                if (parseInt(priority.reward) > 0) {
+                    let { reward } = priority
+                    tag_data.push(
+                        <TagElement
+                            key="tag-reward"
+                            content={`${reward}`}
+                        />
+                    )
+                }
+            }
+
+            if (goal) {
+                let value = goal.max
+                tag_data.push(
+                    <TagElement
+                        key="tag-goal"
+                        content={`${value} time(s) per ${type}(s)`}
+                    />
+                )
+            }
+        }
+
+        else if (type === "month") {
+            if (schedule && startTime) {
                 tag_data.push(
                     <TagElement
                         key="tag-start-time"
@@ -143,30 +303,8 @@ export default class AddTaskPanel extends Component {
                     />
                 )
             }
-        }
 
-        if (repeat) {
-            if (repeat.type === "daily" && type === "day") {
-                let value = repeat.interval.value / 86400 / 1000
-                tag_data.push(
-                    <TagElement
-                        key="tag-repeat"
-                        content={`every ${value} day(s)`}
-                    />
-                )
-            }
-
-            else if (repeat.type === "weekly" && type === "day") {
-                let value = repeat.interval.value / 86400 / 1000 / 7
-                tag_data.push(
-                    <TagElement
-                        key="tag-repeat"
-                        content={`every ${value} week(s)`}
-                    />
-                )
-            }
-
-            else if (repeat.type === "monthly" && type === "day") {
+            if (repeat) {
                 let value = repeat.interval.value
                 tag_data.push(
                     <TagElement
@@ -176,75 +314,45 @@ export default class AddTaskPanel extends Component {
                 )
             }
 
-            else if (repeat.type === "weekly-w" && type === "week") {
-                let value = repeat.interval.value / 86400 / 1000 / 7
+            if (category) {
+                let cate = this.props.categories[category].name
                 tag_data.push(
                     <TagElement
-                        key="tag-repeat"
-                        content={`every ${value} week(s)`}
+                        key="tag-category"
+                        content={`${cate}`}
                     />
                 )
             }
 
-            else if (repeat.type === "monthly-w" && type === "week") {
-                let value = repeat.interval.value
+            if (priority) {
+                let prio = this.props.priorities[priority.value].name
                 tag_data.push(
                     <TagElement
-                        key="tag-repeat"
-                        content={`every ${value} month(s)`}
+                        key="tag-priority"
+                        content={`${prio}`}
+                    />
+                )
+
+                if (parseInt(priority.reward) > 0) {
+                    let { reward } = priority
+                    tag_data.push(
+                        <TagElement
+                            key="tag-reward"
+                            content={`${reward}`}
+                        />
+                    )
+                }
+            }
+
+            if (goal) {
+                let value = goal.max
+                tag_data.push(
+                    <TagElement
+                        key="tag-goal"
+                        content={`${value} time(s) per ${type}(s)`}
                     />
                 )
             }
-
-            else if (repeat.type === "monthly-m" && type === "month") {
-                let value = repeat.interval.value
-                tag_data.push(
-                    <TagElement
-                        key="tag-repeat"
-                        content={`every ${value} month(s)`}
-                    />
-                )
-            }
-        }
-
-        if (category) {
-            let cate = this.props.categories[category].name
-            tag_data.push(
-                <TagElement
-                    key="tag-category"
-                    content={`${cate}`}
-                />
-            )
-        }
-
-        if (priority) {
-            let prio = this.props.priorities[priority.value].name
-            tag_data.push(
-                <TagElement
-                    key="tag-priority"
-                    content={`${prio}`}
-                />
-            )
-
-            if (parseInt(priority.reward) > 0) {
-                let { reward } = priority
-                tag_data.push(
-                    <TagElement
-                        key="tag-reward"
-                        content={`${reward}`}
-                    />
-                )
-            }
-        }
-
-        if (goal) {
-            let value = goal.max
-            tag_data.push(
-                <TagElement
-                    key="tag-goal"
-                    content={`${value} time(s) per ${type}(s)`}
-                />
-            )
         }
 
         this.setState({
@@ -253,17 +361,10 @@ export default class AddTaskPanel extends Component {
     }
 
     componentDidMount() {
-        // let { type } = this.props.currentTask
+        // Load data from currentDayTask object first
+        this.chooseAnnotation('day')
 
-        //automatically choose saved annotation when loaded as default
-        // if (type.length > 0) {
-        //     this.chooseAnnotation(type)
-        // }
-        // else {
-            this.chooseAnnotation('day')
-        // }
-
-        this.addTagDataToRender(this.props.currentTask)
+        this.addTagDataToRender("day", this.props.currentDayTask)
 
         this.keyboardWillShowListener = Keyboard.addListener(
             'keyboardWillShow',
@@ -272,8 +373,38 @@ export default class AddTaskPanel extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.props.currentTask !== prevProps.currentTask) {
-            this.addTagDataToRender(this.props.currentTask)
+        if (this.props.currentAnnotation !== prevProps.currentAnnotation) {
+            if (this.props.currentAnnotation === "day") {
+                this.addTagDataToRender("day", this.props.currentDayTask)
+            }
+
+            else if (this.props.currentAnnotation === "week") {
+                this.addTagDataToRender("week", this.props.currentWeekTask)
+            }
+
+            if (this.props.currentAnnotation === "month") {
+                this.addTagDataToRender("month", this.props.currentMonthTask)
+            }
+        }
+
+        else {
+            if (this.props.currentAnnotation === "day") {
+                if (this.props.currentDayTask !== prevProps.currentDayTask) {
+                    this.addTagDataToRender("day", this.props.currentDayTask)
+                }
+            }
+
+            else if (this.props.currentAnnotation === "week") {
+                if (this.props.currentWeekTask !== prevProps.currentWeekTask) {
+                    this.addTagDataToRender("week", this.props.currentWeekTask)
+                }
+            }
+
+            if (this.props.currentAnnotation === "month") {
+                if (this.props.currentMonthTask !== prevProps.currentMonthTask) {
+                    this.addTagDataToRender("month", this.props.currentMonthTask)
+                }
+            }
         }
     }
 
@@ -378,11 +509,12 @@ export default class AddTaskPanel extends Component {
                         <TaskTitleElement
                             setTaskTextInputRef={this.setTaskTextInputRef}
                             taskTextInputRef={this.taskTextInputRef}
-
+                            currentAnnotation={this.props.currentAnnotation}
                             updateTitle={this.props.updateTitle}
                         />
 
                         <TaskDescriptionElement
+                            currentAnnotation={this.props.currentAnnotation}
                             updateDescription={this.props.updateDescription}
                         />
 
@@ -440,7 +572,6 @@ export default class AddTaskPanel extends Component {
 
                         <BottomOptionElement
                             chooseOption={this.props.addTaskButtonActionProp}
-                            currentTask={this.props.currentTask}
                             taskTextInputRef={this.taskTextInputRef}
                             disableAddTaskPanel={this.disableAddTaskPanel}
                             title="Ok"
@@ -485,7 +616,17 @@ class TaskTitleElement extends React.PureComponent {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.value !== prevState.value) {
-            this.props.updateTitle(this.state.value)
+            if (this.props.currentAnnotation === "day") {
+                this.props.updateTitle("UPDATE_NEW_DAY_TASK", this.state.value)
+            }
+
+            else if (this.props.currentAnnotation === "week") {
+                this.props.updateTitle("UPDATE_NEW_WEEK_TASK", this.state.value)
+            }
+
+            else if (this.props.currentAnnotation === "month") {
+                this.props.updateTitle("UPDATE_NEW_MONTH_TASK", this.state.value)
+            }
         }
     }
 
@@ -537,7 +678,17 @@ class TaskDescriptionElement extends React.PureComponent {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.value !== prevState.value) {
-            this.props.updateDescription(this.state.value)
+            if (this.props.currentAnnotation === "day") {
+                this.props.updateDescription("UPDATE_NEW_DAY_TASK", this.state.value)
+            }
+
+            else if (this.props.currentAnnotation === "week") {
+                this.props.updateDescription("UPDATE_NEW_WEEK_TASK", this.state.value)
+            }
+
+            else if (this.props.currentAnnotation === "month") {
+                this.props.updateDescription("UPDATE_NEW_MONTH_TASK", this.state.value)
+            }
         }
     }
 

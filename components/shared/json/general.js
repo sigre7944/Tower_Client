@@ -81,7 +81,7 @@ const task = {
 
         // after occurances
         type: "after",
-        occurance: 5 // If users set the repetition of a task to be repeated every 2 days. This value will determine
+        occurrence: 5 // If users set the repetition of a task to be repeated every 2 days. This value will determine
         // that the task will be expired in 10 days.
     },
 

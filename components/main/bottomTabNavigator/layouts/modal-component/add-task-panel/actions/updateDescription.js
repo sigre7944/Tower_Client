@@ -1,5 +1,5 @@
-export const updateDescription = (description) => ({
-    type: "UPDATE_NEW_TASK",
+export const updateDescription = (type, description) => ({
+    type,
     data: {
         description
     }

@@ -7,18 +7,21 @@ import AddTaskPanel from './AddTaskPanel'
 
 const mapStateToProps = (state) => ({
     currentTask: state.currentTask,
+    currentDayTask: state.currentDayTask,
+    currentWeekTask: state.currentWeekTask,
+    currentMonthTask: state.currentMonthTask,
     categories: state.categories,
     priorities: state.priorities
 })
 
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    updateTitle: (data) => {
-        dispatch(updateTitle(data))
+    updateTitle: (type, data) => {
+        dispatch(updateTitle(type, data))
     },
 
-    updateDescription: (data) => {
-        dispatch(updateDescription(data))
+    updateDescription: (type, data) => {
+        dispatch(updateDescription(type, data))
     },
 
     updateType: (data) => {

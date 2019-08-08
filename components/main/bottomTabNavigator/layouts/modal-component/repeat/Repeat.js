@@ -194,6 +194,11 @@ export default class Repeat extends Component {
                         toggleEndOnDate={this.toggleEndOnDate}
                         chosenDate={this.state.chosenDate}
                         setEndData={this.setEndData}
+                        currentAnnotation={this.props.currentAnnotation}
+                        currentDayTask={this.props.currentDayTask}
+                        currentWeekTask={this.props.currentWeekTask}
+                        currentMonthTask={this.props.currentMonthTask}
+                        setDate={this.setDate}
                     />
 
                     <View
@@ -425,7 +430,7 @@ class DayRepeatEveryHolder extends React.PureComponent {
 
         let { repeat } = this.props.currentDayTask
 
-        if (repeat && repeat.type !== "daily") {
+        if ((repeat && repeat.type !== "daily") || !repeat) {
             this.props.setRepetionData({
                 type: "daily",
                 interval: {
@@ -440,7 +445,7 @@ class DayRepeatEveryHolder extends React.PureComponent {
 
         let { repeat } = this.props.currentDayTask
 
-        if (repeat && repeat.type !== "weekly") {
+        if ((repeat && repeat.type !== "weekly") || !repeat) {
             this.props.setRepetionData({
                 type: "weekly",
                 interval: {
@@ -456,7 +461,7 @@ class DayRepeatEveryHolder extends React.PureComponent {
 
         let { repeat } = this.props.currentDayTask
 
-        if (repeat && repeat.type !== "monthly") {
+        if ((repeat && repeat.type !== "monthly") || !repeat) {
             this.props.setRepetionData({
                 type: "monthly",
                 interval: {
@@ -646,7 +651,7 @@ class DailyRepeatOption extends React.PureComponent {
     componentDidMount() {
         let { repeat } = this.props.currentDayTask
 
-        if (repeat && parseInt(repeat.interval.value) > 0 && repeat.type === "daily") {
+        if (repeat && repeat.interval && parseInt(repeat.interval.value) > 0 && repeat.type === "daily") {
             this.setState({
                 value: `${parseInt(repeat.interval.value) / (86400 * 1000)}`
             })
@@ -781,7 +786,7 @@ class DayWeeklyRepeatOption extends React.PureComponent {
     componentDidMount() {
         let { repeat } = this.props.currentDayTask
 
-        if (repeat && repeat.type === "weekly" && parseInt(repeat.interval.value) > 0) {
+        if (repeat && repeat.type === "weekly" && repeat.interval && parseInt(repeat.interval.value) > 0) {
 
             this.setState({
                 value: `${parseInt(repeat.interval.value) / (86400 * 1000 * 7)}`
@@ -1089,7 +1094,7 @@ class DayMonthlyRepeatOption extends React.PureComponent {
     componentDidMount() {
         let { repeat } = this.props.currentDayTask
 
-        if (repeat && repeat.type === "monthly" && parseInt(repeat.interval.value) > 0) {
+        if (repeat && repeat.type === "monthly" && repeat.interval && parseInt(repeat.interval.value) > 0) {
             this.setState({
                 value: `${repeat.interval.value}`
             })
@@ -1580,8 +1585,44 @@ export class EndRepeatHolder extends React.PureComponent {
     }
 
     componentDidMount() {
-        this.chooseOptionRadio(0)
+        let end
+
+        if (this.props.currentAnnotation === "day") {
+            end = this.props.currentDayTask.end
+        }
+
+        else if (this.props.currentAnnotation === "week") {
+            end = this.props.currentWeekTask.end
+        }
+
+        else {
+            end = this.props.currentMonthTask.end
+        }
+
+        if (end) {
+            if (end.type === "on") {
+                this.props.setDate(new Date(end.endAt))
+                this.chooseOptionRadio(1)
+            }
+
+            else if (end.type === "after") {
+                this.setState({
+                    afterOccurranceValue: `${end.occurrence}`
+                })
+
+                this.chooseOptionRadio(2)
+            }
+
+            else {
+                this.chooseOptionRadio(0)
+            }
+        }
+
+        else {
+            this.chooseOptionRadio(0)
+        }
     }
+
 
     componentWillUnmount() {
         this._onBlur()
@@ -1611,7 +1652,7 @@ export class EndRepeatHolder extends React.PureComponent {
                 if (this.regExp.test(this.state.afterOccurranceValue)) {
                     this.data = {
                         type: "after",
-                        occurance: parseInt(this.state.afterOccurranceValue)
+                        occurrence: parseInt(this.state.afterOccurranceValue)
                     }
 
                     this.props.setEndData(this.data)
@@ -1632,7 +1673,7 @@ export class EndRepeatHolder extends React.PureComponent {
             else if (this.state.afterOccurranceValue !== prevState.afterOccurranceValue && this.regExp.test(this.state.afterOccurranceValue) && this.currentIndex === 2) {
                 this.data = {
                     type: "after",
-                    occurance: parseInt(this.state.afterOccurranceValue)
+                    occurrence: parseInt(this.state.afterOccurranceValue)
                 }
 
                 this.props.setEndData(this.data)
