@@ -92,6 +92,7 @@ export default class AddTaskPanel extends Component {
         }
 
         this.props.setCurrentAnnotation(annotation)
+        this.props.changeAnnotation(annotation)
     }
 
     toDoWhenWillShowKeyboard = (e) => {
@@ -148,8 +149,8 @@ export default class AddTaskPanel extends Component {
 
             }
 
-            if(end){
-                if(end.type === "never"){
+            if (end) {
+                if (end.type === "never") {
                     tag_data.push(
                         <TagElement
                             key="tag-end"
@@ -158,7 +159,7 @@ export default class AddTaskPanel extends Component {
                     )
                 }
 
-                else if (end.type === "on"){
+                else if (end.type === "on") {
                     let end_date = new Date(end.endAt)
                     tag_data.push(
                         <TagElement
@@ -168,7 +169,7 @@ export default class AddTaskPanel extends Component {
                     )
                 }
 
-                else if (end.type === "after"){
+                else if (end.type === "after") {
                     tag_data.push(
                         <TagElement
                             key="tag-end"
@@ -361,10 +362,23 @@ export default class AddTaskPanel extends Component {
     }
 
     componentDidMount() {
-        // Load data from currentDayTask object first
-        this.chooseAnnotation('day')
+        // Load the current annotation from redux store
+        if (this.props.currentAnnotation === "day") {
+            this.chooseAnnotation('day')
+            this.addTagDataToRender("day", this.props.currentDayTask)
+        }
 
-        this.addTagDataToRender("day", this.props.currentDayTask)
+        else if (this.props.currentAnnotation === "week") {
+            this.chooseAnnotation('week')
+            this.addTagDataToRender("week", this.props.currentDayTask)
+        }
+
+        else if (this.props.currentAnnotation === "month") {
+            this.chooseAnnotation('month')
+            this.addTagDataToRender("month", this.props.currentDayTask)
+        }
+
+
 
         this.keyboardWillShowListener = Keyboard.addListener(
             'keyboardWillShow',
