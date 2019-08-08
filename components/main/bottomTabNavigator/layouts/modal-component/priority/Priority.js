@@ -79,40 +79,24 @@ export default class Priority extends React.Component {
             this.importance_index = 1
             this.urgency_index = 1
 
-            this.props.updatePriority({
-                value: Object.keys(this.props.priorities)[0],
-                reward: parseInt(this.state.reward_value)
-            })
         }
 
         else if (value === "Plan") {
             this.importance_index = 1
             this.urgency_index = 0
 
-            this.props.updatePriority({
-                value: Object.keys(this.props.priorities)[1],
-                reward: parseInt(this.state.reward_value)
-            })
         }
 
         else if (value === "Delay") {
             this.importance_index = 0
             this.urgency_index = 1
 
-            this.props.updatePriority({
-                value: Object.keys(this.props.priorities)[2],
-                reward: parseInt(this.state.reward_value)
-            })
         }
 
         else if (value === "Delegate") {
             this.importance_index = 0
             this.urgency_index = 0
 
-            this.props.updatePriority({
-                value: Object.keys(this.props.priorities)[3],
-                reward: parseInt(this.state.reward_value)
-            })
         }
     }
 
@@ -150,7 +134,39 @@ export default class Priority extends React.Component {
         ).start()
     }
 
-    _disableAllTabs = () => {
+    _updatePriority = () => {
+        let {priorities} = this.props
+        for(let key in priorities){
+            if(priorities.hasOwnProperty(key)){
+                if(priorities[key].name === this.state.priority_value){
+                    if(this.props.currentAnnotation === "day"){
+                        this.props.updatePriority("UPDATE_NEW_DAY_TASK", {
+                            value: key,
+                            reward: parseInt(this.state.reward_value)
+                        })
+                    }
+
+                    else if(this.props.currentAnnotation === "week"){
+                        this.props.updatePriority("UPDATE_NEW_WEEK_TASK", {
+                            value: key,
+                            reward: parseInt(this.state.reward_value)
+                        })
+                    }
+
+                    else if(this.props.currentAnnotation === "month"){
+                        this.props.updatePriority("UPDATE_NEW_MONTH_TASK", {
+                            value: key,
+                            reward: parseInt(this.state.reward_value)
+                        })
+                    }
+                    
+                }
+            }
+        }
+    }
+
+    save = () => {
+        this._updatePriority()
         this.props.disableAllTabs()
     }
 
@@ -164,38 +180,51 @@ export default class Priority extends React.Component {
             "keyboardWillHide",
             this.toDoWhenKeyboardWillHide
         )
-    }
 
-    componentDidUpdate(prevProps, prevState){
-        if(this.state.reward_value !== prevState.reward_value && this.regExp.test(this.state.reward_value)){
-            if (this.state.priority_value === "Do First") {
-                this.props.updatePriority({
-                    value: Object.keys(this.props.priorities)[0],
-                    reward: parseInt(this.state.reward_value)
-                })
+        let priorities = this.props.priorities
+
+        if(this.props.currentAnnotation === "day"){
+            let {priority} = this.props.currentDayTask
+
+            if(priority){
+                this.changePriorityValue(priorities[priority.value].name)
             }
-    
-            else if (this.state.priority_value === "Plan") {
-                this.props.updatePriority({
-                    value: Object.keys(this.props.priorities)[1],
-                    reward: parseInt(this.state.reward_value)
-                })
-            }
-    
-            else if (this.state.priority_value === "Delay") {
-                this.props.updatePriority({
-                    value: Object.keys(this.props.priorities)[2],
-                    reward: parseInt(this.state.reward_value)
-                })
-            }
-    
-            else if (this.state.priority_value === "Delegate") {
-                this.props.updatePriority({
-                    value: Object.keys(this.props.priorities)[3],
-                    reward: parseInt(this.state.reward_value)
+
+            if(priority && parseInt(priority.reward) > 0){
+                this.setState({
+                    reward_value: `${priority.reward}`
                 })
             }
         }
+
+        else if(this.props.currentAnnotation === "week"){
+            let {priority} = this.props.currentWeekTask
+
+            if(priority){
+                this.changePriorityValue(priorities[priority.value].name)
+            }
+
+            if(priority && parseInt(priority.reward) > 0){
+                this.setState({
+                    reward_value: `${priority.reward}`
+                })
+            }
+        }
+
+        else if(this.props.currentAnnotation === "month"){
+            let {priority} = this.props.currentMonthTask
+
+            if(priority){
+                this.changePriorityValue(priorities[priority.value].name)
+            }
+
+            if(priority && parseInt(priority.reward) > 0){
+                this.setState({
+                    reward_value: `${priority.reward}`
+                })
+            }
+        }
+        
     }
 
     componentWillUnmount() {
@@ -284,7 +313,7 @@ export default class Priority extends React.Component {
                                     marginRight: 10
                                 }}
 
-                                onPress={this._disableAllTabs}
+                                onPress={this.save}
                             >
                                 <Text
                                     style={{

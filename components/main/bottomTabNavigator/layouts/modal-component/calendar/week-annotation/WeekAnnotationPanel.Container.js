@@ -4,7 +4,7 @@ import {updateStartingDate} from './actions/updateStartingDate'
 import WeekAnnotationPanel from './WeekAnnotationPanel'
 
 const mapStateToProps = (state) => ({
-    currentTask: state.currentTask
+    currentWeekTask: state.currentWeekTask,
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

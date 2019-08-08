@@ -1,5 +1,5 @@
-export const updateGoal = (goal) => ({
-    type: "UPDATE_NEW_TASK",
+export const updateGoal = (type, goal) => ({
+    type,
     data: {
         goal
     }

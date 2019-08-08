@@ -10,60 +10,121 @@ import Header from './components/main/header/Header'
 import * as FileSystem from 'expo-file-system';
 
 let categories = {},
-  filePath = FileSystem.documentDirectory + "categories.json"
+  currentTask = {},
+  cate_filePath = FileSystem.documentDirectory + "categories.json",
+  currentTask_filePath = FileSystem.documentDirectory + "currentTask.json"
 
 export default class App extends React.Component {
+
+  initialState = {}
+
+  currentDate = new Date()
 
   state = {
     store: undefined,
   }
 
-  LoadCategoriesFromFile = (filePath) => {
-    FileSystem.getInfoAsync(filePath)
-    .then(data => {
-      if (data.exists) {
-        FileSystem.readAsStringAsync(filePath)
-          .then(data => {
-            categories = JSON.parse(data)
-            
-            this.setState({
-              store: createStore(rootReducer, { categories })
-            })
-          })
-      }
-  
-      else {
-  
-        FileSystem.writeAsStringAsync(
-          filePath,
-          JSON.stringify({
-            "cate_0": {
-              "name": "Inbox",
-              "color": "red"
+  loadCategoriesFromFile = async (filePath) => {
+
+    let info = await FileSystem.getInfoAsync(filePath)
+
+    if (info.exists) {
+      let readData = await FileSystem.readAsStringAsync(filePath)
+
+      categories = JSON.parse(readData)
+
+      this.initialState = { ... this.initialState, ... { categories } }
+
+    }
+
+    else {
+      let writtenData = await FileSystem.writeAsStringAsync(
+        filePath,
+        JSON.stringify({
+          cate_0: {
+            name: "Inbox",
+            color: "red"
+          }
+        })
+      )
+      
+      let readData = await FileSystem.readAsStringAsync(filePath)
+
+      categories = JSON.parse(readData)
+
+      this.initialState = { ... this.initialState, ... { categories } }
+
+    }
+  }
+
+  loadCurrentTaskFromFile = async (filePath) => {
+    let info = await FileSystem.getInfoAsync(filePath)
+
+    if(info.exists){
+      let readData = await FileSystem.readAsStringAsync(filePath)
+
+      currentTask = JSON.parse(readData)
+
+      this.initialState = { ... this.initialState, ... { currentTask } }
+    }
+
+    else{
+      let writtenData = await FileSystem.writeAsStringAsync(
+        filePath,
+        JSON.stringify({
+          title: "",
+          description: "",
+          type: "day",
+          category: "cate_0",
+          schedule: {
+            year: this.currentDate.getFullYear(),
+            month: this.currentDate.getMonth(),
+            day: this.currentDate.getDate()
+          },
+          repeat: {
+            type: "daily",
+            interval: {
+              value: 86400 * 1000
             }
-          })
-        )
-          .then(() => {
-            return FileSystem.readAsStringAsync(filePath)
-  
-  
-          })
-          .then(data => {
-            initialState = JSON.parse(data)
-  
-            this.setState({
-              store: createStore(rootReducer, { categories })
-            })
-          })
-      }
-    })
-    .catch(err => {
-      console.log(err)
+          },
+          end: {
+            type: "never"
+          },
+          priority: {
+            value: "pri_01",
+            reward: 0
+          },
+          goal: {
+            max: 1,
+            current: 0
+          }
+        })
+      )
+
+      let readData = await FileSystem.readAsStringAsync(filePath)
+
+      currentTask = JSON.parse(readData)
+
+      this.initialState = { ... this.initialState, ... { currentTask } }
+    }
+  }
+
+  InitializeLoading = async () => {
+    let results = await Promise.all([
+      this.loadCategoriesFromFile(cate_filePath),
+      this.loadCurrentTaskFromFile(currentTask_filePath)
+    ])
+
+    this.setState({
+      store: createStore(rootReducer, this.initialState)
     })
   }
 
-  componentDidMount(){
-    this.LoadCategoriesFromFile(filePath)
+  componentDidMount() {
+    // this.InitializeLoading().catch(err => console.log(err))
+    this.setState({
+      store: createStore(rootReducer)
+    })
   }
 
   render() {
@@ -75,9 +136,9 @@ export default class App extends React.Component {
               <AppContainer />
             </Provider>
 
-          :
+            :
 
-          null
+            null
         }
       </>
 

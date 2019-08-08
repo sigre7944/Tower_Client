@@ -28,7 +28,7 @@ export default class Goal extends React.Component {
                 <GoalPerTimesRow
                     currentAnnotation={this.props.currentAnnotation}
                     updateGoal={this.props.updateGoal}
-                    currentTask={this.props.currentTask}
+                    {... this.props}
                 />
             </View>
         )
@@ -66,33 +66,51 @@ class GoalPerTimesRow extends React.PureComponent {
             current: 0,
         }
 
-        this.props.updateGoal(this.data)
+        if (this.props.currentAnnotation === "day") {
+            this.props.updateGoal("UPDATE_NEW_DAY_TASK", this.data)
+        }
+
+        else if (this.props.currentAnnotation === "week") {
+            this.props.updateGoal("UPDATE_NEW_WEEK_TASK", this.data)
+        }
+
+        else if (this.props.currentAnnotation === "month") {
+            this.props.updateGoal("UPDATE_NEW_MONTH_TASK", this.data)
+        }
     }
 
-    _disableAllTabs = () => {
+    save = () => {
+        this._updateGoal(this.state.value)
         this.props.disableAllTabs()
     }
 
     componentDidMount() {
         if (this.props.currentAnnotation === "day") {
+            let { goal } = this.props.currentDayTask
+
             this.setState(prevState => ({
                 interval: "times per day",
+                value: goal && parseInt(goal.max) > 0 ? `${goal.max}` : "1"
             }))
         }
 
         else if (this.props.currentAnnotation === "week") {
+            let { goal } = this.props.currentWeekTask
+
             this.setState(prevState => ({
                 interval: "times per week",
+                value: goal && parseInt(goal.max) > 0 ? `${goal.max}` : "1"
             }))
         }
 
         else {
+            let { goal } = this.props.currentMonthTask
+
             this.setState(prevState => ({
                 interval: " times per month",
+                value: goal && parseInt(goal.max) > 0 ? `${goal.max}` : "1"
             }))
         }
-
-        this._updateGoal(this.state.value)
 
         this.willHideListener = Keyboard.addListener(
             "keyboardWillHide",
@@ -100,13 +118,7 @@ class GoalPerTimesRow extends React.PureComponent {
         )
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.state.value !== prevState.value && this.regExp.test(this.state.value) && parseInt(this.state.value) > 0) {
-            this._updateGoal(this.state.value)
-        }
-    }
-
-    componentWillUnmount(){
+    componentWillUnmount() {
         Keyboard.removeListener("keyboardWillHide", this.toDoWillHide)
     }
 
@@ -189,7 +201,7 @@ class GoalPerTimesRow extends React.PureComponent {
                             marginRight: 10
                         }}
 
-                        onPress={this._disableAllTabs}
+                        onPress={this.save}
                     >
                         <Text
                             style={{

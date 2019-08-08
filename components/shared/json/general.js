@@ -17,7 +17,7 @@ const task = {
     startTime: 1111111, //timestamp used to return the original starting date
     endTime: 2222222,
     trackingTime: 3333333, // used to track the current time with of the task and compare it with the defined repeated time
-    type: 'Day', // 'Week', 'Month'
+    type: 'day', // 'week', 'month'
     total: 30,
     value: 100,
     category: 'inbox_123', //using category id
@@ -27,13 +27,13 @@ const task = {
         // these properties are used for 'Day' type task
         type: "daily", //weekly, monthly for 'day' type task. Used for editting task components
         interval: {
-            value: 86400 * 2 // timestamp for repetition. 86400 = miliseconds in a day, 2 = number of repetitive days
+            value: 86400 * 1000 * 2 // timestamp for repetition. 86400 * 1000 = miliseconds in a day, 2 = number of repetitive days
         },
 
         // these properties are used for 'Day' type task
         type: "weekly",
         interval: {
-            value: 86400 * 7 * 2, // timestamp for weekly repetition. 86400 * 7 = miliseconds in a week, 2 = number of repetitive weeks
+            value: 86400 * 1000 * 7 * 2, // timestamp for weekly repetition. 86400 * 1000 * 7 = miliseconds in a week, 2 = number of repetitive weeks
             daysInWeek: [0, 1, 2, 3] // indexes for days in a week. Sunday = 0, Monday = 1, Tuesday = 2
         },
 
@@ -47,15 +47,15 @@ const task = {
         },
 
         // these properties are used for 'Week' type task
-        type: "weekly",
+        type: "weekly-w",
         interval: {
-            value: 86400 * 7 * 2
+            value: 86400 * 1000 * 7 * 2
         },
 
         // these properties are used for 'Month' type task
-        type: "monthly",
+        type: "monthly-m",
         interval: {
-            value: 86400 * 7 * 5 // this value will be calculated as this: task for January, repeat every 2 months => 
+            value: 86400 * 1000 * 7 * 5 // this value will be calculated as this: task for January, repeat every 2 months => 
             // January, March, May, July, etc will have the task displayed.
         }
     },
@@ -78,10 +78,10 @@ const task = {
         type: "on",
         endAt: 1212121212, // timestamp of ending date.
 
-        
+
         // after occurances
         type: "after",
-        occurance: 5 // If users set the repetition of a task to be repeated every 2 days. This value will determine
+        occurrence: 5 // If users set the repetition of a task to be repeated every 2 days. This value will determine
         // that the task will be expired in 10 days.
     },
 
@@ -89,6 +89,7 @@ const task = {
         year: 2019, // Calendar component will use this for displaying and styling
         month: 6, // Calendar component will use this for displaying and styling
         day: 26, // Calendar component will use this for displaying and styling
+
     },
 
     priority: {

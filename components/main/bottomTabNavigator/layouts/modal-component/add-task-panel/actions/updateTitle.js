@@ -1,5 +1,5 @@
-export const updateTitle = (title) => ({
-    type: "UPDATE_NEW_TASK",
+export const updateTitle = (type, title) => ({
+    type,
     data: {
         title
     }

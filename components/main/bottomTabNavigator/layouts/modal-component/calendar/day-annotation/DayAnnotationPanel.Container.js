@@ -3,7 +3,7 @@ import DayAnnotationPanel from './DayAnnotationPanel'
 import {updateStartingDate} from './actions/updateStartingDate'
 
 const mapStateToProps = (state) => ({
-    currentTask: state.currentTask
+    currentDayTask: state.currentDayTask
 })
 
 const maptDispatchToProps = (dispatch, ownProps) => ({

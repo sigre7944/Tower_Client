@@ -140,6 +140,10 @@ export default class UnderlayModal extends Component {
 
                                 setCurrentAnnotation={this.setCurrentAnnotation}
                                 currentAnnotation={this.state.currentAnnotation}
+
+                                addTaskButtonActionProp = {this.props.addTaskButtonActionProp}
+
+                                currentTask = {this.props.currentTask}
                             />
 
                             :
@@ -161,6 +165,7 @@ export default class UnderlayModal extends Component {
                                         {this.state.categoryChosen ?
                                             <Category
                                                 disableAllTabs={this.disableAllTabs}
+                                                currentAnnotation={this.state.currentAnnotation}
                                             />
 
                                             :
@@ -180,6 +185,7 @@ export default class UnderlayModal extends Component {
                                                         {this.state.priorityChosen ?
                                                             <Priority
                                                                 disableAllTabs={this.disableAllTabs}
+                                                                currentAnnotation={this.state.currentAnnotation}
                                                             />
 
                                                             :

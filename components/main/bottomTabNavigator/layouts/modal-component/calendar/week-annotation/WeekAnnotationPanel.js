@@ -23,6 +23,8 @@ export default class WeekAnnotationPanel extends Component {
 
     currentTimeInMili = new Date().getTime()
 
+    chosen_day = chosen_week = chosen_month = chosen_year = -1
+
     state = {
         currentMonth: 'This month',
         nextMonthColor: 'white',
@@ -84,7 +86,8 @@ export default class WeekAnnotationPanel extends Component {
                     scrollToWeekRow={this.scrollToWeekRow}
                     currentWeekIndex={this.state.currentWeekIndex}
                     lastWeekIndex={this.state.lastWeekIndex}
-                    updateStartingDate={this.props.updateStartingDate}
+
+                    currentWeekTask = {this.props.currentWeekTask}
                 />
             )
         }
@@ -121,19 +124,8 @@ export default class WeekAnnotationPanel extends Component {
 
         this.props.updateCurrentWeekInMonth(week_data)
 
-        let startTime = trackingTime = new Date(
-            new Date(
-                new Date(
-                    new Date().setDate(week_data.day)).setMonth(week_data.monthIndex)).setFullYear(week_data.year))
-        .getTime()
+        this.setChosenDate(week_data.day, week_data.noWeek, week_data.monthIndex, week_data.year)
 
-        this.props.updateStartingDate({
-            week: week_data.noWeek,
-            month: week_data.monthIndex,
-            year: week_data.year,
-            startTime,
-            trackingTime,
-        })
     }
 
     returnToCurrentMonth = () => {
@@ -252,19 +244,82 @@ export default class WeekAnnotationPanel extends Component {
     }
 
     _onLayout = () => {
-        this.week_data_array.every((data, index) => {
-            if (data.isCurrentWeek) {
-                this.scrollToWeekRow(index)
+        let {schedule} = this.props.currentWeekTask
 
-                return false
+        if(schedule){
+            let found = false
+
+            this.week_data_array.every((data, index) => {
+                if(data.noWeek === schedule.week && data.monthIndex === schedule.month && data.year === schedule.year){
+                    this.scrollToWeekRow(index)
+                    found = true
+                    return false
+                }
+
+                return true
+            })
+
+            if(!found){
+                this.week_data_array.every((data, index) => {
+                    if (data.isCurrentWeek) {
+                        this.scrollToWeekRow(index)
+        
+                        return false
+                    }
+        
+                    return true
+                })
             }
+        }
 
-            return true
-        })
+        else{
+            this.week_data_array.every((data, index) => {
+                if (data.isCurrentWeek) {
+                    this.scrollToWeekRow(index)
+    
+                    return false
+                }
+    
+                return true
+            })
+        }
     }
 
-    _disableAllTabs = () => {
+    save = () => {
+        if(this.chosen_day > 0 && this.chosen_week > 0 && this.chosen_month > 0 && this.chosen_year > 0){
+            if(this.chosen_day < new Date().getDate() && this.chosen_month === new Date().getMonth() && this.chosen_year === new Date().getFullYear()){
+                this._updateStartingDate(new Date().getDate(), this.chosen_week, this.chosen_month, this.chosen_year)
+            }
+
+            else{
+                this._updateStartingDate(this.chosen_day, this.chosen_week, this.chosen_month, this.chosen_year)
+            }
+        }
         this.props.disableAllTabs()
+    }
+
+    setChosenDate = (day, week, month, year) => {
+        this.chosen_day = day
+        this.chosen_week = week
+        this.chosen_month = month
+        this.chosen_year = year
+    }
+
+    _updateStartingDate = (day, week, month, year) => {
+        let startTime = trackingTime = new Date(
+            new Date(
+                new Date(
+                    new Date().setDate(day)).setMonth(month)).setFullYear(year))
+        .getTime()
+
+        this.props.updateStartingDate({
+            day,
+            week: week,
+            month: month,
+            year: year,
+            startTime,
+            trackingTime,
+        })
     }
 
     componentDidMount() {
@@ -423,7 +478,7 @@ export default class WeekAnnotationPanel extends Component {
                             marginRight: 10
                         }}
 
-                        onPress={this._disableAllTabs}
+                        onPress={this.save}
                     >
                         <Text
                             style={{

@@ -1,5 +1,5 @@
-export const updateRepetition = (repeatData) => ({
-    type: "UPDATE_NEW_TASK",
+export const updateRepetition = (type, repeatData) => ({
+    type,
     data: {
         repeat: repeatData
     }

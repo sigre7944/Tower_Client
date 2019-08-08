@@ -1,5 +1,5 @@
-export const updateEnd = (endData) => ({
-    type: "UPDATE_NEW_TASK",
+export const updateEnd = (type, endData) => ({
+    type,
     data: {
         end: endData
     }

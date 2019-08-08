@@ -18,6 +18,9 @@ const shortMonthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG",
 
 export default class Repeat extends Component {
 
+    repetion_data = {}
+    end_data = {}
+
     state = {
         translateYValue: new Animated.Value(0),
 
@@ -35,6 +38,30 @@ export default class Repeat extends Component {
         this.setState({
             weekly_repeat_picker_value: value
         })
+
+        if (this.repetion_data.type && this.repetion_data.type === "weekly-w") {
+            let data = {
+                type: value === "weeks" ? "weekly-w" : "monthly-w",
+                interval: {
+                    value: value === "weeks" && this.repetion_data.interval.value ? this.repetion_data.interval.value : this.repetion_data.interval.value / 86400 / 1000 / 7
+
+                }
+            }
+
+            this.setRepetionData(data)
+        }
+
+        else if (this.repetion_data.type && this.repetion_data.type === "monthly-w") {
+            let data = {
+                type: value === "weeks" ? "weekly-w" : "monthly-w",
+                interval: {
+                    value: value === "weeks" && this.repetion_data.interval.value ? this.repetion_data.interval.value * 86400 * 1000 * 7 : this.repetion_data.interval.value
+                }
+            }
+
+            this.setRepetionData(data)
+        }
+
     }
 
     toggleEndOnDate = () => {
@@ -76,7 +103,30 @@ export default class Repeat extends Component {
         })
     }
 
-    _chooseCalendarOption = () => {
+    setRepetionData = (data) => {
+        this.repetion_data = data
+    }
+
+    setEndData = (data) => {
+        this.end_data = data
+    }
+
+    save = () => {
+        if (this.props.currentAnnotation === "day") {
+            this.props.updateRepetition("UPDATE_NEW_DAY_TASK", this.repetion_data)
+            this.props.updateEnd("UPDATE_NEW_DAY_TASK", this.end_data)
+        }
+
+        else if (this.props.currentAnnotation === "week") {
+            this.props.updateRepetition("UPDATE_NEW_WEEK_TASK", this.repetion_data)
+            this.props.updateEnd("UPDATE_NEW_WEEK_TASK", this.end_data)
+        }
+
+        else if (this.props.currentAnnotation === "month") {
+            this.props.updateRepetition("UPDATE_NEW_MONTH_TASK", this.repetion_data)
+            this.props.updateEnd("UPDATE_NEW_MONTH_TASK", this.end_data)
+        }
+
         this.props.chooseRepeatOption()
     }
 
@@ -106,7 +156,8 @@ export default class Repeat extends Component {
                     {this.props.currentAnnotation === "day" ?
 
                         <DayRepeatEveryHolder
-                            updateRepetition={this.props.updateRepetition}
+                            currentDayTask={this.props.currentDayTask}
+                            setRepetionData={this.setRepetionData}
                         />
 
                         :
@@ -118,13 +169,16 @@ export default class Repeat extends Component {
                                     weekly_repeat_picker_value={this.state.weekly_repeat_picker_value}
                                     noWeekInMonth={this.props.currentWeekInMonth.noWeekInMonth}
 
-                                    updateRepetition={this.props.updateRepetition}
+                                    currentWeekTask={this.props.currentWeekTask}
+                                    setRepetionData={this.setRepetionData}
+                                    setWeeklyRepeatPickerValue={this.setWeeklyRepeatPickerValue}
                                 />
 
                                 :
 
                                 <MonthlyRepeatOption
-                                    updateRepetition={this.props.updateRepetition}
+                                    currentMonthTask={this.props.currentMonthTask}
+                                    setRepetionData={this.setRepetionData}
                                 />
                             }
                         </>
@@ -139,8 +193,12 @@ export default class Repeat extends Component {
                         resetStyle={this.resetStyle}
                         toggleEndOnDate={this.toggleEndOnDate}
                         chosenDate={this.state.chosenDate}
-
-                        updateEnd={this.props.updateEnd}
+                        setEndData={this.setEndData}
+                        currentAnnotation={this.props.currentAnnotation}
+                        currentDayTask={this.props.currentDayTask}
+                        currentWeekTask={this.props.currentWeekTask}
+                        currentMonthTask={this.props.currentMonthTask}
+                        setDate={this.setDate}
                     />
 
                     <View
@@ -184,7 +242,7 @@ export default class Repeat extends Component {
                                 marginRight: 10
                             }}
 
-                            onPress={this._chooseCalendarOption}
+                            onPress={this.save}
                         >
                             <Text
                                 style={{
@@ -369,14 +427,48 @@ class DayRepeatEveryHolder extends React.PureComponent {
 
     chooseDaily = () => {
         this.handleChoosing(0)
+
+        let { repeat } = this.props.currentDayTask
+
+        if ((repeat && repeat.type !== "daily") || !repeat) {
+            this.props.setRepetionData({
+                type: "daily",
+                interval: {
+                    value: 86400 * 1000,
+                }
+            })
+        }
     }
 
     chooseWeekly = () => {
         this.handleChoosing(1)
+
+        let { repeat } = this.props.currentDayTask
+
+        if ((repeat && repeat.type !== "weekly") || !repeat) {
+            this.props.setRepetionData({
+                type: "weekly",
+                interval: {
+                    value: 86400 * 1000 * 7,
+                    daysInWeek: []
+                }
+            })
+        }
     }
 
     chooseMonthly = () => {
         this.handleChoosing(2)
+
+        let { repeat } = this.props.currentDayTask
+
+        if ((repeat && repeat.type !== "monthly") || !repeat) {
+            this.props.setRepetionData({
+                type: "monthly",
+                interval: {
+                    value: 1
+                }
+            })
+        }
     }
 
     //To intially set the styles for holders to avoid a second re-rendering
@@ -400,7 +492,16 @@ class DayRepeatEveryHolder extends React.PureComponent {
     }
 
     componentDidMount() {
-        this.chooseDaily()
+        let { repeat } = this.props.currentDayTask
+
+        if (repeat && repeat.type === "weekly")
+            this.chooseWeekly()
+
+        else if (repeat && repeat.type === "monthly")
+            this.chooseMonthly()
+
+        else
+            this.chooseDaily()
     }
 
     render() {
@@ -465,7 +566,9 @@ class DayRepeatEveryHolder extends React.PureComponent {
 
                 {this.currentIndex === 0 ?
                     <DailyRepeatOption
-                        updateRepetition={this.props.updateRepetition}
+                        currentDayTask={this.props.currentDayTask}
+
+                        setRepetionData={this.props.setRepetionData}
                     />
 
                     :
@@ -473,7 +576,8 @@ class DayRepeatEveryHolder extends React.PureComponent {
                     <>
                         {this.currentIndex === 1 ?
                             <DayWeeklyRepeatOption
-                                updateRepetition={this.props.updateRepetition}
+                                currentDayTask={this.props.currentDayTask}
+                                setRepetionData={this.props.setRepetionData}
                             />
 
                             :
@@ -481,7 +585,8 @@ class DayRepeatEveryHolder extends React.PureComponent {
                             <>
                                 {this.currentIndex === 2 ?
                                     <DayMonthlyRepeatOption
-                                        updateRepetition={this.props.updateRepetition}
+                                        currentDayTask={this.props.currentDayTask}
+                                        setRepetionData={this.props.setRepetionData}
                                     />
 
                                     :
@@ -524,15 +629,15 @@ class DailyRepeatOption extends React.PureComponent {
         })
     }
 
-    _updateRepetition = (value) => {
+    _setRepetitionData = (value) => {
         this.data = {
             type: "daily",
             interval: {
-                value: 86400 * parseInt(value)
+                value: 86400 * 1000 * parseInt(value)
             }
         }
 
-        this.props.updateRepetition(this.data)
+        this.props.setRepetionData(this.data)
     }
 
     toDoWillHide = () => {
@@ -544,7 +649,13 @@ class DailyRepeatOption extends React.PureComponent {
     }
 
     componentDidMount() {
-        this._updateRepetition(this.state.value)
+        let { repeat } = this.props.currentDayTask
+
+        if (repeat && repeat.interval && parseInt(repeat.interval.value) > 0 && repeat.type === "daily") {
+            this.setState({
+                value: `${parseInt(repeat.interval.value) / (86400 * 1000)}`
+            })
+        }
 
         this.willHideListener = Keyboard.addListener(
             "keyboardWillHide",
@@ -554,7 +665,7 @@ class DailyRepeatOption extends React.PureComponent {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.value !== prevState.value && this.regExp.test(this.state.value) && parseInt(this.state.value) > 0) {
-            this._updateRepetition(this.state.value)
+            this._setRepetitionData(this.state.value)
         }
     }
 
@@ -619,7 +730,7 @@ class DayWeeklyRepeatOption extends React.PureComponent {
 
     data = {}
 
-    daysInWeek = []
+    daysInWeek = this.props.currentDayTask.repeat && this.props.currentDayTask.repeat.interval && this.props.currentDayTask.repeat.interval.daysInWeek ? this.props.currentDayTask.repeat.interval.daysInWeek : []
 
     state = {
         value: "1"
@@ -632,11 +743,8 @@ class DayWeeklyRepeatOption extends React.PureComponent {
     }
 
     updateDaysInWeek = (index) => {
-        this.chosenDaysInWeek[index] = !this.chosenDaysInWeek[index]
-    }
-
-    _updateRepetition = (value) => {
         this.daysInWeek = []
+        this.chosenDaysInWeek[index] = !this.chosenDaysInWeek[index]
 
         this.chosenDaysInWeek.forEach((bool, index) => {
             if (bool) {
@@ -647,12 +755,24 @@ class DayWeeklyRepeatOption extends React.PureComponent {
         this.data = {
             type: "weekly",
             interval: {
-                value: 86400 * 7 * parseInt(value),
+                value: 86400 * 1000 * 7 * parseInt(this.state.value),
                 daysInWeek: this.daysInWeek
             }
         }
 
-        this.props.updateRepetition(this.data)
+        this.props.setRepetionData(this.data)
+    }
+
+    _setRepetitionData = (value) => {
+        this.data = {
+            type: "weekly",
+            interval: {
+                value: 86400 * 1000 * 7 * parseInt(value),
+                daysInWeek: this.daysInWeek
+            }
+        }
+
+        this.props.setRepetionData(this.data)
     }
 
     toDoWillHide = () => {
@@ -664,7 +784,14 @@ class DayWeeklyRepeatOption extends React.PureComponent {
     }
 
     componentDidMount() {
-        this._updateRepetition(this.state.value)
+        let { repeat } = this.props.currentDayTask
+
+        if (repeat && repeat.type === "weekly" && repeat.interval && parseInt(repeat.interval.value) > 0) {
+
+            this.setState({
+                value: `${parseInt(repeat.interval.value) / (86400 * 1000 * 7)}`
+            })
+        }
 
         this.willHideListener = Keyboard.addListener(
             "keyboardWillHide",
@@ -674,7 +801,7 @@ class DayWeeklyRepeatOption extends React.PureComponent {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.value !== prevState.value && this.regExp.test(this.state.value) && parseInt(this.state.value) > 0) {
-            this._updateRepetition(this.state.value)
+            this._setRepetitionData(this.state.value)
         }
     }
 
@@ -694,49 +821,63 @@ class DayWeeklyRepeatOption extends React.PureComponent {
                         currentIndex={this.state.currentIndex}
                         lastIndex={this.state.lastIndex}
                         index={1}
-                        updateDaysInWeek={this.updateDaysInWeek} />
+                        updateDaysInWeek={this.updateDaysInWeek}
+                        currentDayTask={this.props.currentDayTask}
+                    />
 
                     <WeeklyOption
                         day="Tue"
                         currentIndex={this.state.currentIndex}
                         lastIndex={this.state.lastIndex}
                         index={2}
-                        updateDaysInWeek={this.updateDaysInWeek} />
+                        updateDaysInWeek={this.updateDaysInWeek}
+                        currentDayTask={this.props.currentDayTask}
+                    />
 
                     <WeeklyOption
                         day="Wed"
                         currentIndex={this.state.currentIndex}
                         lastIndex={this.state.lastIndex}
                         index={3}
-                        updateDaysInWeek={this.updateDaysInWeek} />
+                        updateDaysInWeek={this.updateDaysInWeek}
+                        currentDayTask={this.props.currentDayTask}
+                    />
 
                     <WeeklyOption
                         day="Thu"
                         currentIndex={this.state.currentIndex}
                         lastIndex={this.state.lastIndex}
                         index={4}
-                        updateDaysInWeek={this.updateDaysInWeek} />
+                        updateDaysInWeek={this.updateDaysInWeek}
+                        currentDayTask={this.props.currentDayTask}
+                    />
 
                     <WeeklyOption
                         day="Fri"
                         currentIndex={this.state.currentIndex}
                         lastIndex={this.state.lastIndex}
                         index={5}
-                        updateDaysInWeek={this.updateDaysInWeek} />
+                        updateDaysInWeek={this.updateDaysInWeek}
+                        currentDayTask={this.props.currentDayTask}
+                    />
 
                     <WeeklyOption
                         day="Sat"
                         currentIndex={this.state.currentIndex}
                         lastIndex={this.state.lastIndex}
                         index={6}
-                        updateDaysInWeek={this.updateDaysInWeek} />
+                        updateDaysInWeek={this.updateDaysInWeek}
+                        currentDayTask={this.props.currentDayTask}
+                    />
 
                     <WeeklyOption
                         day="Sun"
                         currentIndex={this.state.currentIndex}
                         lastIndex={this.state.lastIndex}
                         index={0}
-                        updateDaysInWeek={this.updateDaysInWeek} />
+                        updateDaysInWeek={this.updateDaysInWeek}
+                        currentDayTask={this.props.currentDayTask}
+                    />
                 </View>
 
                 <View
@@ -852,6 +993,12 @@ class WeeklyOption extends React.PureComponent {
     // }
 
     componentDidMount() {
+        if (this.props.currentDayTask.repeat && this.props.currentDayTask.repeat.interval && this.props.currentDayTask.repeat.interval.daysInWeek) {
+            if (this.props.currentDayTask.repeat.interval.daysInWeek.includes(this.props.index)) {
+                this._onPress()
+            }
+        }
+
     }
 
     // // Will render a second rerendering and require additional condition for state updating in shouldComponentUpdate
@@ -872,6 +1019,10 @@ class WeeklyOption extends React.PureComponent {
     //         })
     //     }
     // }
+
+    componentDidUpdate(prevProps, prevState) {
+
+    }
 
     render() {
         return (
@@ -921,15 +1072,15 @@ class DayMonthlyRepeatOption extends React.PureComponent {
         })
     }
 
-    _updateRepetition = (value) => {
+    _setRepetitionData = (value) => {
         this.data = {
             type: "monthly",
             interval: {
-                value: parseInt(this.state.value)
+                value: parseInt(value)
             }
         }
 
-        this.props.updateRepetition(this.data)
+        this.props.setRepetionData(this.data)
     }
 
     toDoWillHide = () => {
@@ -941,7 +1092,15 @@ class DayMonthlyRepeatOption extends React.PureComponent {
     }
 
     componentDidMount() {
-        this._updateRepetition(this.state.value)
+        let { repeat } = this.props.currentDayTask
+
+        if (repeat && repeat.type === "monthly" && repeat.interval && parseInt(repeat.interval.value) > 0) {
+            this.setState({
+                value: `${repeat.interval.value}`
+            })
+        }
+
+        this._setRepetitionData(this.state.value)
 
         this.willHideListener = Keyboard.addListener(
             "keyboardWillHide",
@@ -951,7 +1110,7 @@ class DayMonthlyRepeatOption extends React.PureComponent {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.value !== prevState.value && this.regExp.test(this.state.value) && parseInt(this.state.value) > 0) {
-            this._updateRepetition(this.state.value)
+            this._setRepetitionData(this.state.value)
         }
     }
 
@@ -1023,22 +1182,22 @@ class WeeklyRepeatOption extends React.PureComponent {
         this.props.toggleWeekOptionInWeeklyTask()
     }
 
-    _updateRepetition = (value) => {
+    _setRepetitionData = (value) => {
         this.data = this.props.weekly_repeat_picker_value === "weeks" ?
             {
-                type: "weekly",
+                type: "weekly-w",
                 interval: {
-                    value: 86400 * 7 * parseInt(value)
+                    value: 86400 * 1000 * 7 * parseInt(value)
                 }
             } : {
-                type: "monthly",
+                type: "monthly-w",
                 interval: {
                     value: parseInt(value)
                 }
             }
 
 
-        this.props.updateRepetition(this.data)
+        this.props.setRepetionData(this.data)
     }
 
     toDoWillHide = () => {
@@ -1050,7 +1209,26 @@ class WeeklyRepeatOption extends React.PureComponent {
     }
 
     componentDidMount() {
-        this._updateRepetition(this.state.value)
+        let { repeat } = this.props.currentWeekTask
+
+        if (repeat && repeat.type === "weekly-w" && parseInt(repeat.interval.value) > 0) {
+            this.setState({
+                value: `${parseInt(repeat.interval.value) / (86400 * 1000 * 7)}`
+            })
+            this.props.setWeeklyRepeatPickerValue("weeks")
+        }
+
+        else if (repeat && repeat.type === "monthly-w" && parseInt(repeat.interval.value) > 0) {
+            this.setState({
+                value: `${parseInt(repeat.interval.value)}`
+            })
+            this.props.setWeeklyRepeatPickerValue("months")
+        }
+
+        else {
+            this._setRepetitionData(this.state.value)
+            this.props.setWeeklyRepeatPickerValue("weeks")
+        }
 
         this.willHideListener = Keyboard.addListener(
             "keyboardWillHide",
@@ -1060,7 +1238,7 @@ class WeeklyRepeatOption extends React.PureComponent {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.value !== prevState.value && this.regExp.test(this.state.value) && parseInt(this.state.value) > 0) {
-            this._updateRepetition(this.state.value)
+            this._setRepetitionData(this.state.value)
         }
     }
 
@@ -1219,15 +1397,15 @@ class MonthlyRepeatOption extends React.PureComponent {
         })
     }
 
-    _updateRepetition = (value) => {
+    _setRepetitionData = (value) => {
         this.data = {
-            type: "monthly",
+            type: "monthly-m",
             interval: {
                 value: parseInt(value)
             }
         }
 
-        this.props.updateRepetition(this.data)
+        this.props.setRepetionData(this.data)
     }
 
     toDoWillHide = () => {
@@ -1239,7 +1417,17 @@ class MonthlyRepeatOption extends React.PureComponent {
     }
 
     componentDidMount() {
-        this._updateRepetition(this.state.value)
+        let { repeat } = this.props.currentMonthTask
+
+        if (repeat && repeat.type === "monthly-m" && repeat.interval.value > 0) {
+            this.setState({
+                value: `${repeat.interval.value}`
+            })
+        }
+
+        else {
+            this._setRepetitionData(this.state.value)
+        }
 
         this.willHideListener = Keyboard.addListener(
             "keyboardWillHide",
@@ -1249,7 +1437,7 @@ class MonthlyRepeatOption extends React.PureComponent {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.value !== prevState.value && this.regExp.test(this.state.value) && parseInt(this.state.value) > 0) {
-            this._updateRepetition(this.state.value)
+            this._setRepetitionData(this.state.value)
         }
     }
 
@@ -1376,8 +1564,6 @@ export class EndRepeatHolder extends React.PureComponent {
             radio_style_arr: [...radio_style_arr]
         })
 
-
-        // this.props.updateEnd(this.data)
     }
 
     doWhenKeyboardWillShow = () => {
@@ -1399,8 +1585,44 @@ export class EndRepeatHolder extends React.PureComponent {
     }
 
     componentDidMount() {
-        this.chooseOptionRadio(0)
+        let end
+
+        if (this.props.currentAnnotation === "day") {
+            end = this.props.currentDayTask.end
+        }
+
+        else if (this.props.currentAnnotation === "week") {
+            end = this.props.currentWeekTask.end
+        }
+
+        else {
+            end = this.props.currentMonthTask.end
+        }
+
+        if (end) {
+            if (end.type === "on") {
+                this.props.setDate(new Date(end.endAt))
+                this.chooseOptionRadio(1)
+            }
+
+            else if (end.type === "after") {
+                this.setState({
+                    afterOccurranceValue: `${end.occurrence}`
+                })
+
+                this.chooseOptionRadio(2)
+            }
+
+            else {
+                this.chooseOptionRadio(0)
+            }
+        }
+
+        else {
+            this.chooseOptionRadio(0)
+        }
     }
+
 
     componentWillUnmount() {
         this._onBlur()
@@ -1414,7 +1636,7 @@ export class EndRepeatHolder extends React.PureComponent {
                     type: "never"
                 }
 
-                this.props.updateEnd(this.data)
+                this.props.setEndData(this.data)
             }
 
             else if (this.currentIndex === 1) {
@@ -1423,17 +1645,17 @@ export class EndRepeatHolder extends React.PureComponent {
                     endAt: this.props.chosenDate.getTime(),
                 }
 
-                this.props.updateEnd(this.data)
+                this.props.setEndData(this.data)
             }
 
             else {
                 if (this.regExp.test(this.state.afterOccurranceValue)) {
                     this.data = {
                         type: "after",
-                        occurance: parseInt(this.state.afterOccurranceValue)
+                        occurrence: parseInt(this.state.afterOccurranceValue)
                     }
 
-                    this.props.updateEnd(this.data)
+                    this.props.setEndData(this.data)
                 }
             }
         }
@@ -1445,16 +1667,16 @@ export class EndRepeatHolder extends React.PureComponent {
                     endAt: this.props.chosenDate.getTime(),
                 }
 
-                this.props.updateEnd(this.data)
+                this.props.setEndData(this.data)
             }
 
             else if (this.state.afterOccurranceValue !== prevState.afterOccurranceValue && this.regExp.test(this.state.afterOccurranceValue) && this.currentIndex === 2) {
                 this.data = {
                     type: "after",
-                    occurance: parseInt(this.state.afterOccurranceValue)
+                    occurrence: parseInt(this.state.afterOccurranceValue)
                 }
 
-                this.props.updateEnd(this.data)
+                this.props.setEndData(this.data)
             }
         }
     }
