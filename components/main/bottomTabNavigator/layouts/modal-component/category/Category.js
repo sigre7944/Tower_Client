@@ -64,7 +64,10 @@ export default class Category extends React.Component {
                     lastIndex={this.state.lastIndex}
                     selectCategory={this.selectCategory}
 
-                    currentTask = {this.props.currentTask}
+                    currentDayTask={this.props.currentDayTask}
+                    currentWeekTask={this.props.currentWeekTask}
+                    currentMonthTask={this.props.currentMonthTask}
+                    currentAnnotation={this.props.currentAnnotation}
                 />
             )
 
@@ -185,11 +188,11 @@ export default class Category extends React.Component {
     initializeCategoryArr = () => {
         let categories = this.props.categories,
             category_arr = []
-        for(var key in categories){
-            if(categories.hasOwnProperty(key)){
+        for (var key in categories) {
+            if (categories.hasOwnProperty(key)) {
                 category_arr.push({
                     id: key,
-                    ... categories[key]
+                    ...categories[key]
                 })
             }
         }
@@ -199,16 +202,27 @@ export default class Category extends React.Component {
         })
 
         this.setState({
-            category_arr: [... category_arr]
+            category_arr: [...category_arr]
         })
     }
 
     save = () => {
-        this.props.updateCategory(Object.keys(this.props.categories)[this.state.currentIndex])
+        if (this.props.currentAnnotation === "day") {
+            this.props.updateCategory("UPDATE_NEW_DAY_TASK", Object.keys(this.props.categories)[this.state.currentIndex])
+        }
+
+        else if (this.props.currentAnnotation === "week") {
+            this.props.updateCategory("UPDATE_NEW_WEEK_TASK", Object.keys(this.props.categories)[this.state.currentIndex])
+        }
+
+        else if (this.props.currentAnnotation === "month") {
+            this.props.updateCategory("UPDATE_NEW_MONTH_TASK", Object.keys(this.props.categories)[this.state.currentIndex])
+        }
+        
         this.props.disableAllTabs()
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.initializeCategoryArr()
     }
 
@@ -222,7 +236,7 @@ export default class Category extends React.Component {
             }))
         }
 
-        if(this.props.categories !== prevProps.categories){
+        if (this.props.categories !== prevProps.categories) {
             this.initializeCategoryArr()
         }
 
@@ -406,14 +420,37 @@ class CategoryRow extends React.Component {
         return nextState !== this.state || nextProps.currentIndex !== this.props.currentIndex || nextProps.lastIndex !== this.props.lastIndex
     }
 
-    componentDidMount(){
-        let {category} = this.props.currentTask
+    componentDidMount() {
+        if(this.props.currentAnnotation === "day"){
+            let { category } = this.props.currentDayTask
 
-        if(category && category.length > 0){
-            if(this.props.data.id === category){
-                this._onPress()
+            if (category && category.length > 0) {
+                if (this.props.data.id === category) {
+                    this._onPress()
+                }
             }
         }
+        
+        else if (this.props.currentAnnotation === "week"){
+            let { category } = this.props.currentWeekTask
+
+            if (category && category.length > 0) {
+                if (this.props.data.id === category) {
+                    this._onPress()
+                }
+            }
+        }
+
+        else if (this.props.currentAnnotation === "month"){
+            let { category } = this.props.currentMonthTask
+
+            if (category && category.length > 0) {
+                if (this.props.data.id === category) {
+                    this._onPress()
+                }
+            }
+        }
+
     }
 
     render() {

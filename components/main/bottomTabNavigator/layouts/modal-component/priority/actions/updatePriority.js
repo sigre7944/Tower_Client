@@ -1,5 +1,5 @@
-export const updatePriority = (priority) => ({
-    type: "UPDATE_NEW_TASK",
+export const updatePriority = (type, priority) => ({
+    type,
     data: {
         priority
     }

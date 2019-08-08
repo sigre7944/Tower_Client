@@ -214,9 +214,9 @@ class MonthHolder extends Component {
     }
 
     componentDidMount(){
-        let {type, schedule} = this.props.currentTask
+        let {schedule} = this.props.currentMonthTask
 
-        if(type === "month"){
+        if(schedule){
             if(this.props.data.monthNumber === schedule.month && this.props.year === schedule.year){
                 this.chooseMonth()
             }

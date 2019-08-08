@@ -69,7 +69,7 @@ export default class DayAnnotationPanel extends Component {
 
             setChosenDate = {this.setChosenDate}
 
-            currentTask = {this.props.currentTask}
+            currentDayTask = {this.props.currentDayTask}
         />
     )
 

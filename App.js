@@ -121,7 +121,10 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    this.InitializeLoading().catch(err => console.log(err))
+    // this.InitializeLoading().catch(err => console.log(err))
+    this.setState({
+      store: createStore(rootReducer)
+    })
   }
 
   render() {

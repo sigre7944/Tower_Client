@@ -151,8 +151,8 @@ class DayHolder extends React.PureComponent {
 
 
     componentDidMount() {
-        let { type, schedule } = this.props.currentTask
-        if (type === "day") {
+        let { schedule } = this.props.currentDayTask
+        if (schedule) {
             if (this.props.month === schedule.month && this.props.year === schedule.year && this.props.day === schedule.day) {
                 this.chooseDay()
             }

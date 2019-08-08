@@ -4,11 +4,13 @@ import {updatePriority} from './actions/updatePriority'
 
 const mapStateToProps = (state) => ({
     priorities: state.priorities,
-    currentTask: state.currentTask
+    currentDayTask: state.currentDayTask,
+    currentWeekTask: state.currentWeekTask,
+    currentMonthTask: state.currentMonthTask,
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    updatePriority: (data) => dispatch(updatePriority(data))
+    updatePriority: (type, data) => dispatch(updatePriority(type, data))
 })
 
 export default connect(

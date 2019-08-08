@@ -5,6 +5,9 @@ import {tasks} from './tasks'
 import {currentTask} from './currentTask'
 import {categories} from './categories'
 import {priorities} from './priorities'
+import {currentDayTask} from './currentDayTask'
+import {currentWeekTask} from './currentWeekTask'
+import {currentMonthTask} from './currentMonthTask'
 
 const rootReducer = combineReducers({
     currentRoute,
@@ -12,7 +15,10 @@ const rootReducer = combineReducers({
     tasks,
     currentTask,
     categories,
-    priorities
+    priorities,
+    currentDayTask,
+    currentWeekTask,
+    currentMonthTask
 })
 
 export default rootReducer

@@ -64,7 +64,7 @@ export default class MonthAnnotationPanel extends Component {
 
                     setChosenDate={this.setChosenDate}
 
-                    currentTask={this.props.currentTask}
+                    currentMonthTask={this.props.currentMonthTask}
                 />
             )
         }
@@ -84,7 +84,7 @@ export default class MonthAnnotationPanel extends Component {
                 currentYear={this.currentYear}
 
                 setChosenDate={this.setChosenDate}
-                currentTask={this.props.currentTask}
+                currentMonthTask={this.props.currentMonthTask}
             />
         )
     }

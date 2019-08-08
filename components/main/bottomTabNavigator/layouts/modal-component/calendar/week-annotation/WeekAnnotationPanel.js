@@ -87,7 +87,7 @@ export default class WeekAnnotationPanel extends Component {
                     currentWeekIndex={this.state.currentWeekIndex}
                     lastWeekIndex={this.state.lastWeekIndex}
 
-                    currentTask = {this.props.currentTask}
+                    currentWeekTask = {this.props.currentWeekTask}
                 />
             )
         }
@@ -244,9 +244,9 @@ export default class WeekAnnotationPanel extends Component {
     }
 
     _onLayout = () => {
-        let {type, schedule} = this.props.currentTask
+        let {schedule} = this.props.currentWeekTask
 
-        if(type === "week"){
+        if(schedule){
             let found = false
 
             this.week_data_array.every((data, index) => {

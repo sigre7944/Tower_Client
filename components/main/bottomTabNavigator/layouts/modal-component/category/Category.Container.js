@@ -5,12 +5,14 @@ import {updateCategory} from './actions/updateCategory'
 
 const mapStateToProps = (state) => ({
     categories: state.categories,
-    currentTask: state.currentTask,
+    currentDayTask: state.currentDayTask,
+    currentWeekTask: state.currentWeekTask,
+    currentMonthTask: state.currentMonthTask,
 })
 
 const mapDispatchToProps = (dispatch) => ({
     createCategory: (data) => dispatch(createCategory(data)),
-    updateCategory: (data) => dispatch(updateCategory(data))
+    updateCategory: (type, category) => dispatch(updateCategory(type, category))
 })
 
 export default connect(

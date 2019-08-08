@@ -1,5 +1,5 @@
 export const updateStartingDate = ({day, week, month, year, startTime, trackingTime}) => ({
-    type: "UPDATE_NEW_TASK",
+    type: "UPDATE_NEW_WEEK_TASK",
     data: {
         startTime,
         trackingTime,

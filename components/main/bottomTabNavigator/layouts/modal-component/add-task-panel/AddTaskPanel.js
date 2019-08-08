@@ -66,6 +66,9 @@ export default class AddTaskPanel extends Component {
                 weekAnnotationColor: weekAnnotationColor,
                 monthAnnotationColor: monthAnnotationColor,
             })
+
+            this.props.updateType("UPDATE_NEW_DAY_TASK", annotation)
+
         }
 
         else if (annotation === "week") {
@@ -75,6 +78,7 @@ export default class AddTaskPanel extends Component {
                 monthAnnotationColor: monthAnnotationColor,
             })
 
+            this.props.updateType("UPDATE_NEW_WEEK_TASK", annotation)
         }
 
         else {
@@ -83,9 +87,10 @@ export default class AddTaskPanel extends Component {
                 weekAnnotationColor: weekAnnotationColor,
                 monthAnnotationColor: "black",
             })
+
+            this.props.updateType("UPDATE_NEW_MONTH_TASK", annotation)
         }
 
-        this.props.updateType(annotation)
         this.props.setCurrentAnnotation(annotation)
     }
 
@@ -248,17 +253,15 @@ export default class AddTaskPanel extends Component {
     }
 
     componentDidMount() {
-        let { type } = this.props.currentTask
+        // let { type } = this.props.currentTask
 
         //automatically choose saved annotation when loaded as default
-        if (type.length > 0) {
-            this.chooseAnnotation(type)
-        }
-        else {
+        // if (type.length > 0) {
+        //     this.chooseAnnotation(type)
+        // }
+        // else {
             this.chooseAnnotation('day')
-        }
-
-        console.log(this.props.currentTask)
+        // }
 
         this.addTagDataToRender(this.props.currentTask)
 

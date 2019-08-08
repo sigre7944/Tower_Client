@@ -139,10 +139,27 @@ export default class Priority extends React.Component {
         for(let key in priorities){
             if(priorities.hasOwnProperty(key)){
                 if(priorities[key].name === this.state.priority_value){
-                    this.props.updatePriority({
-                        value: key,
-                        reward: parseInt(this.state.reward_value)
-                    })
+                    if(this.props.currentAnnotation === "day"){
+                        this.props.updatePriority("UPDATE_NEW_DAY_TASK", {
+                            value: key,
+                            reward: parseInt(this.state.reward_value)
+                        })
+                    }
+
+                    else if(this.props.currentAnnotation === "week"){
+                        this.props.updatePriority("UPDATE_NEW_WEEK_TASK", {
+                            value: key,
+                            reward: parseInt(this.state.reward_value)
+                        })
+                    }
+
+                    else if(this.props.currentAnnotation === "month"){
+                        this.props.updatePriority("UPDATE_NEW_MONTH_TASK", {
+                            value: key,
+                            reward: parseInt(this.state.reward_value)
+                        })
+                    }
+                    
                 }
             }
         }
@@ -164,16 +181,50 @@ export default class Priority extends React.Component {
             this.toDoWhenKeyboardWillHide
         )
 
-        let {priority} = this.props.currentTask,
-            priorities = this.props.priorities
-        
-        this.changePriorityValue(priorities[priority.value].name)
-        
-        if(parseInt(priority.reward) > 0){
-            this.setState({
-                reward_value: `${priority.reward}`
-            })
+        let priorities = this.props.priorities
+
+        if(this.props.currentAnnotation === "day"){
+            let {priority} = this.props.currentDayTask
+
+            if(priority){
+                this.changePriorityValue(priorities[priority.value].name)
+            }
+
+            if(priority && parseInt(priority.reward) > 0){
+                this.setState({
+                    reward_value: `${priority.reward}`
+                })
+            }
         }
+
+        else if(this.props.currentAnnotation === "week"){
+            let {priority} = this.props.currentWeekTask
+
+            if(priority){
+                this.changePriorityValue(priorities[priority.value].name)
+            }
+
+            if(priority && parseInt(priority.reward) > 0){
+                this.setState({
+                    reward_value: `${priority.reward}`
+                })
+            }
+        }
+
+        else if(this.props.currentAnnotation === "month"){
+            let {priority} = this.props.currentMonthTask
+
+            if(priority){
+                this.changePriorityValue(priorities[priority.value].name)
+            }
+
+            if(priority && parseInt(priority.reward) > 0){
+                this.setState({
+                    reward_value: `${priority.reward}`
+                })
+            }
+        }
+        
     }
 
     componentWillUnmount() {

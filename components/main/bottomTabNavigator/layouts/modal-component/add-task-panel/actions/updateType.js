@@ -1,6 +1,6 @@
-export const updateType = (type) => ({
-    type: "UPDATE_NEW_TASK",
+export const updateType = (type, task_type) => ({
+    type,
     data: {
-        type
+        type: task_type
     }
 })

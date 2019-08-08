@@ -28,7 +28,6 @@ export default class Goal extends React.Component {
                 <GoalPerTimesRow
                     currentAnnotation={this.props.currentAnnotation}
                     updateGoal={this.props.updateGoal}
-                    currentTask={this.props.currentTask}
                     {... this.props}
                 />
             </View>
@@ -67,7 +66,17 @@ class GoalPerTimesRow extends React.PureComponent {
             current: 0,
         }
 
-        this.props.updateGoal(this.data)
+        if (this.props.currentAnnotation === "day") {
+            this.props.updateGoal("UPDATE_NEW_DAY_TASK", this.data)
+        }
+
+        else if (this.props.currentAnnotation === "week") {
+            this.props.updateGoal("UPDATE_NEW_WEEK_TASK", this.data)
+        }
+
+        else if (this.props.currentAnnotation === "month") {
+            this.props.updateGoal("UPDATE_NEW_MONTH_TASK", this.data)
+        }
     }
 
     save = () => {
@@ -76,25 +85,30 @@ class GoalPerTimesRow extends React.PureComponent {
     }
 
     componentDidMount() {
-        let {goal} = this.props.currentTask
         if (this.props.currentAnnotation === "day") {
+            let { goal } = this.props.currentDayTask
+
             this.setState(prevState => ({
                 interval: "times per day",
-                value: parseInt(goal.max) > 0 ? `${goal.max}` : "1"
+                value: goal && parseInt(goal.max) > 0 ? `${goal.max}` : "1"
             }))
         }
 
         else if (this.props.currentAnnotation === "week") {
+            let { goal } = this.props.currentWeekTask
+
             this.setState(prevState => ({
                 interval: "times per week",
-                value: parseInt(goal.max) > 0 ? `${goal.max}` : "1"
+                value: goal && parseInt(goal.max) > 0 ? `${goal.max}` : "1"
             }))
         }
 
         else {
+            let { goal } = this.props.currentMonthTask
+
             this.setState(prevState => ({
                 interval: " times per month",
-                value: parseInt(goal.max) > 0 ? `${goal.max}` : "1"
+                value: goal && parseInt(goal.max) > 0 ? `${goal.max}` : "1"
             }))
         }
 
@@ -104,7 +118,7 @@ class GoalPerTimesRow extends React.PureComponent {
         )
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         Keyboard.removeListener("keyboardWillHide", this.toDoWillHide)
     }
 

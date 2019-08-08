@@ -165,6 +165,7 @@ export default class UnderlayModal extends Component {
                                         {this.state.categoryChosen ?
                                             <Category
                                                 disableAllTabs={this.disableAllTabs}
+                                                currentAnnotation={this.state.currentAnnotation}
                                             />
 
                                             :
@@ -184,6 +185,7 @@ export default class UnderlayModal extends Component {
                                                         {this.state.priorityChosen ?
                                                             <Priority
                                                                 disableAllTabs={this.disableAllTabs}
+                                                                currentAnnotation={this.state.currentAnnotation}
                                                             />
 
                                                             :

@@ -3,7 +3,7 @@ import MonthAnnotationPanel from './MonthAnnotationPanel'
 import {updateStartingDate} from './actions/updateStartingDate'
 
 const mapStateToProps = (state) => ({
-    currentTask: state.currentTask
+    currentMonthTask: state.currentMonthTask
 })
 
 const maptDispatchToProps = (dispatch, ownProps) => ({
