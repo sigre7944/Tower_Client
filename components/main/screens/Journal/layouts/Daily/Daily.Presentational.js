@@ -196,8 +196,14 @@ export default class Daily extends React.Component{
         this.setState({isModalOpened: false})
     }
 
-    setLogtimeModalVisible = (visible) => {
-        this.setState({isLogtimeModalOpened: visible})
+    setLogtimeModalToVisible = () => {
+        console.log('trigger on')
+        this.setState({isLogtimeModalOpened: true})
+    }
+
+    setLogtimeModalToInvisible = () => {
+        console.log('trigger off')
+        this.setState({isLogtimeModalOpened: false})
     }
 
     renderLeftActions = (progress, dragX) => {
@@ -212,7 +218,7 @@ export default class Daily extends React.Component{
                 {
                   transform: [{ translateX: Math.round(Number.parseFloat(JSON.stringify(trans))) }],
                 },
-              ]} onPress={() => {console.log("close")}} title="Here">
+              ]} onPress={() => {console.log("close")}} title="LogTime">
               
                 Archive
               
@@ -291,13 +297,12 @@ export default class Daily extends React.Component{
                         </View>
 
                         :
+                        // later we will user map to render all the data
                         <ScrollView style={styles.scrollViewTasks}>
-                            <TaskCard checked={true} onPress={this.openModal} onSwipeableRightOpen={() => this.setLogtimeModalVisible(true)}/>
+                            <TaskCard checked={true} onPress={this.openModal} openLogtimeModal={this.setLogtimeModalToVisible} closeLogtimeModal={this.setLogtimeModalToInvisible}/>
                             <TaskCard checked={false} onPress={this.openModal}/>
-                            <Swipeable renderLeftActions={this.renderLeftActions} onSwipeableOpen={() => this.setLogtimeModalVisible(true)}>
-                                <Text>
-                                    "hello"
-                                </Text>
+                            <Swipeable renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                <TaskCard checked={false} onPress={this.openModal} title="swipe me to open logtime"/>
                             </Swipeable>
                             <Text style={styles.banner}>Completed</Text>
                             <TaskCard checked={true} onPress={this.openModal}/>
@@ -328,7 +333,7 @@ export default class Daily extends React.Component{
                         }}
                     >
                             <Text>This is the pop up logtime dialog</Text>
-                            <Button onPress={() => this.setLogtimeModalVisible(false)} title="Close">
+                            <Button onPress={this.setLogtimeModalToInvisible} title="Close">
                                 Close
                             </Button>
                     </View>
@@ -409,5 +414,9 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+
+    actionText: {
+        height: 50
     }
 })

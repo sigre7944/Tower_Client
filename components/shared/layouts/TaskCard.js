@@ -10,21 +10,8 @@ export default class TaskCard extends Component {
         checked: false
     }
 
-    renderLeftActions = (progress, dragX) => {
-        const trans = dragX.interpolate({
-          inputRange: [0, 50, 100, 101],
-          outputRange: [-20, 0, 0, 1],
-        });
-        return (
-            <View style={{height:60, zIndex: 20, marginBottom: 4, marginTop: 4, backgroundColor:'blue'}}>
-                <Text>Log time >>></Text>
-            </View>
-        );
-    };
-
     render() {
         return (
-        <Swipeable renderLeftActions={this.renderLeftActions} >
             <TouchableOpacity style={styles.container} onPress={() => this.props.onPress(true)}>
                 
                     <View style={styles.checkBox}>
@@ -37,7 +24,7 @@ export default class TaskCard extends Component {
                         />
                     </View>
                     <View style={styles.description}>
-                        <Text style={styles.descriptionText}>Task 1</Text>
+                        <Text style={styles.descriptionText}>{this.props.title ? this.props.title  : 'Example task'}</Text>
                         <Text style={styles.descriptionAmount}>0/3</Text>
                     </View>
                     <View style={styles.share}>
@@ -48,7 +35,6 @@ export default class TaskCard extends Component {
                     </View>
                 
             </TouchableOpacity> 
-            </Swipeable>
         )
     }
 }
