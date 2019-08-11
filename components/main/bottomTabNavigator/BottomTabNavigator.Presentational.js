@@ -3,214 +3,136 @@ import React from 'react'
 import {
     View,
     Text,
-    ScrollView,
-    StyleSheet,
     TouchableHighlight,
-    Keyboard,
-    TextInput,
-    Dimensions,
-    Modal,
-    TouchableWithoutFeedback,
-    KeyboardAvoidingView,
 } from 'react-native';
 
 import AddTaskButton from './layouts/AddTaskButton'
-import UnderlayModal from './layouts/modal-component/UnderlayModal'
+import OverlayModal from './layouts/modal-component/OverlayModal.Container'
 
-
-const styles= {
-    text: {
-        fontSize: 12
-    }
-}
-
-
-export default class BottomTabNavigator extends React.Component{
-
-
+export default class BottomTabNavigator extends React.Component {
 
     state = {
-        addClicked: false,
+        addTaskClicked: false,
         renderAddTaskUI: null,
         keyboardHeight: 0,
-        addTaskDisplayProperty: 'none',
-        calendarChosen: false
+        should_AddTaskButton_be_displayed: "flex"
     }
 
     //START of ./AddTaskButton.js
     addTaskButtonActionProp = () => {
         this.setState(prevState => ({
-            addClicked: !prevState.addClicked,
-            calendarChosen: false
+            addTaskClicked: !prevState.addTaskClicked,
         }))
     }
     //END of ./AddTaskButton.js
 
+    chooseNewScreen = (routeName) => {
+        this.props.navigation.navigate({ routeName })
 
-
-    //START of /modal-component/UnderlayModal.js
-    dismissAddTaskProcessWhenClickOnUnderlayModal = () => {
-        Keyboard.dismiss
-        this.setState(prevState => ({
-            keyboardHeight: 0,
-            addClicked: !prevState.addClicked
-        }))
+        // this.props.changeRouteAction(routeName)
     }
 
-    chooseCalenderOption = () => {
-        this.setState(prevState=> ({
-            calendarChosen: !prevState.calendarChosen,
-            addTaskDisplayProperty: 'none'
-        }))
-
-        Keyboard.dismiss
-    }
-    //END of /modal-component/UnderlayModal.js
-
-
-    componentDidMount(){
-        this.keyboardWillShowListener = Keyboard.addListener(
-            'keyboardWillShow',
-            (e) => {
+    componentDidUpdate = (prevProps, prevState) => {
+        if (this.props.routeName !== prevProps.routeName) {
+            if ((this.props.routeName === "Daily" || this.props.routeName === "Weekly" || this.props.routeName === "Monthly")) {
                 this.setState({
-                    keyboardHeight: e.endCoordinates.height,
+                    should_AddTaskButton_be_displayed: "flex"
                 })
             }
-        )
 
-        
-    }
 
-    componentDidUpdate = (prepProps, prevState) => {
-        if(this.state.addClicked && this.state.addClicked !== prevState.addClicked){
-            this.setState({
-                addTaskDisplayProperty: 'flex'
-            })
+            else {
+                this.setState({
+                    should_AddTaskButton_be_displayed: "none"
+                })
+            }
         }
     }
 
-    componentWillUnmount(){
-        this.keyboardWillShowListener.remove();
-    }
-
-    render(){
-        return(
+    render() {
+        return (
             <>
-            <View style={{
-                height: 60,
-                display: "flex",
-                alignItems: "center",
-            }}> 
-                {this.state.addClicked ?
-                    
-                    <UnderlayModal 
-                        dismissAddTaskProcessWhenClickOnUnderlayModal = {this.dismissAddTaskProcessWhenClickOnUnderlayModal}
-                        addTaskDisplayProperty = {this.state.addTaskDisplayProperty}
-                        keyboardHeight = {this.state.keyboardHeight}
-                        chooseCalenderOption = {this.chooseCalenderOption}
-                        calendarChosen = {this.state.calendarChosen}
+                <View style={{
+                    height: 60,
+                    display: "flex",
+                    alignItems: "center",
+                }}>
+                    {
+                        this.state.addTaskClicked ?
+                            <OverlayModal
+                                addTaskButtonActionProp={this.addTaskButtonActionProp}
+                            />
+
+                            :
+
+                            <></>
+                    }
+
+
+                    <AddTaskButton
+                        addTaskButtonActionProp={this.addTaskButtonActionProp}
+                        should_AddTaskButton_be_displayed={this.state.should_AddTaskButton_be_displayed}
                     />
 
-                    : 
 
-                    <></>
-                }
-                {this.props.routeName === "Daily" || this.props.routeName === "Weekly" || this.props.routeName === "Monthly" ?
-                    <TouchableHighlight
-                        onPress = {() => {
-                            this.setState(prevState => ({addClicked: !prevState.addClicked}))
-                        }}
-                        style= {{
-                            height: 64,
-                            width: 64,
-                            borderRadius: 50,
-                            backgroundColor: 'black',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            position: 'absolute',
-                            top: -50,
-                            zIndex: 10,
-                            shadowOffset:{  width: 50,  height: 50,  },
-                            shadowColor: 'black',
-                            shadowOpacity: 0.75,
-                            elevation: 5
-                        }}
-                    >
-                        <>
-                        <Text style={{
-                            color: 'white',
-                            fontSize: 24,
-                            fontWeight: "200"
-                        }}> + </Text>
-                        </>
-                    </TouchableHighlight>
-
-                    : 
-
-                    <>
-                    </>
-                }
-                
-
-                <View
-                    style={{
-                        display: "flex",
-                        backgroundColor: 'gainsboro',
-                        flexDirection: "row",
-                        justifyContent: "space-around",
-                        height: 60,
-                    }}
-                >
-                    <TouchableHighlight
-                        onPress = {() => this.props.navigation.navigate({routeName: 'Journal'})}
+                    <View
                         style={{
-                            flex: 1,
+                            display: "flex",
+                            backgroundColor: 'gainsboro',
+                            flexDirection: "row",
+                            justifyContent: "space-around",
                             height: 60,
-                            alignItems: 'center',
-                            justifyContent: 'center'
                         }}
                     >
-                        <Text style={styles.text}>Journal</Text>
-                    </TouchableHighlight>
+                        <ScreenComponent
+                            chooseNewScreen={this.chooseNewScreen}
+                            screen_route_name={"Journal"}
+                        />
 
-                    <TouchableHighlight
-                        onPress = {() => this.props.navigation.navigate({routeName: 'Progress'})}
-                        style={{
-                            flex: 1,
-                            height: 60,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <Text style={styles.text}>Progress</Text>
-                    </TouchableHighlight>
+                        <ScreenComponent
+                            chooseNewScreen={this.chooseNewScreen}
+                            screen_route_name={"Progress"}
+                        />
 
-                    <TouchableHighlight
-                        onPress = {() => this.props.navigation.navigate({routeName: 'Reward'})}
-                        style={{
-                            flex: 1,
-                            height: 60,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <Text style={styles.text}>Reward</Text>
-                    </TouchableHighlight>
+                        <ScreenComponent
+                            chooseNewScreen={this.chooseNewScreen}
+                            screen_route_name={"Reward"}
+                        />
 
-                    <TouchableHighlight
-                        onPress = {() => this.props.navigation.navigate({routeName: 'Settings'})}
-                        style={{
-                            flex: 1,
-                            height: 60,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <Text style={styles.text}>Settings</Text>
-                    </TouchableHighlight>
+                        <ScreenComponent
+                            chooseNewScreen={this.chooseNewScreen}
+                            screen_route_name={"Settings"}
+                        />
+                    </View>
                 </View>
-            </View>
             </>
+        )
+    }
+}
+
+class ScreenComponent extends React.PureComponent {
+
+    _onPress = () => {
+        this.props.chooseNewScreen(this.props.screen_route_name)
+    }
+
+    render() {
+        return (
+            <TouchableHighlight
+                onPress={this._onPress}
+                style={{
+                    flex: 1,
+                    height: 60,
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}
+            >
+                <Text style={{
+                    fontSize: 12
+                }}>
+                    {this.props.screen_route_name}
+                </Text>
+            </TouchableHighlight>
         )
     }
 }

@@ -1,59 +1,101 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 
 import {
     View,
-    Text,
-    TouchableHighlight,
-    TextInput,
-    Dimensions,
-    Modal,
-    TouchableWithoutFeedback,
-    KeyboardAvoidingView,
+
 } from 'react-native';
 
-import DayAnnotationPanel from './day-annotation/DayAnnotationPanel'
-import WeekAnnotationPanel from './week-annotation/WeekAnnotationPanel'
+import DayAnnotationPanel from './day-annotation/DayAnnotationPanel.Container'
+import MonthAnnotationPanel from './month-annotation/MonthAnnotationPanel.Container'
 
-export default class Calendar extends Component{
+import WeekAnnotationPanel from './week-annotation/WeekAnnotationPanel.Container'
+
+import Repeat from '../repeat/Repeat.Container'
+
+export default class Calendar extends Component {
 
     state = {
+        repeatChosen: false
     }
 
+    chooseRepeatOption = () => {
+        this.setState(prevState => ({
+            repeatChosen: !prevState.repeatChosen
+        }))
+    }
 
-    render(){
-        return(
-            <View 
-                style={{
-                    position: 'absolute',
-                    top: 100,
-                    bottom: 100,
-                    right: 25,
-                    left: 25,
-                    backgroundColor: 'white',
-                    borderRadius: 10,
-
-                }}
-            >
-
-            {this.props.currentAnnotation === 'day' ?
-                <DayAnnotationPanel />
-                
-                :
-
-                <>
-                {this.props.currentAnnotation === 'week' ?
-                    <WeekAnnotationPanel />
+    render() {
+        return (
+            <Fragment>
+                {this.state.repeatChosen ?
+                    <Repeat
+                        currentAnnotation={this.props.currentAnnotation}
+                        chooseRepeatOption={this.chooseRepeatOption}
+                    />
 
                     :
 
                     <>
-                    <MonthAnnotationPanel />
+                        {this.props.currentAnnotation === 'day' ?
+                            <View
+                                style={{
+                                    position: 'absolute',
+                                    width: 338,
+                                    height: 446,
+                                    backgroundColor: 'white',
+                                    borderRadius: 10,
+                                }}
+                            >
+                                <DayAnnotationPanel
+                                    chooseRepeatOption={this.chooseRepeatOption}
+
+                                    disableAllTabs={this.props.disableAllTabs}
+                                />
+                            </View>
+
+                            :
+
+                            <Fragment>
+                                {this.props.currentAnnotation === 'week' ?
+                                    <View
+                                        style={{
+                                            position: 'absolute',
+                                            width: 338,
+                                            height: 446,
+                                            backgroundColor: 'white',
+                                            borderRadius: 10,
+                                        }}
+                                    >
+                                        <WeekAnnotationPanel
+                                            chooseRepeatOption={this.chooseRepeatOption}
+
+                                            disableAllTabs={this.props.disableAllTabs}
+                                        />
+                                    </View>
+
+                                    :
+
+                                    <View style={{
+                                        position: 'absolute',
+                                        width: 338,
+                                        height: 546,
+                                        backgroundColor: 'white',
+                                        borderRadius: 10,
+                                    }}>
+                                        <MonthAnnotationPanel
+                                            chooseRepeatOption={this.chooseRepeatOption}
+
+                                            disableAllTabs={this.props.disableAllTabs}
+                                        />
+                                    </View>
+
+                                }
+                            </Fragment>
+                        }
                     </>
-                
                 }
-                </>
-            }
-            </View>
+
+            </Fragment>
         )
     }
 }

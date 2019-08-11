@@ -20,7 +20,6 @@ export default class TaskDetailModal extends Component {
     }
 
     componentDidMount = () => {
-        console.log(Object.keys(this.refs)[0])
         //this.props.setRef(this.refs.modalRef)
     }
 
