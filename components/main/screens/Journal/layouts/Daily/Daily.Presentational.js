@@ -280,7 +280,7 @@ export default class Daily extends React.Component {
                             if (task.type === "day")
                                 return (
                                     <Swipeable key={`daily-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                        <TaskCard task_data = {task} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
+                                        <TaskCard task_data={task} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
                                     </Swipeable>
                                 )
                         })}
@@ -295,6 +295,8 @@ export default class Daily extends React.Component {
                     isOpened={this.state.isModalOpened}
                     closeModal={this.closeModal}
                     task_data={this.task_data}
+                    categories={this.props.categories}
+                    priorities={this.props.priorities}
                 />
 
                 <Modal

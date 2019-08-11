@@ -135,6 +135,7 @@ export default class OverlayModal extends Component {
                 month: date.getMonth(),
                 year: date.getFullYear()
             }
+            data.category= "cate_0"
             data.repeat = {
                 type: "daily",
                 interval: {
@@ -173,7 +174,7 @@ export default class OverlayModal extends Component {
                 month: date.getMonth(),
                 year: date.getFullYear()
             }
-
+            data.category= "cate_0"
             data.repeat = {
                 type: "weekly-w",
                 interval: {
@@ -209,7 +210,7 @@ export default class OverlayModal extends Component {
                 month: date.getMonth(),
                 year: date.getFullYear()
             }
-
+            data.category= "cate_0"
             data.repeat = {
                 type: "monthly-m",
                 interval: {

@@ -832,50 +832,16 @@ class BottomOptionElement extends React.PureComponent {
 
     _onPress = () => {
         if (this.props.addTask) {
-            if (this.props.currentAnnotation === "day") {
-                let data = this.props.currentDayTask
+            if (this.props.currentAnnotation === "day" && this.props.currentDayTask.title && this.props.currentDayTask.title.length > 0) {
 
-                if (!data.schedule) {
-                    let date = new Date()
-
-                    data.schedule = {
-                        day: date.getDate(),
-                        month: date.getMonth(),
-                        year: date.getFullYear()
-                    }
-
-                    data.startTime = date.getTime()
-                    data.trackingTime = data.startTime
-                }
-
-                if (!data.repeat) {
-                    data.repeat = {
-                        type: "daily",
-                        interval: {
-                            value: 86400 * 1000 * 1
-                        }
-                    }
-                }
-
-                if(!data.end){
-                    data.end = {
-                        type: "after",
-                        occurrence: 1
-                    }
-                }
-
-                if(!data.category){
-                    data.category = 'cate_0'
-                }
-
-                this.props.addTask("ADD_NEW_DAY_TASK", data)
+                this.props.addTask("ADD_NEW_DAY_TASK", this.props.currentDayTask)
             }
 
-            else if (this.props.currentAnnotation === "week") {
+            else if (this.props.currentAnnotation === "week" && this.props.currentWeekTask.title && this.props.currentWeekTask.title.length > 0) {
                 this.props.addTask("ADD_NEW_WEEK_TASK", this.props.currentWeekTask)
             }
 
-            else if (this.props.currentAnnotation === "month") {
+            else if (this.props.currentAnnotation === "month" && this.props.currentMonthTask.title && this.props.currentMonthTask.title.length > 0) {
                 this.props.addTask("ADD_NEW_MONTH_TASK", this.props.currentMonthTask)
             }
         }

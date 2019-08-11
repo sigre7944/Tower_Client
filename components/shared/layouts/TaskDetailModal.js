@@ -6,6 +6,14 @@ import Modal from 'react-native-modalbox';
 
 export default class TaskDetailModal extends Component {
 
+    daysInWeekText = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+    monthNames = ["January", "Febuary", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ]
+
+    month_names_in_short = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
     state = {
         isOpened: false,
         isEditing: false
@@ -49,6 +57,30 @@ export default class TaskDetailModal extends Component {
     }
 
     render() {
+        let task_data = this.props.task_data,
+            date = new Date(task_data.startTime),
+            day_in_week_text = this.daysInWeekText[date.getDay()],
+            date_number = date.getDate(),
+            month_text = this.monthNames[date.getMonth()],
+            category = task_data.category ? this.props.categories[task_data.category].name : "",
+            priority = task_data.priority ? this.props.priorities[task_data.priority.value].name : "",
+            repeat,
+            goal = task_data.goal ? `${task_data.goal.max} times` : ""
+
+        if (task_data.repeat) {
+            if (task_data.repeat.type === "daily"){
+                repeat = `Every ${task_data.repeat.interval.value / (86400 * 1000)} day(s)`
+            }
+
+            else if (task_data.repeat.type === "weekly"){
+                repeat = `Every ${task_data.repeat.interval.value / (86400 * 1000 * 7)} week(s)`
+            }
+
+            else if (task_data.repeat.type === "monthly"){
+                repeat = `Every ${task_data.repeat.interval.value} month(s)`
+            }
+        }
+
         return (
             <Modal
                 style={{ marginTop: 50, borderRadius: 10 }}
@@ -96,27 +128,41 @@ export default class TaskDetailModal extends Component {
                                                 <Text style={styles.text}>{this.props.task_data.title}</Text>
                                             </View>
                                         </View>
-                                        {this.props.task_data.schedule ?
-                                            <View style={styles.container}>
-                                                <View style={styles.head}>
-                                                    <FontAwesome name={'calendar'} style={styles.icon} />
+                                        {
+                                            this.props.task_data.description && this.props.task_data.description.length > 0 ?
+                                                <View style={styles.container}>
+                                                    <View style={styles.head}>
+                                                        <CheckBox
+                                                            center
+                                                            checkedIcon='dot-circle-o'
+                                                            uncheckedIcon='circle-o'
+                                                            checked={this.props.checked}
+                                                        />
+                                                    </View>
+                                                    <View style={styles.body}>
+                                                        <Text style={styles.text}>{this.props.task_data.description}</Text>
+                                                    </View>
                                                 </View>
-                                                <View style={styles.body}>
-                                                    <Text style={styles.text}>Thursday, June 13</Text>
-                                                </View>
-                                            </View>
 
-                                            :
+                                                :
 
-                                            <></>
+                                                <></>
                                         }
+                                        <View style={styles.container}>
+                                            <View style={styles.head}>
+                                                <FontAwesome name={'calendar'} style={styles.icon} />
+                                            </View>
+                                            <View style={styles.body}>
+                                                <Text style={styles.text}>{`${day_in_week_text} ${date_number} ${month_text}`}</Text>
+                                            </View>
+                                        </View>
 
                                         <View style={styles.container}>
                                             <View style={styles.head}>
                                                 <FontAwesome name={'circle'} style={styles.icon} />
                                             </View>
                                             <View style={styles.body}>
-                                                <Text style={styles.text}>Leisure</Text>
+                                                <Text style={styles.text}>{category}</Text>
                                             </View>
                                         </View>
                                         <View style={styles.container}>
@@ -124,7 +170,23 @@ export default class TaskDetailModal extends Component {
                                                 <FontAwesome name={'warning'} style={styles.icon} />
                                             </View>
                                             <View style={styles.body}>
-                                                <Text style={styles.text}>Do first</Text>
+                                                <Text style={styles.text}>{priority}</Text>
+                                            </View>
+                                        </View>
+                                        <View style={styles.container}>
+                                            <View style={styles.head}>
+                                                <FontAwesome name={'warning'} style={styles.icon} />
+                                            </View>
+                                            <View style={styles.body}>
+                                                <Text style={styles.text}>{repeat}</Text>
+                                            </View>
+                                        </View>
+                                        <View style={styles.container}>
+                                            <View style={styles.head}>
+                                                <FontAwesome name={'warning'} style={styles.icon} />
+                                            </View>
+                                            <View style={styles.body}>
+                                                <Text style={styles.text}>{goal}</Text>
                                             </View>
                                         </View>
                                         <View style={styles.container}>
