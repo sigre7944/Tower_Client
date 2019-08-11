@@ -3,10 +3,8 @@ import {
     View,
     StyleSheet,
     Text,
-    Button,
     ScrollView,
     TouchableHighlight,
-    Modal
 } from 'react-native';
 import TaskCard from './../../../../../shared/layouts/TaskCard'
 import TaskDetailModal from './../../../../../shared/layouts/TaskDetailModal'

@@ -1,8 +1,3 @@
-import React from 'react';
-import AddAllTodo from './containers/AddAllTodo.Container'
-import DisplayAllTodos from './containers/DisplayAllTodos.Container'
-import DisplayAllCompletedTodos from './containers/DisplayAllCompletedTodos.Container'
-
 import {createMaterialTopTabNavigator} from 'react-navigation'
 
 import Daily from './layouts/Daily/Daily.Container'
