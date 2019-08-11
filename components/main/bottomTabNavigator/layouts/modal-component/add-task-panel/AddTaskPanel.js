@@ -254,6 +254,36 @@ export default class AddTaskPanel extends Component {
                 }
             }
 
+            if (end) {
+                if (end.type === "never") {
+                    tag_data.push(
+                        <TagElement
+                            key="tag-end"
+                            content={`never end`}
+                        />
+                    )
+                }
+
+                else if (end.type === "on") {
+                    let end_date = new Date(end.endAt)
+                    tag_data.push(
+                        <TagElement
+                            key="tag-end"
+                            content={`end at ${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]}`}
+                        />
+                    )
+                }
+
+                else if (end.type === "after") {
+                    tag_data.push(
+                        <TagElement
+                            key="tag-end"
+                            content={`end after ${end.occurrence} occurrences`}
+                        />
+                    )
+                }
+            }
+
             if (category) {
                 let cate = this.props.categories[category].name
                 tag_data.push(
@@ -313,6 +343,36 @@ export default class AddTaskPanel extends Component {
                         content={`every ${value} month(s)`}
                     />
                 )
+            }
+
+            if (end) {
+                if (end.type === "never") {
+                    tag_data.push(
+                        <TagElement
+                            key="tag-end"
+                            content={`never end`}
+                        />
+                    )
+                }
+
+                else if (end.type === "on") {
+                    let end_date = new Date(end.endAt)
+                    tag_data.push(
+                        <TagElement
+                            key="tag-end"
+                            content={`end at ${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]}`}
+                        />
+                    )
+                }
+
+                else if (end.type === "after") {
+                    tag_data.push(
+                        <TagElement
+                            key="tag-end"
+                            content={`end after ${end.occurrence} occurrences`}
+                        />
+                    )
+                }
             }
 
             if (category) {
@@ -771,17 +831,52 @@ class TagElement extends React.PureComponent {
 class BottomOptionElement extends React.PureComponent {
 
     _onPress = () => {
-        if(this.props.addTask){
-            if(this.props.currentAnnotation === "day"){
-                this.props.addTask(this.props.currentDayTask)
+        if (this.props.addTask) {
+            if (this.props.currentAnnotation === "day") {
+                let data = this.props.currentDayTask
+
+                if (!data.schedule) {
+                    let date = new Date()
+
+                    data.schedule = {
+                        day: date.getDate(),
+                        month: date.getMonth(),
+                        year: date.getFullYear()
+                    }
+
+                    data.startTime = date.getTime()
+                    data.trackingTime = data.startTime
+                }
+
+                if (!data.repeat) {
+                    data.repeat = {
+                        type: "daily",
+                        interval: {
+                            value: 86400 * 1000 * 1
+                        }
+                    }
+                }
+
+                if(!data.end){
+                    data.end = {
+                        type: "after",
+                        occurrence: 1
+                    }
+                }
+
+                if(!data.category){
+                    data.category = 'cate_0'
+                }
+
+                this.props.addTask("ADD_NEW_DAY_TASK", data)
             }
 
-            else if(this.props.currentAnnotation === "week"){
-                this.props.addTask(this.props.currentWeekTask)
+            else if (this.props.currentAnnotation === "week") {
+                this.props.addTask("ADD_NEW_WEEK_TASK", this.props.currentWeekTask)
             }
 
-            else if(this.props.currentAnnotation === "month"){
-                this.props.addTask(this.props.currentMonthTask)
+            else if (this.props.currentAnnotation === "month") {
+                this.props.addTask("ADD_NEW_MONTH_TASK", this.props.currentMonthTask)
             }
         }
         this.props.chooseOption()

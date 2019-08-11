@@ -5,6 +5,8 @@ import {
     Text,
     ScrollView,
     TouchableHighlight,
+    Modal,
+    Button
 } from 'react-native';
 import TaskCard from './../../../../../shared/layouts/TaskCard'
 import TaskDetailModal from './../../../../../shared/layouts/TaskDetailModal'
@@ -16,13 +18,15 @@ let scrollViewRef,
     days_arr = [],
     today = new Date().getDate(),
     lastDayIndex = 0
-    
 
-export default class Daily extends React.Component{
+
+export default class Daily extends React.Component {
     static navigationOptions = {
         swipeEnabled: false,
         header: null
     }
+
+    task_data = {}
 
     state = {
         dailyTimeView: null,
@@ -30,13 +34,12 @@ export default class Daily extends React.Component{
         day_number_text_style_arr: [],
         days_arr: [],
 
-        taskTabOpened: false,
         isModalOpened: false,
         isLogtimeModalOpened: false
     }
 
 
-    componentDidMount(){
+    componentDidMount() {
         const didFocusScreen = this.props.navigation.addListener(
             'didFocus',
             payload => {
@@ -44,99 +47,94 @@ export default class Daily extends React.Component{
             }
         )
 
-
         days_arr.length = 0
 
         let month = new Date().getMonth() + 1,
             year = new Date().getFullYear()
 
-        
+
         let daysInMonth = this.getDaysInMonth(month, year),
             day_number_circle_style_arr = [],
             day_number_text_style_arr = []
 
-        for(let i = 1; i <= daysInMonth; i++){
+        for (let i = 1; i <= daysInMonth; i++) {
             let dayWord,
-                dayInWeek = new Date(year, month-1, i).getDay()
+                dayInWeek = new Date(year, month - 1, i).getDay()
 
-            if(dayInWeek === 0){
+            if (dayInWeek === 0) {
                 dayWord = 'Su'
             }
 
-            else if (dayInWeek === 1){
+            else if (dayInWeek === 1) {
                 dayWord = 'Mo'
             }
 
-            else if (dayInWeek === 2){
+            else if (dayInWeek === 2) {
                 dayWord = 'Tu'
             }
 
-            else if (dayInWeek === 3){
+            else if (dayInWeek === 3) {
                 dayWord = 'We'
             }
 
-            else if (dayInWeek === 4){
+            else if (dayInWeek === 4) {
                 dayWord = 'Th'
             }
 
-            else if (dayInWeek === 5){
+            else if (dayInWeek === 5) {
                 dayWord = 'Fr'
             }
 
-            else if (dayInWeek === 6){
+            else if (dayInWeek === 6) {
                 dayWord = 'Sa'
             }
 
             days_arr.push({
-               dayWord: dayWord,
-               dayNumb: i,
-               chosen: false
+                dayWord: dayWord,
+                dayNumb: i,
+                chosen: false
             })
 
             day_number_circle_style_arr.push(styles.circleCenterDayNumberHolder)
 
-            if(i === today)
+            if (i === today)
                 day_number_text_style_arr.push(styles.biggerFontWeightForToday)
             else
                 day_number_text_style_arr.push(styles.notToday)
         }
 
         this.setState({
-            day_number_circle_style_arr: day_number_circle_style_arr.map(style => {return style}),
-            day_number_text_style_arr: day_number_text_style_arr.map(style => {return style}),
-            days_arr: days_arr.map(day => {return day})
+            day_number_circle_style_arr: day_number_circle_style_arr.map(style => { return style }),
+            day_number_text_style_arr: day_number_text_style_arr.map(style => { return style }),
+            days_arr: days_arr.map(day => { return day })
         })
-        
-        this.focusScrollViewToDay(scrollViewRef, days_arr, today)
-    }
 
-    
-    componentDidUpdate(prevProps, prevState){
+        this.focusScrollViewToDay(scrollViewRef, days_arr, today)
     }
 
     chooseDay = (scrollViewRef, days_arr, day, dayIndex) => {
         let day_number_circle_style_arr = this.state.day_number_circle_style_arr,
             day_number_text_style_arr = this.state.day_number_text_style_arr
 
-        day_number_circle_style_arr[lastDayIndex] = {...styles.circleCenterDayNumberHolder, backgroundColor: 'transparent'}
+        day_number_circle_style_arr[lastDayIndex] = { ...styles.circleCenterDayNumberHolder, backgroundColor: 'transparent' }
 
-        if(lastDayIndex === today-1)
-            day_number_text_style_arr[lastDayIndex] = {...styles.biggerFontWeightForToday, color: 'black'}
+        if (lastDayIndex === today - 1)
+            day_number_text_style_arr[lastDayIndex] = { ...styles.biggerFontWeightForToday, color: 'black' }
         else
-            day_number_text_style_arr[lastDayIndex] = {...styles.notToday, color: 'gray'}
-        
+            day_number_text_style_arr[lastDayIndex] = { ...styles.notToday, color: 'gray' }
 
 
-        day_number_circle_style_arr[dayIndex] = {...styles.circleCenterDayNumberHolder, backgroundColor: 'black'}
 
-        if(dayIndex === today-1)
-            day_number_text_style_arr[dayIndex] = {...styles.biggerFontWeightForToday, color: 'white'}
+        day_number_circle_style_arr[dayIndex] = { ...styles.circleCenterDayNumberHolder, backgroundColor: 'black' }
+
+        if (dayIndex === today - 1)
+            day_number_text_style_arr[dayIndex] = { ...styles.biggerFontWeightForToday, color: 'white' }
         else
-            day_number_text_style_arr[dayIndex] = {...styles.notToday, color: 'white'}
+            day_number_text_style_arr[dayIndex] = { ...styles.notToday, color: 'white' }
 
         this.setState({
-            day_number_circle_style_arr: day_number_circle_style_arr.map(style => {return style}),
-            day_number_text_style_arr: day_number_text_style_arr.map(style => {return style})
+            day_number_circle_style_arr: day_number_circle_style_arr.map(style => { return style }),
+            day_number_text_style_arr: day_number_text_style_arr.map(style => { return style })
         })
 
         this.focusScrollViewToDay(scrollViewRef, days_arr, day)
@@ -148,7 +146,7 @@ export default class Daily extends React.Component{
         let dayIndex = days_arr.findIndex(obj => obj.dayNumb === day),
             x_off_set
 
-        if(dayIndex > (days_arr.length - 4)){
+        if (dayIndex > (days_arr.length - 4)) {
             dayIndex = days_arr.length - 7
             scrollViewRef.scrollTo({
                 y: 0,
@@ -156,14 +154,14 @@ export default class Daily extends React.Component{
             })
         }
 
-        else if (dayIndex < 3){
+        else if (dayIndex < 3) {
             scrollViewRef.scrollTo({
                 y: 0,
                 x: 0
             })
         }
 
-        else{
+        else {
             dayIndex -= 3
             x_off_set = dayIndex * dayHolderWidth
 
@@ -178,100 +176,91 @@ export default class Daily extends React.Component{
         return new Date(year, month, 0).getDate()
     }
 
+    openModal = (task_data) => {
+        this.task_data = task_data
 
-    openAddTaskTab = () => {
-        this.setState(prevState => ({
-            taskTabOpened: !prevState.taskTabOpened
-        }))
-    }
-
-
-    openModal = () => {
-        this.setState({isModalOpened: true})
+        this.setState({ isModalOpened: true })
     }
 
     closeModal = () => {
-        this.setState({isModalOpened: false})
+        this.setState({ isModalOpened: false })
     }
 
     setLogtimeModalToVisible = () => {
-        console.log('trigger on')
-        this.setState({isLogtimeModalOpened: true})
+        this.setState({ isLogtimeModalOpened: true })
     }
 
     setLogtimeModalToInvisible = () => {
-        console.log('trigger off')
-        this.setState({isLogtimeModalOpened: false})
+        this.setState({ isLogtimeModalOpened: false })
     }
 
     renderLeftActions = (progress, dragX) => {
         const trans = dragX.interpolate({
-          inputRange: [0, 50, 100, 101],
-          outputRange: [-20, 0, 0, 1],
+            inputRange: [0, 50, 100, 101],
+            outputRange: [-20, 0, 0, 1],
         });
-        console.log(trans);
         return (
             <Button style={[
                 styles.actionText,
                 {
-                  transform: [{ translateX: Math.round(Number.parseFloat(JSON.stringify(trans))) }],
+                    transform: [{ translateX: Math.round(Number.parseFloat(JSON.stringify(trans))) }],
                 },
-              ]} onPress={() => {console.log("close")}} title="LogTime">
-              
+            ]} onPress={() => { }} title="LogTime">
+
                 Archive
-              
+
             </Button>
         );
     }
 
-    render(){
-        return(
+    render() {
+        return (
             <View style={styles.container}>
                 <View style={styles.scrollViewContainer} >
-                    <ScrollView 
-                        horizontal={true} 
+                    <ScrollView
+                        horizontal={true}
                         ref={view => scrollViewRef = view}
                         indicatorStyle='white'
                     >
                         {this.state.days_arr.map((obj, index) => (
-                            <TouchableHighlight 
-                                onPress={this.chooseDay.bind(this, scrollViewRef, days_arr, obj.dayNumb,index)} 
-                                style={styles.dayHolder} 
+                            <TouchableHighlight
+                                onPress={this.chooseDay.bind(this, scrollViewRef, days_arr, obj.dayNumb, index)}
+                                style={styles.dayHolder}
                                 key={"day " + index}
                                 underlayColor='transparent'
                             >
-                            <>
-                                <View>
-                                    {
-                                        obj.dayNumb === today ?
-                                            <Text
-                                            style={styles.biggerFontWeightForToday}
-                                            >
-                                                {obj.dayWord}
-                                            </Text>
+                                <>
+                                    <View>
+                                        {
+                                            obj.dayNumb === today ?
+                                                <Text
+                                                    style={styles.biggerFontWeightForToday}
+                                                >
+                                                    {obj.dayWord}
+                                                </Text>
 
-                                            :
+                                                :
 
-                                            <Text
-                                                style={styles.notToday}
-                                            >
-                                                {obj.dayWord}
-                                            </Text>
-                                    }
-                                </View>
-
-                                <View 
-                                    style={styles.dayNumberHolder}
-                                >
-                                    <View style={this.state.day_number_circle_style_arr[index]}>
-                                        <Text
-                                            style={this.state.day_number_text_style_arr[index]}
-                                        >
-                                            {obj.dayNumb}
-                                        </Text>
+                                                <Text
+                                                    style={styles.notToday}
+                                                >
+                                                    {obj.dayWord}
+                                                </Text>
+                                        }
                                     </View>
-                                </View>
-                            </>
+
+                                    <View
+                                        style={styles.dayNumberHolder}
+                                    >
+                                        <View style={this.state.day_number_circle_style_arr[index]}>
+                                            <Text
+                                                style={this.state.day_number_text_style_arr[index]}
+                                            >
+                                                {obj.dayNumb}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                </>
                             </TouchableHighlight>
                         ))}
 
@@ -284,34 +273,28 @@ export default class Daily extends React.Component{
                     alignItems: "center",
                     justifyContent: "center",
                 }}>
-                    
-                    {this.state.taskTabOpened ? 
-                        <View
-                            style={{
-                                position: 'absolute'
-                            }}
-                        >
-                            <Text>Test</Text>
-                        </View>
 
-                        :
-                        // later we will user map to render all the data
-                        <ScrollView style={styles.scrollViewTasks}>
-                            <TaskCard checked={true} onPress={this.openModal} openLogtimeModal={this.setLogtimeModalToVisible} closeLogtimeModal={this.setLogtimeModalToInvisible}/>
-                            <TaskCard checked={false} onPress={this.openModal}/>
-                            <Swipeable renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                <TaskCard checked={false} onPress={this.openModal} title="swipe me to open logtime"/>
-                            </Swipeable>
-                            <Text style={styles.banner}>Completed</Text>
-                            <TaskCard checked={true} onPress={this.openModal}/>
-                        </ScrollView>
-                          
-                    }
+                    {/* later we will user map to render all the data */}
+                    <ScrollView style={styles.scrollViewTasks}>
+                        {this.props.day_tasks.map((task, index) => {
+                            if (task.type === "day")
+                                return (
+                                    <Swipeable key={`daily-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                        <TaskCard task_data = {task} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
+                                    </Swipeable>
+                                )
+                        })}
+
+                        <Text style={styles.banner}>Completed</Text>
+                        <TaskCard checked={true} onPress={this.openModal} />
+                    </ScrollView>
+
                 </View>
 
-                <TaskDetailModal 
+                <TaskDetailModal
                     isOpened={this.state.isModalOpened}
                     closeModal={this.closeModal}
+                    task_data={this.task_data}
                 />
 
                 <Modal
@@ -319,10 +302,10 @@ export default class Daily extends React.Component{
                     transparent={false}
                     visible={this.state.isLogtimeModalOpened}
                     onRequestClose={() => {
-                      Alert.alert('Modal has been closed.');
+                        Alert.alert('Modal has been closed.');
                     }}
                 >
-                    <View 
+                    <View
                         style={{
                             flex: 1,
                             flexDirection: 'column',
@@ -330,9 +313,9 @@ export default class Daily extends React.Component{
                             alignItems: 'center'
                         }}
                     >
-                            <Text>This is the pop up logtime dialog</Text>
-                            <Button onPress={this.setLogtimeModalToInvisible} title="Close">
-                                Close
+                        <Text>This is the pop up logtime dialog</Text>
+                        <Button onPress={this.setLogtimeModalToInvisible} title="Close">
+                            Close
                             </Button>
                     </View>
                 </Modal>
@@ -351,18 +334,18 @@ const styles = StyleSheet.create({
         height: 70,
     },
 
-    banner:{
+    banner: {
         textAlign: 'left',
         paddingLeft: 8,
         fontSize: 16,
         fontWeight: '600',
         marginTop: 10,
         marginBottom: 10
-    },  
+    },
 
     scrollViewTasks: {
         alignSelf: "stretch",
-        height:50
+        height: 50
     },
 
     dayHolder: {
@@ -379,7 +362,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'black',
-        borderRadius: 35/2
+        borderRadius: 35 / 2
     },
 
     dayNumberHolder: {

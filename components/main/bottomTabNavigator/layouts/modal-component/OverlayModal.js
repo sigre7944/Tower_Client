@@ -42,7 +42,7 @@ class DismissElement extends React.PureComponent {
 
 }
 
-export default class UnderlayModal extends Component {
+export default class OverlayModal extends Component {
 
     state = {
         currentAnnotation: 'day',
@@ -109,6 +109,134 @@ export default class UnderlayModal extends Component {
         }))
     }
 
+    getWeek = (date) => {
+        var target = new Date(date);
+        var dayNr = (date.getDay() + 6) % 7;
+        target.setDate(target.getDate() - dayNr + 3);
+        var firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() != 4) {
+            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+        }
+        return 1 + Math.ceil((firstThursday - target) / 604800000);
+    }
+
+    componentDidMount() {
+        let currentDayTask = this.props.currentDayTask
+        if (!currentDayTask.startTime || !currentDayTask.schedule || !currentDayTask.trackingTime
+            || !currentDayTask.repeat || !currentDayTask.end || !currentDayTask.category || !currentDayTask.priority || !currentDayTask.goal) {
+            let data = {},
+                date = new Date()
+
+            data.startTime = date.getTime()
+            data.trackingTime = data.startTime
+            data.schedule = {
+                day: date.getDate(),
+                month: date.getMonth(),
+                year: date.getFullYear()
+            }
+            data.repeat = {
+                type: "daily",
+                interval: {
+                    value: 86400 * 1000 * 1
+                }
+            }
+            data.end = {
+                type: "never"
+            }
+            data.priority = {
+                value: "pri_01",
+                reward: 0,
+            }
+            data.goal = {
+                max: 1,
+                current: 0
+            }
+
+            this.props.updateAccordingTask("UPDATE_NEW_DAY_TASK", data)
+        }
+
+        let currentWeekTask = this.props.currentWeekTask
+
+        if (!currentWeekTask.startTime || !currentWeekTask.schedule || !currentWeekTask.trackingTime
+            || !currentWeekTask.repeat || !currentWeekTask.end || !currentWeekTask.category || !currentWeekTask.priority || !currentWeekTask.goal) {
+            let data = {},
+                date = new Date(),
+                noWeek = this.getWeek(date)
+
+
+            data.startTime = date.getTime()
+            data.trackingTime = data.startTime
+            data.schedule = {
+                day: date.getDate(),
+                week: noWeek,
+                month: date.getMonth(),
+                year: date.getFullYear()
+            }
+
+            data.repeat = {
+                type: "weekly-w",
+                interval: {
+                    value: 86400 * 1000 * 7 * 1
+                }
+            }
+            data.end = {
+                type: "never"
+            }
+            data.priority = {
+                value: "pri_01",
+                reward: 0,
+            }
+            data.goal = {
+                max: 1,
+                current: 0
+            }
+
+            this.props.updateAccordingTask("UPDATE_NEW_WEEK_TASK", data)
+        }
+
+        let currentMonthTask = this.props.currentMonthTask
+
+        if (!currentMonthTask.startTime || !currentMonthTask.schedule || !currentMonthTask.trackingTime
+            || !currentMonthTask.repeat || !currentMonthTask.end || !currentMonthTask.category || !currentMonthTask.priority || !currentMonthTask.goal) {
+            let data = {},
+                date = new Date()
+
+
+            data.startTime = date.getTime()
+            data.trackingTime = data.startTime
+            data.schedule = {
+                month: date.getMonth(),
+                year: date.getFullYear()
+            }
+
+            data.repeat = {
+                type: "monthly-m",
+                interval: {
+                    value: 1
+                }
+            }
+            data.end = {
+                type: "never"
+            }
+            data.priority = {
+                value: "pri_01",
+                reward: 0,
+            }
+            data.goal = {
+                max: 1,
+                current: 0
+            }
+
+            this.props.updateAccordingTask("UPDATE_NEW_MONTH_TASK", data)
+        }
+    }
+
+    componentDidUpdate(prevProps){
+        if(this.props.currentMonthTask !== prevProps.currentMonthTask){
+        }
+    }
+
     render() {
         return (
             <Modal
@@ -141,9 +269,7 @@ export default class UnderlayModal extends Component {
                                 setCurrentAnnotation={this.setCurrentAnnotation}
                                 currentAnnotation={this.state.currentAnnotation}
 
-                                addTaskButtonActionProp = {this.props.addTaskButtonActionProp}
-
-                                currentTask = {this.props.currentTask}
+                                addTaskButtonActionProp={this.props.addTaskButtonActionProp}
                             />
 
                             :

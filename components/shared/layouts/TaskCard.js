@@ -10,9 +10,13 @@ export default class TaskCard extends Component {
         checked: false
     }
 
+    _onPress = () => {
+        this.props.onPress(this.props.task_data)
+    }
+
     render() {
         return (
-            <TouchableOpacity style={styles.container} onPress={() => this.props.onPress(true)}>
+            <TouchableOpacity style={styles.container} onPress={this._onPress}>
                 
                     <View style={styles.checkBox}>
                         <CheckBox 
@@ -25,7 +29,7 @@ export default class TaskCard extends Component {
                     </View>
                     <View style={styles.description}>
                         <Text style={styles.descriptionText}>{this.props.title ? this.props.title  : 'Example task'}</Text>
-                        <Text style={styles.descriptionAmount}>0/3</Text>
+                        <Text style={styles.descriptionAmount}>{this.props.goal ? `${this.props.goal.current}/${this.props.goal.max}` : "0/3"}</Text>
                     </View>
                     <View style={styles.share}>
                         <FontAwesome name={'link'} style={styles.icon}/>

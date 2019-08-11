@@ -314,9 +314,9 @@ export default class WeekAnnotationPanel extends Component {
 
         this.props.updateStartingDate({
             day,
-            week: week,
-            month: month,
-            year: year,
+            week,
+            month,
+            year,
             startTime,
             trackingTime,
         })

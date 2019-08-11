@@ -6,17 +6,17 @@ import Modal from 'react-native-modalbox';
 
 export default class TaskDetailModal extends Component {
 
-    state={
+    state = {
         isOpened: false,
         isEditing: false
     }
 
     setModalVisible = (visible) => {
-        this.setState({modalVisible: visible});
+        this.setState({ modalVisible: visible });
     }
 
     toggleEdit = (visible) => {
-        this.setState(() => ({isEditing: visible}));
+        this.setState(() => ({ isEditing: visible }));
     }
 
     componentDidMount = () => {
@@ -24,11 +24,11 @@ export default class TaskDetailModal extends Component {
     }
 
     componentDidUpdate = (prevProps, prevState) => {
-        if(this.props.isOpened !== prevProps.isOpened){
-            if(this.props.isOpened){
+        if (this.props.isOpened !== prevProps.isOpened) {
+            if (this.props.isOpened) {
                 this.openModal()
             }
-            else{
+            else {
                 this.closeModal()
             }
         }
@@ -40,9 +40,9 @@ export default class TaskDetailModal extends Component {
 
     closeModal = () => {
         this.refs.taskInfoModal.close()
-        
+
     }
-    
+
     onClose = () => {
         this.toggleEdit(false)
         this.props.closeModal()
@@ -51,7 +51,7 @@ export default class TaskDetailModal extends Component {
     render() {
         return (
             <Modal
-                style={{marginTop: 50, borderRadius: 10}}
+                style={{ marginTop: 50, borderRadius: 10 }}
                 backButtonClose={true}
                 coverScreen={true}
                 isOpen={this.props.isOpened}
@@ -68,24 +68,24 @@ export default class TaskDetailModal extends Component {
                 }}
                 >
                     {
-                        !this.state.isEditing ? 
-                            <View style={{alignSelf: 'stretch', flex: 1, justifyContent: 'flex-end'}}>
-                                <View style={{alignSelf: 'stretch', flex:1, zIndex: 10}}>
+                        !this.state.isEditing ?
+                            <View style={{ alignSelf: 'stretch', flex: 1, justifyContent: 'flex-end' }}>
+                                <View style={{ alignSelf: 'stretch', flex: 1, zIndex: 10 }}>
                                     <View>
-                                        <Text style={{textAlign: 'center'}}><FontAwesome name="minus" style={{fontSize: 26, color:"grey"}}/></Text>
+                                        <Text style={{ textAlign: 'center' }}><FontAwesome name="minus" style={{ fontSize: 26, color: "grey" }} /></Text>
                                     </View>
-                                    <View style={{flexDirection: 'row-reverse', alignItems: 'flex-start'}}>
+                                    <View style={{ flexDirection: 'row-reverse', alignItems: 'flex-start' }}>
                                         <TouchableOpacity onPress={() => () => this.closeModal()}>
-                                            <FontAwesome name={'trash'} style={{width: 50, height: 50, fontSize: 24, lineHeight: 50}} />
+                                            <FontAwesome name={'trash'} style={{ width: 50, height: 50, fontSize: 24, lineHeight: 50 }} />
                                         </TouchableOpacity>
                                         <TouchableOpacity onPress={() => this.toggleEdit(true)}>
-                                            <FontAwesome name={'edit'} style={{width: 50, height: 50, fontSize: 24,lineHeight: 50}}/>
-                                        </TouchableOpacity>  
+                                            <FontAwesome name={'edit'} style={{ width: 50, height: 50, fontSize: 24, lineHeight: 50 }} />
+                                        </TouchableOpacity>
                                     </View>
                                     <View>
                                         <View style={styles.container}>
                                             <View style={styles.head}>
-                                                <CheckBox 
+                                                <CheckBox
                                                     center
                                                     checkedIcon='dot-circle-o'
                                                     uncheckedIcon='circle-o'
@@ -93,20 +93,27 @@ export default class TaskDetailModal extends Component {
                                                 />
                                             </View>
                                             <View style={styles.body}>
-                                                <Text style={styles.text}>Task 1</Text>
+                                                <Text style={styles.text}>{this.props.task_data.title}</Text>
                                             </View>
                                         </View>
+                                        {this.props.task_data.schedule ?
+                                            <View style={styles.container}>
+                                                <View style={styles.head}>
+                                                    <FontAwesome name={'calendar'} style={styles.icon} />
+                                                </View>
+                                                <View style={styles.body}>
+                                                    <Text style={styles.text}>Thursday, June 13</Text>
+                                                </View>
+                                            </View>
+
+                                            :
+
+                                            <></>
+                                        }
+
                                         <View style={styles.container}>
                                             <View style={styles.head}>
-                                                <FontAwesome name={'calendar'} style={styles.icon}/>
-                                            </View>
-                                            <View style={styles.body}>
-                                                <Text style={styles.text}>Thursday, June 13</Text>
-                                            </View>
-                                        </View>
-                                        <View style={styles.container}>
-                                            <View style={styles.head}>
-                                                <FontAwesome name={'circle'} style={styles.icon}/>
+                                                <FontAwesome name={'circle'} style={styles.icon} />
                                             </View>
                                             <View style={styles.body}>
                                                 <Text style={styles.text}>Leisure</Text>
@@ -114,7 +121,7 @@ export default class TaskDetailModal extends Component {
                                         </View>
                                         <View style={styles.container}>
                                             <View style={styles.head}>
-                                                <FontAwesome name={'warning'} style={styles.icon}/>
+                                                <FontAwesome name={'warning'} style={styles.icon} />
                                             </View>
                                             <View style={styles.body}>
                                                 <Text style={styles.text}>Do first</Text>
@@ -122,56 +129,21 @@ export default class TaskDetailModal extends Component {
                                         </View>
                                         <View style={styles.container}>
                                             <View style={styles.head}>
-                                                <FontAwesome name={'link'} style={styles.icon}/>
+                                                <FontAwesome name={'link'} style={styles.icon} />
                                             </View>
                                             <View style={styles.body}>
                                                 <Text style={styles.text}>Link enabled</Text>
                                             </View>
                                         </View>
-                                    </View> 
+                                    </View>
                                 </View>
                             </View>
                             :
-                            <View style={{alignSelf: 'stretch', flex: 1, justifyContent: 'flex-end'}}>
-                                <View style={{alignSelf: 'stretch', flex:1, zIndex: 10}}>
-                                    <View>
-                                        <Text style={{textAlign: 'center'}}><FontAwesome name="minus" style={{fontSize: 26, color:"grey"}}/></Text>
-                                    </View>
-                                    <View>
-                                        <View style={styles.containerEdit}>
-                                            <Text>Task Title</Text>
-                                            <TextInput placeholder="Insert something here"/>
-                                        </View>
-                                        <View style={styles.containerEdit}>
-                                            <Text>Task Description</Text>
-                                            <TextInput placeholder="Insert something here"/>
-                                        </View>
-                                        <View style={styles.containerEdit}>
-                                            <FontAwesome name={'calendar'} style={styles.icon}/>
-                                            <TextInput placeholder="Insert something here"/>
-                                        </View>
-                                        <View style={styles.containerEdit}>
-                                            <FontAwesome name={'circle'} style={styles.icon}/>
-                                            <TextInput placeholder="Insert something here"/>
-                                        </View>
-                                        <View style={styles.container}>
-                                            <FontAwesome name={'warning'} style={styles.icon}/>
-                                            <TextInput placeholder="Insert something here"/> 
-                                        </View>
-                                        <View style={styles.container}>
-                                            <FontAwesome name={'link'} style={styles.icon}/>
-                                            <TextInput placeholder="Insert something here"/>
-                                        </View>
-                                    </View> 
-                                    <View style={{flexDirection: 'row-reverse', alignItems: 'flex-start'}}>
-                                        <TouchableOpacity onPress={() => this.closeModal()}>
-                                            <FontAwesome name={'trash'} style={{width: 50, height: 50, fontSize: 24, lineHeight: 50}} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => this.toggleEdit(false)}>
-                                            <FontAwesome name={'edit'} style={{width: 50, height: 50, fontSize: 24,lineHeight: 50}}/>
-                                        </TouchableOpacity>  
-                                    </View>
-                                </View>
+                            <View
+                                style={{
+                                    flex: 1,
+                                }}
+                            >
                             </View>
                     }
                 </View>
@@ -201,7 +173,7 @@ const styles = StyleSheet.create({
     description: {
         flex: 1
     },
-    descriptionText:{
+    descriptionText: {
         lineHeight: 25,
         fontSize: 16
     },
@@ -226,7 +198,7 @@ const styles = StyleSheet.create({
         lineHeight: 50
     },
     head: {
-        width:50,
+        width: 50,
         height: 50
     },
     body: {

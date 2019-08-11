@@ -34,8 +34,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
         dispatch(changeAnnotation(annotation))
     },
 
-    addTask: (data) => {
-        dispatch(addTask(data))
+    addTask: (type, data) => {
+        dispatch(addTask(type, data))
     }
 })
 
