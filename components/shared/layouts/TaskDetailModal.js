@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-import { Alert, TouchableOpacity, Text, View, StyleSheet, ImageBackground, Image, TextInput, ScrollView, Platform } from 'react-native'
+import { Alert, TouchableOpacity, Text, View, StyleSheet, ImageBackground, Dimensions, Image, TextInput, ScrollView, Platform, Modal as RNModal } from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { CheckBox } from 'react-native-elements';
 import Modal from 'react-native-modalbox';
+import DayCalendar from '../calendar/day-calendar/DayCalendar'
+import Category from '../category/edit-container/Category.Container'
+
 
 export default class TaskDetailModal extends Component {
 
@@ -16,7 +19,12 @@ export default class TaskDetailModal extends Component {
 
     state = {
         isOpened: false,
-        isEditing: false
+        isEditing: false,
+        title_value: "",
+        description_value: "",
+        should_visible: false,
+        edit_calendar: false,
+        edit_category: false,
     }
 
     setModalVisible = (visible) => {
@@ -29,6 +37,7 @@ export default class TaskDetailModal extends Component {
 
     componentDidMount = () => {
         //this.props.setRef(this.refs.modalRef)
+
     }
 
     componentDidUpdate = (prevProps, prevState) => {
@@ -39,6 +48,28 @@ export default class TaskDetailModal extends Component {
             else {
                 this.closeModal()
             }
+        }
+
+        if (this.props.task_data !== prevProps.task_data) {
+            if (this.props.task_data.title && this.props.task_data.title.length > 0) {
+                this.setState({
+                    title_value: this.props.task_data.title
+                })
+            }
+
+            if (this.props.task_data.description && this.props.task_data.description.length > 0) {
+                this.setState({
+                    description_value: this.props.task_data.description
+                })
+            }
+        }
+
+        if(this.state.isEditing && this.state.isEditing !== prevState.isEditing){
+            this.props.updateEdittingTask(this.props.task_data)
+        }
+
+        if(this.props.edittingTask !== prevProps.edittingTask){
+            console.log(this.props.edittingTask)
         }
     }
 
@@ -56,6 +87,40 @@ export default class TaskDetailModal extends Component {
         this.props.closeModal()
     }
 
+    _onChangeTitle = (e) => {
+        this.setState({
+            title_value: e.nativeEvent.text
+        })
+    }
+
+    _onChangeDescription = (e) => {
+        this.setState({
+            description_value: e.nativeEvent.text
+        })
+    }
+
+    toggleShouldVisible = () => {
+        this.setState(prevState => ({
+            should_visible: !prevState.should_visible
+        }))
+    }
+
+    editSchedule = () => {
+        this.toggleShouldVisible()
+
+        this.setState(prevState => ({
+            edit_calendar: !prevState.edit_calendar
+        }))
+    }
+
+    editCategory = () => {
+        this.toggleShouldVisible()
+
+        this.setState(prevState => ({
+            edit_category: !prevState.edit_category
+        }))
+    }
+
     render() {
         let task_data = this.props.task_data,
             date = new Date(task_data.startTime),
@@ -68,15 +133,15 @@ export default class TaskDetailModal extends Component {
             goal = task_data.goal ? `${task_data.goal.max} times` : ""
 
         if (task_data.repeat) {
-            if (task_data.repeat.type === "daily"){
+            if (task_data.repeat.type === "daily") {
                 repeat = `Every ${task_data.repeat.interval.value / (86400 * 1000)} day(s)`
             }
 
-            else if (task_data.repeat.type === "weekly"){
+            else if (task_data.repeat.type === "weekly") {
                 repeat = `Every ${task_data.repeat.interval.value / (86400 * 1000 * 7)} week(s)`
             }
 
-            else if (task_data.repeat.type === "monthly"){
+            else if (task_data.repeat.type === "monthly") {
                 repeat = `Every ${task_data.repeat.interval.value} month(s)`
             }
         }
@@ -92,124 +157,432 @@ export default class TaskDetailModal extends Component {
                 swipeArea={500}
                 onClosed={this.onClose}
             >
-                <View style={{
-                    flex: 1,
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }}
-                >
-                    {
-                        !this.state.isEditing ?
-                            <View style={{ alignSelf: 'stretch', flex: 1, justifyContent: 'flex-end' }}>
-                                <View style={{ alignSelf: 'stretch', flex: 1, zIndex: 10 }}>
-                                    <View>
-                                        <Text style={{ textAlign: 'center' }}><FontAwesome name="minus" style={{ fontSize: 26, color: "grey" }} /></Text>
-                                    </View>
-                                    <View style={{ flexDirection: 'row-reverse', alignItems: 'flex-start' }}>
-                                        <TouchableOpacity onPress={() => () => this.closeModal()}>
-                                            <FontAwesome name={'trash'} style={{ width: 50, height: 50, fontSize: 24, lineHeight: 50 }} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => this.toggleEdit(true)}>
-                                            <FontAwesome name={'edit'} style={{ width: 50, height: 50, fontSize: 24, lineHeight: 50 }} />
-                                        </TouchableOpacity>
-                                    </View>
-                                    <View>
-                                        <View style={styles.container}>
-                                            <View style={styles.head}>
-                                                <CheckBox
-                                                    center
-                                                    checkedIcon='dot-circle-o'
-                                                    uncheckedIcon='circle-o'
-                                                    checked={this.props.checked}
-                                                />
-                                            </View>
-                                            <View style={styles.body}>
-                                                <Text style={styles.text}>{this.props.task_data.title}</Text>
-                                            </View>
+
+                {!this.state.isEditing ?
+                    <View style={{
+                        flex: 1,
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}
+                    >
+                        <View style={{ alignSelf: 'stretch', flex: 1, justifyContent: 'flex-end' }}>
+                            <View style={{ alignSelf: 'stretch', flex: 1, zIndex: 10 }}>
+                                <View>
+                                    <Text style={{ textAlign: 'center' }}><FontAwesome name="minus" style={{ fontSize: 26, color: "grey" }} /></Text>
+                                </View>
+                                <View style={{ flexDirection: 'row-reverse', alignItems: 'flex-start' }}>
+                                    <TouchableOpacity onPress={() => () => this.closeModal()}>
+                                        <FontAwesome name={'trash'} style={{ width: 50, height: 50, fontSize: 24, lineHeight: 50 }} />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => this.toggleEdit(true)}>
+                                        <FontAwesome name={'edit'} style={{ width: 50, height: 50, fontSize: 24, lineHeight: 50 }} />
+                                    </TouchableOpacity>
+                                </View>
+                                <View>
+                                    <View style={styles.container}>
+                                        <View style={styles.head}>
+                                            <CheckBox
+                                                center
+                                                checkedIcon='dot-circle-o'
+                                                uncheckedIcon='circle-o'
+                                                checked={this.props.checked}
+                                            />
                                         </View>
-                                        {
-                                            this.props.task_data.description && this.props.task_data.description.length > 0 ?
-                                                <View style={styles.container}>
-                                                    <View style={styles.head}>
-                                                        <CheckBox
-                                                            center
-                                                            checkedIcon='dot-circle-o'
-                                                            uncheckedIcon='circle-o'
-                                                            checked={this.props.checked}
-                                                        />
-                                                    </View>
-                                                    <View style={styles.body}>
-                                                        <Text style={styles.text}>{this.props.task_data.description}</Text>
-                                                    </View>
+                                        <View style={styles.body}>
+                                            <Text style={styles.text}>{this.props.task_data.title}</Text>
+                                        </View>
+                                    </View>
+                                    {
+                                        this.props.task_data.description && this.props.task_data.description.length > 0 ?
+                                            <View style={styles.container}>
+                                                <View style={styles.head}>
+                                                    <CheckBox
+                                                        center
+                                                        checkedIcon='dot-circle-o'
+                                                        uncheckedIcon='circle-o'
+                                                        checked={this.props.checked}
+                                                    />
                                                 </View>
+                                                <View style={styles.body}>
+                                                    <Text style={styles.text}>{this.props.task_data.description}</Text>
+                                                </View>
+                                            </View>
 
-                                                :
+                                            :
 
-                                                <></>
-                                        }
-                                        <View style={styles.container}>
-                                            <View style={styles.head}>
-                                                <FontAwesome name={'calendar'} style={styles.icon} />
-                                            </View>
-                                            <View style={styles.body}>
-                                                <Text style={styles.text}>{`${day_in_week_text} ${date_number} ${month_text}`}</Text>
-                                            </View>
+                                            <></>
+                                    }
+                                    <View style={styles.container}>
+                                        <View style={styles.head}>
+                                            <FontAwesome name={'calendar'} style={styles.icon} />
                                         </View>
+                                        <View style={styles.body}>
+                                            <Text style={styles.text}>{`${day_in_week_text} ${date_number} ${month_text}`}</Text>
+                                        </View>
+                                    </View>
 
-                                        <View style={styles.container}>
-                                            <View style={styles.head}>
-                                                <FontAwesome name={'circle'} style={styles.icon} />
-                                            </View>
-                                            <View style={styles.body}>
-                                                <Text style={styles.text}>{category}</Text>
-                                            </View>
+                                    <View style={styles.container}>
+                                        <View style={styles.head}>
+                                            <FontAwesome name={'circle'} style={styles.icon} />
                                         </View>
-                                        <View style={styles.container}>
-                                            <View style={styles.head}>
-                                                <FontAwesome name={'warning'} style={styles.icon} />
-                                            </View>
-                                            <View style={styles.body}>
-                                                <Text style={styles.text}>{priority}</Text>
-                                            </View>
+                                        <View style={styles.body}>
+                                            <Text style={styles.text}>{category}</Text>
                                         </View>
-                                        <View style={styles.container}>
-                                            <View style={styles.head}>
-                                                <FontAwesome name={'warning'} style={styles.icon} />
-                                            </View>
-                                            <View style={styles.body}>
-                                                <Text style={styles.text}>{repeat}</Text>
-                                            </View>
+                                    </View>
+                                    <View style={styles.container}>
+                                        <View style={styles.head}>
+                                            <FontAwesome name={'warning'} style={styles.icon} />
                                         </View>
-                                        <View style={styles.container}>
-                                            <View style={styles.head}>
-                                                <FontAwesome name={'warning'} style={styles.icon} />
-                                            </View>
-                                            <View style={styles.body}>
-                                                <Text style={styles.text}>{goal}</Text>
-                                            </View>
+                                        <View style={styles.body}>
+                                            <Text style={styles.text}>{priority}</Text>
                                         </View>
-                                        <View style={styles.container}>
-                                            <View style={styles.head}>
-                                                <FontAwesome name={'link'} style={styles.icon} />
-                                            </View>
-                                            <View style={styles.body}>
-                                                <Text style={styles.text}>Link enabled</Text>
-                                            </View>
+                                    </View>
+                                    <View style={styles.container}>
+                                        <View style={styles.head}>
+                                            <FontAwesome name={'warning'} style={styles.icon} />
+                                        </View>
+                                        <View style={styles.body}>
+                                            <Text style={styles.text}>{repeat}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.container}>
+                                        <View style={styles.head}>
+                                            <FontAwesome name={'warning'} style={styles.icon} />
+                                        </View>
+                                        <View style={styles.body}>
+                                            <Text style={styles.text}>{goal}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.container}>
+                                        <View style={styles.head}>
+                                            <FontAwesome name={'link'} style={styles.icon} />
+                                        </View>
+                                        <View style={styles.body}>
+                                            <Text style={styles.text}>Link enabled</Text>
                                         </View>
                                     </View>
                                 </View>
                             </View>
-                            :
+                        </View>
+                    </View>
+                    :
+                    <>
+                        <View
+                            style={{
+                                flex: 1,
+                                paddingTop: 58,
+                                paddingHorizontal: 30,
+                                position: "relative",
+                            }}
+                        >
+                            <View
+                                style={{
+                                    borderBottomColor: "gainsboro",
+                                    borderBottomWidth: 1,
+                                    height: 65,
+                                    marginBottom: 18,
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        fontSize: 13,
+                                        lineHeight: 15,
+                                        color: "rgba(0, 0, 0, 0.25)",
+                                        marginBottom: 5,
+                                    }}
+                                >
+                                    Task Title
+                            </Text>
+
+                                <TextInput
+                                    style={{
+                                        height: 30,
+                                    }}
+
+                                    value={this.state.title_value}
+                                    onChange={this._onChangeTitle}
+                                />
+                            </View>
+
+                            <View
+                                style={{
+                                    borderBottomColor: "gainsboro",
+                                    borderBottomWidth: 1,
+                                    height: 65,
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        fontSize: 13,
+                                        lineHeight: 15,
+                                        color: "rgba(0, 0, 0, 0.25)",
+                                        marginBottom: 5,
+                                    }}
+                                >
+                                    Task Description
+                            </Text>
+
+                                <TextInput
+                                    style={{
+                                        height: 30,
+                                    }}
+
+                                    value={this.state.description_value}
+                                    onChange={this._onChangeDescription}
+                                />
+                            </View>
+
+                            <View
+                                style={{
+                                    borderBottomColor: "gainsboro",
+                                    borderBottomWidth: 1,
+                                    height: 65,
+                                    justifyContent: "center"
+                                }}
+                            >
+                                <TouchableOpacity
+                                    style={{
+                                        height: 30,
+                                    }}
+
+                                    onPress={this.editSchedule}
+                                >
+                                    <Text>
+                                        {`${day_in_week_text} ${date_number} ${month_text}`}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <View
+                                style={{
+                                    borderBottomColor: "gainsboro",
+                                    borderBottomWidth: 1,
+                                    height: 65,
+                                    justifyContent: "center"
+                                }}
+                            >
+                                <TouchableOpacity
+                                    style={{
+                                        height: 30,
+                                    }}
+
+                                    onPress={this.editCategory}
+                                >
+                                    <Text
+                                        style={{
+                                            color: "red"
+                                        }}
+                                    >
+                                        {category}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <View
+                                style={{
+                                    borderBottomColor: "gainsboro",
+                                    borderBottomWidth: 1,
+                                    height: 65,
+                                    justifyContent: "center"
+                                }}
+                            >
+                                <TouchableOpacity
+                                    style={{
+                                        height: 30,
+                                    }}
+                                >
+                                    <Text>
+                                        {priority}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <View
+                                style={{
+                                    borderBottomColor: "gainsboro",
+                                    borderBottomWidth: 1,
+                                    height: 65,
+                                    justifyContent: "center"
+                                }}
+                            >
+                                <TouchableOpacity
+                                    style={{
+                                        height: 30,
+                                    }}
+                                >
+                                    <Text>
+                                        {repeat}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <View
+                                style={{
+                                    borderBottomColor: "gainsboro",
+                                    borderBottomWidth: 1,
+                                    height: 65,
+                                    justifyContent: "center"
+                                }}
+                            >
+                                <TouchableOpacity
+                                    style={{
+                                        height: 30,
+                                    }}
+                                >
+                                    <Text>
+                                        {goal}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <View
+                                style={{
+                                    position: "absolute",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    bottom: 100,
+                                    left: 30,
+                                    right: 30,
+                                }}
+                            >
+                                <TouchableOpacity
+                                    style={{
+                                        width: 135,
+                                        height: 48,
+                                        borderRadius: 30,
+                                        backgroundColor: "gainsboro",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }}
+                                >
+                                    <Text
+                                        style={{
+                                            color: "white"
+                                        }}
+                                    >
+                                        Cancel
+                                </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={{
+                                        width: 135,
+                                        height: 48,
+                                        borderRadius: 30,
+                                        backgroundColor: "black",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }}
+                                >
+                                    <Text
+                                        style={{
+                                            color: "white"
+                                        }}
+                                    >
+                                        Save
+                                </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+
+                        <RNModal
+                            visible={this.state.should_visible}
+                            transparent={true}
+                        >
                             <View
                                 style={{
                                     flex: 1,
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    position: "relative",
                                 }}
                             >
+                                <DismissArea
+                                    toggleShouldVisible={this.toggleShouldVisible}
+                                />
+
+                                <>
+                                    {
+                                        this.state.edit_calendar ?
+                                            <CalendarEdit
+                                                currentDayTask={this.props.task_data}
+                                            />
+
+                                            :
+
+                                            <>
+                                                {
+                                                    this.state.edit_category ?
+
+                                                        <Category 
+                                                            task_data = {this.props.task_data}
+                                                            action_type = {"UPDATE_EDIT_TASK"}
+                                                            hideAction={this.toggleShouldVisible}
+                                                        />
+
+                                                        :
+
+                                                        <></>
+                                                }
+
+                                            </>
+
+
+                                    }
+                                </>
                             </View>
-                    }
-                </View>
+                        </RNModal>
+
+                    </>
+                }
+
+
             </Modal>
+        )
+    }
+}
+
+class CalendarEdit extends React.PureComponent {
+
+    render() {
+        return (
+            <View
+                style={{
+                    position: 'absolute',
+                    width: 338,
+                    height: 346,
+                    backgroundColor: 'white',
+                    borderRadius: 10,
+                }}
+            >
+                <DayCalendar
+                    {... this.props}
+                />
+            </View>
+        )
+    }
+}
+
+class DismissArea extends React.PureComponent {
+    _onPress = () => {
+        this.props.toggleShouldVisible()
+    }
+    render() {
+        return (
+            <TouchableOpacity
+                style={{
+                    flex: 1,
+                    backgroundColor: "black",
+                    width: Dimensions.get("window").width,
+                    opacity: 0.5
+                }}
+
+                onPress={this._onPress}
+            >
+
+            </TouchableOpacity>
         )
     }
 }

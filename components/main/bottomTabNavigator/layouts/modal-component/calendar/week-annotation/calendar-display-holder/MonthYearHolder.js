@@ -3,9 +3,6 @@ import React, { Component } from 'react'
 import {
     View,
     Text,
-    Dimensions,
-    FlatList,
-    TouchableHighlight
 } from 'react-native';
 
 export default class MonthYearHolder extends React.PureComponent{

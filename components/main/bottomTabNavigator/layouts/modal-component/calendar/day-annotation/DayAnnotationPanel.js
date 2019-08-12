@@ -3,7 +3,6 @@ import React, { Component } from 'react'
 import {
     View,
     Text,
-    Dimensions,
     FlatList,
     TouchableHighlight
 } from 'react-native';
@@ -60,15 +59,11 @@ export default class DayAnnotationPanel extends Component {
             month_index={index}
             chooseDifferentMonth={this.chooseDifferentMonth}
             current_month_index={this.state.current_month_index}
-
             currentDayInMonth={new Date().getDate()}
             currentMonth={new Date().getMonth()}
             currentYear={new Date().getFullYear()}
-
             scrollToCurrentMonth={this.scrollToCurrentMonth}
-
             setChosenDate = {this.setChosenDate}
-
             currentDayTask = {this.props.currentDayTask}
         />
     )

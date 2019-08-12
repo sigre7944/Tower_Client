@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 
-
-
 import {
     View,
     Text,
@@ -62,10 +60,7 @@ export default class Category extends React.Component {
                     lastIndex={this.state.lastIndex}
                     selectCategory={this.selectCategory}
 
-                    currentDayTask={this.props.currentDayTask}
-                    currentWeekTask={this.props.currentWeekTask}
-                    currentMonthTask={this.props.currentMonthTask}
-                    currentAnnotation={this.props.currentAnnotation}
+                    task_data = {this.props.task_data}
                 />
             )
 
@@ -205,19 +200,9 @@ export default class Category extends React.Component {
     }
 
     save = () => {
-        if (this.props.currentAnnotation === "day") {
-            this.props.updateCategory("UPDATE_NEW_DAY_TASK", Object.keys(this.props.categories)[this.state.currentIndex])
-        }
+        this.props.updateCategory(Object.keys(this.props.categories)[this.state.currentIndex])
 
-        else if (this.props.currentAnnotation === "week") {
-            this.props.updateCategory("UPDATE_NEW_WEEK_TASK", Object.keys(this.props.categories)[this.state.currentIndex])
-        }
-
-        else if (this.props.currentAnnotation === "month") {
-            this.props.updateCategory("UPDATE_NEW_MONTH_TASK", Object.keys(this.props.categories)[this.state.currentIndex])
-        }
-        
-        this.props.disableAllTabs()
+        this.props.hideAction()
     }
 
     componentDidMount() {
@@ -370,7 +355,7 @@ export default class Category extends React.Component {
 }
 
 // row for rendering purpose in Flatlist
-class CategoryRow extends React.Component {
+class CategoryRow extends React.PureComponent {
     static styles = StyleSheet.create({
         unChosenRadio: {
             width: 20,
@@ -414,41 +399,14 @@ class CategoryRow extends React.Component {
         return null
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return nextState !== this.state || nextProps.currentIndex !== this.props.currentIndex || nextProps.lastIndex !== this.props.lastIndex
-    }
-
     componentDidMount() {
-        if(this.props.currentAnnotation === "day"){
-            let { category } = this.props.currentDayTask
+        let { category } = this.props.task_data
 
-            if (category && category.length > 0) {
-                if (this.props.data.id === category) {
-                    this._onPress()
-                }
+        if (category && category.length > 0) {
+            if (this.props.data.id === category) {
+                this._onPress()
             }
         }
-        
-        else if (this.props.currentAnnotation === "week"){
-            let { category } = this.props.currentWeekTask
-
-            if (category && category.length > 0) {
-                if (this.props.data.id === category) {
-                    this._onPress()
-                }
-            }
-        }
-
-        else if (this.props.currentAnnotation === "month"){
-            let { category } = this.props.currentMonthTask
-
-            if (category && category.length > 0) {
-                if (this.props.data.id === category) {
-                    this._onPress()
-                }
-            }
-        }
-
     }
 
     render() {

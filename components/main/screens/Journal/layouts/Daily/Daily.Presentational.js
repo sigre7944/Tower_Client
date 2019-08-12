@@ -9,7 +9,7 @@ import {
     Button
 } from 'react-native';
 import TaskCard from './../../../../../shared/layouts/TaskCard'
-import TaskDetailModal from './../../../../../shared/layouts/TaskDetailModal'
+import TaskDetailModal from './../../../../../shared/layouts/day-edit/TaskDetailModal.Container'
 
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
@@ -297,6 +297,7 @@ export default class Daily extends React.Component {
                     task_data={this.task_data}
                     categories={this.props.categories}
                     priorities={this.props.priorities}
+                    action_type = {"UPDATE_EDIT_TASK"}
                 />
 
                 <Modal

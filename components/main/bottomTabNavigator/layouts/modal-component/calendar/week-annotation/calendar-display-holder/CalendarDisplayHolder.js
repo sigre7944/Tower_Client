@@ -3,8 +3,6 @@ import React, { Component } from 'react'
 import {
     View,
     Text,
-    Dimensions,
-    FlatList,
     StyleSheet,
     TouchableHighlight
 } from 'react-native';

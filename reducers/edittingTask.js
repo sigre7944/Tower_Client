@@ -1,6 +1,6 @@
-export const currentMonthTask = (state = {}, action) => {
+export const edittingTask = (state = {}, action) => {
     switch (action.type){
-        case 'UPDATE_NEW_MONTH_TASK':
+        case 'UPDATE_EDIT_TASK':
             return {... state, ... action.data}
 
         default:
