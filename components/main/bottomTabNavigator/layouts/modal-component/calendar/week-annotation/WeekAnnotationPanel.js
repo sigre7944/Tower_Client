@@ -87,7 +87,7 @@ export default class WeekAnnotationPanel extends Component {
                     currentWeekIndex={this.state.currentWeekIndex}
                     lastWeekIndex={this.state.lastWeekIndex}
 
-                    currentWeekTask = {this.props.currentWeekTask}
+                    currentWeekTask={this.props.currentWeekTask}
                 />
             )
         }
@@ -135,13 +135,25 @@ export default class WeekAnnotationPanel extends Component {
 
     }
 
+    getWeek = (date) => {
+        var target = new Date(date);
+        var dayNr = (date.getDay() + 6) % 7;
+        target.setDate(target.getDate() - dayNr + 3);
+        var firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() != 4) {
+            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+        }
+        return 1 + Math.ceil((firstThursday - target) / 604800000);
+    }
+
     initWeeks = () => {
         let year = new Date().getFullYear()
 
         this.getWeekData(new Date(year, 0, 1), new Date(year + this.numberOfYears, 11, 31), 1)
     }
 
-    getWeekData = (firstDayOfWeek, endDay, noWeek, noWeekInMonth) => {
+    getWeekData = (firstDayOfWeek, endDay) => {
 
         if (firstDayOfWeek.getTime() > endDay.getTime()) {
             return
@@ -149,17 +161,11 @@ export default class WeekAnnotationPanel extends Component {
 
         let weekData = {
             noWeek: 0,
-            week_day_array: new Array(7),
+            week_day_array: [],
             month: monthNames[firstDayOfWeek.getMonth()],
             monthIndex: firstDayOfWeek.getMonth(),
             year: firstDayOfWeek.getFullYear(),
             day: firstDayOfWeek.getDate(),
-            noWeekInMonth: 0
-        }
-
-        //If noWeek = 53 meaning turn to the new year => reset to 1
-        if (noWeek === 53) {
-            noWeek = 1
         }
 
         //Get monthAndYear text to seperate months
@@ -168,41 +174,32 @@ export default class WeekAnnotationPanel extends Component {
             this.week_data_array.push({
                 monthAndYear: monthNames[firstDayOfWeek.getMonth()] + " " + firstDayOfWeek.getFullYear(),
             })
-            noWeekInMonth = 1
         }
 
-        //When firstDayOfWeek is not Monday, meaning it starts the new year
-        if (firstDayOfWeek.getDay() !== 1) {
-            let firstDayOfWeekInWeekDay = firstDayOfWeek.getDay() === 0 ? 7 : firstDayOfWeek.getDay() //Sunday will have an index of 7 instead of 0
-
-            weekData.noWeek = 1
-
-            for (let i = firstDayOfWeekInWeekDay; i <= 7; i++) {
-                if (i === firstDayOfWeekInWeekDay)
-                    weekData.week_day_array[i - 1] = new Date(firstDayOfWeek.getTime())
-
-                else
-                    weekData.week_day_array[i - 1] = new Date(firstDayOfWeek.getTime() + (60 * 60 * 24 * 1000) * (i - firstDayOfWeekInWeekDay))
+        if(firstDayOfWeek.getDay() !== 1){
+            for(let i = 1; i < firstDayOfWeek.getDay(); i++){
+                weekData.week_day_array.push(undefined)
             }
         }
 
-        //When firstDayOfWeek is Monday, meaning it is still in the current year
-        else {
-            weekData.noWeek = noWeek
-            weekData.noWeekInMonth = noWeekInMonth
+        let currentWeek = this.getWeek(firstDayOfWeek)
+        weekData.noWeek = currentWeek
 
-            for (let i = firstDayOfWeek.getDay(); i <= 7; i++) {
-                weekData.week_day_array[i - 1] = new Date(firstDayOfWeek.getTime() + (60 * 60 * 24 * 1000) * (i - 1))
+        for(let i = 0; i <7; i++){
+            let day = new Date(firstDayOfWeek.getTime() + (60 * 60 * 24 * 1000) * (i))
+
+            if(currentWeek === this.getWeek(day)){
+                weekData.week_day_array.push(day)
             }
         }
 
         this.week_data_array.push(weekData)
 
-        //Get the last day of week to calculate the next Monday
-        let nextMondayTime = new Date(weekData.week_day_array[6].getTime() + (60 * 60 * 24 * 1000))
+        //Get the next starting day of the following week
+        let nextMondayTime = new Date(weekData.week_day_array[weekData.week_day_array.length - 1].getTime() + (60 * 60 * 24 * 1000))
 
 
-        this.getWeekData(nextMondayTime, endDay, weekData.noWeek + 1, weekData.noWeekInMonth + 1)
+        this.getWeekData(nextMondayTime, endDay)
     }
 
     trimPastWeeks = () => {
@@ -244,13 +241,13 @@ export default class WeekAnnotationPanel extends Component {
     }
 
     _onLayout = () => {
-        let {schedule} = this.props.currentWeekTask
+        let { schedule } = this.props.currentWeekTask
 
-        if(schedule){
+        if (schedule) {
             let found = false
 
             this.week_data_array.every((data, index) => {
-                if(data.noWeek === schedule.week && data.monthIndex === schedule.month && data.year === schedule.year){
+                if (data.noWeek === schedule.week && data.monthIndex === schedule.month && data.year === schedule.year) {
                     this.scrollToWeekRow(index)
                     found = true
                     return false
@@ -259,39 +256,39 @@ export default class WeekAnnotationPanel extends Component {
                 return true
             })
 
-            if(!found){
+            if (!found) {
                 this.week_data_array.every((data, index) => {
                     if (data.isCurrentWeek) {
                         this.scrollToWeekRow(index)
-        
+
                         return false
                     }
-        
+
                     return true
                 })
             }
         }
 
-        else{
+        else {
             this.week_data_array.every((data, index) => {
                 if (data.isCurrentWeek) {
                     this.scrollToWeekRow(index)
-    
+
                     return false
                 }
-    
+
                 return true
             })
         }
     }
 
     save = () => {
-        if(this.chosen_day > 0 && this.chosen_week > 0 && this.chosen_month > 0 && this.chosen_year > 0){
-            if(this.chosen_day < new Date().getDate() && this.chosen_month === new Date().getMonth() && this.chosen_year === new Date().getFullYear()){
+        if (this.chosen_day > 0 && this.chosen_week > 0 && this.chosen_month > 0 && this.chosen_year > 0) {
+            if (this.chosen_day < new Date().getDate() && this.chosen_month === new Date().getMonth() && this.chosen_year === new Date().getFullYear()) {
                 this._updateStartingDate(new Date().getDate(), this.chosen_week, this.chosen_month, this.chosen_year)
             }
 
-            else{
+            else {
                 this._updateStartingDate(this.chosen_day, this.chosen_week, this.chosen_month, this.chosen_year)
             }
         }
@@ -310,7 +307,7 @@ export default class WeekAnnotationPanel extends Component {
             new Date(
                 new Date(
                     new Date().setDate(day)).setMonth(month)).setFullYear(year))
-        .getTime()
+            .getTime()
 
         this.props.updateStartingDate({
             day,
