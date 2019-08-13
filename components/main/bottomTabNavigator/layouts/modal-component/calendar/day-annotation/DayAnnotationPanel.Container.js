@@ -1,16 +1,12 @@
 import {connect} from 'react-redux'
 import DayAnnotationPanel from './DayAnnotationPanel'
-import {updateStartingDate} from './actions/updateStartingDate'
+import {updateTask} from '../../../../../../shared/actions/updateTask'
 
-const mapStateToProps = (state) => ({
-    currentDayTask: state.currentDayTask
+const mapDispatchToProps = (dispatch, ownProps) => ({
+    updateTask: (data) => dispatch(updateTask("UPDATE_NEW_DAY_TASK", data))
 })
 
-const maptDispatchToProps = (dispatch, ownProps) => ({
-    updateStartingDate: (data) => dispatch(updateStartingDate(data))
-}) 
-
 export default connect(
-    mapStateToProps,
-    maptDispatchToProps
+    null,
+    mapDispatchToProps
 )(DayAnnotationPanel)

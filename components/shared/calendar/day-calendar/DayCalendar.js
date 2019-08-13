@@ -62,7 +62,7 @@ export default class DayCalendar extends React.Component {
             currentMonth={new Date().getMonth()}
             currentYear={new Date().getFullYear()}
             scrollToCurrentMonth={this.scrollToCurrentMonth}
-            setChosenDate={this.setChosenDate}
+            setData={this.setData}
             task_data={this.props.task_data}
         />
     )
@@ -98,34 +98,11 @@ export default class DayCalendar extends React.Component {
         this.getFollowingMonths(currentMonth, currentYear, numberOfMonths)
     }
 
-    setChosenDate = (day, month, year) => {
+    setData = (day, month, year) => {
         this.chosen_day = day
         this.chosen_month = month
         this.chosen_year = year
-    }
-
-    save = () => {
-        if(this.chosen_day > 0 && this.chosen_month > 0 && this.chosen_year > 0){
-            if(this.chosen_day < new Date().getDate() && this.chosen_month === new Date().getMonth() && this.chosen_year === new Date().getFullYear())
-                this._updateStartingDate(new Date().getDate(), this.chosen_month, this.chosen_year)
-
-            else
-                this._updateStartingDate(this.chosen_day, this.chosen_month, this.chosen_year)
-        }
-
-        this.props.disableAllTabs()
-    }
-
-    _updateStartingDate = (day, month, year) => {
-        let startTime = trackingTime = new Date(new Date(new Date((new Date().setMonth(month))).setDate(day)).setFullYear(year)).getTime()
-
-        this.props.updateStartingDate({
-            day,
-            month,
-            year,
-            startTime,
-            trackingTime
-        })
+        this.props.setData(day, month, year)
     }
 
     componentDidMount() {
@@ -458,7 +435,7 @@ class DayHolder extends React.PureComponent {
 
         this.props.chooseDifferentMonth(this.props.month_index)
 
-        this.props.setChosenDate(this.props.day, this.props.month, this.props.year)
+        this.props.setData(this.props.day, this.props.month, this.props.year)
     }
 
 

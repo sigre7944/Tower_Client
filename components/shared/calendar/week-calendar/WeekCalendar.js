@@ -119,9 +119,7 @@ export default class WeekCalendar extends Component {
             displaying_text_of_current_week: displaying_text_of_current_week
         }))
 
-        this.props.updateCurrentWeekInMonth(week_data)
-
-        this.setChosenDate(week_data.day, week_data.noWeek, week_data.monthIndex, week_data.year)
+        this.setData(week_data.day, week_data.noWeek, week_data.monthIndex, week_data.year, week_data.noWeekInMonth)
 
     }
 
@@ -133,10 +131,10 @@ export default class WeekCalendar extends Component {
     }
 
     getWeek = (date) => {
-        var target = new Date(date);
-        var dayNr = (date.getDay() + 6) % 7;
+        let target = new Date(date);
+        let dayNr = (date.getDay() + 6) % 7;
         target.setDate(target.getDate() - dayNr + 3);
-        var firstThursday = target.valueOf();
+        let firstThursday = target.valueOf();
         target.setMonth(0, 1);
         if (target.getDay() != 4) {
             target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
@@ -150,10 +148,14 @@ export default class WeekCalendar extends Component {
         this.getWeekData(new Date(year, 0, 1), new Date(year + this.numberOfYears, 11, 31), 1)
     }
 
-    getWeekData = (firstDayOfWeek, endDay) => {
+    getWeekData = (firstDayOfWeek, endDay, noWeekInMonth) => {
 
         if (firstDayOfWeek.getTime() > endDay.getTime()) {
             return
+        }
+
+        if(noWeekInMonth >= 4){
+            noWeekInMonth = 4
         }
 
         let weekData = {
@@ -163,6 +165,7 @@ export default class WeekCalendar extends Component {
             monthIndex: firstDayOfWeek.getMonth(),
             year: firstDayOfWeek.getFullYear(),
             day: firstDayOfWeek.getDate(),
+            noWeekInMonth
         }
 
         //Get monthAndYear text to seperate months
@@ -171,10 +174,12 @@ export default class WeekCalendar extends Component {
             this.week_data_array.push({
                 monthAndYear: monthNames[firstDayOfWeek.getMonth()] + " " + firstDayOfWeek.getFullYear(),
             })
+
+            noWeekInMonth = 0
         }
 
-        if(firstDayOfWeek.getDay() !== 1){
-            for(let i = 1; i < firstDayOfWeek.getDay(); i++){
+        if (firstDayOfWeek.getDay() !== 1) {
+            for (let i = 1; i < firstDayOfWeek.getDay(); i++) {
                 weekData.week_day_array.push(undefined)
             }
         }
@@ -182,10 +187,10 @@ export default class WeekCalendar extends Component {
         let currentWeek = this.getWeek(firstDayOfWeek)
         weekData.noWeek = currentWeek
 
-        for(let i = 0; i <7; i++){
+        for (let i = 0; i < 7; i++) {
             let day = new Date(firstDayOfWeek.getTime() + (60 * 60 * 24 * 1000) * (i))
 
-            if(currentWeek === this.getWeek(day)){
+            if (currentWeek === this.getWeek(day)) {
                 weekData.week_day_array.push(day)
             }
         }
@@ -196,7 +201,7 @@ export default class WeekCalendar extends Component {
         let nextMondayTime = new Date(weekData.week_day_array[weekData.week_day_array.length - 1].getTime() + (60 * 60 * 24 * 1000))
 
 
-        this.getWeekData(nextMondayTime, endDay)
+        this.getWeekData(nextMondayTime, endDay, noWeekInMonth+1)
     }
 
     trimPastWeeks = () => {
@@ -279,41 +284,8 @@ export default class WeekCalendar extends Component {
         }
     }
 
-    save = () => {
-        if (this.chosen_day > 0 && this.chosen_week > 0 && this.chosen_month > 0 && this.chosen_year > 0) {
-            if (this.chosen_day < new Date().getDate() && this.chosen_month === new Date().getMonth() && this.chosen_year === new Date().getFullYear()) {
-                this._updateStartingDate(new Date().getDate(), this.chosen_week, this.chosen_month, this.chosen_year)
-            }
-
-            else {
-                this._updateStartingDate(this.chosen_day, this.chosen_week, this.chosen_month, this.chosen_year)
-            }
-        }
-        this.props.disableAllTabs()
-    }
-
-    setChosenDate = (day, week, month, year) => {
-        this.chosen_day = day
-        this.chosen_week = week
-        this.chosen_month = month
-        this.chosen_year = year
-    }
-
-    _updateStartingDate = (day, week, month, year) => {
-        let startTime = trackingTime = new Date(
-            new Date(
-                new Date(
-                    new Date().setDate(day)).setMonth(month)).setFullYear(year))
-            .getTime()
-
-        this.props.updateStartingDate({
-            day,
-            week,
-            month,
-            year,
-            startTime,
-            trackingTime,
-        })
+    setData = (day, week, month, year, noWeekInMonth) => {
+        this.props.setData(day, week, month, year, noWeekInMonth)
     }
 
     componentDidMount() {
@@ -413,76 +385,6 @@ export default class WeekCalendar extends Component {
                         </View>
                     </View>
                 </View>
-
-                {/* Add Repeat */}
-                <TouchableHighlight
-                    style={{
-                        height: 40,
-                        backgroundColor: "white",
-                        justifyContent: "center",
-                        borderTopWidth: 1,
-                        borderTopColor: 'gainsboro',
-                    }}
-
-                    onPress={this._chooseRepeatOption}
-                    underlayColor="gainsboro"
-                >
-                    <Text>
-                        Add repeat
-                </Text>
-                </TouchableHighlight>
-                <View
-                    style={{
-                        height: 60,
-                        marginBottom: 10,
-                        backgroundColor: 'white',
-                        flexDirection: "row",
-                        justifyContent: "flex-end",
-                        alignItems: 'center'
-                    }}
-                >
-                    <TouchableHighlight
-                        style={{
-                            alignItems: "center",
-                            justifyContent: "center",
-                            height: 50,
-                            width: 50,
-                            borderRadius: 25,
-                            backgroundColor: 'gray',
-                            marginRight: 20
-                        }}
-                    >
-                        <Text
-                            style={{
-                                color: "white"
-                            }}
-                        >
-                            X
-                    </Text>
-                    </TouchableHighlight>
-
-                    <TouchableHighlight
-                        style={{
-                            alignItems: "center",
-                            justifyContent: "center",
-                            height: 50,
-                            width: 50,
-                            borderRadius: 25,
-                            backgroundColor: 'gray',
-                            marginRight: 10
-                        }}
-
-                        onPress={this.save}
-                    >
-                        <Text
-                            style={{
-                                color: "white"
-                            }}
-                        >
-                            OK
-                    </Text>
-                    </TouchableHighlight>
-                </View>
             </>
         )
     }
@@ -510,9 +412,9 @@ class DayInWeekHolder extends React.PureComponent {
     }
 }
 
-class MonthYearHolder extends React.PureComponent{
-    render(){
-        return(
+class MonthYearHolder extends React.PureComponent {
+    render() {
+        return (
             <View
                 style={{
                     flex: 1,
@@ -528,18 +430,14 @@ class MonthYearHolder extends React.PureComponent{
     }
 }
 
-class CalendarDisplayHolder extends React.PureComponent{
-
-    shouldComponentUpdate(nextProps, nextState){
-        return this.props.index === nextProps.lastWeekIndex || this.props.index === nextProps.currentWeekIndex
-    }
+class CalendarDisplayHolder extends React.PureComponent {
 
     _scrollToWeekRow = () => {
         this.props.scrollToWeekRow(this.props.index)
     }
 
-    render(){
-        return(
+    render() {
+        return (
             <>
                 <TouchableHighlight
                     style={{
@@ -549,22 +447,22 @@ class CalendarDisplayHolder extends React.PureComponent{
                     }}
 
                     onPress={this._scrollToWeekRow}
-                    underlayColor = {"gainsboro"}
+                    underlayColor={"gainsboro"}
                 >
                     <>
-                    <WeekNumberHolder 
-                        noWeek = {this.props.weekData.noWeek} 
-                        currentWeekIndex = {this.props.currentWeekIndex}
-                        lastWeekIndex = {this.props.lastWeekIndex}
-                        index = {this.props.index}
-                    />
-                    <DayHolder dayTimeInMili = {this.props.weekData.week_day_array[0]} />
-                    <DayHolder dayTimeInMili = {this.props.weekData.week_day_array[1]} />
-                    <DayHolder dayTimeInMili = {this.props.weekData.week_day_array[2]} />
-                    <DayHolder dayTimeInMili = {this.props.weekData.week_day_array[3]} />
-                    <DayHolder dayTimeInMili = {this.props.weekData.week_day_array[4]} />
-                    <DayHolder dayTimeInMili = {this.props.weekData.week_day_array[5]} />
-                    <DayHolder dayTimeInMili = {this.props.weekData.week_day_array[6]} />
+                        <WeekNumberHolder
+                            noWeek={this.props.weekData.noWeek}
+                            currentWeekIndex={this.props.currentWeekIndex}
+                            lastWeekIndex={this.props.lastWeekIndex}
+                            index={this.props.index}
+                        />
+                        <DayHolder dayTimeInMili={this.props.weekData.week_day_array[0]} />
+                        <DayHolder dayTimeInMili={this.props.weekData.week_day_array[1]} />
+                        <DayHolder dayTimeInMili={this.props.weekData.week_day_array[2]} />
+                        <DayHolder dayTimeInMili={this.props.weekData.week_day_array[3]} />
+                        <DayHolder dayTimeInMili={this.props.weekData.week_day_array[4]} />
+                        <DayHolder dayTimeInMili={this.props.weekData.week_day_array[5]} />
+                        <DayHolder dayTimeInMili={this.props.weekData.week_day_array[6]} />
                     </>
                 </TouchableHighlight>
             </>
@@ -573,29 +471,29 @@ class CalendarDisplayHolder extends React.PureComponent{
 }
 
 
-class WeekNumberHolder extends React.PureComponent{
+class WeekNumberHolder extends React.PureComponent {
 
-    state={
+    state = {
         style: styles.unchosenWeek
     }
 
-    UNSAFE_componentWillReceiveProps(nextProps, nextState){
+    UNSAFE_componentWillReceiveProps(nextProps, nextState) {
 
-        if(this.props.index === nextProps.currentWeekIndex){
+        if (this.props.index === nextProps.currentWeekIndex) {
             this.setState({
                 style: styles.chosenWeek
             })
         }
 
-        else if(this.props.index === nextProps.lastWeekIndex){
+        else if (this.props.index === nextProps.lastWeekIndex) {
             this.setState({
                 style: styles.unchosenWeek
             })
         }
     }
 
-    render(){
-        return(
+    render() {
+        return (
             <View style={this.state.style}>
                 <Text>
                     {this.props.noWeek}
@@ -605,21 +503,17 @@ class WeekNumberHolder extends React.PureComponent{
     }
 }
 
-class DayHolder extends React.PureComponent{
+class DayHolder extends React.PureComponent {
 
-    shouldComponentUpdate(){
-        return false
-    }
-
-    render(){
-        return(
+    render() {
+        return (
             <View style={{
                 flex: 1,
                 alignItems: "center",
                 justifyContent: "center"
             }}>
                 <Text>
-                    {new Date(this.props.dayTimeInMili).getDate()? new Date(this.props.dayTimeInMili).getDate() : null}
+                    {new Date(this.props.dayTimeInMili).getDate() ? new Date(this.props.dayTimeInMili).getDate() : null}
                 </Text>
             </View>
         )

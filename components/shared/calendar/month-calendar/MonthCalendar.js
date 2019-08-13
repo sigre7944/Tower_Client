@@ -3,12 +3,11 @@ import React, { Component } from 'react'
 import {
     View,
     Text,
-    Dimensions,
+    StyleSheet,
     FlatList,
     TouchableHighlight
 } from 'react-native';
 
-import CalendarDisplayHolder from './calendar-display-holder/CalendarDisplayHolder'
 
 const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
     "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
@@ -46,48 +45,25 @@ export default class MonthCalendar extends Component {
 
     _keyExtractor = (item, index) => `month-calendar-${index}`
 
-    _renderItem = ({ item, index }) => {
-        if (index === 0) {
-            return (
-                <CalendarDisplayHolder
-                    monthData={item}
-                    yearIndex={index}
-                    marginLeft={0}
-                    changeCurrentYearIndex={this.changeCurrentYearIndex}
-                    last_year_index={this.state.last_year_index}
-                    current_year_index={this.state.current_year_index}
+    _renderItem = ({ item, index }) => (
+        <CalendarDisplayHolder
+            monthData={item}
+            yearIndex={index}
+            marginLeft={index === 0 ? 0 : 338}
+            changeCurrentYearIndex={this.changeCurrentYearIndex}
+            last_year_index={this.state.last_year_index}
+            current_year_index={this.state.current_year_index}
 
-                    returnToCurrentYear={this.returnToCurrentYear}
+            returnToCurrentYear={this.returnToCurrentYear}
 
-                    currentMonth={this.currentMonth}
-                    currentYear={this.currentYear}
+            currentMonth={this.currentMonth}
+            currentYear={this.currentYear}
 
-                    setChosenDate={this.setChosenDate}
+            setData={this.setData}
+            task_data={this.props.task_data}
+        />
+    )
 
-                    task_data={this.props.task_data}
-                />
-            )
-        }
-
-        return (
-            <CalendarDisplayHolder
-                monthData={item}
-                yearIndex={index}
-                marginLeft={338}
-                changeCurrentYearIndex={this.changeCurrentYearIndex}
-                last_year_index={this.state.last_year_index}
-                current_year_index={this.state.current_year_index}
-
-                returnToCurrentYear={this.returnToCurrentYear}
-
-                currentMonth={this.currentMonth}
-                currentYear={this.currentYear}
-
-                setChosenDate={this.setChosenDate}
-                task_data={this.props.task_data}
-            />
-        )
-    }
 
     changeCurrentYearIndex = (index) => {
         this.setState((state, props) => {
@@ -122,35 +98,8 @@ export default class MonthCalendar extends Component {
         })
     }
 
-    save = () => {
-        if (this.chosen_month > 0 && this.chosen_year > 0) {
-            if (this.chosen_month < new Date().getMonth() && this.chosen_year === new Date().getFullYear())
-                this._updateStartingDate(new Date().getMonth(), this.chosen_year)
-
-            else
-                this._updateStartingDate(this.chosen_month, this.chosen_year)
-        }
-        this.props.disableAllTabs()
-    }
-
-    setChosenDate = (month, year) => {
-        this.chosen_month = month
-        this.chosen_year = year
-    }
-
-    _updateStartingDate = (month, year) => {
-        let startTime = trackingTime = new Date(
-            new Date(
-                new Date(
-                    new Date().setDate(1)).setMonth(month)).setFullYear(year))
-            .getTime()
-
-        this.props.updateStartingDate({
-            month,
-            year,
-            startTime,
-            trackingTime
-        })
+    setData = (month, year) => {
+        this.props.setData(month, year)
     }
 
     componentDidMount() {
@@ -184,82 +133,12 @@ export default class MonthCalendar extends Component {
 
                     </FlatList>
                 </View>
-
-                {/* Add Repeat */}
-                <TouchableHighlight
-                    style={{
-                        height: 40,
-                        backgroundColor: "white",
-                        justifyContent: "center",
-                        borderTopWidth: 1,
-                        borderTopColor: 'gainsboro',
-                    }}
-
-                    onPress={this._chooseRepeatOption}
-                    underlayColor="gainsboro"
-                >
-                    <Text>
-                        Add repeat
-                    </Text>
-                </TouchableHighlight>
-                <View
-                    style={{
-                        height: 60,
-                        marginBottom: 10,
-                        backgroundColor: 'white',
-                        flexDirection: "row",
-                        justifyContent: "flex-end",
-                        alignItems: 'center'
-                    }}
-                >
-                    <TouchableHighlight
-                        style={{
-                            alignItems: "center",
-                            justifyContent: "center",
-                            height: 50,
-                            width: 50,
-                            borderRadius: 25,
-                            backgroundColor: 'gray',
-                            marginRight: 20
-                        }}
-                    >
-                        <Text
-                            style={{
-                                color: "white"
-                            }}
-                        >
-                            X
-                    </Text>
-                    </TouchableHighlight>
-
-                    <TouchableHighlight
-                        style={{
-                            alignItems: "center",
-                            justifyContent: "center",
-                            height: 50,
-                            width: 50,
-                            borderRadius: 25,
-                            backgroundColor: 'gray',
-                            marginRight: 10
-                        }}
-
-                        onPress={this.save}
-                    >
-                        <Text
-                            style={{
-                                color: "white"
-                            }}
-                        >
-                            OK
-                    </Text>
-                    </TouchableHighlight>
-                </View>
             </>
         )
     }
 }
 
-class CalendarDisplayHolder extends Component {
+class CalendarDisplayHolder extends React.PureComponent {
 
     state = {
         current_month_index: -1,
@@ -307,16 +186,16 @@ class CalendarDisplayHolder extends Component {
         return null
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        // we only re-render when yearIndex equals to last_year_index, meaning
-        // the case that the current calendar was the previously chosen calendar => to
-        // update its style to origin.
-        // And only re-rende when yearIndex equals to current_year_index, meaning
-        // the case that current calendar is the currently chosen calendar => to
-        // update its style to the chosen styles.
-        return this.props.yearIndex === nextProps.last_year_index
-            || this.props.yearIndex === nextProps.current_year_index
-    }
+    // shouldComponentUpdate(nextProps, nextState) {
+    //     // we only re-render when yearIndex equals to last_year_index, meaning
+    //     // the case that the current calendar was the previously chosen calendar => to
+    //     // update its style to origin.
+    //     // And only re-rende when yearIndex equals to current_year_index, meaning
+    //     // the case that current calendar is the currently chosen calendar => to
+    //     // update its style to the chosen styles.
+    //     return this.props.yearIndex === nextProps.last_year_index
+    //         || this.props.yearIndex === nextProps.current_year_index
+    // }
 
     render() {
         return (
@@ -325,9 +204,9 @@ class CalendarDisplayHolder extends Component {
                     width: 338,
                     marginLeft: this.props.marginLeft
                 }}>
-                    <DisplayYear 
-                    year={this.props.monthData.year} 
-                    returnToCurrentYear = {this.props.returnToCurrentYear}
+                    <DisplayYear
+                        year={this.props.monthData.year}
+                        returnToCurrentYear={this.props.returnToCurrentYear}
                     />
 
                     <View style={{
@@ -352,9 +231,9 @@ class CalendarDisplayHolder extends Component {
                                 changeCurrentMonthIndex={this.changeCurrentMonthIndex}
                                 resetCurrentAndLastMonthIndexes={this.resetCurrentAndLastMonthIndexes}
 
-                                currentMonth = {this.props.currentMonth}
-                                currentYear = {this.props.currentYear}
-                                year={this.props.monthData.year} 
+                                currentMonth={this.props.currentMonth}
+                                currentYear={this.props.currentYear}
+                                year={this.props.monthData.year}
 
                             />
                         ))}
@@ -397,7 +276,7 @@ class DisplayYear extends React.PureComponent {
     }
 }
 
-class MonthHolder extends Component {
+class MonthHolder extends React.PureComponent {
 
     state = {
         monthStyle: styles.unchosenMonth
@@ -412,7 +291,7 @@ class MonthHolder extends Component {
 
         this.props.changeCurrentMonthIndex(this.props.monthIndex)
 
-        this.props.setChosenDate(this.props.data.monthNumber, this.props.year)
+        this.props.setData(this.props.data.monthNumber, this.props.year)
     }
 
 
@@ -457,32 +336,32 @@ class MonthHolder extends Component {
         return null
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return this.props.monthIndex === nextProps.current_month_index
-            || this.props.monthIndex === nextProps.last_month_index
-            || nextProps.current_month_index === -1
-    }
+    // shouldComponentUpdate(nextProps, nextState) {
+    //     return this.props.monthIndex === nextProps.current_month_index
+    //         || this.props.monthIndex === nextProps.last_month_index
+    //         || nextProps.current_month_index === -1
+    // }
 
-    componentDidMount(){
-        let {schedule} = this.props.task_data
+    componentDidMount() {
+        let { schedule } = this.props.task_data
 
-        if(schedule){
-            if(this.props.data.monthNumber === schedule.month && this.props.year === schedule.year){
+        if (schedule) {
+            if (this.props.data.monthNumber === schedule.month && this.props.year === schedule.year) {
                 this.chooseMonth()
             }
 
-            else{
-                if(this.props.data.monthNumber === this.props.currentMonth && this.props.year === this.props.currentYear){
+            else {
+                if (this.props.data.monthNumber === this.props.currentMonth && this.props.year === this.props.currentYear) {
                     this.chooseMonth()
                 }
             }
         }
-        else{
-            if(this.props.data.monthNumber === this.props.currentMonth && this.props.year === this.props.currentYear){
+        else {
+            if (this.props.data.monthNumber === this.props.currentMonth && this.props.year === this.props.currentYear) {
                 this.chooseMonth()
             }
         }
-        
+
     }
 
     render() {
