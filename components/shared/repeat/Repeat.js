@@ -112,22 +112,13 @@ export default class Repeat extends Component {
     }
 
     save = () => {
-        if (this.props.currentAnnotation === "day") {
-            this.props.updateRepetition("UPDATE_NEW_DAY_TASK", this.repetion_data)
-            this.props.updateEnd("UPDATE_NEW_DAY_TASK", this.end_data)
-        }
+        this.props.updateTask({
+            repeat: this.repetion_data,
+            end: this.end_data
+        })
 
-        else if (this.props.currentAnnotation === "week") {
-            this.props.updateRepetition("UPDATE_NEW_WEEK_TASK", this.repetion_data)
-            this.props.updateEnd("UPDATE_NEW_WEEK_TASK", this.end_data)
-        }
-
-        else if (this.props.currentAnnotation === "month") {
-            this.props.updateRepetition("UPDATE_NEW_MONTH_TASK", this.repetion_data)
-            this.props.updateEnd("UPDATE_NEW_MONTH_TASK", this.end_data)
-        }
-
-        this.props.chooseRepeatOption()
+        this.props.hideAction()
+        
     }
 
     componentWillUnmount() {
@@ -167,7 +158,6 @@ export default class Repeat extends Component {
                                 <WeeklyRepeatOption
                                     toggleWeekOptionInWeeklyTask={this.toggleWeekOptionInWeeklyTask}
                                     weekly_repeat_picker_value={this.state.weekly_repeat_picker_value}
-                                    noWeekInMonth={this.props.currentWeekInMonth.noWeekInMonth}
 
                                     task_data={this.props.task_data}
                                     setRepetionData={this.setRepetionData}
@@ -1245,6 +1235,7 @@ class WeeklyRepeatOption extends React.PureComponent {
     }
 
     render() {
+        console.log(this.props.task_data.schedule.noWeekInMonth)
         return (
             <>
                 <View
@@ -1301,7 +1292,7 @@ class WeeklyRepeatOption extends React.PureComponent {
                             alignItems: "center"
                         }}
                     >
-                        <Text>Every {this.number_nth_convensions[this.props.noWeekInMonth - 1]} week of the month</Text>
+                        <Text>Every {this.number_nth_convensions[this.props.task_data.schedule.noWeekInMonth - 1]} week of the month</Text>
                     </View>
 
                     :

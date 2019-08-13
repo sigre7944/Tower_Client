@@ -4,7 +4,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { CheckBox } from 'react-native-elements';
 import Modal from 'react-native-modalbox';
 import DayCalendar from '../calendar/day-calendar/DayCalendar'
-import Category from '../category/edit-container/Category.Container'
+import Category from '../category/Category.Container'
 
 
 export default class TaskDetailModal extends Component {
@@ -66,10 +66,6 @@ export default class TaskDetailModal extends Component {
 
         if(this.state.isEditing && this.state.isEditing !== prevState.isEditing){
             this.props.updateEdittingTask(this.props.task_data)
-        }
-
-        if(this.props.edittingTask !== prevProps.edittingTask){
-            console.log(this.props.edittingTask)
         }
     }
 
@@ -517,7 +513,7 @@ export default class TaskDetailModal extends Component {
                                                     this.state.edit_category ?
 
                                                         <Category 
-                                                            task_data = {this.props.task_data}
+                                                            edit = {true}
                                                             action_type = {"UPDATE_EDIT_TASK"}
                                                             hideAction={this.toggleShouldVisible}
                                                         />

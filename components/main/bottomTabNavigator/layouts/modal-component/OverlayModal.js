@@ -2,18 +2,18 @@ import React, { Component } from 'react'
 
 import {
     View,
-    Text,
     Modal,
     TouchableWithoutFeedback,
-    Keyboard,
     Dimensions
 } from 'react-native';
 
 import AddTaskPanel from './add-task-panel/AddTaskPanel.Container'
 import Calendar from './calendar/Calendar'
-import Category from './category/Category.Container'
-import Priority from './priority/Priority.Container'
-import Goal from './goal/Goal.Container'
+
+import Category from '../../../../shared/category/Category.Container'
+import Goal from '../../../../shared/goal/Goal.Container'
+import Priority from '../../../../shared/priority/Priority.Container'
+
 
 class DismissElement extends React.PureComponent {
     _onPress = () => {
@@ -135,7 +135,7 @@ export default class OverlayModal extends Component {
                 month: date.getMonth(),
                 year: date.getFullYear()
             }
-            data.category= "cate_0"
+            data.category = "cate_0"
             data.repeat = {
                 type: "daily",
                 interval: {
@@ -174,7 +174,7 @@ export default class OverlayModal extends Component {
                 month: date.getMonth(),
                 year: date.getFullYear()
             }
-            data.category= "cate_0"
+            data.category = "cate_0"
             data.repeat = {
                 type: "weekly-w",
                 interval: {
@@ -210,7 +210,7 @@ export default class OverlayModal extends Component {
                 month: date.getMonth(),
                 year: date.getFullYear()
             }
-            data.category= "cate_0"
+            data.category = "cate_0"
             data.repeat = {
                 type: "monthly-m",
                 interval: {
@@ -233,12 +233,13 @@ export default class OverlayModal extends Component {
         }
     }
 
-    componentDidUpdate(prevProps){
-        if(this.props.currentMonthTask !== prevProps.currentMonthTask){
+    componentDidUpdate(prevProps) {
+        if (this.props.currentMonthTask !== prevProps.currentMonthTask) {
         }
     }
 
     render() {
+
         return (
             <Modal
                 transparent={true}
@@ -291,10 +292,10 @@ export default class OverlayModal extends Component {
                                         {/* Category Panel */}
                                         {this.state.categoryChosen ?
                                             <Category
-                                                disableAllTabs={this.disableAllTabs}
                                                 currentAnnotation={this.state.currentAnnotation}
+                                                edit={false}
+                                                hideAction={this.disableAllTabs}
                                             />
-
                                             :
 
                                             <>
@@ -302,7 +303,8 @@ export default class OverlayModal extends Component {
                                                 {this.state.goalChosen ?
                                                     <Goal
                                                         currentAnnotation={this.state.currentAnnotation}
-                                                        disableAllTabs={this.disableAllTabs}
+                                                        edit={false}
+                                                        hideAction={this.disableAllTabs}
                                                     />
 
                                                     :
@@ -311,8 +313,9 @@ export default class OverlayModal extends Component {
                                                         {/* Priority Panel */}
                                                         {this.state.priorityChosen ?
                                                             <Priority
-                                                                disableAllTabs={this.disableAllTabs}
                                                                 currentAnnotation={this.state.currentAnnotation}
+                                                                edit={false}
+                                                                hideAction={this.disableAllTabs}
                                                             />
 
                                                             :

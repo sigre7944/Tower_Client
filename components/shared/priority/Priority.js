@@ -134,14 +134,16 @@ export default class Priority extends React.Component {
         ).start()
     }
 
-    _updatePriority = () => {
+    _updateTask = () => {
         let { priorities } = this.props
         for (let key in priorities) {
             if (priorities.hasOwnProperty(key)) {
                 if (priorities[key].name === this.state.priority_value) {
-                    this.props.updatePriority({
-                        value: key,
-                        reward: parseInt(this.state.reward_value)
+                    this.props.updateTask({
+                        priority: {
+                            value: key,
+                            reward: parseInt(this.state.reward_value)
+                        }
                     })
                 }
             }
@@ -149,8 +151,8 @@ export default class Priority extends React.Component {
     }
 
     save = () => {
-        this._updatePriority()
-        this.props.disableAllTabs()
+        this._updateTask()
+        this.props.hideAction()
     }
 
     componentDidMount() {

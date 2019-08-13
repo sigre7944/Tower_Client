@@ -42,14 +42,16 @@ export default class WeekAnnotationPanel extends Component {
         let nearest_monday = this.getMonday(date)
         let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
 
-        return Math.floor((nearest_monday - first_moday_of_month)/7) + 1
+        return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
     }
 
     save = () => {
+
         if (this.chosen_day > 0 && this.chosen_week > 0 && this.chosen_month > 0 && this.chosen_year > 0) {
             let current = new Date()
+
             if (this.chosen_day < current.getDate() && this.chosen_month === current.getMonth() && this.chosen_year === current.getFullYear()) {
-                this._updateTask(this.getMonday(current), this.getWeek(current), this.chosen_month, this.getNoWeekInMonth(current))
+                this._updateTask(this.getMonday(current), this.getWeek(current), this.chosen_month, this.chosen_year, this.getNoWeekInMonth(current))
             }
 
             else {
@@ -91,7 +93,7 @@ export default class WeekAnnotationPanel extends Component {
         return (
             <>
 
-                <WeekCalendar 
+                <WeekCalendar
                     edit={false}
                     setData={this.setData}
                 />

@@ -200,7 +200,7 @@ export default class Category extends React.Component {
     }
 
     save = () => {
-        this.props.updateCategory(Object.keys(this.props.categories)[this.state.currentIndex])
+        this.props.updateTask({category: Object.keys(this.props.categories)[this.state.currentIndex]})
 
         this.props.hideAction()
     }

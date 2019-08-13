@@ -101,6 +101,31 @@ export default class AddTaskPanel extends Component {
         })
     }
 
+    getWeek = (date) => {
+        let target = new Date(date);
+        let dayNr = (date.getDay() + 6) % 7;
+        target.setDate(target.getDate() - dayNr + 3);
+        let firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() != 4) {
+            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+        }
+        return 1 + Math.ceil((firstThursday - target) / 604800000);
+    }
+
+    getMonday = (date) => {
+        let dayInWeek = new Date(date).getDay()
+        let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
+        return new Date(new Date(date).getTime() - (diff * 86400 * 1000)).getDate()
+    }
+
+    getNoWeekInMonth = (date) => {
+        let nearest_monday = this.getMonday(date)
+        let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
+
+        return Math.floor((nearest_monday - first_moday_of_month)/7) + 1
+    }
+
     addTagDataToRender = (type, { startTime, schedule, repeat, end, category, priority, goal }) => {
         let tag_data = []
 
@@ -480,6 +505,7 @@ export default class AddTaskPanel extends Component {
                 }
             }
         }
+
     }
 
     componentWillUnmount() {

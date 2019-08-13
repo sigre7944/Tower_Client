@@ -27,7 +27,7 @@ export default class Goal extends React.Component {
 
                 <GoalPerTimesRow
                     currentAnnotation={this.props.currentAnnotation}
-                    updateGoal={this.props.updateGoal}
+                    updateTask={this.props.updateTask}
                     {... this.props}
                 />
             </View>
@@ -60,18 +60,18 @@ class GoalPerTimesRow extends React.PureComponent {
         }
     }
 
-    _updateGoal = (value) => {
+    _updateTask = (value) => {
         this.data = {
             max: parseInt(value),
             current: 0,
         }
 
-        this.props.updateGoal(this.data)
+        this.props.updateTask({ goal: this.data })
     }
 
     save = () => {
-        this._updateGoal(this.state.value)
-        this.props.disableAllTabs()
+        this._updateTask(this.state.value)
+        this.props.hideAction()
     }
 
     componentDidMount() {

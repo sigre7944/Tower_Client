@@ -16,7 +16,7 @@ export default class WeekCalendar extends Component {
     numberOfYears = 10
     week_data_array = []
 
-    currentDisplayingMonth = -1 //January's index is 0
+    currentDisplayingMonth = 0 //January's index is 0
 
     currentTimeInMili = new Date().getTime()
 
@@ -35,10 +35,6 @@ export default class WeekCalendar extends Component {
         displaying_text_of_current_week: '',
 
         week_data_array: []
-    }
-
-    _chooseRepeatOption = () => {
-        this.props.chooseRepeatOption()
     }
 
     chooseMonthOption = (monthOption) => {
@@ -154,7 +150,7 @@ export default class WeekCalendar extends Component {
             return
         }
 
-        if(noWeekInMonth >= 4){
+        if(noWeekInMonth > 4){
             noWeekInMonth = 4
         }
 
@@ -165,7 +161,6 @@ export default class WeekCalendar extends Component {
             monthIndex: firstDayOfWeek.getMonth(),
             year: firstDayOfWeek.getFullYear(),
             day: firstDayOfWeek.getDate(),
-            noWeekInMonth
         }
 
         //Get monthAndYear text to seperate months
@@ -175,8 +170,10 @@ export default class WeekCalendar extends Component {
                 monthAndYear: monthNames[firstDayOfWeek.getMonth()] + " " + firstDayOfWeek.getFullYear(),
             })
 
-            noWeekInMonth = 0
+            noWeekInMonth = 1
         }
+
+        weekData.noWeekInMonth = noWeekInMonth
 
         if (firstDayOfWeek.getDay() !== 1) {
             for (let i = 1; i < firstDayOfWeek.getDay(); i++) {
