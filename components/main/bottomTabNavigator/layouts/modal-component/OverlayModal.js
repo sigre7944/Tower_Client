@@ -14,7 +14,6 @@ import Category from '../../../../shared/category/Category.Container'
 import Goal from '../../../../shared/goal/Goal.Container'
 import Priority from '../../../../shared/priority/Priority.Container'
 
-
 class DismissElement extends React.PureComponent {
     _onPress = () => {
         if (this.props.addTaskMenuChosen) {
@@ -233,11 +232,6 @@ export default class OverlayModal extends Component {
         }
     }
 
-    componentDidUpdate(prevProps) {
-        if (this.props.currentMonthTask !== prevProps.currentMonthTask) {
-        }
-    }
-
     render() {
 
         return (
@@ -273,7 +267,6 @@ export default class OverlayModal extends Component {
 
                                 addTaskButtonActionProp={this.props.addTaskButtonActionProp}
                             />
-
                             :
 
                             <>

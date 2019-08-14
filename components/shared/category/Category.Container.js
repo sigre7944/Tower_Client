@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import Category from './Category'
-import { createCategory } from '../../main/bottomTabNavigator/layouts/modal-component/category/actions/createCategory'
+import { createCategory } from '../actions/createCategory'
 import { updateTask } from '../actions/updateTask'
 
 let action_type = ""

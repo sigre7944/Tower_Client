@@ -2,8 +2,8 @@ import { connect } from 'react-redux'
 import { updateTitle } from './actions/updateTitle'
 import { updateDescription } from './actions/updateDescription'
 import { updateType } from './actions/updateType'
-import { changeAnnotation } from './actions/changeAnnotation'
 import { addTask } from './actions/addTask'
+import {updateTask} from '../../../../../shared/actions/updateTask'
 import AddTaskPanel from './AddTaskPanel'
 
 
@@ -13,7 +13,6 @@ const mapStateToProps = (state) => ({
     currentMonthTask: state.currentMonthTask,
     categories: state.categories,
     priorities: state.priorities,
-    currentAnnotation: state.currentAnnotation
 })
 
 
@@ -28,10 +27,6 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 
     updateType: (type, data) => {
         dispatch(updateType(type, data))
-    },
-
-    changeAnnotation: (annotation) => {
-        dispatch(changeAnnotation(annotation))
     },
 
     addTask: (type, data) => {

@@ -92,7 +92,6 @@ export default class AddTaskPanel extends Component {
         }
 
         this.props.setCurrentAnnotation(annotation)
-        this.props.changeAnnotation(annotation)
     }
 
     toDoWhenWillShowKeyboard = (e) => {
