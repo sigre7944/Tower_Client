@@ -31,6 +31,10 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 
     addTask: (type, data) => {
         dispatch(addTask(type, data))
+    },
+
+    updateTask: (type, data) => {
+        dispatch(updateTask(type, data))
     }
 })
 

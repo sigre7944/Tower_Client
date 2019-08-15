@@ -11,6 +11,8 @@ import {
     ScrollView
 } from 'react-native';
 
+const uuidv1 = require('uuid')
+
 
 let dayAnnotationColor = '#b0b0b0',
     weekAnnotationColor = '#9a9a9a',
@@ -122,7 +124,7 @@ export default class AddTaskPanel extends Component {
         let nearest_monday = this.getMonday(date)
         let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
 
-        return Math.floor((nearest_monday - first_moday_of_month)/7) + 1
+        return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
     }
 
     addTagDataToRender = (type, { startTime, schedule, repeat, end, category, priority, goal }) => {
@@ -859,15 +861,128 @@ class BottomOptionElement extends React.PureComponent {
         if (this.props.addTask) {
             if (this.props.currentAnnotation === "day" && this.props.currentDayTask.title && this.props.currentDayTask.title.length > 0) {
 
-                this.props.addTask("ADD_NEW_DAY_TASK", this.props.currentDayTask)
+                let add_data = { ... this.props.currentDayTask, ... { createdAt: new Date().getTime(), id: uuidv1() } }
+
+                this.props.addTask("ADD_NEW_DAY_TASK", add_data)
+
+                let date = new Date()
+
+                let reset_data = {
+                    title: "",
+                    description: "",
+                    startTime: date.getTime(),
+                    trackingTime: date.getTime(),
+                    type: "day",
+                    schedule: {
+                        day: date.getDate(),
+                        month: date.getMonth(),
+                        year: date.getFullYear()
+                    },
+                    category: "cate_0",
+                    repeat: {
+                        type: "daily",
+                        interval: {
+                            value: 86400 * 1000 * 1
+                        }
+                    },
+                    end: {
+                        type: "never"
+                    },
+                    priority: {
+                        value: "pri_01",
+                        reward: 0,
+                    },
+                    goal: {
+                        max: 1,
+                        current: 0
+                    }
+                }
+
+                this.props.updateTask("UPDATE_NEW_DAY_TASK", reset_data)
             }
 
             else if (this.props.currentAnnotation === "week" && this.props.currentWeekTask.title && this.props.currentWeekTask.title.length > 0) {
-                this.props.addTask("ADD_NEW_WEEK_TASK", this.props.currentWeekTask)
+
+                let add_data = { ... this.props.currentWeekTask, ... { createdAt: new Date().getTime(), id: uuidv1() } }
+
+                this.props.addTask("ADD_NEW_WEEK_TASK", add_data)
+
+                let date = new Date()
+
+                let reset_data = {
+                    title: "",
+                    description: "",
+                    startTime: date.getTime(),
+                    trackingTime: date.getTime(),
+                    type: "week",
+                    schedule: {
+                        day: date.getDate(),
+                        week: noWeek,
+                        month: date.getMonth(),
+                        year: date.getFullYear()
+                    },
+                    category: "cate_0",
+                    repeat: {
+                        type: "weekly-w",
+                        interval: {
+                            value: 86400 * 1000 * 7 * 1
+                        }
+                    },
+                    end: {
+                        type: "never"
+                    },
+                    priority: {
+                        value: "pri_01",
+                        reward: 0,
+                    },
+                    goal: {
+                        max: 1,
+                        current: 0
+                    }
+                }
+
+                this.props.updateTask("UPDATE_NEW_WEEK_TASK", reset_data)
             }
 
             else if (this.props.currentAnnotation === "month" && this.props.currentMonthTask.title && this.props.currentMonthTask.title.length > 0) {
-                this.props.addTask("ADD_NEW_MONTH_TASK", this.props.currentMonthTask)
+
+                let add_data = { ... this.props.currentMonthTask, ... { createdAt: new Date().getTime(), id: uuidv1() } }
+
+                this.props.addTask("ADD_NEW_MONTH_TASK", add_data)
+
+                let date = new Date()
+
+                let reset_data = {
+                    title: "",
+                    description: "",
+                    startTime: date.getTime(),
+                    trackingTime: date.getTime(),
+                    type: "month",
+                    schedule: {
+                        month: date.getMonth(),
+                        year: date.getFullYear()
+                    },
+                    category: "cate_0",
+                    repeat: {
+                        type: "monthly-m",
+                        interval: {
+                            value: 1
+                        }
+                    },
+                    end: {
+                        type: "never"
+                    },
+                    priority: {
+                        value: "pri_01",
+                        reward: 0,
+                    },
+                    goal: {
+                        max: 1,
+                        current: 0
+                    }
+                }
+
+                this.props.updateTask("UPDATE_NEW_MONTH_TASK", reset_data)
             }
         }
         this.props.chooseOption()

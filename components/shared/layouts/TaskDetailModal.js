@@ -5,7 +5,9 @@ import { CheckBox } from 'react-native-elements';
 import Modal from 'react-native-modalbox';
 import DayCalendar from '../calendar/day-calendar/DayCalendar'
 import Category from '../category/Category.Container'
-
+import Priority from '../priority/Priority.Container'
+import Repeat from '../repeat/Repeat.Container'
+import Goal from '../goal/Goal.Container'
 
 export default class TaskDetailModal extends Component {
 
@@ -20,11 +22,13 @@ export default class TaskDetailModal extends Component {
     state = {
         isOpened: false,
         isEditing: false,
-        title_value: "",
-        description_value: "",
-        should_visible: false,
-        edit_calendar: false,
-        edit_category: false,
+        day_in_week_text: "",
+        date_number: "",
+        month_text: "",
+        category: "",
+        priority: "",
+        repeat: "",
+        goal: ""
     }
 
     setModalVisible = (visible) => {
@@ -33,11 +37,6 @@ export default class TaskDetailModal extends Component {
 
     toggleEdit = (visible) => {
         this.setState(() => ({ isEditing: visible }));
-    }
-
-    componentDidMount = () => {
-        //this.props.setRef(this.refs.modalRef)
-
     }
 
     componentDidUpdate = (prevProps, prevState) => {
@@ -50,22 +49,44 @@ export default class TaskDetailModal extends Component {
             }
         }
 
-        if (this.props.task_data !== prevProps.task_data) {
-            if (this.props.task_data.title && this.props.task_data.title.length > 0) {
-                this.setState({
-                    title_value: this.props.task_data.title
-                })
-            }
-
-            if (this.props.task_data.description && this.props.task_data.description.length > 0) {
-                this.setState({
-                    description_value: this.props.task_data.description
-                })
-            }
-        }
-
         if (this.state.isEditing && this.state.isEditing !== prevState.isEditing) {
             this.props.updateEdittingTask(this.props.task_data)
+        }
+
+        if (this.props.task_data !== prevProps.task_data) {
+            let task_data = this.props.task_data,
+                date = new Date(task_data.startTime),
+                day_in_week_text = this.daysInWeekText[date.getDay()],
+                date_number = date.getDate(),
+                month_text = this.monthNames[date.getMonth()],
+                category = task_data.category ? this.props.categories[task_data.category].name : "",
+                priority = task_data.priority ? this.props.priorities[task_data.priority.value].name : "",
+                repeat,
+                goal = task_data.goal ? `${task_data.goal.max} times` : ""
+
+            if (task_data.repeat) {
+                if (task_data.repeat.type === "daily") {
+                    repeat = `Every ${task_data.repeat.interval.value / (86400 * 1000)} day(s)`
+                }
+
+                else if (task_data.repeat.type === "weekly") {
+                    repeat = `Every ${task_data.repeat.interval.value / (86400 * 1000 * 7)} week(s)`
+                }
+
+                else if (task_data.repeat.type === "monthly") {
+                    repeat = `Every ${task_data.repeat.interval.value} month(s)`
+                }
+            }
+
+            this.setState({
+                day_in_week_text,
+                date_number,
+                month_text,
+                category,
+                priority,
+                repeat,
+                goal,
+            })
         }
     }
 
@@ -83,67 +104,8 @@ export default class TaskDetailModal extends Component {
         this.props.closeModal()
     }
 
-    _onChangeTitle = (e) => {
-        this.setState({
-            title_value: e.nativeEvent.text
-        })
-    }
-
-    _onChangeDescription = (e) => {
-        this.setState({
-            description_value: e.nativeEvent.text
-        })
-    }
-
-    toggleShouldVisible = () => {
-        this.setState(prevState => ({
-            should_visible: !prevState.should_visible
-        }))
-    }
-
-    editSchedule = () => {
-        this.toggleShouldVisible()
-
-        this.setState({
-            edit_calendar: true,
-            edit_category: false,
-        })
-    }
-
-    editCategory = () => {
-        this.toggleShouldVisible()
-
-        this.setState({
-            edit_calendar: false,
-            edit_category: true,
-        })
-    }
 
     render() {
-        let task_data = this.props.task_data,
-            date = new Date(task_data.startTime),
-            day_in_week_text = this.daysInWeekText[date.getDay()],
-            date_number = date.getDate(),
-            month_text = this.monthNames[date.getMonth()],
-            category = task_data.category ? this.props.categories[task_data.category].name : "",
-            priority = task_data.priority ? this.props.priorities[task_data.priority.value].name : "",
-            repeat,
-            goal = task_data.goal ? `${task_data.goal.max} times` : ""
-
-        if (task_data.repeat) {
-            if (task_data.repeat.type === "daily") {
-                repeat = `Every ${task_data.repeat.interval.value / (86400 * 1000)} day(s)`
-            }
-
-            else if (task_data.repeat.type === "weekly") {
-                repeat = `Every ${task_data.repeat.interval.value / (86400 * 1000 * 7)} week(s)`
-            }
-
-            else if (task_data.repeat.type === "monthly") {
-                repeat = `Every ${task_data.repeat.interval.value} month(s)`
-            }
-        }
-
         return (
             <Modal
                 style={{ marginTop: 50, borderRadius: 10 }}
@@ -216,7 +178,7 @@ export default class TaskDetailModal extends Component {
                                             <FontAwesome name={'calendar'} style={styles.icon} />
                                         </View>
                                         <View style={styles.body}>
-                                            <Text style={styles.text}>{`${day_in_week_text} ${date_number} ${month_text}`}</Text>
+                                            <Text style={styles.text}>{`${this.state.day_in_week_text} ${this.state.date_number} ${this.state.month_text}`}</Text>
                                         </View>
                                     </View>
 
@@ -225,7 +187,7 @@ export default class TaskDetailModal extends Component {
                                             <FontAwesome name={'circle'} style={styles.icon} />
                                         </View>
                                         <View style={styles.body}>
-                                            <Text style={styles.text}>{category}</Text>
+                                            <Text style={styles.text}>{this.state.category}</Text>
                                         </View>
                                     </View>
                                     <View style={styles.container}>
@@ -233,7 +195,7 @@ export default class TaskDetailModal extends Component {
                                             <FontAwesome name={'warning'} style={styles.icon} />
                                         </View>
                                         <View style={styles.body}>
-                                            <Text style={styles.text}>{priority}</Text>
+                                            <Text style={styles.text}>{this.state.category}</Text>
                                         </View>
                                     </View>
                                     <View style={styles.container}>
@@ -241,7 +203,7 @@ export default class TaskDetailModal extends Component {
                                             <FontAwesome name={'warning'} style={styles.icon} />
                                         </View>
                                         <View style={styles.body}>
-                                            <Text style={styles.text}>{repeat}</Text>
+                                            <Text style={styles.text}>{this.state.repeat}</Text>
                                         </View>
                                     </View>
                                     <View style={styles.container}>
@@ -249,7 +211,7 @@ export default class TaskDetailModal extends Component {
                                             <FontAwesome name={'warning'} style={styles.icon} />
                                         </View>
                                         <View style={styles.body}>
-                                            <Text style={styles.text}>{goal}</Text>
+                                            <Text style={styles.text}>{this.state.goal}</Text>
                                         </View>
                                     </View>
                                     <View style={styles.container}>
@@ -265,279 +227,401 @@ export default class TaskDetailModal extends Component {
                         </View>
                     </View>
                     :
-                    <>
-                        <View
-                            style={{
-                                flex: 1,
-                                paddingTop: 58,
-                                paddingHorizontal: 30,
-                                position: "relative",
-                            }}
-                        >
-                            <View
-                                style={{
-                                    borderBottomColor: "gainsboro",
-                                    borderBottomWidth: 1,
-                                    height: 65,
-                                    marginBottom: 18,
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        fontSize: 13,
-                                        lineHeight: 15,
-                                        color: "rgba(0, 0, 0, 0.25)",
-                                        marginBottom: 5,
-                                    }}
-                                >
-                                    Task Title
-                            </Text>
 
-                                <TextInput
-                                    style={{
-                                        height: 30,
-                                    }}
+                    <EditDetails
+                        task_data={this.props.task_data}
+                        day_in_week_text={this.state.day_in_week_text}
+                        date_number={this.state.date_number}
+                        month_text={this.state.month_text}
+                        category={this.state.category}
+                        priority={this.state.priority}
+                        repeat={this.state.repeat}
+                        goal={this.state.goal}
 
-                                    value={this.state.title_value}
-                                    onChange={this._onChangeTitle}
-                                />
-                            </View>
-
-                            <View
-                                style={{
-                                    borderBottomColor: "gainsboro",
-                                    borderBottomWidth: 1,
-                                    height: 65,
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        fontSize: 13,
-                                        lineHeight: 15,
-                                        color: "rgba(0, 0, 0, 0.25)",
-                                        marginBottom: 5,
-                                    }}
-                                >
-                                    Task Description
-                            </Text>
-
-                                <TextInput
-                                    style={{
-                                        height: 30,
-                                    }}
-
-                                    value={this.state.description_value}
-                                    onChange={this._onChangeDescription}
-                                />
-                            </View>
-
-                            <View
-                                style={{
-                                    borderBottomColor: "gainsboro",
-                                    borderBottomWidth: 1,
-                                    height: 65,
-                                    justifyContent: "center"
-                                }}
-                            >
-                                <TouchableOpacity
-                                    style={{
-                                        height: 30,
-                                    }}
-
-                                    onPress={this.editSchedule}
-                                >
-                                    <Text>
-                                        {`${day_in_week_text} ${date_number} ${month_text}`}
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            <View
-                                style={{
-                                    borderBottomColor: "gainsboro",
-                                    borderBottomWidth: 1,
-                                    height: 65,
-                                    justifyContent: "center"
-                                }}
-                            >
-                                <TouchableOpacity
-                                    style={{
-                                        height: 30,
-                                    }}
-
-                                    onPress={this.editCategory}
-                                >
-                                    <Text
-                                        style={{
-                                            color: "red"
-                                        }}
-                                    >
-                                        {category}
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            <View
-                                style={{
-                                    borderBottomColor: "gainsboro",
-                                    borderBottomWidth: 1,
-                                    height: 65,
-                                    justifyContent: "center"
-                                }}
-                            >
-                                <TouchableOpacity
-                                    style={{
-                                        height: 30,
-                                    }}
-                                >
-                                    <Text>
-                                        {priority}
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            <View
-                                style={{
-                                    borderBottomColor: "gainsboro",
-                                    borderBottomWidth: 1,
-                                    height: 65,
-                                    justifyContent: "center"
-                                }}
-                            >
-                                <TouchableOpacity
-                                    style={{
-                                        height: 30,
-                                    }}
-                                >
-                                    <Text>
-                                        {repeat}
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            <View
-                                style={{
-                                    borderBottomColor: "gainsboro",
-                                    borderBottomWidth: 1,
-                                    height: 65,
-                                    justifyContent: "center"
-                                }}
-                            >
-                                <TouchableOpacity
-                                    style={{
-                                        height: 30,
-                                    }}
-                                >
-                                    <Text>
-                                        {goal}
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            <View
-                                style={{
-                                    position: "absolute",
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                    bottom: 100,
-                                    left: 30,
-                                    right: 30,
-                                }}
-                            >
-                                <TouchableOpacity
-                                    style={{
-                                        width: 135,
-                                        height: 48,
-                                        borderRadius: 30,
-                                        backgroundColor: "gainsboro",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                    }}
-                                >
-                                    <Text
-                                        style={{
-                                            color: "white"
-                                        }}
-                                    >
-                                        Cancel
-                                </Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={{
-                                        width: 135,
-                                        height: 48,
-                                        borderRadius: 30,
-                                        backgroundColor: "black",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                    }}
-                                >
-                                    <Text
-                                        style={{
-                                            color: "white"
-                                        }}
-                                    >
-                                        Save
-                                </Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-
-                        <RNModal
-                            visible={this.state.should_visible}
-                            transparent={true}
-                        >
-                            <View
-                                style={{
-                                    flex: 1,
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    position: "relative",
-                                }}
-                            >
-                                <DismissArea
-                                    toggleShouldVisible={this.toggleShouldVisible}
-                                />
-
-                                <>
-                                    {
-                                        this.state.edit_calendar ?
-                                            <CalendarEdit
-                                                task_data={this.props.task_data}
-                                            />
-
-                                            :
-
-                                            <>
-                                                {
-                                                    this.state.edit_category ?
-
-                                                        <Category
-                                                            edit={true}
-                                                            action_type={"UPDATE_EDIT_TASK"}
-                                                            hideAction={this.toggleShouldVisible}
-                                                        />
-
-                                                        :
-
-                                                        <></>
-                                                }
-
-                                            </>
-
-
-                                    }
-                                </>
-                            </View>
-                        </RNModal>
-
-                    </>
+                        updateEdittingTask={this.props.updateEdittingTask}
+                    />
                 }
 
 
             </Modal>
+        )
+    }
+}
+
+class EditDetails extends React.PureComponent {
+
+    state = {
+        title_value: "",
+        description_value: "",
+        should_visible: false,
+
+        edit_calendar: false,
+        edit_category: false,
+        edit_repeat: false,
+        edit_priority: false,
+        edit_goal: false,
+    }
+
+    _onChangeTitle = (e) => {
+        this.setState({
+            title_value: e.nativeEvent.text
+        })
+    }
+
+    _onChangeDescription = (e) => {
+        this.setState({
+            description_value: e.nativeEvent.text
+        })
+    }
+
+    toggleShouldVisible = () => {
+        this.setState(prevState => ({
+            should_visible: !prevState.should_visible
+        }))
+    }
+
+    disableAllTabBools = () => {
+        this.setState({
+            edit_calendar: false,
+            edit_category: false,
+            edit_repeat: false,
+            edit_priority: false,
+            edit_goal: false,
+        })
+    }
+
+    toggleAction = (name) => {
+        this.toggleShouldVisible()
+        this.disableAllTabBools()
+
+        if (name === "calendar") {
+            this.setState({
+                edit_calendar: true
+            })
+        }
+
+        else if (name === "category") {
+            this.setState({
+                edit_category: true
+            })
+        }
+
+        else if (name === "repeat") {
+            this.setState({
+                edit_repeat: true
+            })
+        }
+
+        else if (name === "priority") {
+            this.setState({
+                edit_priority: true
+            })
+        }
+
+        else {
+            this.setState({
+                edit_goal: true
+            })
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.task_data !== prevProps.task_data) {
+            if (this.props.task_data.title && this.props.task_data.title.length > 0) {
+                this.setState({
+                    title_value: this.props.task_data.title
+                })
+            }
+
+            if (this.props.task_data.description && this.props.task_data.description.length > 0) {
+                this.setState({
+                    description_value: this.props.task_data.description
+                })
+            }
+        }
+    }
+
+    render() {
+        return (
+            <>
+                <View
+                    style={{
+                        flex: 1,
+                        paddingTop: 58,
+                        paddingHorizontal: 30,
+                        position: "relative",
+                    }}
+                >
+                    <View
+                        style={{
+                            borderBottomColor: "gainsboro",
+                            borderBottomWidth: 1,
+                            height: 65,
+                            marginBottom: 18,
+                        }}
+                    >
+                        <Text
+                            style={{
+                                fontSize: 13,
+                                lineHeight: 15,
+                                color: "rgba(0, 0, 0, 0.25)",
+                                marginBottom: 5,
+                            }}
+                        >
+                            Task Title
+                            </Text>
+
+                        <TextInput
+                            style={{
+                                height: 30,
+                            }}
+
+                            value={this.state.title_value}
+                            onChange={this._onChangeTitle}
+                        />
+                    </View>
+
+                    <View
+                        style={{
+                            borderBottomColor: "gainsboro",
+                            borderBottomWidth: 1,
+                            height: 65,
+                        }}
+                    >
+                        <Text
+                            style={{
+                                fontSize: 13,
+                                lineHeight: 15,
+                                color: "rgba(0, 0, 0, 0.25)",
+                                marginBottom: 5,
+                            }}
+                        >
+                            Task Description
+                            </Text>
+
+                        <TextInput
+                            style={{
+                                height: 30,
+                            }}
+
+                            value={this.state.description_value}
+                            onChange={this._onChangeDescription}
+                        />
+                    </View>
+
+                    <OptionButton
+                        content={`${this.props.day_in_week_text} ${this.props.date_number} ${this.props.month_text}`}
+                        text_color={"black"}
+                        toggleAction={this.toggleAction}
+                        name={"calendar"}
+                    />
+                    <OptionButton
+                        content={this.props.category}
+                        text_color={"red"}
+                        toggleAction={this.toggleAction}
+                        name={"category"}
+                    />
+
+                    <OptionButton
+                        content={this.props.priority}
+                        text_color={"red"}
+                        toggleAction={this.toggleAction}
+                        name={"priority"}
+                    />
+
+                    <OptionButton
+                        content={this.props.repeat}
+                        text_color={"black"}
+                        toggleAction={this.toggleAction}
+                        name={"repeat"}
+                    />
+
+                    <OptionButton
+                        content={this.props.goal}
+                        text_color={"black"}
+                        toggleAction={this.toggleAction}
+                        name={"goal"}
+                    />
+
+                    <View
+                        style={{
+                            position: "absolute",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            bottom: 100,
+                            left: 30,
+                            right: 30,
+                        }}
+                    >
+                        <TouchableOpacity
+                            style={{
+                                width: 135,
+                                height: 48,
+                                borderRadius: 30,
+                                backgroundColor: "gainsboro",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    color: "white"
+                                }}
+                            >
+                                Cancel
+                                </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={{
+                                width: 135,
+                                height: 48,
+                                borderRadius: 30,
+                                backgroundColor: "black",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    color: "white"
+                                }}
+                            >
+                                Save
+                                </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                <RNModal
+                    visible={this.state.should_visible}
+                    transparent={true}
+                >
+                    <View
+                        style={{
+                            flex: 1,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            position: "relative",
+                        }}
+                    >
+                        <DismissArea
+                            toggleShouldVisible={this.toggleShouldVisible}
+                        />
+
+                        <>
+                            {
+                                this.state.edit_calendar ?
+                                    <CalendarEdit
+                                        task_data={this.props.task_data}
+                                        hideAction={this.toggleShouldVisible}
+                                        updateEdittingTask={this.props.updateEdittingTask}
+                                    />
+
+                                    :
+
+                                    <>
+                                        {
+                                            this.state.edit_category ?
+
+                                                <Category
+                                                    edit={true}
+                                                    action_type={"UPDATE_EDIT_TASK"}
+                                                    hideAction={this.toggleShouldVisible}
+                                                />
+
+                                                :
+
+                                                <>
+                                                    {
+                                                        this.state.edit_priority ?
+
+                                                            <Priority
+                                                                edit={true}
+                                                                action_type={"UPDATE_EDIT_TASK"}
+                                                                hideAction={this.toggleShouldVisible}
+                                                            />
+
+                                                            :
+
+                                                            <>
+                                                                {
+                                                                    this.state.edit_repeat ?
+
+                                                                        <Repeat
+                                                                            edit={true}
+                                                                            action_type={"UPDATE_EDIT_TASK"}
+                                                                            hideAction={this.toggleShouldVisible}
+                                                                        />
+
+                                                                        :
+
+                                                                        <>
+                                                                            {
+                                                                                this.state.edit_goal ?
+
+                                                                                    <Goal
+                                                                                        edit={true}
+                                                                                        action_type={"UPDATE_EDIT_TASK"}
+                                                                                        hideAction={this.toggleShouldVisible}
+                                                                                    />
+
+                                                                                    :
+
+                                                                                    <></>
+                                                                            }
+                                                                        </>
+                                                                }
+                                                            </>
+                                                    }
+                                                </>
+                                        }
+
+                                    </>
+
+
+                            }
+                        </>
+                    </View>
+                </RNModal>
+            </>
+        )
+    }
+}
+
+class OptionButton extends React.PureComponent {
+
+    _onPress = () => {
+        this.props.toggleAction(this.props.name)
+    }
+
+    render() {
+        return (
+            <View
+                style={{
+                    borderBottomColor: "gainsboro",
+                    borderBottomWidth: 1,
+                    height: 65,
+                    justifyContent: "center"
+                }}
+            >
+                <TouchableOpacity
+                    style={{
+                        height: 30,
+                    }}
+
+                    onPress={this._onPress}
+                >
+                    <Text
+                        style={{
+                            color: this.props.text_color
+                        }}
+                    >
+                        {this.props.content}
+                    </Text>
+                </TouchableOpacity>
+            </View>
         )
     }
 }
@@ -554,6 +638,34 @@ class CalendarEdit extends React.PureComponent {
         this.chosen_year = year
     }
 
+    save = () => {
+        let data = {}
+        if (this.chosen_day > 0 && this.chosen_month > 0 && this.chosen_year > 0) {
+            if (this.chosen_day < new Date().getDate() && this.chosen_month === new Date().getMonth() && this.chosen_year === new Date().getFullYear()){
+                data.startTime = new Date().getTime()
+                data.trackingTime = data.startTime
+                data.schedule = {
+                    day: new Date().getDate(),
+                    month: this.chosen_month,
+                    year: this.chosen_yaer
+                }
+            }
+
+            else{
+                data.startTime = new Date(new Date(new Date((new Date().setMonth(this.month))).setDate(this.day)).setFullYear(this.year)).getTime()
+                data.trackingTime = data.startTime
+                data.schedule = {
+                    day: this.chosen_day,
+                    month: this.chosen_month,
+                    year: this.chosen_yaer
+                }
+            }
+        }
+
+        this.props.updateEdittingTask(data)
+
+        this.props.hideAction()
+    }
 
     render() {
         return (
@@ -570,6 +682,59 @@ class CalendarEdit extends React.PureComponent {
                     {... this.props}
                     setData={this.setData}
                 />
+
+                <View
+                    style={{
+                        height: 60,
+                        backgroundColor: 'white',
+                        flexDirection: "row",
+                        marginBottom: 10,
+                        justifyContent: "flex-end",
+                        alignItems: 'center'
+                    }}
+                >
+                    <TouchableOpacity
+                        style={{
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: 50,
+                            width: 50,
+                            borderRadius: 25,
+                            backgroundColor: 'gray',
+                            marginRight: 20
+                        }}
+                    >
+                        <Text
+                            style={{
+                                color: "white"
+                            }}
+                        >
+                            X
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={{
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: 50,
+                            width: 50,
+                            borderRadius: 25,
+                            backgroundColor: 'gray',
+                            marginRight: 10
+                        }}
+
+                        onPress={this.save}
+                    >
+                        <Text
+                            style={{
+                                color: "white"
+                            }}
+                        >
+                            OK
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         )
     }
