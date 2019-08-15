@@ -64,7 +64,7 @@ export default class TaskDetailModal extends Component {
             }
         }
 
-        if(this.state.isEditing && this.state.isEditing !== prevState.isEditing){
+        if (this.state.isEditing && this.state.isEditing !== prevState.isEditing) {
             this.props.updateEdittingTask(this.props.task_data)
         }
     }
@@ -104,17 +104,19 @@ export default class TaskDetailModal extends Component {
     editSchedule = () => {
         this.toggleShouldVisible()
 
-        this.setState(prevState => ({
-            edit_calendar: !prevState.edit_calendar
-        }))
+        this.setState({
+            edit_calendar: true,
+            edit_category: false,
+        })
     }
 
     editCategory = () => {
         this.toggleShouldVisible()
 
-        this.setState(prevState => ({
-            edit_category: !prevState.edit_category
-        }))
+        this.setState({
+            edit_calendar: false,
+            edit_category: true,
+        })
     }
 
     render() {
@@ -503,7 +505,7 @@ export default class TaskDetailModal extends Component {
                                     {
                                         this.state.edit_calendar ?
                                             <CalendarEdit
-                                                currentDayTask={this.props.task_data}
+                                                task_data={this.props.task_data}
                                             />
 
                                             :
@@ -512,9 +514,9 @@ export default class TaskDetailModal extends Component {
                                                 {
                                                     this.state.edit_category ?
 
-                                                        <Category 
-                                                            edit = {true}
-                                                            action_type = {"UPDATE_EDIT_TASK"}
+                                                        <Category
+                                                            edit={true}
+                                                            action_type={"UPDATE_EDIT_TASK"}
                                                             hideAction={this.toggleShouldVisible}
                                                         />
 
@@ -542,6 +544,17 @@ export default class TaskDetailModal extends Component {
 
 class CalendarEdit extends React.PureComponent {
 
+    chosen_day = -1
+    chosen_month = -1
+    chosen_year = -1
+
+    setData = (day, month, year) => {
+        this.chosen_day = day
+        this.chosen_month = month
+        this.chosen_year = year
+    }
+
+
     render() {
         return (
             <View
@@ -555,6 +568,7 @@ class CalendarEdit extends React.PureComponent {
             >
                 <DayCalendar
                     {... this.props}
+                    setData={this.setData}
                 />
             </View>
         )
