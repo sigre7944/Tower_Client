@@ -13,7 +13,7 @@ export default class WeekAnnotationPanel extends Component {
     chosen_noWeekInMonth = chosen_day = chosen_week = chosen_month = chosen_year = -1
 
     state = {
-
+        toggle_clear: false
     }
 
     _chooseRepeatOption = () => {
@@ -61,6 +61,15 @@ export default class WeekAnnotationPanel extends Component {
         this.props.disableAllTabs()
     }
 
+    clear = () => {
+        this.setState(prevState => ({
+            toggle_clear: !prevState.toggle_clear
+        }))
+
+        let date = new Date()
+        this.setData(this.getMonday(date), this.getWeek(date), date.getMonth(), date.getFullYear(), this.getNoWeekInMonth(date))
+    }
+
     setData = (day, week, month, year, noWeekInMonth) => {
         this.chosen_day = day
         this.chosen_week = week
@@ -96,6 +105,7 @@ export default class WeekAnnotationPanel extends Component {
                 <WeekCalendar
                     edit={false}
                     setData={this.setData}
+                    toggle_clear={this.state.toggle_clear}
                 />
 
                 {/* Add Repeat */}
@@ -125,6 +135,28 @@ export default class WeekAnnotationPanel extends Component {
                         alignItems: 'center'
                     }}
                 >
+                    <TouchableHighlight
+                        style={{
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: 50,
+                            width: 50,
+                            borderRadius: 25,
+                            backgroundColor: 'gray',
+                            marginRight: 20
+                        }}
+
+                        onPress={this.clear}
+                    >
+                        <Text
+                            style={{
+                                color: "white"
+                            }}
+                        >
+                            Clear
+                        </Text>
+                    </TouchableHighlight>
+
                     <TouchableHighlight
                         style={{
                             alignItems: "center",

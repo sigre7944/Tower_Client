@@ -730,7 +730,7 @@ export default class WeekCalendar extends Component {
     componentDidMount() {
 
         let { schedule } = this.props.task_data
-        
+
         this.initWeeks()
 
         if (schedule.year > this.year) {
@@ -752,6 +752,21 @@ export default class WeekCalendar extends Component {
             return true
         })
 
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.toggle_clear !== prevProps.toggle_clear) {
+            let date = new Date()
+
+            this.week_data_array.every((data, index) => {
+                if (data.noWeek === this.getWeek(date) && data.monthIndex === date.getMonth() && data.year === date.getFullYear()) {
+                    this.scrollToWeekRow(index)
+                    return false
+                }
+
+                return true
+            })
+        }
     }
 
     render() {

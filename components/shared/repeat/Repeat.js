@@ -121,6 +121,10 @@ export default class Repeat extends Component {
         
     }
 
+    cancel = () => {
+        this.props.hideAction()
+    }
+
     componentWillUnmount() {
         Keyboard.removeListener('keyboardWillShow', this.toDoWhenWillShowKeyboard)
         Keyboard.removeListener('keyboardWillHide', this.toDoWhenWillHideKB)
@@ -209,6 +213,8 @@ export default class Repeat extends Component {
                                 backgroundColor: 'gray',
                                 marginRight: 20
                             }}
+
+                            onPress={this.cancel}
                         >
                             <Text
                                 style={{

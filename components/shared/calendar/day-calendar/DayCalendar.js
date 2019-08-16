@@ -702,7 +702,11 @@ export default class DayCalendar extends React.Component {
         this.loadData()
     }
 
-    componentDidUpdate(prevProps, prevState){
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.toggle_clear !== prevProps.toggle_clear) {
+            this.returnToCurrentMonth()
+            this.chooseDay(0, new Date().getDate() - 1)
+        }
 
     }
 
@@ -875,11 +879,9 @@ class Day extends React.Component {
     componentDidMount() {
         let { schedule } = this.props.task_data
 
-        if (schedule) {
-            if (this.props.data.month === schedule.month && this.props.data.day === schedule.day && this.props.data.year === schedule.year) {
-                this._onPress()
-                this.props.toggleAniBool()
-            }
+        if (this.props.data.month === schedule.month && this.props.data.day === schedule.day && this.props.data.year === schedule.year) {
+            this._onPress()
+            this.props.toggleAniBool()
         }
     }
 

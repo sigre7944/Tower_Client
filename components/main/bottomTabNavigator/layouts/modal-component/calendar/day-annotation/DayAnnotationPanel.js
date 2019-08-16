@@ -15,6 +15,7 @@ export default class DayAnnotationPanel extends Component {
     chosen_year = -1
 
     state = {
+        toggle_clear: false
     }
 
     _chooseRepeatOption = () => {
@@ -31,6 +32,19 @@ export default class DayAnnotationPanel extends Component {
         }
 
         this.props.disableAllTabs()
+    }
+
+    cancel = () => {
+        this.props.disableAllTabs()
+    }
+
+    clear = () => {
+        this.setState(prevState => ({
+            toggle_clear: !prevState.toggle_clear
+        }))
+
+        let date = new Date()
+        this.setData(date.getDate(), date.getMonth(), date.getFullYear())
     }
 
     setData = (day, month, year) => {
@@ -62,6 +76,7 @@ export default class DayAnnotationPanel extends Component {
                 <DayCalendar
                     edit={false}
                     setData={this.setData}
+                    toggle_clear={this.state.toggle_clear}
                 />
                 <TouchableHighlight
                     style={{
@@ -99,6 +114,30 @@ export default class DayAnnotationPanel extends Component {
                             backgroundColor: 'gray',
                             marginRight: 20
                         }}
+
+                        onPress={this.clear}
+                    >
+                        <Text
+                            style={{
+                                color: "white"
+                            }}
+                        >
+                            Clear
+                        </Text>
+                    </TouchableHighlight>
+
+                    <TouchableHighlight
+                        style={{
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: 50,
+                            width: 50,
+                            borderRadius: 25,
+                            backgroundColor: 'gray',
+                            marginRight: 20
+                        }}
+
+                        onPress={this.cancel}
                     >
                         <Text
                             style={{

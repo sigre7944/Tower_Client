@@ -13,6 +13,7 @@ export default class MonthAnnotationPanel extends Component {
     chosen_month = chosen_year = -1
 
     state = {
+        toggle_clear: false
     }
 
     _chooseRepeatOption = () => {
@@ -28,6 +29,15 @@ export default class MonthAnnotationPanel extends Component {
                 this._updateTask(this.chosen_month, this.chosen_year)
         }
         this.props.disableAllTabs()
+    }
+
+    clear = () => {
+        this.setState(prevState => ({
+            toggle_clear: !prevState.toggle_clear
+        }))
+
+        let date = new Date()
+        this.setData(date.getMonth(), date.getFullYear())
     }
 
     setData = (month, year) => {
@@ -58,6 +68,7 @@ export default class MonthAnnotationPanel extends Component {
                 <MonthCalendar
                     edit={false}
                     setData={this.setData}
+                    toggle_clear={this.state.toggle_clear}
                 />
 
                 {/* Add Repeat */}
@@ -87,6 +98,28 @@ export default class MonthAnnotationPanel extends Component {
                         alignItems: 'center'
                     }}
                 >
+                    <TouchableHighlight
+                        style={{
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: 50,
+                            width: 50,
+                            borderRadius: 25,
+                            backgroundColor: 'gray',
+                            marginRight: 20
+                        }}
+
+                        onPress={this.clear}
+                    >
+                        <Text
+                            style={{
+                                color: "white"
+                            }}
+                        >
+                            Clear
+                        </Text>
+                    </TouchableHighlight>
+
                     <TouchableHighlight
                         style={{
                             alignItems: "center",
