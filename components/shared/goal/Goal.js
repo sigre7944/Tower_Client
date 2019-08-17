@@ -74,6 +74,16 @@ class GoalPerTimesRow extends React.PureComponent {
         this.props.hideAction()
     }
 
+    cancel = () => {
+        this.props.hideAction()
+    }
+
+    clear = () => {
+        this.setState({
+            value: "1"
+        })
+    }
+
     componentDidMount() {
         let { goal } = this.props.task_data
 
@@ -166,6 +176,30 @@ class GoalPerTimesRow extends React.PureComponent {
                             backgroundColor: 'gray',
                             marginRight: 20
                         }}
+
+                        onPress={this.clear}
+                    >
+                        <Text
+                            style={{
+                                color: "white"
+                            }}
+                        >
+                            Clear
+                        </Text>
+                    </TouchableHighlight>
+
+                    <TouchableHighlight
+                        style={{
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: 50,
+                            width: 50,
+                            borderRadius: 25,
+                            backgroundColor: 'gray',
+                            marginRight: 20
+                        }}
+
+                        onPress={this.cancel}
                     >
                         <Text
                             style={{

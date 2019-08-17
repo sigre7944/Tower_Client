@@ -155,6 +155,15 @@ export default class Priority extends React.Component {
         this.props.hideAction()
     }
 
+    cancel = () => {
+        this.props.hideAction()
+    }
+
+    clear = () => {
+        this.changePriorityValue("Do First")
+        this.changeRewardValue("0")
+    }
+
     componentDidMount() {
         this.keyboardWillShowListener = Keyboard.addListener(
             "keyboardWillShow",
@@ -247,6 +256,30 @@ export default class Priority extends React.Component {
                                     backgroundColor: 'gray',
                                     marginRight: 20
                                 }}
+
+                                onPress={this.clear}
+                            >
+                                <Text
+                                    style={{
+                                        color: "white"
+                                    }}
+                                >
+                                    Clear
+                                </Text>
+                            </TouchableHighlight>
+
+                            <TouchableHighlight
+                                style={{
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    height: 50,
+                                    width: 50,
+                                    borderRadius: 25,
+                                    backgroundColor: 'gray',
+                                    marginRight: 20
+                                }}
+
+                                onPress={this.cancel}
                             >
                                 <Text
                                     style={{

@@ -32,6 +32,8 @@ export default class Repeat extends Component {
 
 
         weekly_repeat_picker_value: "weeks",
+
+        toggle_clear: false
     }
 
     setWeeklyRepeatPickerValue = (value) => {
@@ -121,6 +123,12 @@ export default class Repeat extends Component {
         
     }
 
+    clear = () => {
+        this.setState(prevState => ({
+            toggle_clear: !prevState.toggle_clear
+        }))
+    }
+
     cancel = () => {
         this.props.hideAction()
     }
@@ -153,6 +161,7 @@ export default class Repeat extends Component {
                         <DayRepeatEveryHolder
                             task_data={this.props.task_data}
                             setRepetionData={this.setRepetionData}
+                            toggle_clear={this.state.toggle_clear}
                         />
 
                         :
@@ -166,6 +175,8 @@ export default class Repeat extends Component {
                                     task_data={this.props.task_data}
                                     setRepetionData={this.setRepetionData}
                                     setWeeklyRepeatPickerValue={this.setWeeklyRepeatPickerValue}
+
+                                    toggle_clear={this.state.toggle_clear}
                                 />
 
                                 :
@@ -173,6 +184,8 @@ export default class Repeat extends Component {
                                 <MonthlyRepeatOption
                                     task_data={this.props.task_data}
                                     setRepetionData={this.setRepetionData}
+
+                                    toggle_clear={this.state.toggle_clear}
                                 />
                             }
                         </>
@@ -203,6 +216,28 @@ export default class Repeat extends Component {
                             alignItems: 'center'
                         }}
                     >
+                        <TouchableHighlight
+                            style={{
+                                alignItems: "center",
+                                justifyContent: "center",
+                                height: 50,
+                                width: 50,
+                                borderRadius: 25,
+                                backgroundColor: 'gray',
+                                marginRight: 20
+                            }}
+
+                            onPress={this.clear}
+                        >
+                            <Text
+                                style={{
+                                    color: "white"
+                                }}
+                            >
+                                Clear
+                            </Text>
+                        </TouchableHighlight>
+
                         <TouchableHighlight
                             style={{
                                 alignItems: "center",
@@ -393,7 +428,6 @@ class DayRepeatEveryHolder extends React.PureComponent {
     state = {
         holderStyle_arr: [],
         textStyle_arr: []
-
     }
 
     handleChoosing = (index) => {
@@ -448,6 +482,7 @@ class DayRepeatEveryHolder extends React.PureComponent {
                 }
             })
         }
+
     }
 
     chooseMonthly = () => {
@@ -463,6 +498,7 @@ class DayRepeatEveryHolder extends React.PureComponent {
                 }
             })
         }
+
     }
 
     //To intially set the styles for holders to avoid a second re-rendering
@@ -496,6 +532,12 @@ class DayRepeatEveryHolder extends React.PureComponent {
 
         else
             this.chooseDaily()
+    }
+
+    componentDidUpdate(prevProps, prevState){
+        if(this.props.toggle_clear !== prevProps.toggle_clear){
+            this.chooseDaily(0)
+        }
     }
 
     render() {
@@ -563,6 +605,9 @@ class DayRepeatEveryHolder extends React.PureComponent {
                         task_data={this.props.task_data}
 
                         setRepetionData={this.props.setRepetionData}
+
+                        toggle_clear={this.props.toggle_clear}
+
                     />
 
                     :
@@ -651,6 +696,8 @@ class DailyRepeatOption extends React.PureComponent {
             })
         }
 
+        this._setRepetitionData(this.state.value)
+
         this.willHideListener = Keyboard.addListener(
             "keyboardWillHide",
             this.toDoWillHide
@@ -660,6 +707,12 @@ class DailyRepeatOption extends React.PureComponent {
     componentDidUpdate(prevProps, prevState) {
         if (this.state.value !== prevState.value && this.regExp.test(this.state.value) && parseInt(this.state.value) > 0) {
             this._setRepetitionData(this.state.value)
+        }
+
+        if(this.props.toggle_clear !== prevProps.toggle_clear){
+            this.setState({
+                value: "1"
+            })
         }
     }
 
@@ -786,6 +839,8 @@ class DayWeeklyRepeatOption extends React.PureComponent {
                 value: `${parseInt(repeat.interval.value) / (86400 * 1000 * 7)}`
             })
         }
+
+        this._setRepetitionData(this.state.value)
 
         this.willHideListener = Keyboard.addListener(
             "keyboardWillHide",
@@ -1224,6 +1279,8 @@ class WeeklyRepeatOption extends React.PureComponent {
             this.props.setWeeklyRepeatPickerValue("weeks")
         }
 
+        this._setRepetitionData(this.state.value)
+
         this.willHideListener = Keyboard.addListener(
             "keyboardWillHide",
             this.toDoWillHide
@@ -1234,6 +1291,16 @@ class WeeklyRepeatOption extends React.PureComponent {
         if (this.state.value !== prevState.value && this.regExp.test(this.state.value) && parseInt(this.state.value) > 0) {
             this._setRepetitionData(this.state.value)
         }
+
+
+
+        if(this.props.toggle_clear !== prevProps.toggle_clear){
+            this.setState({
+                value: "1"
+            })
+
+            this.props.setWeeklyRepeatPickerValue("weeks")
+        }
     }
 
     componentWillUnmount() {
@@ -1241,7 +1308,6 @@ class WeeklyRepeatOption extends React.PureComponent {
     }
 
     render() {
-        console.log(this.props.task_data.schedule.noWeekInMonth)
         return (
             <>
                 <View
@@ -1420,10 +1486,8 @@ class MonthlyRepeatOption extends React.PureComponent {
             })
         }
 
-        else {
-            this._setRepetitionData(this.state.value)
-        }
-
+        this._setRepetitionData(this.state.value)
+        
         this.willHideListener = Keyboard.addListener(
             "keyboardWillHide",
             this.toDoWillHide
@@ -1433,6 +1497,12 @@ class MonthlyRepeatOption extends React.PureComponent {
     componentDidUpdate(prevProps, prevState) {
         if (this.state.value !== prevState.value && this.regExp.test(this.state.value) && parseInt(this.state.value) > 0) {
             this._setRepetitionData(this.state.value)
+        }
+
+        if(this.props.toggle_clear !== prevProps.toggle_clear){
+            this.setState({
+                value: "1"
+            })
         }
     }
 

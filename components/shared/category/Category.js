@@ -45,7 +45,8 @@ export default class Category extends React.Component {
         },
 
         // count to update flat list (every update, plus 1)
-        should_flat_list_rerender: 0
+        should_flat_list_rerender: 0,
+
     }
 
     _keyExtractor = (item, index) => `flatlist-category-${index}`
@@ -60,7 +61,7 @@ export default class Category extends React.Component {
                     lastIndex={this.state.lastIndex}
                     selectCategory={this.selectCategory}
 
-                    task_data = {this.props.task_data}
+                    task_data={this.props.task_data}
                 />
             )
 
@@ -200,8 +201,17 @@ export default class Category extends React.Component {
     }
 
     save = () => {
-        this.props.updateTask({category: Object.keys(this.props.categories)[this.state.currentIndex]})
+        this.props.updateTask({ category: Object.keys(this.props.categories)[this.state.currentIndex] })
 
+        this.props.hideAction()
+    }
+
+    clear = () => {
+
+        this.selectCategory(0)
+    }
+
+    cancel = () => {
         this.props.hideAction()
     }
 
@@ -299,6 +309,30 @@ export default class Category extends React.Component {
                                 backgroundColor: 'gray',
                                 marginRight: 20
                             }}
+
+                            onPress={this.clear}
+                        >
+                            <Text
+                                style={{
+                                    color: "white"
+                                }}
+                            >
+                                Clear
+                            </Text>
+                        </TouchableHighlight>
+
+                        <TouchableHighlight
+                            style={{
+                                alignItems: "center",
+                                justifyContent: "center",
+                                height: 50,
+                                width: 50,
+                                borderRadius: 25,
+                                backgroundColor: 'gray',
+                                marginRight: 20
+                            }}
+
+                            onPress={this.cancel}
                         >
                             <Text
                                 style={{
