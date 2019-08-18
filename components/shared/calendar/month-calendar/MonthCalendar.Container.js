@@ -3,17 +3,13 @@ import MonthCalendar from './MonthCalendar'
 
 const mapStateToProps = (state, ownProps) => {
 
-    if(ownProps.edit){
-        return({
-            task_data: state.edittingTask
-        })
-    }
-
-    else{
+    if(!ownProps.edit){
         return({
             task_data: state.currentMonthTask
         })
     }
+
+    return null
 }
 
 export default connect(

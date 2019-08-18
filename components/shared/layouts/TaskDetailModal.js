@@ -19,6 +19,8 @@ export default class TaskDetailModal extends Component {
 
     month_names_in_short = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
+    edit_task = this.props.task_data
+
     state = {
         isOpened: false,
         isEditing: false,
@@ -28,7 +30,9 @@ export default class TaskDetailModal extends Component {
         category: "",
         priority: "",
         repeat: "",
-        goal: ""
+        goal: "",
+
+        should_update: 0,
     }
 
     setModalVisible = (visible) => {
@@ -49,32 +53,30 @@ export default class TaskDetailModal extends Component {
             }
         }
 
-        if (this.state.isEditing && this.state.isEditing !== prevState.isEditing) {
-            this.props.updateEdittingTask(this.props.task_data)
-        }
-
         if (this.props.task_data !== prevProps.task_data) {
-            let task_data = this.props.task_data,
-                date = new Date(task_data.startTime),
+            this.edit_task = this.props.task_data
+
+            let edit_task = this.edit_task,
+                date = new Date(edit_task.startTime),
                 day_in_week_text = this.daysInWeekText[date.getDay()],
                 date_number = date.getDate(),
                 month_text = this.monthNames[date.getMonth()],
-                category = task_data.category ? this.props.categories[task_data.category].name : "",
-                priority = task_data.priority ? this.props.priorities[task_data.priority.value].name : "",
+                category = edit_task.category ? this.props.categories[edit_task.category].name : "",
+                priority = edit_task.priority ? this.props.priorities[edit_task.priority.value].name : "",
                 repeat,
-                goal = task_data.goal ? `${task_data.goal.max} times` : ""
+                goal = edit_task.goal ? `${edit_task.goal.max} times` : ""
 
-            if (task_data.repeat) {
-                if (task_data.repeat.type === "daily") {
-                    repeat = `Every ${task_data.repeat.interval.value / (86400 * 1000)} day(s)`
+            if (edit_task.repeat) {
+                if (edit_task.repeat.type === "daily") {
+                    repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000)} day(s)`
                 }
 
-                else if (task_data.repeat.type === "weekly") {
-                    repeat = `Every ${task_data.repeat.interval.value / (86400 * 1000 * 7)} week(s)`
+                else if (edit_task.repeat.type === "weekly") {
+                    repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000 * 7)} week(s)`
                 }
 
-                else if (task_data.repeat.type === "monthly") {
-                    repeat = `Every ${task_data.repeat.interval.value} month(s)`
+                else if (edit_task.repeat.type === "monthly") {
+                    repeat = `Every ${edit_task.repeat.interval.value} month(s)`
                 }
             }
 
@@ -150,11 +152,11 @@ export default class TaskDetailModal extends Component {
                                             />
                                         </View>
                                         <View style={styles.body}>
-                                            <Text style={styles.text}>{this.props.task_data.title}</Text>
+                                            <Text style={styles.text}>{this.edit_task.title}</Text>
                                         </View>
                                     </View>
                                     {
-                                        this.props.task_data.description && this.props.task_data.description.length > 0 ?
+                                        this.edit_task.description && this.edit_task.description.length > 0 ?
                                             <View style={styles.container}>
                                                 <View style={styles.head}>
                                                     <CheckBox
@@ -165,7 +167,7 @@ export default class TaskDetailModal extends Component {
                                                     />
                                                 </View>
                                                 <View style={styles.body}>
-                                                    <Text style={styles.text}>{this.props.task_data.description}</Text>
+                                                    <Text style={styles.text}>{this.edit_task.description}</Text>
                                                 </View>
                                             </View>
 
@@ -229,16 +231,10 @@ export default class TaskDetailModal extends Component {
                     :
 
                     <EditDetails
-                        task_data={this.props.task_data}
-                        day_in_week_text={this.state.day_in_week_text}
-                        date_number={this.state.date_number}
-                        month_text={this.state.month_text}
-                        category={this.state.category}
-                        priority={this.state.priority}
-                        repeat={this.state.repeat}
-                        goal={this.state.goal}
-
-                        updateEdittingTask={this.props.updateEdittingTask}
+                        task_data={this.edit_task}
+                        categories={this.props.categories}
+                        priorities={this.props.priorities}
+                        hideAction={this.toggleEdit}
                     />
                 }
 
@@ -250,6 +246,23 @@ export default class TaskDetailModal extends Component {
 
 class EditDetails extends React.PureComponent {
 
+    daysInWeekText = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+    monthNames = ["January", "Febuary", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ]
+
+    month_names_in_short = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+    edit_task = {}
+    day_in_week_text = ""
+    date_number = ""
+    month_text = ""
+    category = ""
+    priority = ""
+    repeat = ""
+    goal = ""
+
     state = {
         title_value: "",
         description_value: "",
@@ -260,6 +273,8 @@ class EditDetails extends React.PureComponent {
         edit_repeat: false,
         edit_priority: false,
         edit_goal: false,
+
+        should_update: 0,
     }
 
     _onChangeTitle = (e) => {
@@ -325,19 +340,73 @@ class EditDetails extends React.PureComponent {
         }
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.props.task_data !== prevProps.task_data) {
-            if (this.props.task_data.title && this.props.task_data.title.length > 0) {
-                this.setState({
-                    title_value: this.props.task_data.title
-                })
-            }
+    setEditTask = (data) => {
+        this.edit_task = { ... this.edit_task, ...data }
 
-            if (this.props.task_data.description && this.props.task_data.description.length > 0) {
-                this.setState({
-                    description_value: this.props.task_data.description
-                })
-            }
+        this.setState(prevState => ({
+            should_update: prevState.should_update + 1
+        }))
+    }
+
+    save = () => {
+
+    }
+
+    cancel = () => {
+        this.props.hideAction()
+    }
+
+    componentDidMount() {
+        this.edit_task = this.props.task_data
+
+        let { title, description, category, repeat, priority, goal, startTime } = this.edit_task
+
+        let date = new Date(startTime)
+
+        this.day_in_week_text = this.daysInWeekText[date.getDay()]
+        this.date_number = date.getDate()
+        this.month_text = this.monthNames[date.getMonth()]
+        this.category = this.props.categories[category].name
+        this.priority = this.props.priorities[priority.value].name
+        this.goal = `${goal.max} times`
+
+        if (repeat.type === "daily") {
+            this.repeat = `Every ${repeat.interval.value / (86400 * 1000)} day(s)`
+        }
+
+        else if (repeat.type === "weekly") {
+            this.repeat = `Every ${repeat.interval.value / (86400 * 1000 * 7)} week(s)`
+        }
+
+        else if (repeat.type === "monthly") {
+            this.repeat = `Every ${repeat.interval.value} month(s)`
+        }
+
+        this.setState(prevState => ({
+            title_value: title,
+            should_update: prevState.should_update + 1,
+            description_value: description ? description: ""
+        }))
+
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        // if (this.props.task_data !== prevProps.task_data) {
+        //     if (this.props.task_data.title && this.props.task_data.title.length > 0) {
+        //         this.setState({
+        //             title_value: this.props.task_data.title
+        //         })
+        //     }
+
+        //     if (this.props.task_data.description && this.props.task_data.description.length > 0) {
+        //         this.setState({
+        //             description_value: this.props.task_data.description
+        //         })
+        //     }
+        // }
+
+        if(this.state.should_update !== prevState.should_update){
+            console.log(this.edit_task)
         }
     }
 
@@ -410,34 +479,34 @@ class EditDetails extends React.PureComponent {
                     </View>
 
                     <OptionButton
-                        content={`${this.props.day_in_week_text} ${this.props.date_number} ${this.props.month_text}`}
+                        content={`${this.day_in_week_text} ${this.date_number} ${this.month_text}`}
                         text_color={"black"}
                         toggleAction={this.toggleAction}
                         name={"calendar"}
                     />
                     <OptionButton
-                        content={this.props.category}
+                        content={this.category}
                         text_color={"red"}
                         toggleAction={this.toggleAction}
                         name={"category"}
                     />
 
                     <OptionButton
-                        content={this.props.priority}
+                        content={this.priority}
                         text_color={"red"}
                         toggleAction={this.toggleAction}
                         name={"priority"}
                     />
 
                     <OptionButton
-                        content={this.props.repeat}
+                        content={this.repeat}
                         text_color={"black"}
                         toggleAction={this.toggleAction}
                         name={"repeat"}
                     />
 
                     <OptionButton
-                        content={this.props.goal}
+                        content={this.goal}
                         text_color={"black"}
                         toggleAction={this.toggleAction}
                         name={"goal"}
@@ -463,6 +532,8 @@ class EditDetails extends React.PureComponent {
                                 alignItems: "center",
                                 justifyContent: "center",
                             }}
+
+                            onPress={this.cancel}
                         >
                             <Text
                                 style={{
@@ -482,6 +553,8 @@ class EditDetails extends React.PureComponent {
                                 alignItems: "center",
                                 justifyContent: "center",
                             }}
+
+                            onPress={this.save}
                         >
                             <Text
                                 style={{
@@ -514,9 +587,10 @@ class EditDetails extends React.PureComponent {
                             {
                                 this.state.edit_calendar ?
                                     <CalendarEdit
-                                        task_data={this.props.task_data}
+                                        edit={true}
+                                        task_data={this.props.edit_task}
                                         hideAction={this.toggleShouldVisible}
-                                        updateEdittingTask={this.props.updateEdittingTask}
+                                        setEditTask={this.setEditTask}
                                     />
 
                                     :
@@ -529,6 +603,7 @@ class EditDetails extends React.PureComponent {
                                                     edit={true}
                                                     action_type={"UPDATE_EDIT_TASK"}
                                                     hideAction={this.toggleShouldVisible}
+                                                    updateTask={this.setEditTask}
                                                 />
 
                                                 :
@@ -541,6 +616,7 @@ class EditDetails extends React.PureComponent {
                                                                 edit={true}
                                                                 action_type={"UPDATE_EDIT_TASK"}
                                                                 hideAction={this.toggleShouldVisible}
+                                                                updateTask={this.setEditTask}
                                                             />
 
                                                             :
@@ -553,6 +629,7 @@ class EditDetails extends React.PureComponent {
                                                                             edit={true}
                                                                             action_type={"UPDATE_EDIT_TASK"}
                                                                             hideAction={this.toggleShouldVisible}
+                                                                            updateTask={this.setEditTask}
                                                                         />
 
                                                                         :
@@ -565,6 +642,7 @@ class EditDetails extends React.PureComponent {
                                                                                         edit={true}
                                                                                         action_type={"UPDATE_EDIT_TASK"}
                                                                                         hideAction={this.toggleShouldVisible}
+                                                                                        updateTask={this.setEditTask}
                                                                                     />
 
                                                                                     :
@@ -641,7 +719,7 @@ class CalendarEdit extends React.PureComponent {
     save = () => {
         let data = {}
         if (this.chosen_day > 0 && this.chosen_month > 0 && this.chosen_year > 0) {
-            if (this.chosen_day < new Date().getDate() && this.chosen_month === new Date().getMonth() && this.chosen_year === new Date().getFullYear()){
+            if (this.chosen_day < new Date().getDate() && this.chosen_month === new Date().getMonth() && this.chosen_year === new Date().getFullYear()) {
                 data.startTime = new Date().getTime()
                 data.trackingTime = data.startTime
                 data.schedule = {
@@ -651,7 +729,7 @@ class CalendarEdit extends React.PureComponent {
                 }
             }
 
-            else{
+            else {
                 data.startTime = new Date(new Date(new Date((new Date().setMonth(this.month))).setDate(this.day)).setFullYear(this.year)).getTime()
                 data.trackingTime = data.startTime
                 data.schedule = {
@@ -662,7 +740,7 @@ class CalendarEdit extends React.PureComponent {
             }
         }
 
-        this.props.updateEdittingTask(data)
+        this.props.setEditTask(data)
 
         this.props.hideAction()
     }

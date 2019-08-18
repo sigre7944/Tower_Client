@@ -6,15 +6,8 @@ import { updateTask } from '../actions/updateTask'
 let action_type = ""
 
 const mapStateToProps = (state, ownProps) => {
-    if(ownProps.edit){
-        action_type = "UPDATE_EDIT_TASK"
-        return ({
-            categories: state.categories,
-            task_data: state.edittingTask
-        })
-    }
-
-    else{
+    
+    if(!ownProps.edit){
         if(ownProps.currentAnnotation === "day"){
             action_type = "UPDATE_NEW_DAY_TASK"
             return ({
@@ -39,12 +32,19 @@ const mapStateToProps = (state, ownProps) => {
             })
         }
     }
+
+    return null
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
-    createCategory: (data) => dispatch(createCategory(data)),
-    updateTask: (data) => dispatch(updateTask(action_type, data))
-})
+const mapDispatchToProps = (dispatch, ownProps) => {
+    if (!ownProps.edit) {
+        return ({
+            updateTask: (data) => dispatch(updateTask(action_type, data))
+        })
+    }
+
+    return null
+}
 
 export default connect(
     mapStateToProps,

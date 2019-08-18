@@ -3,17 +3,13 @@ import WeekCalendar from './WeekCalendar'
 
 const mapStateToProps = (state, ownProps) => {
 
-    if(ownProps.edit){
-        return({
-            task_data: state.edittingTask
-        })
-    }
-
-    else{
+    if(!ownProps.edit){
         return({
             task_data: state.currentWeekTask
         })
     }
+
+    return null
 }
 
 

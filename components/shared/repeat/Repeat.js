@@ -120,7 +120,6 @@ export default class Repeat extends Component {
         })
 
         this.props.hideAction()
-        
     }
 
     clear = () => {

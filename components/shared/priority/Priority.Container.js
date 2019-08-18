@@ -5,16 +5,8 @@ import { updateTask } from '../actions/updateTask'
 let action_type = ""
 
 const mapStateToProps = (state, ownProps) => {
-    if(ownProps.edit){
-        action_type = "UPDATE_EDIT_TASK"
-        return ({
-            priorities: state.priorities,
-            task_data: state.edittingTask
-        })
-    }
-
-    else{
-        if(ownProps.currentAnnotation === "day"){
+    if (!ownProps.edit) {
+        if (ownProps.currentAnnotation === "day") {
             action_type = "UPDATE_NEW_DAY_TASK"
             return ({
                 priorities: state.priorities,
@@ -22,7 +14,7 @@ const mapStateToProps = (state, ownProps) => {
             })
         }
 
-        else if(ownProps.currentAnnotation === "week"){
+        else if (ownProps.currentAnnotation === "week") {
             action_type = "UPDATE_NEW_WEEK_TASK"
             return ({
                 priorities: state.priorities,
@@ -30,7 +22,7 @@ const mapStateToProps = (state, ownProps) => {
             })
         }
 
-        else{
+        else {
             action_type = "UPDATE_NEW_MONTH_TASK"
             return ({
                 priorities: state.priorities,
@@ -38,11 +30,19 @@ const mapStateToProps = (state, ownProps) => {
             })
         }
     }
+
+    return null
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
-    updateTask: (data) => dispatch(updateTask(action_type, data))
-})
+const mapDispatchToProps = (dispatch, ownProps) => {
+    if (!ownProps.edit) {
+        return ({
+            updateTask: (data) => dispatch(updateTask(action_type, data))
+        })
+    }
+
+    return null
+}
 
 export default connect(
     mapStateToProps,

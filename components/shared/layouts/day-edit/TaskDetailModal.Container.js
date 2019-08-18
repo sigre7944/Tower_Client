@@ -1,6 +1,6 @@
 import {connect} from 'react-redux'
 import TaskDetailModal from '../TaskDetailModal'
-import {updateEdittingTask} from '../day-edit/actions/updateEdittingTask'
+import {updateTask} from '../../actions/updateTask'
 
 const mapStateToProps = (state) => ({
     categories: state.categories,
@@ -8,7 +8,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    updateEdittingTask: (data) => dispatch(updateEdittingTask(ownProps.action_type, data)),
+    updateEdittingTask: (data) => dispatch(updateTask(ownProps.action_type, data)),
 })
 
 export default connect(
