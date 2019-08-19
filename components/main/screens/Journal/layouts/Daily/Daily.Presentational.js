@@ -45,7 +45,6 @@ export default class Daily extends React.Component {
         })
     }
 
-
     componentDidMount() {
         const didFocusScreen = this.props.navigation.addListener(
             'didFocus',
@@ -101,8 +100,9 @@ export default class Daily extends React.Component {
                     should_update: prevState.should_update + 1,
                 }))
             }
-
         }
+
+        
     }
 
     render() {
@@ -111,6 +111,8 @@ export default class Daily extends React.Component {
 
                 <DayFlatlist 
                     setChosenDayData={this.setChosenDayData}
+                    updateHeaderText={this.props.updateHeaderText}
+                    headerPressed={this.props.headerPressed}
                 />
 
                 <View style={{
@@ -268,6 +270,17 @@ class DayFlatlist extends React.PureComponent {
         }))
     }
 
+    _onScroll = (e) => {
+        let index = Math.floor((e.nativeEvent.contentOffset.x)/64 + 2)
+        if(index < 0){
+            index = 0
+        }
+
+        let string = `${this.month_text_arr[this.month_data[index].month]} - ${this.month_data[index].year}`
+
+        this.props.updateHeaderText(string)
+    }
+
 
     initMonthData = (month, year) => {
         let first_day_of_month = new Date(year, month, 1).getDate(),
@@ -275,6 +288,7 @@ class DayFlatlist extends React.PureComponent {
 
         this.month_data.push({
             month_text: this.month_text_arr[month],
+            month,
             year: year
         })
 
@@ -314,6 +328,12 @@ class DayFlatlist extends React.PureComponent {
         })
     }
 
+    componentDidUpdate(prevProps, prevState){
+        if(this.props.headerPressed !== prevProps.headerPressed){
+            this.chooseDay(this.start_index)
+        }
+    }
+
     render() {
         return (
             <View
@@ -337,6 +357,9 @@ class DayFlatlist extends React.PureComponent {
                     getItemLayout={this._getItemLayout}
 
                     ref={this.setRef}
+
+                    onScroll={this._onScroll}
+                    scrollEventThrottle={5}
                 />
             </View>
         )
