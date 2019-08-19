@@ -4,21 +4,17 @@ import {
     StyleSheet,
     Text,
     ScrollView,
-    TouchableHighlight,
+    TouchableOpacity,
     Modal,
-    Button
+    Button,
+    FlatList
 } from 'react-native';
 import TaskCard from './../../../../../shared/layouts/TaskCard'
 import TaskDetailModal from './../../../../../shared/layouts/day-edit/TaskDetailModal.Container'
 
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
-let scrollViewRef,
-    dayHolderWidth = 60,
-    days_arr = [],
-    today = new Date().getDate(),
-    lastDayIndex = 0
-
+let dayHolderWidth = 60
 
 export default class Daily extends React.Component {
     static navigationOptions = {
@@ -30,14 +26,23 @@ export default class Daily extends React.Component {
 
     state = {
         dailyTimeView: null,
-        day_number_circle_style_arr: [],
-        day_number_text_style_arr: [],
-        days_arr: [],
 
         isModalOpened: false,
         isLogtimeModalOpened: false,
 
         should_update: 0,
+
+        chosen_day_data: {
+            day: new Date().getDate(),
+            month: new Date().getMonth(),
+            year: new Date().getFullYear()
+        }
+    }
+
+    setChosenDayData = (day, month, year) => {
+        this.setState({
+            chosen_day_data: {...{}, ...{day, month, year}}
+        })
     }
 
 
@@ -48,134 +53,6 @@ export default class Daily extends React.Component {
                 this.props.changeRouteAction(payload.state.routeName)
             }
         )
-
-        days_arr.length = 0
-
-        let month = new Date().getMonth() + 1,
-            year = new Date().getFullYear()
-
-
-        let daysInMonth = this.getDaysInMonth(month, year),
-            day_number_circle_style_arr = [],
-            day_number_text_style_arr = []
-
-        for (let i = 1; i <= daysInMonth; i++) {
-            let dayWord,
-                dayInWeek = new Date(year, month - 1, i).getDay()
-
-            if (dayInWeek === 0) {
-                dayWord = 'Su'
-            }
-
-            else if (dayInWeek === 1) {
-                dayWord = 'Mo'
-            }
-
-            else if (dayInWeek === 2) {
-                dayWord = 'Tu'
-            }
-
-            else if (dayInWeek === 3) {
-                dayWord = 'We'
-            }
-
-            else if (dayInWeek === 4) {
-                dayWord = 'Th'
-            }
-
-            else if (dayInWeek === 5) {
-                dayWord = 'Fr'
-            }
-
-            else if (dayInWeek === 6) {
-                dayWord = 'Sa'
-            }
-
-            days_arr.push({
-                dayWord: dayWord,
-                dayNumb: i,
-                chosen: false
-            })
-
-            day_number_circle_style_arr.push(styles.circleCenterDayNumberHolder)
-
-            if (i === today)
-                day_number_text_style_arr.push(styles.biggerFontWeightForToday)
-            else
-                day_number_text_style_arr.push(styles.notToday)
-        }
-
-        this.setState({
-            day_number_circle_style_arr: day_number_circle_style_arr.map(style => { return style }),
-            day_number_text_style_arr: day_number_text_style_arr.map(style => { return style }),
-            days_arr: days_arr.map(day => { return day })
-        })
-
-        this.focusScrollViewToDay(scrollViewRef, days_arr, today)
-    }
-
-    chooseDay = (scrollViewRef, days_arr, day, dayIndex) => {
-        let day_number_circle_style_arr = this.state.day_number_circle_style_arr,
-            day_number_text_style_arr = this.state.day_number_text_style_arr
-
-        day_number_circle_style_arr[lastDayIndex] = { ...styles.circleCenterDayNumberHolder, backgroundColor: 'transparent' }
-
-        if (lastDayIndex === today - 1)
-            day_number_text_style_arr[lastDayIndex] = { ...styles.biggerFontWeightForToday, color: 'black' }
-        else
-            day_number_text_style_arr[lastDayIndex] = { ...styles.notToday, color: 'gray' }
-
-
-
-        day_number_circle_style_arr[dayIndex] = { ...styles.circleCenterDayNumberHolder, backgroundColor: 'black' }
-
-        if (dayIndex === today - 1)
-            day_number_text_style_arr[dayIndex] = { ...styles.biggerFontWeightForToday, color: 'white' }
-        else
-            day_number_text_style_arr[dayIndex] = { ...styles.notToday, color: 'white' }
-
-        this.setState({
-            day_number_circle_style_arr: day_number_circle_style_arr.map(style => { return style }),
-            day_number_text_style_arr: day_number_text_style_arr.map(style => { return style })
-        })
-
-        this.focusScrollViewToDay(scrollViewRef, days_arr, day)
-
-        lastDayIndex = dayIndex
-    }
-
-    focusScrollViewToDay = (scrollViewRef, days_arr, day) => {
-        let dayIndex = days_arr.findIndex(obj => obj.dayNumb === day),
-            x_off_set
-
-        if (dayIndex > (days_arr.length - 4)) {
-            dayIndex = days_arr.length - 7
-            scrollViewRef.scrollTo({
-                y: 0,
-                x: dayIndex * dayHolderWidth
-            })
-        }
-
-        else if (dayIndex < 3) {
-            scrollViewRef.scrollTo({
-                y: 0,
-                x: 0
-            })
-        }
-
-        else {
-            dayIndex -= 3
-            x_off_set = dayIndex * dayHolderWidth
-
-            scrollViewRef.scrollTo({
-                y: 0,
-                x: x_off_set
-            })
-        }
-    }
-
-    getDaysInMonth = (month, year) => {
-        return new Date(year, month, 0).getDate()
     }
 
     openModal = (task_data) => {
@@ -231,58 +108,11 @@ export default class Daily extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <View style={styles.scrollViewContainer} >
-                    <ScrollView
-                        horizontal={true}
-                        ref={view => scrollViewRef = view}
-                        indicatorStyle='white'
-                    >
-                        {this.state.days_arr.map((obj, index) => (
-                            <TouchableHighlight
-                                onPress={this.chooseDay.bind(this, scrollViewRef, days_arr, obj.dayNumb, index)}
-                                style={styles.dayHolder}
-                                key={"day " + index}
-                                underlayColor='transparent'
-                            >
-                                <>
-                                    <View>
-                                        {
-                                            obj.dayNumb === today ?
-                                                <Text
-                                                    style={styles.biggerFontWeightForToday}
-                                                >
-                                                    {obj.dayWord}
-                                                </Text>
 
-                                                :
+                <DayFlatlist 
+                    setChosenDayData={this.setChosenDayData}
+                />
 
-                                                <Text
-                                                    style={styles.notToday}
-                                                >
-                                                    {obj.dayWord}
-                                                </Text>
-                                        }
-                                    </View>
-
-                                    <View
-                                        style={styles.dayNumberHolder}
-                                    >
-                                        <View style={this.state.day_number_circle_style_arr[index]}>
-                                            <Text
-                                                style={this.state.day_number_text_style_arr[index]}
-                                            >
-                                                {obj.dayNumb}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                </>
-                            </TouchableHighlight>
-                        ))}
-
-                        {this.state.dailyTimeView}
-
-                    </ScrollView>
-                </View>
                 <View style={{
                     flex: 1,
                     alignItems: "center",
@@ -292,7 +122,9 @@ export default class Daily extends React.Component {
                     {/* later we will user map to render all the data */}
                     <ScrollView style={styles.scrollViewTasks}>
                         {this.props.day_tasks.map((task, index) => {
-                            if (task.type === "day")
+                            let {schedule} = task,
+                                {day, month, year} = this.state.chosen_day_data
+                            if (task.type === "day" && schedule.day === day && schedule.month === month && schedule.year === year)
                                 return (
                                     <Swipeable key={`daily-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
                                         <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
@@ -337,6 +169,275 @@ export default class Daily extends React.Component {
                             </Button>
                     </View>
                 </Modal>
+            </View>
+        )
+    }
+}
+
+class DayFlatlist extends React.PureComponent {
+
+    month_data = []
+
+    month = new Date().getMonth()
+    year = new Date().getFullYear()
+
+    day_text_arr = ["S", "M", "T", "W", "T", "F", "S"]
+    month_text_arr = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+    _flatlistRef = React.createRef()
+
+    start_index = -1
+
+    state = {
+        should_update: 0,
+
+        current_day_index: 0,
+        last_day_index: 0,
+    }
+
+    chooseDay = (day_index) => {
+        this.setState(prevState => ({
+            last_day_index: prevState.current_day_index,
+            current_day_index: day_index,
+
+            should_update: prevState.should_update + 1,
+        }))
+
+        let day = this.month_data[day_index].day,
+            month = this.month_data[day_index].month,
+            year = this.month_data[day_index].year
+
+        this.props.setChosenDayData(day, month, year)
+
+        this.scrollToIndex(day_index)
+    }
+
+    scrollToIndex = (index) => {
+        if(this._flatlistRef){
+            this._flatlistRef.scrollToOffset({animated: true, offset: index * 64 - 64})
+        }
+    }
+
+    _keyExtractor = (item, index) => `day-${index}`
+
+    _renderItem = ({ item, index }) => {
+        if (item.month_text) {
+            return (
+                <MonthYearDisplay
+                    data={item}
+                />
+            )
+        }
+
+        return (
+            <DayHolder
+                data={item}
+
+                current_day_index={this.state.current_day_index}
+                last_day_index={this.state.last_day_index}
+
+                day_index = {index}
+
+                chooseDay={this.chooseDay}
+            />
+        )
+    }
+
+    _getItemLayout = (data, index) => ({
+        length: 64,
+        offset: index * 64,
+        index
+    })
+
+    setRef = (r) => {
+        this._flatlistRef = r
+    }
+
+    _onEndReached = () => {
+        this.month += 1
+
+        if (this.month > 11) {
+            this.month = 0
+            this.year += 1
+        }
+
+        this.initMonthData(this.month, this.year)
+
+        this.setState(prevState => ({
+            should_update: prevState.should_update + 1
+        }))
+    }
+
+
+    initMonthData = (month, year) => {
+        let first_day_of_month = new Date(year, month, 1).getDate(),
+            last_day_of_month = new Date(year, month, 0).getDate()
+
+        this.month_data.push({
+            month_text: this.month_text_arr[month],
+            year: year
+        })
+
+        for (let i = first_day_of_month; i <= last_day_of_month; i++) {
+            this.month_data.push({
+                day: i,
+                month: month,
+                year: year,
+                day_text: this.day_text_arr[new Date(year, month, i).getDay()]
+            })
+        }
+
+    }
+
+    componentDidMount() {
+        this.initMonthData(this.month, this.year)
+
+        let day = new Date().getDate(),
+            month = new Date().getMonth(),
+            year = new Date().getFullYear()
+
+        this.month_data.every((data, index) => {
+            if(data.day === day && data.month === month && data.year === year){
+                this.start_index = index
+
+                this.setState(prevState => ({
+                    last_day_index: prevState.current_day_index,
+                    current_day_index: index,
+        
+                    should_update: prevState.should_update + 1,
+                }))
+
+                return false
+            }
+
+            return true
+        })
+    }
+
+    render() {
+        return (
+            <View
+                style={{
+                    height: 70,
+                }}
+            >
+                <FlatList
+                    data={this.month_data}
+                    extraData={this.state.should_update}
+
+                    keyExtractor={this._keyExtractor}
+                    renderItem={this._renderItem}
+
+                    onEndReachedThreshold={0.5}
+                    onEndReached={this._onEndReached}
+
+                    horizontal={true}
+
+                    initialScrollIndex={this.start_index}
+                    getItemLayout={this._getItemLayout}
+
+                    ref={this.setRef}
+                />
+            </View>
+        )
+    }
+}
+
+class DayHolder extends React.Component {
+
+    state = {
+        day_style: styles.not_chosen_day,
+        text_style: styles.not_chosen_text
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return this.props.day_index === nextProps.current_day_index || this.props.day_index === nextProps.last_day_index
+    }
+
+    static getDerivedStateFromProps(nextProps, prevState){
+
+        if(nextProps.day_index === nextProps.current_day_index){
+            return({
+                day_style: styles.chosen_day,
+                text_style: styles.chosen_text
+            })
+        }
+
+        else if(nextProps.day_index === nextProps.last_day_index){
+            return({
+                day_style: styles.not_chosen_day,
+                text_style: styles.not_chosen_text
+            })
+        }
+
+        return null
+    }
+
+    _onPress = () => {
+        this.props.chooseDay(this.props.day_index)
+    }
+
+    render() {
+        return (
+            <TouchableOpacity
+                style={{
+                    marginHorizontal: 7,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: 50,
+                }}
+
+                onPress={this._onPress}
+            >
+                <Text
+                    style={{
+                        color: "gainsboro"
+                    }}
+                >
+                    {this.props.data.day_text}
+                </Text>
+
+                <View
+                    style={this.state.day_style}
+                >
+                    <Text
+                        style={this.state.text_style}
+                    >
+                        {this.props.data.day}
+                    </Text>
+                </View>
+            </TouchableOpacity>
+        )
+    }
+}
+
+class MonthYearDisplay extends React.PureComponent {
+
+    render() {
+        return (
+            <View
+                style={{
+                    marginHorizontal: 7,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: 50,
+                }}
+            >
+                <Text
+                    style={{
+                    }}
+                >
+                    {this.props.data.month_text}
+                </Text>
+
+                <Text
+                    style={{
+                        marginTop: 5
+                    }}
+                >
+                    {this.props.data.year}
+                </Text>
+
             </View>
         )
     }
@@ -417,5 +518,32 @@ const styles = StyleSheet.create({
 
     actionText: {
         height: 50
+    },
+
+    not_chosen_day: {
+        marginTop: 5,
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+
+    chosen_day: {
+        marginTop: 5,
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "black"
+    },
+
+    not_chosen_text: {
+        color: "black"
+    },
+
+    chosen_text: {
+        color: "white"
     }
 })
