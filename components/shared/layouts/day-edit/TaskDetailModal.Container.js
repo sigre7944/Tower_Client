@@ -4,7 +4,7 @@ import {updateTask} from '../../actions/updateTask'
 
 const mapStateToProps = (state) => ({
     categories: state.categories,
-    edittingTask: state.edittingTask,
+    priorities: state.priorities,
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

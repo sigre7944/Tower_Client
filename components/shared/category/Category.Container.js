@@ -33,17 +33,22 @@ const mapStateToProps = (state, ownProps) => {
         }
     }
 
-    return null
+    return({
+        categories: state.categories,
+    })
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
     if (!ownProps.edit) {
         return ({
+            createCategory: (data) => dispatch(createCategory(data)),
             updateTask: (data) => dispatch(updateTask(action_type, data))
         })
     }
 
-    return null
+    return({
+        createCategory: (data) => dispatch(createCategory(data)),
+    })
 }
 
 export default connect(

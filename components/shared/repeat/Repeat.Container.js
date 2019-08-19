@@ -29,7 +29,7 @@ const mapStateToProps = (state, ownProps) => {
         }
     }
 
-    return null
+    return {}
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
@@ -39,7 +39,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         })
     }
 
-    return null
+    return {}
 }
 
 export default connect(

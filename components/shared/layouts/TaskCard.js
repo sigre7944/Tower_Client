@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import { Alert, Modal, TouchableOpacity, Text, View, StyleSheet, Button, Image, TextInput, ScrollView, Platform } from 'react-native'
+import { TouchableOpacity, Text, View, StyleSheet} from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { CheckBox } from 'react-native-elements'
-import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { RectButton } from 'react-native-gesture-handler';
 
 export default class TaskCard extends Component {
     state={

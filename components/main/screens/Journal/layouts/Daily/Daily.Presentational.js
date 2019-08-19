@@ -35,7 +35,9 @@ export default class Daily extends React.Component {
         days_arr: [],
 
         isModalOpened: false,
-        isLogtimeModalOpened: false
+        isLogtimeModalOpened: false,
+
+        should_update: 0,
     }
 
 
@@ -213,6 +215,19 @@ export default class Daily extends React.Component {
         );
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.day_tasks !== prevProps.day_tasks) {
+
+            if (this.task_data.index >= 0) {
+                this.task_data = this.props.day_tasks[this.task_data.index]
+                this.setState(prevState => ({
+                    should_update: prevState.should_update + 1,
+                }))
+            }
+
+        }
+    }
+
     render() {
         return (
             <View style={styles.container}>
@@ -280,7 +295,7 @@ export default class Daily extends React.Component {
                             if (task.type === "day")
                                 return (
                                     <Swipeable key={`daily-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                        <TaskCard task_data={task} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
+                                        <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
                                     </Swipeable>
                                 )
                         })}
@@ -297,7 +312,7 @@ export default class Daily extends React.Component {
                     task_data={this.task_data}
                     categories={this.props.categories}
                     priorities={this.props.priorities}
-                    action_type = {"UPDATE_EDIT_TASK"}
+                    action_type={"ADD_EDIT_DAY_TASK"}
                 />
 
                 <Modal

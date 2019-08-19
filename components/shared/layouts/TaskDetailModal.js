@@ -197,7 +197,7 @@ export default class TaskDetailModal extends Component {
                                             <FontAwesome name={'warning'} style={styles.icon} />
                                         </View>
                                         <View style={styles.body}>
-                                            <Text style={styles.text}>{this.state.category}</Text>
+                                            <Text style={styles.text}>{this.state.priority}</Text>
                                         </View>
                                     </View>
                                     <View style={styles.container}>
@@ -235,6 +235,7 @@ export default class TaskDetailModal extends Component {
                         categories={this.props.categories}
                         priorities={this.props.priorities}
                         hideAction={this.toggleEdit}
+                        updateEdittingTask={this.props.updateEdittingTask}
                     />
                 }
 
@@ -343,23 +344,21 @@ class EditDetails extends React.PureComponent {
     setEditTask = (data) => {
         this.edit_task = { ... this.edit_task, ...data }
 
-        this.setState(prevState => ({
-            should_update: prevState.should_update + 1
-        }))
+        this.renderData(this.edit_task)
     }
 
     save = () => {
+        this.props.updateEdittingTask(this.edit_task)
 
+        this.cancel()
     }
 
     cancel = () => {
         this.props.hideAction()
     }
 
-    componentDidMount() {
-        this.edit_task = this.props.task_data
-
-        let { title, description, category, repeat, priority, goal, startTime } = this.edit_task
+    renderData = (edit_task) => {
+        let { category, repeat, priority, goal, startTime } = edit_task
 
         let date = new Date(startTime)
 
@@ -383,11 +382,21 @@ class EditDetails extends React.PureComponent {
         }
 
         this.setState(prevState => ({
-            title_value: title,
             should_update: prevState.should_update + 1,
-            description_value: description ? description: ""
         }))
+    }
 
+    componentDidMount() {
+        this.edit_task = this.props.task_data
+
+        let {title, description} = this.edit_task
+
+        this.setState({
+            title_value: title,
+            description_value: description ? description: "",
+        })
+
+        this.renderData(this.edit_task)
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -404,10 +413,6 @@ class EditDetails extends React.PureComponent {
         //         })
         //     }
         // }
-
-        if(this.state.should_update !== prevState.should_update){
-            console.log(this.edit_task)
-        }
     }
 
     render() {
@@ -588,7 +593,7 @@ class EditDetails extends React.PureComponent {
                                 this.state.edit_calendar ?
                                     <CalendarEdit
                                         edit={true}
-                                        task_data={this.props.edit_task}
+                                        task_data={this.edit_task}
                                         hideAction={this.toggleShouldVisible}
                                         setEditTask={this.setEditTask}
                                     />
@@ -601,7 +606,7 @@ class EditDetails extends React.PureComponent {
 
                                                 <Category
                                                     edit={true}
-                                                    action_type={"UPDATE_EDIT_TASK"}
+                                                    task_data={this.edit_task}
                                                     hideAction={this.toggleShouldVisible}
                                                     updateTask={this.setEditTask}
                                                 />
@@ -614,7 +619,7 @@ class EditDetails extends React.PureComponent {
 
                                                             <Priority
                                                                 edit={true}
-                                                                action_type={"UPDATE_EDIT_TASK"}
+                                                                task_data={this.edit_task}
                                                                 hideAction={this.toggleShouldVisible}
                                                                 updateTask={this.setEditTask}
                                                             />
@@ -627,9 +632,10 @@ class EditDetails extends React.PureComponent {
 
                                                                         <Repeat
                                                                             edit={true}
-                                                                            action_type={"UPDATE_EDIT_TASK"}
+                                                                            task_data={this.edit_task}
                                                                             hideAction={this.toggleShouldVisible}
                                                                             updateTask={this.setEditTask}
+                                                                            currentAnnotation={"day"}
                                                                         />
 
                                                                         :
@@ -640,7 +646,7 @@ class EditDetails extends React.PureComponent {
 
                                                                                     <Goal
                                                                                         edit={true}
-                                                                                        action_type={"UPDATE_EDIT_TASK"}
+                                                                                        task_data={this.edit_task}
                                                                                         hideAction={this.toggleShouldVisible}
                                                                                         updateTask={this.setEditTask}
                                                                                     />
@@ -716,6 +722,10 @@ class CalendarEdit extends React.PureComponent {
         this.chosen_year = year
     }
 
+    state = {
+        toggle_clear: false
+    }
+
     save = () => {
         let data = {}
         if (this.chosen_day > 0 && this.chosen_month > 0 && this.chosen_year > 0) {
@@ -725,17 +735,17 @@ class CalendarEdit extends React.PureComponent {
                 data.schedule = {
                     day: new Date().getDate(),
                     month: this.chosen_month,
-                    year: this.chosen_yaer
+                    year: this.chosen_year
                 }
             }
 
             else {
-                data.startTime = new Date(new Date(new Date((new Date().setMonth(this.month))).setDate(this.day)).setFullYear(this.year)).getTime()
+                data.startTime = new Date(new Date(new Date((new Date().setMonth(this.chosen_month))).setDate(this.chosen_day)).setFullYear(this.chosen_year)).getTime()
                 data.trackingTime = data.startTime
                 data.schedule = {
                     day: this.chosen_day,
                     month: this.chosen_month,
-                    year: this.chosen_yaer
+                    year: this.chosen_year
                 }
             }
         }
@@ -743,6 +753,19 @@ class CalendarEdit extends React.PureComponent {
         this.props.setEditTask(data)
 
         this.props.hideAction()
+    }
+
+    cancel = () => {
+        this.props.hideAction()
+    }
+
+    clear = () => {
+        this.setState(prevState => ({
+            toggle_clear: !prevState.toggle_clear
+        }))
+
+        let date = new Date()
+        this.setData(date.getDate(), date.getMonth(), date.getFullYear())
     }
 
     render() {
@@ -758,6 +781,7 @@ class CalendarEdit extends React.PureComponent {
             >
                 <DayCalendar
                     {... this.props}
+                    toggle_clear={this.state.toggle_clear}
                     setData={this.setData}
                 />
 
@@ -781,6 +805,30 @@ class CalendarEdit extends React.PureComponent {
                             backgroundColor: 'gray',
                             marginRight: 20
                         }}
+
+                        onPress={this.clear}
+                    >
+                        <Text
+                            style={{
+                                color: "white"
+                            }}
+                        >
+                            Clear
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={{
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: 50,
+                            width: 50,
+                            borderRadius: 25,
+                            backgroundColor: 'gray',
+                            marginRight: 20
+                        }}
+                        
+                        onPress={this.cancel}
                     >
                         <Text
                             style={{

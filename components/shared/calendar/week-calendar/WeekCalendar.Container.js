@@ -9,7 +9,7 @@ const mapStateToProps = (state, ownProps) => {
         })
     }
 
-    return null
+    return {}
 }
 
 

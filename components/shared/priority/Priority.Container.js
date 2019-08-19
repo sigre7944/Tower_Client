@@ -31,7 +31,9 @@ const mapStateToProps = (state, ownProps) => {
         }
     }
 
-    return null
+    return({
+        priorities: state.priorities,
+    })
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
@@ -41,7 +43,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         })
     }
 
-    return null
+    return {}
 }
 
 export default connect(

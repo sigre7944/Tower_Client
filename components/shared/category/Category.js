@@ -152,31 +152,33 @@ export default class Category extends React.Component {
 
     // action when users click 'Create' button when creating new category
     addNewCateData = () => {
-        let category_arr = [... this.state.category_arr]
+        if(this.state.new_cate_data.name.length > 0){
+            let category_arr = [... this.state.category_arr]
 
-        category_arr.push(category_arr[category_arr.length - 1])
-        category_arr[category_arr.length - 2] = this.state.new_cate_data
-
-
-        this.setState(prevState => ({
-            //reset new_cate_data
-            new_cate_data: { ...prevState.new_cate_data, ...{ name: "", backgroundColor: "white" } },
-
-            // update the lastIndex and currentIndex to rerender the Flatlist, make it update the color of current
-            // chosen category (freshly created category).
-            lastIndex: prevState.currentIndex,
-            currentIndex: category_arr.length - 2
-        }))
-
-        let key = "cate_" + (this.state.category_arr.length - 1),
-            data = {}
-
-        data[key] = {
-            name: this.state.new_cate_data.name,
-            color: this.state.new_cate_data.color,
+            category_arr.push(category_arr[category_arr.length - 1])
+            category_arr[category_arr.length - 2] = this.state.new_cate_data
+    
+    
+            this.setState(prevState => ({
+                //reset new_cate_data
+                new_cate_data: { ...prevState.new_cate_data, ...{ name: "", color: "white" } },
+    
+                // update the lastIndex and currentIndex to rerender the Flatlist, make it update the color of current
+                // chosen category (freshly created category).
+                lastIndex: prevState.currentIndex,
+                currentIndex: category_arr.length - 2
+            }))
+    
+            let key = "cate_" + (this.state.category_arr.length - 1),
+                data = {}
+    
+            data[key] = {
+                name: this.state.new_cate_data.name,
+                color: this.state.new_cate_data.color,
+            }
+    
+            this.props.createCategory(data)
         }
-
-        this.props.createCategory(data)
     }
 
     initializeCategoryArr = () => {

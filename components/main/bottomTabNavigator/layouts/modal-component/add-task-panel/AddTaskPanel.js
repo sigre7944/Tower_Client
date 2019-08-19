@@ -860,8 +860,16 @@ class BottomOptionElement extends React.PureComponent {
     _onPress = () => {
         if (this.props.addTask) {
             if (this.props.currentAnnotation === "day" && this.props.currentDayTask.title && this.props.currentDayTask.title.length > 0) {
+                let add_data
 
-                let add_data = { ... this.props.currentDayTask, ... { createdAt: new Date().getTime(), id: uuidv1() } }
+                if (this.props.day_tasks.length === 0) {
+                    add_data = { ... this.props.currentDayTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: 0 } }
+                }
+
+                else {
+                    add_data = { ... this.props.currentDayTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: this.props.day_tasks.length } }
+                }
+
 
                 this.props.addTask("ADD_NEW_DAY_TASK", add_data)
 
@@ -903,7 +911,15 @@ class BottomOptionElement extends React.PureComponent {
 
             else if (this.props.currentAnnotation === "week" && this.props.currentWeekTask.title && this.props.currentWeekTask.title.length > 0) {
 
-                let add_data = { ... this.props.currentWeekTask, ... { createdAt: new Date().getTime(), id: uuidv1() } }
+                let add_data
+
+                if (this.props.week_tasks.length === 0) {
+                    add_data = { ... this.props.currentDayTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: 0 } }
+                }
+
+                else {
+                    add_data = { ... this.props.currentDayTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: this.props.week_tasks.length } }
+                }
 
                 this.props.addTask("ADD_NEW_WEEK_TASK", add_data)
 
@@ -946,7 +962,15 @@ class BottomOptionElement extends React.PureComponent {
 
             else if (this.props.currentAnnotation === "month" && this.props.currentMonthTask.title && this.props.currentMonthTask.title.length > 0) {
 
-                let add_data = { ... this.props.currentMonthTask, ... { createdAt: new Date().getTime(), id: uuidv1() } }
+                let add_data
+
+                if (this.props.month_tasks.length === 0) {
+                    add_data = { ... this.props.currentDayTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: 0 } }
+                }
+
+                else {
+                    add_data = { ... this.props.currentDayTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: this.props.month_tasks.length } }
+                }
 
                 this.props.addTask("ADD_NEW_MONTH_TASK", add_data)
 
