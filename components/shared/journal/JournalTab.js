@@ -222,6 +222,8 @@ export default class JournalTab extends React.PureComponent {
                     categories={this.props.categories}
                     priorities={this.props.priorities}
                     action_type={this.props.action_type}
+
+                    type = {this.props.type}
                 />
 
                 <Modal

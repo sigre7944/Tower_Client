@@ -4,7 +4,8 @@ import WeekFlatlist from './WeekFlatlist'
 
 const mapStateToProps = (state, ownProps) => {
     return ({
-        headerPressed: state.headerPressed
+        headerPressed: state.headerPressed,
+        currentRoute: state.currentRoute
     })
 }
 

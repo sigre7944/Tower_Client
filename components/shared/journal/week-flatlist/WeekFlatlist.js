@@ -39,14 +39,14 @@ export default class WeekFlatlist extends React.Component {
         let week = this.week_data[week_index].week,
             year = this.week_data[week_index].year
 
-        this.props.setChosenDateData({week, year})
+        this.props.setChosenDateData({ week, year })
 
         this.scrollToIndex(week_index)
     }
 
     scrollToIndex = (index) => {
-        if(this._flatlistRef){
-            this._flatlistRef.scrollToOffset({animated: true, offset: index * 102 - 102})
+        if (this._flatlistRef) {
+            this._flatlistRef.scrollToOffset({ animated: true, offset: index * 102 - 102 })
         }
     }
 
@@ -137,7 +137,7 @@ export default class WeekFlatlist extends React.Component {
     }
 
     _onScroll = (e) => {
-        let index = Math.floor((e.nativeEvent.contentOffset.x) / 102 + 2)
+        let index = Math.floor((e.nativeEvent.contentOffset.x) / 102 + 1)
         if (index < 0) {
             index = 0
         }
@@ -156,20 +156,20 @@ export default class WeekFlatlist extends React.Component {
 
         this.monday = this.getMonday(first_monday_of_month)
 
-        for(let i = 0; i < 10; i++){
+        for (let i = 0; i < 10; i++) {
             this.getWeekData(this.monday)
         }
 
         this.week_data.every((data, index) => {
 
-            if(data.week === current_week && data.year === current_year){
+            if (data.week === current_week && data.year === current_year) {
 
                 this.start_index = index
 
                 this.setState(prevState => ({
                     last_week_index: prevState.current_week_index,
                     current_week_index: index,
-        
+
                     should_update: prevState.should_update + 1
                 }))
 
@@ -180,9 +180,20 @@ export default class WeekFlatlist extends React.Component {
         })
     }
 
-    componentDidUpdate(prevProps, prevState){
-        if(this.props.headerPressed !== prevProps.headerPressed){
-            this.chooseWeek(this.start_index)
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.headerPressed !== prevProps.headerPressed) {
+            if (this.props.currentRoute === "Week") {
+                this.chooseWeek(this.start_index)
+            }
+        }
+
+        if (this.props.currentRoute !== prevProps.currentRoute) {
+            if (this.props.currentRoute === "Week") {
+
+                let string = `${this.month_text_arr[this.week_data[this.state.current_week_index].month]} - ${this.week_data[this.state.current_week_index].year}`
+
+                this.props.updateHeaderText(string)
+            }
         }
     }
 
@@ -232,17 +243,17 @@ class WeekHolder extends React.Component {
         return this.props.week_index === nextProps.current_week_index || this.props.week_index === nextProps.last_week_index
     }
 
-    static getDerivedStateFromProps(nextProps, prevState){
+    static getDerivedStateFromProps(nextProps, prevState) {
 
-        if(nextProps.week_index === nextProps.current_week_index){
-            return({
+        if (nextProps.week_index === nextProps.current_week_index) {
+            return ({
                 week_style: styles.chosen_week,
                 text_style: styles.chosen_week_text
             })
         }
 
-        else if(nextProps.week_index === nextProps.last_week_index){
-            return({
+        else if (nextProps.week_index === nextProps.last_week_index) {
+            return ({
                 week_style: styles.not_chosen_week,
                 text_style: styles.not_chosen_week_text
             })
@@ -266,7 +277,7 @@ class WeekHolder extends React.Component {
                     width: 88,
                 }}
 
-                onPress = {this._onPress}
+                onPress={this._onPress}
             >
                 <View
                     style={this.state.week_style}

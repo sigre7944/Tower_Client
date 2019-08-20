@@ -1,14 +1,4 @@
 import React from 'react'
-import {
-    View,
-    StyleSheet,
-    Text,
-    ScrollView,
-    TouchableOpacity,
-    Modal,
-    Button,
-    FlatList
-} from 'react-native';
 
 import JournalTab from '../../../../../shared/journal/JournalTab.Container'
 

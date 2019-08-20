@@ -40,14 +40,14 @@ export default class DayFlatlist extends React.Component {
             month = this.month_data[day_index].month,
             year = this.month_data[day_index].year
 
-        this.props.setChosenDateData({day, month, year})
+        this.props.setChosenDateData({ day, month, year })
 
         this.scrollToIndex(day_index)
     }
 
     scrollToIndex = (index) => {
-        if(this._flatlistRef){
-            this._flatlistRef.scrollToOffset({animated: true, offset: index * 64 - 64})
+        if (this._flatlistRef) {
+            this._flatlistRef.scrollToOffset({ animated: true, offset: index * 64 - 64 })
         }
     }
 
@@ -69,7 +69,7 @@ export default class DayFlatlist extends React.Component {
                 current_day_index={this.state.current_day_index}
                 last_day_index={this.state.last_day_index}
 
-                day_index = {index}
+                day_index={index}
 
                 chooseDay={this.chooseDay}
             />
@@ -102,8 +102,8 @@ export default class DayFlatlist extends React.Component {
     }
 
     _onScroll = (e) => {
-        let index = Math.floor((e.nativeEvent.contentOffset.x)/64 + 2)
-        if(index < 0){
+        let index = Math.floor((e.nativeEvent.contentOffset.x) / 64 + 1)
+        if (index < 0) {
             index = 0
         }
 
@@ -142,13 +142,13 @@ export default class DayFlatlist extends React.Component {
             year = new Date().getFullYear()
 
         this.month_data.every((data, index) => {
-            if(data.day === day && data.month === month && data.year === year){
+            if (data.day === day && data.month === month && data.year === year) {
                 this.start_index = index
 
                 this.setState(prevState => ({
                     last_day_index: prevState.current_day_index,
                     current_day_index: index,
-        
+
                     should_update: prevState.should_update + 1,
                 }))
 
@@ -159,9 +159,20 @@ export default class DayFlatlist extends React.Component {
         })
     }
 
-    componentDidUpdate(prevProps, prevState){
-        if(this.props.headerPressed !== prevProps.headerPressed){
-            this.chooseDay(this.start_index)
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.headerPressed !== prevProps.headerPressed) {
+            if (this.props.currentRoute === "Day") {
+                this.chooseDay(this.start_index)
+            }
+        }
+
+        if (this.props.currentRoute !== prevProps.currentRoute) {
+            if (this.props.currentRoute === "Day") {
+
+                let string = `${this.month_text_arr[this.month_data[this.state.current_day_index].month]} - ${this.month_data[this.state.current_day_index].year}`
+
+                this.props.updateHeaderText(string)
+            }
         }
     }
 
@@ -208,17 +219,17 @@ class DayHolder extends React.Component {
         return this.props.day_index === nextProps.current_day_index || this.props.day_index === nextProps.last_day_index
     }
 
-    static getDerivedStateFromProps(nextProps, prevState){
+    static getDerivedStateFromProps(nextProps, prevState) {
 
-        if(nextProps.day_index === nextProps.current_day_index){
-            return({
+        if (nextProps.day_index === nextProps.current_day_index) {
+            return ({
                 day_style: styles.chosen_day,
                 text_style: styles.chosen_text
             })
         }
 
-        else if(nextProps.day_index === nextProps.last_day_index){
-            return({
+        else if (nextProps.day_index === nextProps.last_day_index) {
+            return ({
                 day_style: styles.not_chosen_day,
                 text_style: styles.not_chosen_text
             })

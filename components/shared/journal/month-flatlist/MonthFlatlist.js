@@ -138,7 +138,7 @@ export default class MonthFlatlist extends React.Component {
     }
 
     _onScroll = (e) => {
-        let index = Math.floor((e.nativeEvent.contentOffset.x) / 97 + 2)
+        let index = Math.floor((e.nativeEvent.contentOffset.x) / 97 + 1)
         if (index < 0) {
             index = 0
         }
@@ -178,9 +178,25 @@ export default class MonthFlatlist extends React.Component {
         })
     }
 
-    componentDidUpdate(prevProps, prevState){
-        if(this.props.headerPressed !== prevProps.headerPressed){
-            this.chooseMonth(this.start_index)
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.headerPressed !== prevProps.headerPressed) {
+            if (this.props.currentRoute === "Month") {
+                this.chooseMonth(this.start_index)
+            }
+        }
+
+        if (this.props.currentRoute !== prevProps.currentRoute) {
+            if (this.props.currentRoute === "Month") {
+                let string
+
+                if (this.month_data[this.state.current_month_index].month >= 0)
+                    string = `${this.month_text_arr[this.month_data[this.state.current_month_index].month]} - ${this.month_data[this.state.current_month_index].year}`
+
+                else
+                    string = `${this.month_data[this.state.current_month_index].year}`
+
+                this.props.updateHeaderText(string)
+            }
         }
     }
 

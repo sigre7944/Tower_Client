@@ -5,6 +5,7 @@ import { CheckBox } from 'react-native-elements';
 import Modal from 'react-native-modalbox';
 import DayCalendar from '../calendar/day-calendar/DayCalendar.Container'
 import WeekCalendar from '../calendar/week-calendar/WeekCalendar.Container'
+import MonthCalendar from '../calendar/month-calendar/MonthCalendar.Container'
 import Category from '../category/Category.Container'
 import Priority from '../priority/Priority.Container'
 import Repeat from '../repeat/Repeat.Container'

@@ -6,12 +6,12 @@ import Monthly from './layouts/Monthly/Monthly'
 
 
 const JournalTopNavigator = createMaterialTopTabNavigator({
-    Daily: {screen: Daily},
-    Weekly: {screen: Weekly},
-    Monthly: {screen: Monthly}
+    Day: {screen: Daily},
+    Week: {screen: Weekly},
+    Month: {screen: Monthly}
 },
 {
-    initialRouteName: "Daily",
+    initialRouteName: "Day",
     tabBarOptions: {
         upperCaseLabel: false,
         labelStyle: {
