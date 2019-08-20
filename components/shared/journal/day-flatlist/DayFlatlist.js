@@ -1,178 +1,13 @@
 import React from 'react'
 import {
     View,
-    StyleSheet,
     Text,
-    ScrollView,
     TouchableOpacity,
-    Modal,
-    Button,
-    FlatList
+    FlatList,
+    StyleSheet
 } from 'react-native';
-import TaskCard from './../../../../../shared/layouts/TaskCard'
-import TaskDetailModal from './../../../../../shared/layouts/day-edit/TaskDetailModal.Container'
 
-import Swipeable from 'react-native-gesture-handler/Swipeable';
-
-let dayHolderWidth = 60
-
-export default class Daily extends React.Component {
-    static navigationOptions = {
-        swipeEnabled: false,
-        header: null
-    }
-
-    task_data = {}
-
-    state = {
-        isModalOpened: false,
-        isLogtimeModalOpened: false,
-
-        should_update: 0,
-
-        chosen_day_data: {
-            day: new Date().getDate(),
-            month: new Date().getMonth(),
-            year: new Date().getFullYear()
-        }
-    }
-
-    setChosenDayData = (day, month, year) => {
-        this.setState({
-            chosen_day_data: {...{}, ...{day, month, year}}
-        })
-    }
-
-    componentDidMount() {
-        const didFocusScreen = this.props.navigation.addListener(
-            'didFocus',
-            payload => {
-                this.props.changeRouteAction(payload.state.routeName)
-            }
-        )
-    }
-
-    openModal = (task_data) => {
-        this.task_data = task_data
-
-        this.setState({ isModalOpened: true })
-    }
-
-    closeModal = () => {
-        this.setState({ isModalOpened: false })
-    }
-
-    setLogtimeModalToVisible = () => {
-        this.setState({ isLogtimeModalOpened: true })
-    }
-
-    setLogtimeModalToInvisible = () => {
-        this.setState({ isLogtimeModalOpened: false })
-    }
-
-    renderLeftActions = (progress, dragX) => {
-        const trans = dragX.interpolate({
-            inputRange: [0, 50, 100, 101],
-            outputRange: [-20, 0, 0, 1],
-        });
-        return (
-            <Button style={[
-                styles.actionText,
-                {
-                    transform: [{ translateX: Math.round(Number.parseFloat(JSON.stringify(trans))) }],
-                },
-            ]} onPress={() => { }} title="LogTime">
-
-                Archive
-
-            </Button>
-        );
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (this.props.day_tasks !== prevProps.day_tasks) {
-
-            if (this.task_data.index >= 0) {
-                this.task_data = this.props.day_tasks[this.task_data.index]
-                this.setState(prevState => ({
-                    should_update: prevState.should_update + 1,
-                }))
-            }
-        }
-    }
-
-    render() {
-        return (
-            <View style={styles.container}>
-
-                <DayFlatlist 
-                    setChosenDayData={this.setChosenDayData}
-                    updateHeaderText={this.props.updateHeaderText}
-                    headerPressed={this.props.headerPressed}
-                />
-
-                <View style={{
-                    flex: 1,
-                    alignItems: "center",
-                    justifyContent: "center",
-                }}>
-
-                    {/* later we will user map to render all the data */}
-                    <ScrollView style={styles.scrollViewTasks}>
-                        {this.props.day_tasks.map((task, index) => {
-                            let {schedule} = task,
-                                {day, month, year} = this.state.chosen_day_data
-                            if (task.type === "day" && schedule.day === day && schedule.month === month && schedule.year === year)
-                                return (
-                                    <Swipeable key={`daily-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                        <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                                    </Swipeable>
-                                )
-                        })}
-
-                        <Text style={styles.banner}>Completed</Text>
-                        <TaskCard checked={true} onPress={this.openModal} />
-                    </ScrollView>
-
-                </View>
-
-                <TaskDetailModal
-                    isOpened={this.state.isModalOpened}
-                    closeModal={this.closeModal}
-                    task_data={this.task_data}
-                    categories={this.props.categories}
-                    priorities={this.props.priorities}
-                    action_type={"ADD_EDIT_DAY_TASK"}
-                />
-
-                <Modal
-                    animationType="slide"
-                    transparent={false}
-                    visible={this.state.isLogtimeModalOpened}
-                    onRequestClose={() => {
-                        Alert.alert('Modal has been closed.');
-                    }}
-                >
-                    <View
-                        style={{
-                            flex: 1,
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            alignItems: 'center'
-                        }}
-                    >
-                        <Text>This is the pop up logtime dialog</Text>
-                        <Button onPress={this.setLogtimeModalToInvisible} title="Close">
-                            Close
-                            </Button>
-                    </View>
-                </Modal>
-            </View>
-        )
-    }
-}
-
-class DayFlatlist extends React.PureComponent {
+export default class DayFlatlist extends React.Component {
 
     month_data = []
 
@@ -456,43 +291,12 @@ class MonthYearDisplay extends React.PureComponent {
                 >
                     {this.props.data.year}
                 </Text>
-
             </View>
         )
     }
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1
-    },
-    
-    banner: {
-        textAlign: 'left',
-        paddingLeft: 8,
-        fontSize: 16,
-        fontWeight: '600',
-        marginTop: 10,
-        marginBottom: 10
-    },
-
-    scrollViewTasks: {
-        alignSelf: "stretch",
-        height: 50
-    },
-
-    dayHolder: {
-        width: dayHolderWidth,
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 15,
-    },
-
-    actionText: {
-        height: 50
-    },
-
     not_chosen_day: {
         marginTop: 5,
         width: 30,
