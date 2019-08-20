@@ -102,18 +102,7 @@ export default class AddTaskPanel extends Component {
         })
     }
 
-    getWeek = (date) => {
-        let target = new Date(date);
-        let dayNr = (date.getDay() + 6) % 7;
-        target.setDate(target.getDate() - dayNr + 3);
-        let firstThursday = target.valueOf();
-        target.setMonth(0, 1);
-        if (target.getDay() != 4) {
-            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
-        }
-        return 1 + Math.ceil((firstThursday - target) / 604800000);
-    }
-
+    
     getMonday = (date) => {
         let dayInWeek = new Date(date).getDay()
         let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
@@ -857,6 +846,18 @@ class TagElement extends React.PureComponent {
 
 class BottomOptionElement extends React.PureComponent {
 
+    getWeek = (date) => {
+        let target = new Date(date);
+        let dayNr = (date.getDay() + 6) % 7;
+        target.setDate(target.getDate() - dayNr + 3);
+        let firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() != 4) {
+            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+        }
+        return 1 + Math.ceil((firstThursday - target) / 604800000);
+    }
+
     _onPress = () => {
         if (this.props.addTask) {
             if (this.props.currentAnnotation === "day" && this.props.currentDayTask.title && this.props.currentDayTask.title.length > 0) {
@@ -914,11 +915,11 @@ class BottomOptionElement extends React.PureComponent {
                 let add_data
 
                 if (this.props.week_tasks.length === 0) {
-                    add_data = { ... this.props.currentDayTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: 0 } }
+                    add_data = { ... this.props.currentWeekTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: 0 } }
                 }
 
                 else {
-                    add_data = { ... this.props.currentDayTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: this.props.week_tasks.length } }
+                    add_data = { ... this.props.currentWeekTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: this.props.week_tasks.length } }
                 }
 
                 this.props.addTask("ADD_NEW_WEEK_TASK", add_data)
@@ -933,7 +934,7 @@ class BottomOptionElement extends React.PureComponent {
                     type: "week",
                     schedule: {
                         day: date.getDate(),
-                        week: noWeek,
+                        week: this.getWeek(date),
                         month: date.getMonth(),
                         year: date.getFullYear()
                     },
@@ -965,11 +966,11 @@ class BottomOptionElement extends React.PureComponent {
                 let add_data
 
                 if (this.props.month_tasks.length === 0) {
-                    add_data = { ... this.props.currentDayTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: 0 } }
+                    add_data = { ... this.props.currentMonthTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: 0 } }
                 }
 
                 else {
-                    add_data = { ... this.props.currentDayTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: this.props.month_tasks.length } }
+                    add_data = { ... this.props.currentMonthTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: this.props.month_tasks.length } }
                 }
 
                 this.props.addTask("ADD_NEW_MONTH_TASK", add_data)

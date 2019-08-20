@@ -15,7 +15,7 @@ export default class DayFlatlist extends React.Component {
     year = new Date().getFullYear()
 
     day_text_arr = ["S", "M", "T", "W", "T", "F", "S"]
-    month_text_arr = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    month_text_arr = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
     _flatlistRef = React.createRef()
 
@@ -40,7 +40,7 @@ export default class DayFlatlist extends React.Component {
             month = this.month_data[day_index].month,
             year = this.month_data[day_index].year
 
-        this.props.setChosenDayData(day, month, year)
+        this.props.setChosenDateData({day, month, year})
 
         this.scrollToIndex(day_index)
     }

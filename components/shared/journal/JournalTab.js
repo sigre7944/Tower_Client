@@ -4,13 +4,16 @@ import {
     StyleSheet,
     Text,
     ScrollView,
-    TouchableOpacity,
     Modal,
     Button,
-    FlatList
 } from 'react-native';
+
 import TaskCard from '../layouts/TaskCard'
-import TaskDetailModal from '../layouts/TaskDetailModal'
+import TaskDetailModal from '../layouts/TaskDetailModal.Container'
+
+import DayFlatlist from './day-flatlist/DayFlatlist.Container'
+import WeekFlatlist from './week-flatlist/WeekFlatlist.Container'
+import MonthFlatlist from './month-flatlist/MonthFlatlist.Container'
 
 import Swipeable from 'react-native-gesture-handler/Swipeable'
 
@@ -36,34 +39,35 @@ export default class JournalTab extends React.PureComponent {
 
     current_date = new Date()
 
+    initChosenDateData = () => {
+        if (this.props.type === "day") {
+            return ({
+                day: this.current_date.getDate(),
+                month: this.current_date.getMonth(),
+                year: this.current_date.getFullYear()
+            })
+        }
+
+        else if (this.props.type === "week") {
+            return ({
+                week: this.getWeek(this.current_date),
+                year: this.current_date.getFullYear()
+            })
+        }
+
+        return ({
+            month: this.current_date.getMonth(),
+            year: this.current_date.getFullYear()
+        })
+    }
+
     state = {
         isModalOpened: false,
         isLogtimeModalOpened: false,
 
         should_update: 0,
 
-        chosen_date_data: () => {
-            if (this.props.type === "day") {
-                return ({
-                    day: current_date.getDate(),
-                    month: current_date.getMonth(),
-                    year: current_dategetFullYear()
-                })
-            }
-
-            else if (this.props.type === "week") {
-                return ({
-                    week: this.getWeek(current_date),
-                    month: current_date.getMonth(),
-                    year: current_date.getFullYear()
-                })
-            }
-
-            return ({
-                month: current_date.getMonth(),
-                year: current_date.getFullYear()
-            })
-        }
+        chosen_date_data: this.initChosenDateData()
     }
 
     setChosenDateData = (data) => {
@@ -130,22 +134,32 @@ export default class JournalTab extends React.PureComponent {
     }
 
     render() {
-        let action_type
-        if (this.props.type === "day") {
-            action_type = "ADD_EDIT_DAY_TASK"
-        }
-
-        else if (this.props.type === "week") {
-            action_type = "ADD_EDIT_WEEK_TASK"
-        }
-
-        else {
-            action_type = "ADD_EDIT_MONTH_TASK"
-        }
 
         return (
             <View style={styles.container}>
-                {/* DayFlatlist/WeekFlatlist/MonthFlatlist */}
+                {
+                    this.props.type === "day" ?
+
+                        <DayFlatlist
+                            setChosenDateData={this.setChosenDateData}
+                        />
+
+                        :
+                        <>
+                            {
+                                this.props.type === "week" ?
+                                    <WeekFlatlist
+                                        setChosenDateData={this.setChosenDateData}
+                                    />
+
+                                    :
+
+                                    <MonthFlatlist 
+                                        setChosenDateData={this.setChosenDateData}
+                                    />
+                            }
+                        </>
+                }
 
                 <View style={{
                     flex: 1,
@@ -156,26 +170,29 @@ export default class JournalTab extends React.PureComponent {
                     {/* later we will user map to render all the data */}
                     <ScrollView style={styles.scrollViewTasks}>
                         {this.props.tasks.map((task, index) => {
-                            let { schedule } = task,
-                                component = <></>
+                            let { schedule } = task
 
-                            if (task.type === "day") {
+                            if (this.props.type === "day") {
                                 let { day, month, year } = this.state.chosen_date_data
 
                                 if (schedule.day === day && schedule.month === month && schedule.year === year) {
-                                    component = <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                        <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                                    </Swipeable>
+                                    return (
+                                        <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                            <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
+                                        </Swipeable>
+                                    )
                                 }
                             }
 
-                            else if (task.type === "week") {
-                                let { week, month, year } = this.state.chosen_date_data
+                            else if (this.props.type === "week") {
+                                let { week, year } = this.state.chosen_date_data
 
-                                if (schedule.week === week && schedule.month === month && schedule.year === year) {
-                                    component = <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                        <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                                    </Swipeable>
+                                if (schedule.week === week && schedule.year === year) {
+                                    return (
+                                        <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                            <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
+                                        </Swipeable>
+                                    )
                                 }
                             }
 
@@ -183,13 +200,13 @@ export default class JournalTab extends React.PureComponent {
                                 let { month, year } = this.state.chosen_date_data
 
                                 if (schedule.month === month && schedule.year === year) {
-                                    component = <Swipeable key={`month-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                        <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                                    </Swipeable>
+                                    return (
+                                        <Swipeable key={`month-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                            <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
+                                        </Swipeable>
+                                    )
                                 }
                             }
-
-                            return component
                         })}
 
                         <Text style={styles.banner}>Completed</Text>
@@ -204,7 +221,7 @@ export default class JournalTab extends React.PureComponent {
                     task_data={this.task_data}
                     categories={this.props.categories}
                     priorities={this.props.priorities}
-                    action_type={action_type}
+                    action_type={this.props.action_type}
                 />
 
                 <Modal
@@ -254,42 +271,7 @@ const styles = StyleSheet.create({
         height: 50
     },
 
-    dayHolder: {
-        width: dayHolderWidth,
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 15,
-    },
-
     actionText: {
         height: 50
     },
-
-    not_chosen_day: {
-        marginTop: 5,
-        width: 30,
-        height: 30,
-        borderRadius: 15,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-
-    chosen_day: {
-        marginTop: 5,
-        width: 30,
-        height: 30,
-        borderRadius: 15,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "black"
-    },
-
-    not_chosen_text: {
-        color: "black"
-    },
-
-    chosen_text: {
-        color: "white"
-    }
 })

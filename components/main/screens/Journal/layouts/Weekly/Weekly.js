@@ -1,15 +1,7 @@
 import React from 'react'
-import {
-    View,
-    Text,
-    ScrollView,
-    StyleSheet,
-    TouchableHighlight
-} from 'react-native';
 
-import WeekFlatlist from '../../../../../shared/journal/week-flatlist/WeekFlatlist.Container'
+import JournalTab from '../../../../../shared/journal/JournalTab.Container'
 
-let weekHolderWith = 60
 
 export default class Weekly extends React.Component {
     static navigationOptions = {
@@ -19,7 +11,11 @@ export default class Weekly extends React.Component {
 
     render() {
         return (
-            <WeekFlatlist />
+            <JournalTab 
+                type="week"
+                action_type="ADD_EDIT_WEEK_TASK"
+                {...this.props}
+            />
         )
     }
 }

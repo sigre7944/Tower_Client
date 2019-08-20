@@ -3,7 +3,7 @@ import { updateTitle } from './actions/updateTitle'
 import { updateDescription } from './actions/updateDescription'
 import { updateType } from './actions/updateType'
 import { addTask } from './actions/addTask'
-import {updateTask} from '../../../../../shared/actions/updateTask'
+import { updateTask } from '../../../../../shared/actions/updateTask'
 import AddTaskPanel from './AddTaskPanel'
 
 

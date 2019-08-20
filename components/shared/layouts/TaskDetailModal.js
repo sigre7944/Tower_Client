@@ -3,7 +3,8 @@ import { Alert, TouchableOpacity, Text, View, StyleSheet, ImageBackground, Dimen
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { CheckBox } from 'react-native-elements';
 import Modal from 'react-native-modalbox';
-import DayCalendar from '../calendar/day-calendar/DayCalendar'
+import DayCalendar from '../calendar/day-calendar/DayCalendar.Container'
+import WeekCalendar from '../calendar/week-calendar/WeekCalendar.Container'
 import Category from '../category/Category.Container'
 import Priority from '../priority/Priority.Container'
 import Repeat from '../repeat/Repeat.Container'
@@ -783,6 +784,7 @@ class CalendarEdit extends React.PureComponent {
                     {... this.props}
                     toggle_clear={this.state.toggle_clear}
                     setData={this.setData}
+                    edit={true}
                 />
 
                 <View

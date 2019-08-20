@@ -9,7 +9,7 @@ import {
 
 export default class WeekFlatlist extends React.Component {
 
-    month_text_arr = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    month_text_arr = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
     _flatlistRef = React.createRef()
 
@@ -35,6 +35,11 @@ export default class WeekFlatlist extends React.Component {
 
             should_update: prevState.should_update + 1
         }))
+
+        let week = this.week_data[week_index].week,
+            year = this.week_data[week_index].year
+
+        this.props.setChosenDateData({week, year})
 
         this.scrollToIndex(week_index)
     }
@@ -216,7 +221,7 @@ export default class WeekFlatlist extends React.Component {
 
 class WeekHolder extends React.Component {
 
-    month_text_arr = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "July", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    month_text_arr = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
     state = {
         week_style: styles.not_chosen_week,
