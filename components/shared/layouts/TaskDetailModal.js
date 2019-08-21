@@ -33,7 +33,7 @@ export default class TaskDetailModal extends Component {
         priority: "",
         repeat: "",
         goal: "",
-
+        calendar_text: "",
         should_update: 0,
     }
 
@@ -60,36 +60,62 @@ export default class TaskDetailModal extends Component {
 
             let edit_task = this.edit_task,
                 date = new Date(edit_task.startTime),
-                day_in_week_text = this.daysInWeekText[date.getDay()],
-                date_number = date.getDate(),
-                month_text = this.monthNames[date.getMonth()],
                 category = edit_task.category ? this.props.categories[edit_task.category].name : "",
                 priority = edit_task.priority ? this.props.priorities[edit_task.priority.value].name : "",
-                repeat,
-                goal = edit_task.goal ? `${edit_task.goal.max} times` : ""
+                goal = edit_task.goal ? `${edit_task.goal.max} times` : "",
+                calendar_text, repeat
 
-            if (edit_task.repeat) {
-                if (edit_task.repeat.type === "daily") {
-                    repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000)} day(s)`
+
+            if (this.props.type === "day") {
+
+                calendar_text = `${this.daysInWeekText[date.getDay()]} ${date.getDate()} ${this.monthNames[date.getMonth()]} ${date.getFullYear()}`
+
+                if (edit_task.repeat) {
+                    if (edit_task.repeat.type === "daily") {
+                        repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000)} day(s)`
+                    }
+
+                    else if (edit_task.repeat.type === "weekly") {
+                        repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000 * 7)} week(s)`
+                    }
+
+                    else {
+                        repeat = `Every ${edit_task.repeat.interval.value} month(s)`
+                    }
                 }
 
-                else if (edit_task.repeat.type === "weekly") {
-                    repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000 * 7)} week(s)`
+            }
+
+            else if (this.props.type === "week") {
+
+                calendar_text = `Week ${edit_task.schedule.week} ${this.monthNames[date.getMonth()]} ${date.getFullYear()}`
+
+                if (edit_task.repeat) {
+                    if (edit_task.repeat.type === "weekly-w") {
+                        repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000 * 7)} week(s)`
+                    }
+
+                    else {
+                        repeat = `Every ${edit_task.repeat.interval.value} month(s)`
+                    }
                 }
 
-                else if (edit_task.repeat.type === "monthly") {
+            }
+
+            else {
+                calendar_text = `${this.monthNames[edit_task.schedule.month]} ${edit_task.schedule.year}`
+
+                if (edit_task.repeat) {
                     repeat = `Every ${edit_task.repeat.interval.value} month(s)`
                 }
             }
 
             this.setState({
-                day_in_week_text,
-                date_number,
-                month_text,
                 category,
                 priority,
                 repeat,
                 goal,
+                calendar_text
             })
         }
     }
@@ -182,7 +208,7 @@ export default class TaskDetailModal extends Component {
                                             <FontAwesome name={'calendar'} style={styles.icon} />
                                         </View>
                                         <View style={styles.body}>
-                                            <Text style={styles.text}>{`${this.state.day_in_week_text} ${this.state.date_number} ${this.state.month_text}`}</Text>
+                                            <Text style={styles.text}>{this.state.calendar_text}</Text>
                                         </View>
                                     </View>
 
@@ -238,6 +264,7 @@ export default class TaskDetailModal extends Component {
                         priorities={this.props.priorities}
                         hideAction={this.toggleEdit}
                         updateEdittingTask={this.props.updateEdittingTask}
+                        type={this.props.type}
                     />
                 }
 
@@ -258,9 +285,7 @@ class EditDetails extends React.PureComponent {
     month_names_in_short = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
     edit_task = {}
-    day_in_week_text = ""
-    date_number = ""
-    month_text = ""
+    calendar_text = ""
     category = ""
     priority = ""
     repeat = ""
@@ -360,27 +385,50 @@ class EditDetails extends React.PureComponent {
     }
 
     renderData = (edit_task) => {
-        let { category, repeat, priority, goal, startTime } = edit_task
+        let { category, repeat, priority, goal, startTime, schedule } = edit_task
 
         let date = new Date(startTime)
 
-        this.day_in_week_text = this.daysInWeekText[date.getDay()]
-        this.date_number = date.getDate()
-        this.month_text = this.monthNames[date.getMonth()]
         this.category = this.props.categories[category].name
         this.priority = this.props.priorities[priority.value].name
         this.goal = `${goal.max} times`
 
-        if (repeat.type === "daily") {
-            this.repeat = `Every ${repeat.interval.value / (86400 * 1000)} day(s)`
+        if (this.props.type === "day") {
+
+            this.calendar_text = `${this.daysInWeekText[date.getDay()]} ${date.getDate()} ${this.monthNames[date.getMonth()]} ${date.getFullYear()}`
+
+            if (repeat.type === "daily") {
+                this.repeat = `Every ${repeat.interval.value / (86400 * 1000)} day(s)`
+            }
+
+            else if (repeat.type === "weekly") {
+                this.repeat = `Every ${repeat.interval.value / (86400 * 1000 * 7)} week(s)`
+            }
+
+            else {
+                this.repeat = `Every ${repeat.interval.value} month(s)`
+            }
         }
 
-        else if (repeat.type === "weekly") {
-            this.repeat = `Every ${repeat.interval.value / (86400 * 1000 * 7)} week(s)`
+        else if (this.props.type === "week") {
+
+            this.calendar_text = `Week ${schedule.week} ${this.monthNames[date.getMonth()]} ${date.getFullYear()}`
+
+            if (repeat.type === "weekly-w") {
+                this.repeat = `Every ${repeat.interval.value / (86400 * 1000 * 7)} week(s)`
+            }
+
+            else {
+                this.repeat = `Every ${repeat.interval.value} month(s)`
+            }
+
         }
 
-        else if (repeat.type === "monthly") {
+        else {
+            this.calendar_text = `${this.monthNames[schedule.month]} ${schedule.year}`
+
             this.repeat = `Every ${repeat.interval.value} month(s)`
+
         }
 
         this.setState(prevState => ({
@@ -391,11 +439,11 @@ class EditDetails extends React.PureComponent {
     componentDidMount() {
         this.edit_task = this.props.task_data
 
-        let {title, description} = this.edit_task
+        let { title, description } = this.edit_task
 
         this.setState({
             title_value: title,
-            description_value: description ? description: "",
+            description_value: description ? description : "",
         })
 
         this.renderData(this.edit_task)
@@ -486,7 +534,7 @@ class EditDetails extends React.PureComponent {
                     </View>
 
                     <OptionButton
-                        content={`${this.day_in_week_text} ${this.date_number} ${this.month_text}`}
+                        content={this.calendar_text}
                         text_color={"black"}
                         toggleAction={this.toggleAction}
                         name={"calendar"}
@@ -598,6 +646,7 @@ class EditDetails extends React.PureComponent {
                                         task_data={this.edit_task}
                                         hideAction={this.toggleShouldVisible}
                                         setEditTask={this.setEditTask}
+                                        type={this.props.type}
                                     />
 
                                     :
@@ -637,7 +686,7 @@ class EditDetails extends React.PureComponent {
                                                                             task_data={this.edit_task}
                                                                             hideAction={this.toggleShouldVisible}
                                                                             updateTask={this.setEditTask}
-                                                                            currentAnnotation={"day"}
+                                                                            currentAnnotation={this.props.type}
                                                                         />
 
                                                                         :
@@ -651,6 +700,7 @@ class EditDetails extends React.PureComponent {
                                                                                         task_data={this.edit_task}
                                                                                         hideAction={this.toggleShouldVisible}
                                                                                         updateTask={this.setEditTask}
+                                                                                        currentAnnotation={this.props.type}
                                                                                     />
 
                                                                                     :
@@ -714,40 +764,130 @@ class OptionButton extends React.PureComponent {
 
 class CalendarEdit extends React.PureComponent {
 
-    chosen_day = -1
-    chosen_month = -1
-    chosen_year = -1
+    day_data = {}
 
-    setData = (day, month, year) => {
-        this.chosen_day = day
-        this.chosen_month = month
-        this.chosen_year = year
-    }
+    week_data = {}
+
+    month_data = {}
 
     state = {
         toggle_clear: false
     }
 
+    setDayData = (day, month, year) => {
+        this.day_data = { day, month, year }
+    }
+
+    setWeekData = (day, week, month, year, noWeekInMonth) => {
+        this.week_data = { day, week, month, year, noWeekInMonth }
+    }
+
+    setMonthData = (month, year) => {
+        this.month_data = { month, year }
+    }
+
+    getWeek = (date) => {
+        let target = new Date(date);
+        let dayNr = (date.getDay() + 6) % 7;
+        target.setDate(target.getDate() - dayNr + 3);
+        let firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() != 4) {
+            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+        }
+        return 1 + Math.ceil((firstThursday - target) / 604800000);
+    }
+
+    getMonday = (date) => {
+        let dayInWeek = new Date(date).getDay()
+        let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
+        return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
+    }
+
+    getNoWeekInMonth = (date) => {
+        let nearest_monday = this.getMonday(date)
+        let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
+
+        return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
+    }
+
     save = () => {
         let data = {}
-        if (this.chosen_day > 0 && this.chosen_month > 0 && this.chosen_year > 0) {
-            if (this.chosen_day < new Date().getDate() && this.chosen_month === new Date().getMonth() && this.chosen_year === new Date().getFullYear()) {
-                data.startTime = new Date().getTime()
-                data.trackingTime = data.startTime
-                data.schedule = {
-                    day: new Date().getDate(),
-                    month: this.chosen_month,
-                    year: this.chosen_year
+
+        if (this.props.type === "day") {
+            if (this.day_data.day > 0 && this.day_data.month > 0 && this.day_data.year > 0) {
+                let current = new Date()
+                if (this.day_data.day < current.getDate() && this.day_data.month === current.getMonth() && this.day_data.year === current.getFullYear()) {
+                    data.startTime = current.getTime()
+                    data.trackingTime = data.startTime
+                    data.schedule = {
+                        day: current.getDate(),
+                        month: this.day_data.month,
+                        year: this.day_data.year
+                    }
+                }
+
+                else {
+                    data.startTime = new Date(new Date(new Date((new Date().setMonth(this.day_data.month))).setDate(this.day_data.day)).setFullYear(this.day_data.year)).getTime()
+                    data.trackingTime = data.startTime
+                    data.schedule = {
+                        day: this.day_data.day,
+                        month: this.day_data.month,
+                        year: this.day_data.year
+                    }
                 }
             }
+        }
 
-            else {
-                data.startTime = new Date(new Date(new Date((new Date().setMonth(this.chosen_month))).setDate(this.chosen_day)).setFullYear(this.chosen_year)).getTime()
-                data.trackingTime = data.startTime
-                data.schedule = {
-                    day: this.chosen_day,
-                    month: this.chosen_month,
-                    year: this.chosen_year
+        else if (this.props.type === "week") {
+            if (this.week_data.day > 0 && this.week_data.week > 0 && this.week_data.month > 0 && this.week_data.year > 0) {
+                let current = new Date()
+
+                if (this.week_data.week < this.getWeek(current) && this.week_data.month === current.getMonth() && this.week_data.year === current.getFullYear()) {
+                    data.startTime = this.getMonday(current).getTime()
+                    data.trackingTime = data.startTime
+                    data.schedule = {
+                        week: this.getWeek(current),
+                        day: this.getMonday(current).getDate(),
+                        month: this.week_data.month,
+                        year: this.week_data.year,
+                        noWeekInMonth: this.getNoWeekInMonth(current)
+                    }
+                }
+
+                else {
+                    data.startTime = new Date(new Date(new Date((new Date().setMonth(this.week_data.month))).setDate(this.week_data.day)).setFullYear(this.week_data.year)).getTime()
+                    data.trackingTime = data.startTime
+                    data.schedule = {
+                        week: this.week_data.week,
+                        day: this.week_data.day,
+                        month: this.week_data.month,
+                        year: this.week_data.year,
+                        noWeekInMonth: this.week_data.noWeekInMonth
+                    }
+                }
+            }
+        }
+
+        else {
+            if (this.month_data.month > 0 && this.month_data.year > 0) {
+                let current = new Date()
+                if (this.month_data.month < current.getMonth() && this.month_data.year === current.getFullYear()){
+                    data.startTime = new Date(new Date(new Date((new Date().setMonth(current.getMonth()))).setDate(1)).setFullYear(this.month_data.year)).getTime()
+                    data.trackingTime = data.startTime
+                    data.schedule = {
+                        month: current.getMonth(),
+                        year: this.month_data.year,
+                    }
+                }
+    
+                else {
+                    data.startTime = new Date(new Date(new Date((new Date().setMonth(this.month_data.month))).setDate(1)).setFullYear(this.month_data.year)).getTime()
+                    data.trackingTime = data.startTime
+                    data.schedule = {
+                        month: this.month_data.month,
+                        year: this.month_data.year,
+                    }
                 }
             }
         }
@@ -781,12 +921,33 @@ class CalendarEdit extends React.PureComponent {
                     borderRadius: 10,
                 }}
             >
-                <DayCalendar
-                    {... this.props}
-                    toggle_clear={this.state.toggle_clear}
-                    setData={this.setData}
-                    edit={true}
-                />
+                {this.props.type === "day" ?
+                    < DayCalendar
+                        {... this.props}
+                        toggle_clear={this.state.toggle_clear}
+                        setData={this.setDayData}
+                    />
+                    :
+                    <>
+                        {
+                            this.props.type === "week" ?
+                                <WeekCalendar
+                                    {... this.props}
+                                    toggle_clear={this.state.toggle_clear}
+                                    setData={this.setWeekData}
+                                />
+
+                                :
+
+                                <MonthCalendar
+                                    {... this.props}
+                                    toggle_clear={this.state.toggle_clear}
+                                    setData={this.setMonthData}
+                                />
+                        }
+                    </>
+                }
+
 
                 <View
                     style={{
@@ -830,7 +991,7 @@ class CalendarEdit extends React.PureComponent {
                             backgroundColor: 'gray',
                             marginRight: 20
                         }}
-                        
+
                         onPress={this.cancel}
                     >
                         <Text

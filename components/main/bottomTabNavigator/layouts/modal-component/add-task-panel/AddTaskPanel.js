@@ -864,11 +864,11 @@ class BottomOptionElement extends React.PureComponent {
                 let add_data
 
                 if (this.props.day_tasks.length === 0) {
-                    add_data = { ... this.props.currentDayTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: 0 } }
+                    add_data = { ... this.props.currentDayTask, ... { createdAt: new Date().getTime(), id: uuidv1()} }
                 }
 
                 else {
-                    add_data = { ... this.props.currentDayTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: this.props.day_tasks.length } }
+                    add_data = { ... this.props.currentDayTask, ... { createdAt: new Date().getTime(), id: uuidv1()} }
                 }
 
 
@@ -915,11 +915,11 @@ class BottomOptionElement extends React.PureComponent {
                 let add_data
 
                 if (this.props.week_tasks.length === 0) {
-                    add_data = { ... this.props.currentWeekTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: 0 } }
+                    add_data = { ... this.props.currentWeekTask, ... { createdAt: new Date().getTime(), id: uuidv1()} }
                 }
 
                 else {
-                    add_data = { ... this.props.currentWeekTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: this.props.week_tasks.length } }
+                    add_data = { ... this.props.currentWeekTask, ... { createdAt: new Date().getTime(), id: uuidv1()} }
                 }
 
                 this.props.addTask("ADD_NEW_WEEK_TASK", add_data)
@@ -966,11 +966,11 @@ class BottomOptionElement extends React.PureComponent {
                 let add_data
 
                 if (this.props.month_tasks.length === 0) {
-                    add_data = { ... this.props.currentMonthTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: 0 } }
+                    add_data = { ... this.props.currentMonthTask, ... { createdAt: new Date().getTime(), id: uuidv1()} }
                 }
 
                 else {
-                    add_data = { ... this.props.currentMonthTask, ... { createdAt: new Date().getTime(), id: uuidv1(), index: this.props.month_tasks.length } }
+                    add_data = { ... this.props.currentMonthTask, ... { createdAt: new Date().getTime(), id: uuidv1()} }
                 }
 
                 this.props.addTask("ADD_NEW_MONTH_TASK", add_data)

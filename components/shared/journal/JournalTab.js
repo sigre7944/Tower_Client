@@ -17,6 +17,8 @@ import MonthFlatlist from './month-flatlist/MonthFlatlist.Container'
 
 import Swipeable from 'react-native-gesture-handler/Swipeable'
 
+import {Seq, Map} from 'immutable'
+
 export default class JournalTab extends React.PureComponent {
     static navigationOptions = {
         swipeEnabled: false,
@@ -124,8 +126,8 @@ export default class JournalTab extends React.PureComponent {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.props.tasks !== prevProps.tasks) {
-            if (this.task_data.index >= 0) {
-                this.task_data = this.props.tasks[this.task_data.index]
+            if(this.task_data.id){
+                this.task_data = Map(this.props.tasks).get(this.task_data.id)
                 this.setState(prevState => ({
                     should_update: prevState.should_update + 1,
                 }))
@@ -169,7 +171,7 @@ export default class JournalTab extends React.PureComponent {
 
                     {/* later we will user map to render all the data */}
                     <ScrollView style={styles.scrollViewTasks}>
-                        {this.props.tasks.map((task, index) => {
+                        {Map(this.props.tasks).valueSeq().map((task, index) => {
                             let { schedule } = task
 
                             if (this.props.type === "day") {
