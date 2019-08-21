@@ -15,7 +15,10 @@ const mapStateToProps = (state) => ({
     priorities: state.priorities,
     day_tasks: state.day_tasks,
     week_tasks: state.week_tasks,
-    month_tasks: state.month_tasks
+    month_tasks: state.month_tasks,
+
+    addTaskDescription: state.addTaskDescription,
+    addTaskTitle: state.addTaskTitle
 })
 
 
