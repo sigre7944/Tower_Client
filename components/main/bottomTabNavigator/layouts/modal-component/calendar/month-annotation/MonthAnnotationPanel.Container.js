@@ -1,16 +1,12 @@
 import {connect} from 'react-redux'
 import MonthAnnotationPanel from './MonthAnnotationPanel'
-import {updateStartingDate} from './actions/updateStartingDate'
-
-const mapStateToProps = (state) => ({
-    currentMonthTask: state.currentMonthTask
-})
+import {updateTask} from '../../../../../../shared/actions/updateTask'
 
 const maptDispatchToProps = (dispatch, ownProps) => ({
-    updateStartingDate: (data) => dispatch(updateStartingDate(data))
+    updateTask: (data) => dispatch(updateTask("UPDATE_NEW_MONTH_TASK", data))
 }) 
 
 export default connect(
-    mapStateToProps,
+    null,
     maptDispatchToProps
 )(MonthAnnotationPanel)

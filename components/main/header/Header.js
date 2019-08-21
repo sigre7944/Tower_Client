@@ -6,8 +6,6 @@ import {
     StyleSheet,
     Alert,
     Text,
-    TouchableHighlight,
-    TextInput,
     TouchableOpacity
 } from 'react-native';
 import Modal from 'react-native-modalbox';
@@ -29,8 +27,8 @@ export default class Header extends React.Component {
     };
 
 
-    componentDidMount = () => {
-
+    _onPress = () => {
+        this.props.toggleReturn()
     }
 
     setModalVisible = (visible) => {
@@ -59,11 +57,24 @@ export default class Header extends React.Component {
                             }}
                         />
                     </TouchableOpacity>
-                    <Text style={{
-                        color: 'white',
-                        fontSize: 20,
-                        fontWeight: '500',
-                    }}>Today</Text>
+
+                    <TouchableOpacity
+                        style={{
+
+                        }}
+
+                        onPress={this._onPress}
+                    >
+                        <Text
+                            style={{
+                                color: 'white',
+                                fontSize: 20,
+                                fontWeight: '500',
+                            }}>
+                            {this.props.headerText}
+                        </Text>
+                    </TouchableOpacity>
+
 
                     <TouchableOpacity onPress={() => this.refs.optionModal.open()}>
                         <Image

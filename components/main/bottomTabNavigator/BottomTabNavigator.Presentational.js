@@ -34,7 +34,7 @@ export default class BottomTabNavigator extends React.Component {
 
     componentDidUpdate = (prevProps, prevState) => {
         if (this.props.routeName !== prevProps.routeName) {
-            if ((this.props.routeName === "Daily" || this.props.routeName === "Weekly" || this.props.routeName === "Monthly")) {
+            if ((this.props.routeName === "Day" || this.props.routeName === "Week" || this.props.routeName === "Month")) {
                 this.setState({
                     should_AddTaskButton_be_displayed: "flex"
                 })

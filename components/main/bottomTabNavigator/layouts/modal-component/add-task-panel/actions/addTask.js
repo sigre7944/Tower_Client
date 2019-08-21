@@ -1,4 +1,5 @@
-export const addTask = (data) => ({
-    type: "ADD_NEW_TASK",
+export const addTask = (type, data) => ({
+    type,
     data
 })
+

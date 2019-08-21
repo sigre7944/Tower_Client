@@ -7,10 +7,8 @@ import {
 
 import DayAnnotationPanel from './day-annotation/DayAnnotationPanel.Container'
 import MonthAnnotationPanel from './month-annotation/MonthAnnotationPanel.Container'
-
 import WeekAnnotationPanel from './week-annotation/WeekAnnotationPanel.Container'
-
-import Repeat from '../repeat/Repeat.Container'
+import Repeat from '../../../../../shared/repeat/Repeat.Container'
 
 export default class Calendar extends Component {
 
@@ -30,7 +28,8 @@ export default class Calendar extends Component {
                 {this.state.repeatChosen ?
                     <Repeat
                         currentAnnotation={this.props.currentAnnotation}
-                        chooseRepeatOption={this.chooseRepeatOption}
+                        hideAction={this.chooseRepeatOption}
+                        edit={false}
                     />
 
                     :

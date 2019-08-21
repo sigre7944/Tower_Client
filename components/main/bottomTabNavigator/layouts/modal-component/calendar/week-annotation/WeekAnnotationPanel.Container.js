@@ -1,18 +1,12 @@
 import {connect} from 'react-redux'
-import {updateCurrentWeekInMonth} from './actions/updateCurrentWeekInMonth'
-import {updateStartingDate} from './actions/updateStartingDate'
+import {updateTask} from '../../../../../../shared/actions/updateTask'
 import WeekAnnotationPanel from './WeekAnnotationPanel'
 
-const mapStateToProps = (state) => ({
-    currentWeekTask: state.currentWeekTask,
-})
-
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    updateCurrentWeekInMonth: (week_data) => dispatch(updateCurrentWeekInMonth(week_data)),
-    updateStartingDate: (data) => dispatch(updateStartingDate(data))
+    updateTask: (data) => dispatch(updateTask("UPDATE_NEW_WEEK_TASK", data))
 })
 
 export default connect(
-    mapStateToProps,
+    null,
     mapDispatchToProps
 )(WeekAnnotationPanel)

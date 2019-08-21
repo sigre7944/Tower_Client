@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
-import { Alert, Modal, TouchableOpacity, Text, View, StyleSheet, Button, Image, TextInput, ScrollView, Platform } from 'react-native'
+import { TouchableOpacity, Text, View, StyleSheet} from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { CheckBox } from 'react-native-elements'
-import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { RectButton } from 'react-native-gesture-handler';
 
 export default class TaskCard extends Component {
     state={
         checked: false
     }
 
+    _onPress = () => {
+        this.props.onPress(this.props.task_data)
+    }
+
     render() {
         return (
-            <TouchableOpacity style={styles.container} onPress={() => this.props.onPress(true)}>
+            <TouchableOpacity style={styles.container} onPress={this._onPress}>
                 
                     <View style={styles.checkBox}>
                         <CheckBox 
@@ -25,7 +27,7 @@ export default class TaskCard extends Component {
                     </View>
                     <View style={styles.description}>
                         <Text style={styles.descriptionText}>{this.props.title ? this.props.title  : 'Example task'}</Text>
-                        <Text style={styles.descriptionAmount}>0/3</Text>
+                        <Text style={styles.descriptionAmount}>{this.props.goal ? `${this.props.goal.current}/${this.props.goal.max}` : "0/3"}</Text>
                     </View>
                     <View style={styles.share}>
                         <FontAwesome name={'link'} style={styles.icon}/>
