@@ -8,6 +8,8 @@ import {
     Button,
 } from 'react-native';
 
+import { PanGestureHandler } from 'react-native-gesture-handler'
+
 import TaskCard from '../layouts/TaskCard'
 import TaskDetailModal from '../layouts/TaskDetailModal.Container'
 
@@ -17,7 +19,7 @@ import MonthFlatlist from './month-flatlist/MonthFlatlist.Container'
 
 import Swipeable from 'react-native-gesture-handler/Swipeable'
 
-import {Seq, Map} from 'immutable'
+import { Map } from 'immutable'
 
 export default class JournalTab extends React.PureComponent {
     static navigationOptions = {
@@ -126,7 +128,7 @@ export default class JournalTab extends React.PureComponent {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.props.tasks !== prevProps.tasks) {
-            if(this.task_data.id){
+            if (this.task_data.id) {
                 this.task_data = Map(this.props.tasks).get(this.task_data.id)
                 this.setState(prevState => ({
                     should_update: prevState.should_update + 1,
@@ -156,7 +158,7 @@ export default class JournalTab extends React.PureComponent {
 
                                     :
 
-                                    <MonthFlatlist 
+                                    <MonthFlatlist
                                         setChosenDateData={this.setChosenDateData}
                                     />
                             }
@@ -217,16 +219,24 @@ export default class JournalTab extends React.PureComponent {
 
                 </View>
 
-                <TaskDetailModal
-                    isOpened={this.state.isModalOpened}
-                    closeModal={this.closeModal}
-                    task_data={this.task_data}
-                    categories={this.props.categories}
-                    priorities={this.props.priorities}
-                    action_type={this.props.action_type}
+                {this.state.isModalOpened ?
+                    <TaskDetailModal
+                        // isOpened={this.state.isModalOpened}
+                        closeModal={this.closeModal}
+                        task_data={this.task_data}
+                        categories={this.props.categories}
+                        priorities={this.props.priorities}
+                        action_type={this.props.action_type}
 
-                    type = {this.props.type}
-                />
+                        type={this.props.type}
+                    />
+
+                    :
+
+                    null
+                }
+
+
 
                 <Modal
                     animationType="slide"
