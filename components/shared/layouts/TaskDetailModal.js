@@ -25,6 +25,8 @@ export default class TaskDetailModal extends Component {
 
     edit_task = this.props.task_data
 
+    yes_delete_clicked = false
+
     state = {
         isOpened: false,
         isEditing: false,
@@ -41,9 +43,9 @@ export default class TaskDetailModal extends Component {
         toggle_delete: false,
     }
 
-    setModalVisible = (visible) => {
-        this.setState({ modalVisible: visible });
-    }
+    // setModalVisible = (visible) => {
+    //     this.setState({ modalVisible: visible });
+    // }
 
     toggleEdit = (visible) => {
         this.setState(() => ({ isEditing: visible }));
@@ -60,7 +62,10 @@ export default class TaskDetailModal extends Component {
 
         if (this.props.type === "day") {
 
-            calendar_text = `${this.daysInWeekText[date.getDay()]} ${date.getDate()} ${this.monthNames[date.getMonth()]} ${date.getFullYear()}`
+            if (date) {
+                calendar_text = `${this.daysInWeekText[date.getDay()]} ${date.getDate()} ${this.monthNames[date.getMonth()]} ${date.getFullYear()}`
+            }
+
 
             if (edit_task.repeat) {
                 if (edit_task.repeat.type === "daily") {
@@ -80,7 +85,9 @@ export default class TaskDetailModal extends Component {
 
         else if (this.props.type === "week") {
 
-            calendar_text = `Week ${edit_task.schedule.week} ${this.monthNames[date.getMonth()]} ${date.getFullYear()}`
+            if (date && edit_task.schedule) {
+                calendar_text = `Week ${edit_task.schedule.week} ${this.monthNames[date.getMonth()]} ${date.getFullYear()}`
+            }
 
             if (edit_task.repeat) {
                 if (edit_task.repeat.type === "weekly-w") {
@@ -95,7 +102,9 @@ export default class TaskDetailModal extends Component {
         }
 
         else {
-            calendar_text = `${this.monthNames[edit_task.schedule.month]} ${edit_task.schedule.year}`
+            if (edit_task.schedule) {
+                calendar_text = `${this.monthNames[edit_task.schedule.month]} ${edit_task.schedule.year}`
+            }
 
             if (edit_task.repeat) {
                 repeat = `Every ${edit_task.repeat.interval.value} month(s)`
@@ -112,92 +121,102 @@ export default class TaskDetailModal extends Component {
     }
 
     componentDidUpdate = (prevProps, prevState) => {
-        if (this.props.isOpened !== prevProps.isOpened) {
-            if (this.props.isOpened) {
-                this.openModal()
+        // if (this.props.isOpened !== prevProps.isOpened) {
+        //     if (this.props.isOpened) {
+        //         this.openModal()
+        //     }
+        //     else {
+        //         this.closeModal()
+        //     }
+        // }
+
+        if (this.props.task_data !== prevProps.task_data) {
+            this.edit_task = this.props.task_data
+
+            let edit_task = this.edit_task,
+                date = new Date(edit_task.startTime),
+                category = edit_task.category ? this.props.categories[edit_task.category].name : "",
+                priority = edit_task.priority ? this.props.priorities[edit_task.priority.value].name : "",
+                goal = edit_task.goal ? `${edit_task.goal.max} times` : "",
+                calendar_text, repeat
+
+
+            if (this.props.type === "day") {
+
+                if (date) {
+                    calendar_text = `${this.daysInWeekText[date.getDay()]} ${date.getDate()} ${this.monthNames[date.getMonth()]} ${date.getFullYear()}`
+                }
+
+                if (edit_task.repeat) {
+                    if (edit_task.repeat.type === "daily") {
+                        repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000)} day(s)`
+                    }
+
+                    else if (edit_task.repeat.type === "weekly") {
+                        repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000 * 7)} week(s)`
+                    }
+
+                    else {
+                        repeat = `Every ${edit_task.repeat.interval.value} month(s)`
+                    }
+                }
+
             }
+
+            else if (this.props.type === "week") {
+
+                if (date && edit_task.schedule) {
+                    calendar_text = `Week ${edit_task.schedule.week} ${this.monthNames[date.getMonth()]} ${date.getFullYear()}`
+                }
+
+                if (edit_task.repeat) {
+                    if (edit_task.repeat.type === "weekly-w") {
+                        repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000 * 7)} week(s)`
+                    }
+
+                    else {
+                        repeat = `Every ${edit_task.repeat.interval.value} month(s)`
+                    }
+                }
+
+            }
+
             else {
-                this.closeModal()
+                if (edit_task.schedule) {
+                    calendar_text = `${this.monthNames[edit_task.schedule.month]} ${edit_task.schedule.year}`
+                }
+
+                if (edit_task.repeat) {
+                    repeat = `Every ${edit_task.repeat.interval.value} month(s)`
+                }
             }
+
+            this.setState({
+                category,
+                priority,
+                repeat,
+                goal,
+                calendar_text
+            })
         }
 
-        // if (this.props.task_data !== prevProps.task_data) {
-        //     this.edit_task = this.props.task_data
-
-        //     let edit_task = this.edit_task,
-        //         date = new Date(edit_task.startTime),
-        //         category = edit_task.category ? this.props.categories[edit_task.category].name : "",
-        //         priority = edit_task.priority ? this.props.priorities[edit_task.priority.value].name : "",
-        //         goal = edit_task.goal ? `${edit_task.goal.max} times` : "",
-        //         calendar_text, repeat
-
-
-        //     if (this.props.type === "day") {
-
-        //         calendar_text = `${this.daysInWeekText[date.getDay()]} ${date.getDate()} ${this.monthNames[date.getMonth()]} ${date.getFullYear()}`
-
-        //         if (edit_task.repeat) {
-        //             if (edit_task.repeat.type === "daily") {
-        //                 repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000)} day(s)`
-        //             }
-
-        //             else if (edit_task.repeat.type === "weekly") {
-        //                 repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000 * 7)} week(s)`
-        //             }
-
-        //             else {
-        //                 repeat = `Every ${edit_task.repeat.interval.value} month(s)`
-        //             }
-        //         }
-
-        //     }
-
-        //     else if (this.props.type === "week") {
-
-        //         calendar_text = `Week ${edit_task.schedule.week} ${this.monthNames[date.getMonth()]} ${date.getFullYear()}`
-
-        //         if (edit_task.repeat) {
-        //             if (edit_task.repeat.type === "weekly-w") {
-        //                 repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000 * 7)} week(s)`
-        //             }
-
-        //             else {
-        //                 repeat = `Every ${edit_task.repeat.interval.value} month(s)`
-        //             }
-        //         }
-
-        //     }
-
-        //     else {
-        //         calendar_text = `${this.monthNames[edit_task.schedule.month]} ${edit_task.schedule.year}`
-
-        //         if (edit_task.repeat) {
-        //             repeat = `Every ${edit_task.repeat.interval.value} month(s)`
-        //         }
-        //     }
-
-        //     this.setState({
-        //         category,
-        //         priority,
-        //         repeat,
-        //         goal,
-        //         calendar_text
-        //     })
-        // }
+        if (this.state.toggle_delete !== prevProps.toggleDelete && this.yes_delete_clicked) {
+            this.props.closeModal()
+        }
     }
 
-    openModal = () => {
-        this.refs.taskInfoModal.open()
-    }
+    // openModal = () => {
+    //     this.refs.taskInfoModal.open()
+    // }
 
-    closeModal = () => {
-        this.refs.taskInfoModal.close()
-    }
+    // closeModal = () => {
+    //     this.refs.taskInfoModal.close()
+    // }
 
-    onClose = () => {
-        this.toggleEdit(false)
-        this.props.closeModal()
-    }
+    // onClose = () => {
+    //     this.toggleEdit(false)
+    //     this.props.closeModal()
+    // }
 
     dismissModal = () => {
         this.props.closeModal()
@@ -210,19 +229,21 @@ export default class TaskDetailModal extends Component {
     }
 
     delete = () => {
-        // if(this.props.type === "day"){
-        //     this.props.deleteTask("DELETE_DAY_TASK", this.edit_task.id)
-        // }
+        if (this.props.type === "day") {
+            this.props.deleteTask("DELETE_DAY_TASK", this.edit_task.id)
+        }
 
-        // else if(this.props.type === "day"){
-        //     this.props.deleteTask("DELETE_WEEK_TASK", this.edit_task.id)
-        // }
+        else if (this.props.type === "week") {
+            this.props.deleteTask("DELETE_WEEK_TASK", this.edit_task.id)
+        }
 
-        // else{
-        //     this.props.deleteTask("DELETE_MONTH_TASK", this.edit_task.id)
-        // }
+        else {
+            this.props.deleteTask("DELETE_MONTH_TASK", this.edit_task.id)
+        }
 
-        this.props.closeModal()
+        this.props.resetTaskData()
+        this.toggleDelete()
+        this.yes_delete_clicked = true
     }
 
 
@@ -467,7 +488,7 @@ export default class TaskDetailModal extends Component {
                                                             }}
                                                         >
                                                             Yes
-                                                </Text>
+                                                        </Text>
                                                     </TouchableOpacity>
                                                 </View>
                                             </View>

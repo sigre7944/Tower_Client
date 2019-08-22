@@ -29,6 +29,10 @@ export default class JournalTab extends React.PureComponent {
 
     task_data = {}
 
+    resetTaskData = () => {
+        this.task_data = {}
+    }
+
     getWeek = (date) => {
         let target = new Date(date);
         let dayNr = (date.getDay() + 6) % 7;
@@ -130,6 +134,7 @@ export default class JournalTab extends React.PureComponent {
         if (this.props.tasks !== prevProps.tasks) {
             if (this.task_data.id) {
                 this.task_data = Map(this.props.tasks).get(this.task_data.id)
+
                 this.setState(prevState => ({
                     should_update: prevState.should_update + 1,
                 }))
@@ -227,13 +232,13 @@ export default class JournalTab extends React.PureComponent {
                         categories={this.props.categories}
                         priorities={this.props.priorities}
                         action_type={this.props.action_type}
-
+                        resetTaskData={this.resetTaskData}
                         type={this.props.type}
                     />
 
                     :
 
-                    null
+                    <></>
                 }
 
 
