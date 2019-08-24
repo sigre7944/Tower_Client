@@ -47,6 +47,20 @@ export default class JournalTab extends React.PureComponent {
         return 1 + Math.ceil((firstThursday - target) / 604800000);
     }
 
+    getMonday = (date) => {
+        let dayInWeek = new Date(date).getDay()
+        let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
+        return new Date(new Date(date).getTime() - (diff * 86400 * 1000)).getDate()
+    }
+
+    getNoWeekInMonth = (date) => {
+        let nearest_monday = this.getMonday(date)
+        let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
+
+        return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
+    }
+
+
     current_date = new Date()
 
     initChosenDateData = () => {
@@ -61,6 +75,8 @@ export default class JournalTab extends React.PureComponent {
         else if (this.props.type === "week") {
             return ({
                 week: this.getWeek(this.current_date),
+                month: this.current_date.getMonth(),
+                day: this.current_date.getDate(),
                 year: this.current_date.getFullYear()
             })
         }
@@ -269,7 +285,7 @@ export default class JournalTab extends React.PureComponent {
                                 else if (repeat.type === "weekly") {
                                     let start_date_time = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)).getTime(),
                                         current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime(),
-                                        interval_value = repeat.interval.value / 7,
+                                        interval_value = repeat.interval.value,
                                         diff = (current_date_time - start_date_time) / (86400 * 1000 * 7)
 
                                     if (diff > 0 && diff % interval_value === 0) {
@@ -308,10 +324,12 @@ export default class JournalTab extends React.PureComponent {
                                         }
                                     }
                                 }
+
+                                return null
                             }
 
                             else if (this.props.type === "week") {
-                                let { week, year } = this.state.chosen_date_data
+                                let { day, month, week, year } = this.state.chosen_date_data
 
                                 if (schedule.week === week && schedule.year === year) {
                                     return (
@@ -320,6 +338,52 @@ export default class JournalTab extends React.PureComponent {
                                         </Swipeable>
                                     )
                                 }
+
+                                else if (repeat.type === "weekly-w") {
+                                    let interval_value = repeat.interval.value,
+                                        start_date = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)),
+                                        current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year))
+
+                                    if (month >= schedule.month && year >= schedule.year && current_date.getTime() > start_date.getTime()) {
+                                        if (Math.abs(this.getWeek(current_date) - schedule.week) % interval_value === 0) {
+                                            return (
+                                                <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                                    <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
+                                                </Swipeable>
+                                            )
+                                        }
+                                    }
+
+                                }
+
+                                else if (repeat.type === "monthly-w") {
+                                    let interval_value = repeat.interval.value,
+                                        current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)),
+                                        diff_year = year - schedule.year,
+                                        diff_month = (month + diff_year * 12) - schedule.month,
+                                        current_no_week_in_month = this.getNoWeekInMonth(current_date),
+                                        last_no_week_in_month = this.getNoWeekInMonth(new Date(year, month + 1, 0))
+
+                                    if (diff_month > 0 && diff_month % interval_value === 0) {
+                                        if (current_no_week_in_month === schedule.noWeekInMonth) {
+                                            return (
+                                                <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                                    <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
+                                                </Swipeable>
+                                            )
+                                        }
+
+                                        else if (current_no_week_in_month === last_no_week_in_month && schedule.noWeekInMonth === 5) {
+                                            return (
+                                                <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                                    <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
+                                                </Swipeable>
+                                            )
+                                        }
+                                    }
+                                }
+
+                                return null
                             }
 
                             else {
@@ -332,6 +396,22 @@ export default class JournalTab extends React.PureComponent {
                                         </Swipeable>
                                     )
                                 }
+
+                                else if (repeat.type === "monthly-m") {
+                                    let interval_value = repeat.interval.value,
+                                        diff_year = year - schedule.year,
+                                        diff_month = (month + diff_year * 12) - schedule.month
+                                    
+                                    if(diff_month > 0 && diff_month % interval_value === 0){
+                                        return (
+                                            <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
+                                            </Swipeable>
+                                        )
+                                    }
+                                }
+
+                                return null
                             }
                         })}
                         {/* {this.render_component_arr} */}

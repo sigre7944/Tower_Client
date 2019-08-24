@@ -71,7 +71,7 @@ export default class TaskDetailModal extends Component {
                 }
 
                 else if (edit_task.repeat.type === "weekly") {
-                    repeat = `Every ${edit_task.repeat.interval.value / 7} week(s)`
+                    repeat = `Every ${edit_task.repeat.interval.value} week(s)`
                 }
 
                 else {
@@ -89,7 +89,7 @@ export default class TaskDetailModal extends Component {
 
             if (edit_task.repeat) {
                 if (edit_task.repeat.type === "weekly-w") {
-                    repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000 * 7)} week(s)`
+                    repeat = `Every ${edit_task.repeat.interval.value} week(s)`
                 }
 
                 else {
@@ -169,7 +169,7 @@ export default class TaskDetailModal extends Component {
 
                 if (edit_task.repeat) {
                     if (edit_task.repeat.type === "weekly-w") {
-                        repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000 * 7)} week(s)`
+                        repeat = `Every ${edit_task.repeat.interval.value} week(s)`
                     }
 
                     else {
@@ -647,7 +647,7 @@ class EditDetails extends React.PureComponent {
             }
 
             else if (repeat.type === "weekly") {
-                this.repeat = `Every ${repeat.interval.value / 7} week(s)`
+                this.repeat = `Every ${repeat.interval.value} week(s)`
             }
 
             else {
@@ -660,7 +660,7 @@ class EditDetails extends React.PureComponent {
             this.calendar_text = `Week ${schedule.week} ${this.monthNames[date.getMonth()]} ${date.getFullYear()}`
 
             if (repeat.type === "weekly-w") {
-                this.repeat = `Every ${repeat.interval.value / (86400 * 1000 * 7)} week(s)`
+                this.repeat = `Every ${repeat.interval.value} week(s)`
             }
 
             else {

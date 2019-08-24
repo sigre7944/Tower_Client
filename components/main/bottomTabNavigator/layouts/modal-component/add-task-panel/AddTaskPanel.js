@@ -150,7 +150,7 @@ export default class AddTaskPanel extends Component {
                 }
 
                 else if (repeat.type === "weekly") {
-                    let value = repeat.interval.value / 7
+                    let value = repeat.interval.value
                     tag_data.push(
                         <TagElement
                             key="tag-repeat"
@@ -257,7 +257,7 @@ export default class AddTaskPanel extends Component {
 
             if (repeat) {
                 if (repeat.type === "weekly-w") {
-                    let value = repeat.interval.value 
+                    let value = repeat.interval.value
                     tag_data.push(
                         <TagElement
                             key="tag-repeat"
@@ -848,6 +848,19 @@ class BottomOptionElement extends React.PureComponent {
         return 1 + Math.ceil((firstThursday - target) / 604800000);
     }
 
+    getMonday = (date) => {
+        let dayInWeek = new Date(date).getDay()
+        let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
+        return new Date(new Date(date).getTime() - (diff * 86400 * 1000)).getDate()
+    }
+
+    getNoWeekInMonth = (date) => {
+        let nearest_monday = this.getMonday(date)
+        let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
+
+        return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
+    }
+
     _onPress = () => {
         if (this.props.addTask) {
             if (this.props.currentAnnotation === "day" && this.props.title_value.length > 0) {
@@ -955,7 +968,8 @@ class BottomOptionElement extends React.PureComponent {
                         day: date.getDate(),
                         week: this.getWeek(date),
                         month: date.getMonth(),
-                        year: date.getFullYear()
+                        year: date.getFullYear(),
+                        noWeekInMonth: this.getNoWeekInMonth(date)
                     },
                     category: "cate_0",
                     repeat: {
@@ -980,16 +994,30 @@ class BottomOptionElement extends React.PureComponent {
                 this.props.updateTask("UPDATE_NEW_WEEK_TASK", reset_data)
             }
 
-            else if (this.props.currentAnnotation === "month" && this.props.currentMonthTask.title && this.props.currentMonthTask.title.length > 0) {
+            else if (this.props.currentAnnotation === "month" && this.props.title_value.length > 0) {
 
                 let add_data
 
                 if (this.props.month_tasks.length === 0) {
-                    add_data = { ... this.props.currentMonthTask, ... { createdAt: new Date().getTime(), id: uuidv1() } }
+                    add_data = {
+                        ... this.props.currentMonthTask, ... {
+                            createdAt: new Date().getTime(),
+                            id: uuidv1(),
+                            title: this.props.title_value,
+                            description: this.props.description_value
+                        }
+                    }
                 }
 
                 else {
-                    add_data = { ... this.props.currentMonthTask, ... { createdAt: new Date().getTime(), id: uuidv1() } }
+                    add_data = {
+                        ... this.props.currentMonthTask, ... {
+                            createdAt: new Date().getTime(),
+                            id: uuidv1(),
+                            title: this.props.title_value,
+                            description: this.props.description_value
+                        }
+                    }
                 }
 
                 this.props.addTask("ADD_NEW_MONTH_TASK", add_data)

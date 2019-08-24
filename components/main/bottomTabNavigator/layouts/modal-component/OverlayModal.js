@@ -120,6 +120,19 @@ export default class OverlayModal extends Component {
         return 1 + Math.ceil((firstThursday - target) / 604800000);
     }
 
+    getMonday = (date) => {
+        let dayInWeek = new Date(date).getDay()
+        let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
+        return new Date(new Date(date).getTime() - (diff * 86400 * 1000)).getDate()
+    }
+
+    getNoWeekInMonth = (date) => {
+        let nearest_monday = this.getMonday(date)
+        let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
+
+        return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
+    }
+
     componentDidMount() {
         let currentDayTask = this.props.currentDayTask
         if (!currentDayTask.startTime || !currentDayTask.schedule || !currentDayTask.trackingTime
@@ -164,14 +177,14 @@ export default class OverlayModal extends Component {
                 date = new Date(),
                 noWeek = this.getWeek(date)
 
-
             data.startTime = date.getTime()
             data.trackingTime = data.startTime
             data.schedule = {
                 day: date.getDate(),
                 week: noWeek,
                 month: date.getMonth(),
-                year: date.getFullYear()
+                year: date.getFullYear(),
+                noWeekInMonth: this.getNoWeekInMonth(date),
             }
             data.category = "cate_0"
             data.repeat = {

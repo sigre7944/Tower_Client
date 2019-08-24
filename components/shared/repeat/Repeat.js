@@ -476,7 +476,7 @@ class DayRepeatEveryHolder extends React.PureComponent {
             this.props.setRepetionData({
                 type: "weekly",
                 interval: {
-                    value: 86400 * 1000 * 7,
+                    value: 1,
                     daysInWeek: []
                 }
             })
@@ -801,7 +801,7 @@ class DayWeeklyRepeatOption extends React.PureComponent {
         this.data = {
             type: "weekly",
             interval: {
-                value: 7 * parseInt(this.state.value),
+                value: parseInt(this.state.value),
                 daysInWeek: this.daysInWeek
             }
         }
@@ -813,7 +813,7 @@ class DayWeeklyRepeatOption extends React.PureComponent {
         this.data = {
             type: "weekly",
             interval: {
-                value: 7 * parseInt(value),
+                value: parseInt(value),
                 daysInWeek: this.daysInWeek
             }
         }
@@ -835,7 +835,7 @@ class DayWeeklyRepeatOption extends React.PureComponent {
         if (repeat && repeat.type === "weekly" && repeat.interval && parseInt(repeat.interval.value) > 0) {
 
             this.setState({
-                value: `${parseInt(repeat.interval.value) / 7}`
+                value: `${parseInt(repeat.interval.value)}`
             })
         }
 
@@ -1214,7 +1214,7 @@ class WeeklyRepeatOption extends React.PureComponent {
 
     data = {}
 
-    number_nth_convensions = ["first", "second", "third", "last"]
+    number_nth_convensions = ["first", "second", "third", "last", "last"]
 
     state = {
         value: "1"
@@ -1290,8 +1290,6 @@ class WeeklyRepeatOption extends React.PureComponent {
         if (this.state.value !== prevState.value && this.regExp.test(this.state.value) && parseInt(this.state.value) > 0) {
             this._setRepetitionData(this.state.value)
         }
-
-
 
         if (this.props.toggle_clear !== prevProps.toggle_clear) {
             this.setState({
