@@ -138,7 +138,7 @@ export default class OverlayModal extends Component {
             data.repeat = {
                 type: "daily",
                 interval: {
-                    value: 86400 * 1000 * 1
+                    value: 1
                 }
             }
             data.end = {
@@ -177,7 +177,7 @@ export default class OverlayModal extends Component {
             data.repeat = {
                 type: "weekly-w",
                 interval: {
-                    value: 86400 * 1000 * 7 * 1
+                    value: 1
                 }
             }
             data.end = {

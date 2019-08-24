@@ -140,7 +140,7 @@ export default class AddTaskPanel extends Component {
 
             if (repeat) {
                 if (repeat.type === "daily") {
-                    let value = repeat.interval.value / 86400 / 1000
+                    let value = repeat.interval.value
                     tag_data.push(
                         <TagElement
                             key="tag-repeat"
@@ -150,7 +150,7 @@ export default class AddTaskPanel extends Component {
                 }
 
                 else if (repeat.type === "weekly") {
-                    let value = repeat.interval.value / 86400 / 1000 / 7
+                    let value = repeat.interval.value / 7
                     tag_data.push(
                         <TagElement
                             key="tag-repeat"
@@ -257,7 +257,7 @@ export default class AddTaskPanel extends Component {
 
             if (repeat) {
                 if (repeat.type === "weekly-w") {
-                    let value = repeat.interval.value / 86400 / 1000 / 7
+                    let value = repeat.interval.value 
                     tag_data.push(
                         <TagElement
                             key="tag-repeat"
@@ -896,7 +896,7 @@ class BottomOptionElement extends React.PureComponent {
                     repeat: {
                         type: "daily",
                         interval: {
-                            value: 86400 * 1000 * 1
+                            value: 1
                         }
                     },
                     end: {
@@ -961,7 +961,7 @@ class BottomOptionElement extends React.PureComponent {
                     repeat: {
                         type: "weekly-w",
                         interval: {
-                            value: 86400 * 1000 * 7 * 1
+                            value: 1
                         }
                     },
                     end: {

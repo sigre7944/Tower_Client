@@ -29,6 +29,8 @@ export default class JournalTab extends React.PureComponent {
 
     task_data = {}
 
+    render_component_arr = []
+
     resetTaskData = () => {
         this.task_data = {}
     }
@@ -134,11 +136,70 @@ export default class JournalTab extends React.PureComponent {
         if (this.props.tasks !== prevProps.tasks) {
             if (this.task_data.id) {
                 this.task_data = Map(this.props.tasks).get(this.task_data.id)
-
-                this.setState(prevState => ({
-                    should_update: prevState.should_update + 1,
-                }))
             }
+
+            this.render_component_arr = Map(this.props.tasks).valueSeq().map((task, index) => {
+                let { schedule, repeat, startTime } = task
+
+                if (this.props.type === "day") {
+                    let { day, month, year } = this.state.chosen_date_data
+
+                    if (schedule.day === day && schedule.month === month && schedule.year === year) {
+                        return (
+                            <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
+                            </Swipeable>
+                        )
+                    }
+
+                    else if (repeat.type === "daily") {
+                        let start_date_time = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)).getTime(),
+                            current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime()
+
+                        if (Math.floor((current_date_time - start_date_time) / (86400 * 1000)) % repeat.interval.value === 0) {
+                            return (
+                                <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                    <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
+                                </Swipeable>
+                            )
+                        }
+                    }
+
+                    else if (repeat.type === "weekly") {
+
+                    }
+                }
+
+                else if (this.props.type === "week") {
+                    let { week, year } = this.state.chosen_date_data
+
+                    if (schedule.week === week && schedule.year === year) {
+                        return (
+                            <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
+                            </Swipeable>
+                        )
+                    }
+
+
+                }
+
+                else {
+                    let { month, year } = this.state.chosen_date_data
+
+                    if (schedule.month === month && schedule.year === year) {
+                        return (
+                            <Swipeable key={`month-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
+                            </Swipeable>
+                        )
+                    }
+                }
+            })
+
+            this.setState(prevState => ({
+                should_update: prevState.should_update + 1,
+            }))
         }
     }
 
@@ -179,7 +240,7 @@ export default class JournalTab extends React.PureComponent {
                     {/* later we will user map to render all the data */}
                     <ScrollView style={styles.scrollViewTasks}>
                         {Map(this.props.tasks).valueSeq().map((task, index) => {
-                            let { schedule } = task
+                            let { schedule, repeat, startTime } = task
 
                             if (this.props.type === "day") {
                                 let { day, month, year } = this.state.chosen_date_data
@@ -190,6 +251,62 @@ export default class JournalTab extends React.PureComponent {
                                             <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
                                         </Swipeable>
                                     )
+                                }
+
+                                else if (repeat.type === "daily") {
+                                    let start_date_time = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)).getTime(),
+                                        current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime()
+
+                                    if (Math.floor((current_date_time - start_date_time) / (86400 * 1000)) % repeat.interval.value === 0) {
+                                        return (
+                                            <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
+                                            </Swipeable>
+                                        )
+                                    }
+                                }
+
+                                else if (repeat.type === "weekly") {
+                                    let start_date_time = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)).getTime(),
+                                        current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime(),
+                                        interval_value = repeat.interval.value / 7,
+                                        diff = (current_date_time - start_date_time) / (86400 * 1000 * 7)
+
+                                    if (diff > 0 && diff % interval_value === 0) {
+                                        return (
+                                            <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
+                                            </Swipeable>
+                                        )
+                                    }
+                                }
+
+                                else if (repeat.type === "monthly") {
+                                    let start_date = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)),
+                                        current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)),
+                                        interval_value = repeat.interval.value,
+                                        diff_year = current_date.getFullYear() - start_date.getFullYear(),
+                                        diff_month = (current_date.getMonth() + diff_year * 12) - start_date.getMonth()
+
+
+                                    if (diff_month > 0 && diff_month % interval_value === 0) {
+                                        if (current_date.getDate() === start_date.getDate()) {
+                                            return (
+                                                <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                                    <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
+                                                </Swipeable>
+                                            )
+                                        }
+                                        else {
+                                            if (current_date.getDate() === new Date(current_date.getFullYear(), current_date.getMonth() + 1, 0).getDate()) {
+                                                return (
+                                                    <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                                        <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
+                                                    </Swipeable>
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
                             }
 
@@ -217,7 +334,7 @@ export default class JournalTab extends React.PureComponent {
                                 }
                             }
                         })}
-
+                        {/* {this.render_component_arr} */}
                         <Text style={styles.banner}>Completed</Text>
                         <TaskCard checked={true} onPress={this.openModal} />
                     </ScrollView>

@@ -11,8 +11,6 @@ import Priority from '../priority/Priority.Container'
 import Repeat from '../repeat/Repeat.Container'
 import Goal from '../goal/Goal.Container'
 
-import { PanGestureHandler } from 'react-native-gesture-handler'
-
 export default class TaskDetailModal extends Component {
 
     daysInWeekText = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
@@ -69,11 +67,11 @@ export default class TaskDetailModal extends Component {
 
             if (edit_task.repeat) {
                 if (edit_task.repeat.type === "daily") {
-                    repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000)} day(s)`
+                    repeat = `Every ${edit_task.repeat.interval.value} day(s)`
                 }
 
                 else if (edit_task.repeat.type === "weekly") {
-                    repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000 * 7)} week(s)`
+                    repeat = `Every ${edit_task.repeat.interval.value / 7} week(s)`
                 }
 
                 else {
@@ -149,11 +147,11 @@ export default class TaskDetailModal extends Component {
 
                 if (edit_task.repeat) {
                     if (edit_task.repeat.type === "daily") {
-                        repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000)} day(s)`
+                        repeat = `Every ${edit_task.repeat.interval.value} day(s)`
                     }
 
                     else if (edit_task.repeat.type === "weekly") {
-                        repeat = `Every ${edit_task.repeat.interval.value / (86400 * 1000 * 7)} week(s)`
+                        repeat = `Every ${edit_task.repeat.interval.value} week(s)`
                     }
 
                     else {
@@ -645,11 +643,11 @@ class EditDetails extends React.PureComponent {
             this.calendar_text = `${this.daysInWeekText[date.getDay()]} ${date.getDate()} ${this.monthNames[date.getMonth()]} ${date.getFullYear()}`
 
             if (repeat.type === "daily") {
-                this.repeat = `Every ${repeat.interval.value / (86400 * 1000)} day(s)`
+                this.repeat = `Every ${repeat.interval.value} day(s)`
             }
 
             else if (repeat.type === "weekly") {
-                this.repeat = `Every ${repeat.interval.value / (86400 * 1000 * 7)} week(s)`
+                this.repeat = `Every ${repeat.interval.value / 7} week(s)`
             }
 
             else {
