@@ -19,12 +19,12 @@ export default class TaskCard extends Component {
                             center
                             checkedIcon='dot-circle-o'
                             uncheckedIcon='circle-o'
-                            checked={this.state.checked}
+                            checked={this.props.finished ? true : this.state.checked}
                             onPress={() => this.setState({checked: !this.state.checked})}
                         />
                     </View>
                     <View style={styles.description}>
-                        <Text style={styles.descriptionText}>{this.props.title ? this.props.title  : 'Example task'}</Text>
+                        <Text style={styles.descriptionText} color={this.props.finished && 'grey'}>{this.props.title ? this.props.title  : 'Example task'}</Text>
                         <Text style={styles.descriptionAmount}>0/3</Text>
                     </View>
                     <View style={styles.share}>

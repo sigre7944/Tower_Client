@@ -6,12 +6,15 @@ import {
     Button,
     ScrollView,
     TouchableHighlight,
+    TextInput,
     Modal
 } from 'react-native';
 import TaskCard from './../../../../../shared/layouts/TaskCard'
 import TaskDetailModal from './../../../../../shared/layouts/TaskDetailModal'
 
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+//import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Swipeable from 'react-native-swipeable';
+import { Formik } from 'formik';
 
 let scrollViewRef,
     dayHolderWidth = 60,
@@ -209,7 +212,7 @@ export default class Daily extends React.Component{
     renderLeftActions = (progress, dragX) => {
         const trans = dragX.interpolate({
           inputRange: [0, 50, 100, 101],
-          outputRange: [-20, 0, 0, 1],
+          outputRange: [-20, 0, 0, 20],
         });
         console.log(trans);
         return (
@@ -218,15 +221,35 @@ export default class Daily extends React.Component{
                 {
                   transform: [{ translateX: Math.round(Number.parseFloat(JSON.stringify(trans))) }],
                 },
-              ]} onPress={() => {console.log("close")}} title="LogTime">
-              
-                Archive
-              
+              ]} onPress={() => {console.log("close")}} title="LogTime">     
             </Button>
         );
     }
 
+    swipableWillClose = () => {
+
+    }
+
     render(){
+        const leftContent = <Text style={{
+            textAlign: 'right',
+            lineHeight: 50,
+            paddingRight: 50
+        }}>Log time</Text>;
+
+        const rightButtons = [
+            <TouchableHighlight><Text style={{
+                textAlign: 'left',
+                lineHeight: 50,
+                paddingLeft: 5
+            }}>Button 1</Text></TouchableHighlight>,
+            <TouchableHighlight><Text style={{
+                textAlign: 'left',
+                lineHeight: 50,
+                paddingLeft: 5
+            }}>Button 2</Text></TouchableHighlight>
+        ];
+
         return(
             <View style={styles.container}>
                 <View style={styles.scrollViewContainer} >
@@ -301,11 +324,11 @@ export default class Daily extends React.Component{
                         <ScrollView style={styles.scrollViewTasks}>
                             <TaskCard checked={true} onPress={this.openModal} openLogtimeModal={this.setLogtimeModalToVisible} closeLogtimeModal={this.setLogtimeModalToInvisible}/>
                             <TaskCard checked={false} onPress={this.openModal}/>
-                            <Swipeable renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                            <Swipeable leftContent={leftContent} rightButtons={rightButtons} renderLeftActions={this.renderLeftActions} onLeftActionRelease={this.setLogtimeModalToVisible} onSwipeableWillClose={this.swipableWillClose}>
                                 <TaskCard checked={false} onPress={this.openModal} title="swipe me to open logtime"/>
                             </Swipeable>
                             <Text style={styles.banner}>Completed</Text>
-                            <TaskCard checked={true} onPress={this.openModal}/>
+                            <TaskCard checked={true} onPress={this.openModal} finished={true}/>
                         </ScrollView>
                           
                     }
@@ -332,7 +355,29 @@ export default class Daily extends React.Component{
                             alignItems: 'center'
                         }}
                     >
-                            <Text>This is the pop up logtime dialog</Text>
+                            <Formik
+                                initialValues={{ action: 'something', time: '0' }}
+                                onSubmit={values => console.log(values)}
+                            >
+                                {props => (
+                                <View>
+                                    <Text>Action</Text>
+                                    <TextInput
+                                    onChangeText={props.handleChange('action')}
+                                    onBlur={props.handleBlur('action')}
+                                    value={props.values.action}
+                                    />
+                                    <Text>Time</Text>
+                                    <TextInput
+                                    onChangeText={props.handleChange('time')}
+                                    onBlur={props.handleBlur('time')}
+                                    
+                                    value={props.values.time}
+                                    />
+                                    <Button onPress={() => {props.handleSubmit; console.log(props)}} title="Submit" />
+                                </View>
+                                )}
+                            </Formik>
                             <Button onPress={this.setLogtimeModalToInvisible} title="Close">
                                 Close
                             </Button>
@@ -417,6 +462,8 @@ const styles = StyleSheet.create({
     },
 
     actionText: {
-        height: 50
+        height: 50,
+        width: 200,
+        backgroundColor: 'blue'
     }
 })
