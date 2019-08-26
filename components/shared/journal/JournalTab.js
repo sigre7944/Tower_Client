@@ -9,7 +9,7 @@ import {
     FlatList
 } from 'react-native';
 
-import TaskCard from '../layouts/TaskCard'
+import TaskCard from '../layouts/TaskCard.Container'
 import TaskDetailModal from '../layouts/TaskDetailModal.Container'
 
 import DayFlatlist from './day-flatlist/DayFlatlist.Container'
@@ -114,9 +114,10 @@ export default class JournalTab extends React.PureComponent {
         this.setState({ isLogtimeModalOpened: true })
     }
 
-    setLogtimeModalToInvisible = () => {
-        this.setState({ isLogtimeModalOpened: false })
-    }
+    // setLogtimeModalToInvisible = () => {
+    //     this.setState({ isLogtimeModalOpened: false })
+    // }
+
 
     componentDidMount() {
         const didFocusScreen = this.props.navigation.addListener(
@@ -199,7 +200,7 @@ export default class JournalTab extends React.PureComponent {
                     <></>
                 }
 
-                <Modal
+                {/* <Modal
                     animationType="slide"
                     transparent={false}
                     visible={this.state.isLogtimeModalOpened}
@@ -220,7 +221,7 @@ export default class JournalTab extends React.PureComponent {
                             Close
                             </Button>
                     </View>
-                </Modal>
+                </Modal> */}
             </View>
         )
     }
@@ -245,18 +246,21 @@ class ToDoTasks extends React.PureComponent {
             inputRange: [0, 50, 100, 101],
             outputRange: [-20, 0, 0, 1],
         });
-        return (
-            <Button style={[
-                styles.actionText,
-                {
-                    transform: [{ translateX: Math.round(Number.parseFloat(JSON.stringify(trans))) }],
-                },
-            ]} onPress={() => { }} title="LogTime">
 
-                Archive
+        // return (
+        //     <Button style={[
+        //         styles.actionText,
+        //         {
+        //             transform: [{ translateX: Math.round(Number.parseFloat(JSON.stringify(trans))) }],
+        //         },
+        //     ]} onPress={() => { }} title="LogTime">
 
-            </Button>
-        );
+        //         Archive
+
+        //     </Button>
+        // );
+
+        return null
     }
 
     handleTaskUpdate = (task, index) => {
@@ -268,7 +272,16 @@ class ToDoTasks extends React.PureComponent {
             if (schedule.day === day && schedule.month === month && schedule.year === year) {
                 return (
                     <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                        <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                        <TaskCard
+                            action_type="UPDATE_COMPLETED_DAY_TASK"
+                            type={this.props.type}
+                            task_data={task}
+                            index={index}
+                            checked={false}
+                            onPress={this.openModal}
+                            title={title}
+                            goal={goal}
+                        />
                     </Swipeable>
                 )
             }
@@ -281,7 +294,15 @@ class ToDoTasks extends React.PureComponent {
                 if (diff_day > 0 && diff_day % repeat.interval.value === 0) {
                     return (
                         <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                            <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                            <TaskCard
+                                action_type="UPDATE_COMPLETED_DAY_TASK"
+                                type={this.props.type}
+                                task_data={task}
+                                index={index}
+                                checked={false}
+                                onPress={this.openModal}
+                                title={title}
+                                goal={goal} />
                         </Swipeable>
                     )
                 }
@@ -296,7 +317,15 @@ class ToDoTasks extends React.PureComponent {
                 if (diff > 0 && diff % interval_value === 0) {
                     return (
                         <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                            <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                            <TaskCard
+                                action_type="UPDATE_COMPLETED_DAY_TASK"
+                                type={this.props.type}
+                                task_data={task}
+                                index={index}
+                                checked={false}
+                                onPress={this.openModal}
+                                title={title}
+                                goal={goal} />
                         </Swipeable>
                     )
                 }
@@ -314,7 +343,15 @@ class ToDoTasks extends React.PureComponent {
                     if (current_date.getDate() === start_date.getDate()) {
                         return (
                             <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                                <TaskCard
+                                    action_type="UPDATE_COMPLETED_DAY_TASK"
+                                    type={this.props.type}
+                                    task_data={task}
+                                    index={index}
+                                    checked={false}
+                                    onPress={this.openModal}
+                                    title={title}
+                                    goal={goal} />
                             </Swipeable>
                         )
                     }
@@ -322,7 +359,15 @@ class ToDoTasks extends React.PureComponent {
                         if (current_date.getDate() === new Date(current_date.getFullYear(), current_date.getMonth() + 1, 0).getDate()) {
                             return (
                                 <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                    <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                                    <TaskCard
+                                        action_type="UPDATE_COMPLETED_DAY_TASK"
+                                        type={this.props.type}
+                                        task_data={task}
+                                        index={index}
+                                        checked={false}
+                                        onPress={this.openModal}
+                                        title={title}
+                                        goal={goal} />
                                 </Swipeable>
                             )
                         }
@@ -337,7 +382,14 @@ class ToDoTasks extends React.PureComponent {
             if (schedule.week === week && schedule.year === year) {
                 return (
                     <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                        <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                        <TaskCard
+                            action_type="UPDATE_COMPLETED_WEEK_TASK"
+                            type={this.props.type} task_data={task}
+                            index={index}
+                            checked={false}
+                            onPress={this.openModal}
+                            title={title}
+                            goal={goal} />
                     </Swipeable>
                 )
             }
@@ -351,7 +403,16 @@ class ToDoTasks extends React.PureComponent {
                     if (Math.abs(this.getWeek(current_date) - schedule.week) % interval_value === 0) {
                         return (
                             <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                                <TaskCard
+                                    action_type="UPDATE_COMPLETED_WEEK_TASK"
+                                    type={this.props.type}
+                                    task_data={task}
+                                    index={index}
+                                    checked={false}
+                                    onPress={this.openModal}
+                                    title={title}
+                                    goal={goal}
+                                />
                             </Swipeable>
                         )
                     }
@@ -371,7 +432,15 @@ class ToDoTasks extends React.PureComponent {
                     if (current_no_week_in_month === schedule.noWeekInMonth) {
                         return (
                             <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                                <TaskCard
+                                    action_type="UPDATE_COMPLETED_WEEK_TASK"
+                                    type={this.props.type}
+                                    task_data={task}
+                                    index={index}
+                                    checked={false}
+                                    onPress={this.openModal}
+                                    title={title}
+                                    goal={goal} />
                             </Swipeable>
                         )
                     }
@@ -379,7 +448,15 @@ class ToDoTasks extends React.PureComponent {
                     else if (current_no_week_in_month === last_no_week_in_month && schedule.noWeekInMonth === 5) {
                         return (
                             <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                                <TaskCard
+                                    action_type="UPDATE_COMPLETED_WEEK_TASK"
+                                    type={this.props.type}
+                                    task_data={task}
+                                    index={index}
+                                    checked={false}
+                                    onPress={this.openModal}
+                                    title={title}
+                                    goal={goal} />
                             </Swipeable>
                         )
                     }
@@ -393,7 +470,15 @@ class ToDoTasks extends React.PureComponent {
             if (schedule.month === month && schedule.year === year) {
                 return (
                     <Swipeable key={`month-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                        <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                        <TaskCard
+                            action_type="UPDATE_COMPLETED_MONTH_TASK"
+                            type={this.props.type}
+                            task_data={task}
+                            index={index}
+                            checked={false}
+                            onPress={this.openModal}
+                            title={title}
+                            goal={goal} />
                     </Swipeable>
                 )
             }
@@ -406,7 +491,15 @@ class ToDoTasks extends React.PureComponent {
                 if (diff_month > 0 && diff_month % interval_value === 0) {
                     return (
                         <Swipeable key={`month-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                            <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                            <TaskCard
+                                action_type="UPDATE_COMPLETED_MONTH_TASK"
+                                type={this.props.type}
+                                task_data={task}
+                                index={index}
+                                checked={false}
+                                onPress={this.openModal}
+                                title={title}
+                                goal={goal} />
                         </Swipeable>
                     )
                 }

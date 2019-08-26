@@ -49,7 +49,7 @@ export default class TaskDetailModal extends Component {
         this.setState(() => ({ isEditing: visible }));
     }
 
-    componentDidMount() {
+    handleTaskUpdate = () => {
         let edit_task = this.edit_task,
             date = new Date(edit_task.startTime),
             category = edit_task.category ? this.props.categories[edit_task.category].name : "",
@@ -118,75 +118,15 @@ export default class TaskDetailModal extends Component {
         })
     }
 
+    componentDidMount() {
+        this.handleTaskUpdate()
+    }
+
     componentDidUpdate = (prevProps, prevState) => {
         if (this.props.task_data !== prevProps.task_data) {
             this.edit_task = this.props.task_data
 
-            let edit_task = this.edit_task,
-                date = new Date(edit_task.startTime),
-                category = edit_task.category ? this.props.categories[edit_task.category].name : "",
-                priority = edit_task.priority ? this.props.priorities[edit_task.priority.value].name : "",
-                goal = edit_task.goal ? `${edit_task.goal.max} times` : "",
-                calendar_text, repeat
-
-
-            if (this.props.type === "day") {
-
-                if (date) {
-                    calendar_text = `${this.daysInWeekText[date.getDay()]} ${date.getDate()} ${this.monthNames[date.getMonth()]} ${date.getFullYear()}`
-                }
-
-                if (edit_task.repeat) {
-                    if (edit_task.repeat.type === "daily") {
-                        repeat = `Every ${edit_task.repeat.interval.value} day(s)`
-                    }
-
-                    else if (edit_task.repeat.type === "weekly") {
-                        repeat = `Every ${edit_task.repeat.interval.value} week(s)`
-                    }
-
-                    else {
-                        repeat = `Every ${edit_task.repeat.interval.value} month(s)`
-                    }
-                }
-
-            }
-
-            else if (this.props.type === "week") {
-
-                if (date && edit_task.schedule) {
-                    calendar_text = `Week ${edit_task.schedule.week} ${this.monthNames[date.getMonth()]} ${date.getFullYear()}`
-                }
-
-                if (edit_task.repeat) {
-                    if (edit_task.repeat.type === "weekly-w") {
-                        repeat = `Every ${edit_task.repeat.interval.value} week(s)`
-                    }
-
-                    else {
-                        repeat = `Every ${edit_task.repeat.interval.value} month(s)`
-                    }
-                }
-
-            }
-
-            else {
-                if (edit_task.schedule) {
-                    calendar_text = `${this.monthNames[edit_task.schedule.month]} ${edit_task.schedule.year}`
-                }
-
-                if (edit_task.repeat) {
-                    repeat = `Every ${edit_task.repeat.interval.value} month(s)`
-                }
-            }
-
-            this.setState({
-                category,
-                priority,
-                repeat,
-                goal,
-                calendar_text
-            })
+            this.handleTaskUpdate()
         }
 
         if (this.state.toggle_delete !== prevProps.toggleDelete && this.yes_delete_clicked) {
@@ -683,22 +623,6 @@ class EditDetails extends React.PureComponent {
         })
 
         this.renderData(this.edit_task)
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        // if (this.props.task_data !== prevProps.task_data) {
-        //     if (this.props.task_data.title && this.props.task_data.title.length > 0) {
-        //         this.setState({
-        //             title_value: this.props.task_data.title
-        //         })
-        //     }
-
-        //     if (this.props.task_data.description && this.props.task_data.description.length > 0) {
-        //         this.setState({
-        //             description_value: this.props.task_data.description
-        //         })
-        //     }
-        // }
     }
 
     render() {

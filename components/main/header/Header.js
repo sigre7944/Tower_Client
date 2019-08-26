@@ -2,9 +2,7 @@ import React from 'react';
 import {
     View,
     Image,
-    Button,
     StyleSheet,
-    Alert,
     Text,
     TouchableOpacity
 } from 'react-native';
