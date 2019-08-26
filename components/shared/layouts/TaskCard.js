@@ -3,7 +3,7 @@ import { TouchableOpacity, Text, View, StyleSheet} from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { CheckBox } from 'react-native-elements'
 
-export default class TaskCard extends Component {
+export default class TaskCard extends React.PureComponent {
     state={
         checked: false
     }

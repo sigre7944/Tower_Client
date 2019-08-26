@@ -119,15 +119,6 @@ export default class TaskDetailModal extends Component {
     }
 
     componentDidUpdate = (prevProps, prevState) => {
-        // if (this.props.isOpened !== prevProps.isOpened) {
-        //     if (this.props.isOpened) {
-        //         this.openModal()
-        //     }
-        //     else {
-        //         this.closeModal()
-        //     }
-        // }
-
         if (this.props.task_data !== prevProps.task_data) {
             this.edit_task = this.props.task_data
 

@@ -6,9 +6,8 @@ import {
     ScrollView,
     Modal,
     Button,
+    FlatList
 } from 'react-native';
-
-import { PanGestureHandler } from 'react-native-gesture-handler'
 
 import TaskCard from '../layouts/TaskCard'
 import TaskDetailModal from '../layouts/TaskDetailModal.Container'
@@ -60,7 +59,6 @@ export default class JournalTab extends React.PureComponent {
         return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
     }
 
-
     current_date = new Date()
 
     initChosenDateData = () => {
@@ -102,15 +100,6 @@ export default class JournalTab extends React.PureComponent {
         })
     }
 
-    componentDidMount() {
-        const didFocusScreen = this.props.navigation.addListener(
-            'didFocus',
-            payload => {
-                this.props.changeRouteAction(payload.state.routeName)
-            }
-        )
-    }
-
     openModal = (task_data) => {
         this.task_data = task_data
 
@@ -129,98 +118,27 @@ export default class JournalTab extends React.PureComponent {
         this.setState({ isLogtimeModalOpened: false })
     }
 
-    renderLeftActions = (progress, dragX) => {
-        const trans = dragX.interpolate({
-            inputRange: [0, 50, 100, 101],
-            outputRange: [-20, 0, 0, 1],
-        });
-        return (
-            <Button style={[
-                styles.actionText,
-                {
-                    transform: [{ translateX: Math.round(Number.parseFloat(JSON.stringify(trans))) }],
-                },
-            ]} onPress={() => { }} title="LogTime">
-
-                Archive
-
-            </Button>
-        );
+    componentDidMount() {
+        const didFocusScreen = this.props.navigation.addListener(
+            'didFocus',
+            payload => {
+                this.props.changeRouteAction(payload.state.routeName)
+            }
+        )
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (this.props.tasks !== prevProps.tasks) {
             if (this.task_data.id) {
                 this.task_data = Map(this.props.tasks).get(this.task_data.id)
+                this.setState(prevState => ({
+                    should_update: prevState.should_update + 1,
+                }))
             }
-
-            this.render_component_arr = Map(this.props.tasks).valueSeq().map((task, index) => {
-                let { schedule, repeat, startTime } = task
-
-                if (this.props.type === "day") {
-                    let { day, month, year } = this.state.chosen_date_data
-
-                    if (schedule.day === day && schedule.month === month && schedule.year === year) {
-                        return (
-                            <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                            </Swipeable>
-                        )
-                    }
-
-                    else if (repeat.type === "daily") {
-                        let start_date_time = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)).getTime(),
-                            current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime()
-
-                        if (Math.floor((current_date_time - start_date_time) / (86400 * 1000)) % repeat.interval.value === 0) {
-                            return (
-                                <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                    <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                                </Swipeable>
-                            )
-                        }
-                    }
-
-                    else if (repeat.type === "weekly") {
-
-                    }
-                }
-
-                else if (this.props.type === "week") {
-                    let { week, year } = this.state.chosen_date_data
-
-                    if (schedule.week === week && schedule.year === year) {
-                        return (
-                            <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                            </Swipeable>
-                        )
-                    }
-
-
-                }
-
-                else {
-                    let { month, year } = this.state.chosen_date_data
-
-                    if (schedule.month === month && schedule.year === year) {
-                        return (
-                            <Swipeable key={`month-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                            </Swipeable>
-                        )
-                    }
-                }
-            })
-
-            this.setState(prevState => ({
-                should_update: prevState.should_update + 1,
-            }))
         }
     }
 
     render() {
-
         return (
             <View style={styles.container}>
                 {
@@ -252,171 +170,14 @@ export default class JournalTab extends React.PureComponent {
                     alignItems: "center",
                     justifyContent: "center",
                 }}>
-
-                    {/* later we will user map to render all the data */}
                     <ScrollView style={styles.scrollViewTasks}>
-                        {Map(this.props.tasks).valueSeq().map((task, index) => {
-                            let { schedule, repeat, startTime } = task
-
-                            if (this.props.type === "day") {
-                                let { day, month, year } = this.state.chosen_date_data
-
-                                if (schedule.day === day && schedule.month === month && schedule.year === year) {
-                                    return (
-                                        <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                            <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                                        </Swipeable>
-                                    )
-                                }
-
-                                else if (repeat.type === "daily") {
-                                    let start_date_time = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)).getTime(),
-                                        current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime()
-
-                                    if (Math.floor((current_date_time - start_date_time) / (86400 * 1000)) % repeat.interval.value === 0) {
-                                        return (
-                                            <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                                            </Swipeable>
-                                        )
-                                    }
-                                }
-
-                                else if (repeat.type === "weekly") {
-                                    let start_date_time = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)).getTime(),
-                                        current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime(),
-                                        interval_value = repeat.interval.value,
-                                        diff = (current_date_time - start_date_time) / (86400 * 1000 * 7)
-
-                                    if (diff > 0 && diff % interval_value === 0) {
-                                        return (
-                                            <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                                            </Swipeable>
-                                        )
-                                    }
-                                }
-
-                                else if (repeat.type === "monthly") {
-                                    let start_date = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)),
-                                        current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)),
-                                        interval_value = repeat.interval.value,
-                                        diff_year = current_date.getFullYear() - start_date.getFullYear(),
-                                        diff_month = (current_date.getMonth() + diff_year * 12) - start_date.getMonth()
-
-
-                                    if (diff_month > 0 && diff_month % interval_value === 0) {
-                                        if (current_date.getDate() === start_date.getDate()) {
-                                            return (
-                                                <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                                    <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                                                </Swipeable>
-                                            )
-                                        }
-                                        else {
-                                            if (current_date.getDate() === new Date(current_date.getFullYear(), current_date.getMonth() + 1, 0).getDate()) {
-                                                return (
-                                                    <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                                        <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                                                    </Swipeable>
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-
-                                return null
-                            }
-
-                            else if (this.props.type === "week") {
-                                let { day, month, week, year } = this.state.chosen_date_data
-
-                                if (schedule.week === week && schedule.year === year) {
-                                    return (
-                                        <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                            <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                                        </Swipeable>
-                                    )
-                                }
-
-                                else if (repeat.type === "weekly-w") {
-                                    let interval_value = repeat.interval.value,
-                                        start_date = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)),
-                                        current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year))
-
-                                    if (month >= schedule.month && year >= schedule.year && current_date.getTime() > start_date.getTime()) {
-                                        if (Math.abs(this.getWeek(current_date) - schedule.week) % interval_value === 0) {
-                                            return (
-                                                <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                                    <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                                                </Swipeable>
-                                            )
-                                        }
-                                    }
-
-                                }
-
-                                else if (repeat.type === "monthly-w") {
-                                    let interval_value = repeat.interval.value,
-                                        current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)),
-                                        diff_year = year - schedule.year,
-                                        diff_month = (month + diff_year * 12) - schedule.month,
-                                        current_no_week_in_month = this.getNoWeekInMonth(current_date),
-                                        last_no_week_in_month = this.getNoWeekInMonth(new Date(year, month + 1, 0))
-
-                                    if (diff_month > 0 && diff_month % interval_value === 0) {
-                                        if (current_no_week_in_month === schedule.noWeekInMonth) {
-                                            return (
-                                                <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                                    <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                                                </Swipeable>
-                                            )
-                                        }
-
-                                        else if (current_no_week_in_month === last_no_week_in_month && schedule.noWeekInMonth === 5) {
-                                            return (
-                                                <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                                    <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                                                </Swipeable>
-                                            )
-                                        }
-                                    }
-                                }
-
-                                return null
-                            }
-
-                            else {
-                                let { month, year } = this.state.chosen_date_data
-
-                                if (schedule.month === month && schedule.year === year) {
-                                    return (
-                                        <Swipeable key={`month-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                            <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                                        </Swipeable>
-                                    )
-                                }
-
-                                else if (repeat.type === "monthly-m") {
-                                    let interval_value = repeat.interval.value,
-                                        diff_year = year - schedule.year,
-                                        diff_month = (month + diff_year * 12) - schedule.month
-                                    
-                                    if(diff_month > 0 && diff_month % interval_value === 0){
-                                        return (
-                                            <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={task.title} goal={task.goal} />
-                                            </Swipeable>
-                                        )
-                                    }
-                                }
-
-                                return null
-                            }
-                        })}
-                        {/* {this.render_component_arr} */}
-                        <Text style={styles.banner}>Completed</Text>
-                        <TaskCard checked={true} onPress={this.openModal} />
+                        <ToDoTasks
+                            tasks={this.props.tasks}
+                            type={this.props.type}
+                            chosen_date_data={this.state.chosen_date_data}
+                            openModal={this.openModal}
+                            setLogtimeModalToVisible={this.setLogtimeModalToVisible}
+                        />
                     </ScrollView>
 
                 </View>
@@ -437,8 +198,6 @@ export default class JournalTab extends React.PureComponent {
 
                     <></>
                 }
-
-
 
                 <Modal
                     animationType="slide"
@@ -467,6 +226,216 @@ export default class JournalTab extends React.PureComponent {
     }
 }
 
+class ToDoTasks extends React.PureComponent {
+
+    state = {
+        tasks_array: []
+    }
+
+    openModal = (task) => {
+        this.props.openModal(task)
+    }
+
+    setLogtimeModalToVisible = () => {
+        this.props.setLogtimeModalToVisible()
+    }
+
+    renderLeftActions = (progress, dragX) => {
+        const trans = dragX.interpolate({
+            inputRange: [0, 50, 100, 101],
+            outputRange: [-20, 0, 0, 1],
+        });
+        return (
+            <Button style={[
+                styles.actionText,
+                {
+                    transform: [{ translateX: Math.round(Number.parseFloat(JSON.stringify(trans))) }],
+                },
+            ]} onPress={() => { }} title="LogTime">
+
+                Archive
+
+            </Button>
+        );
+    }
+
+    handleTaskUpdate = (task, index) => {
+        let { schedule, repeat, startTime, title, goal } = task
+
+        if (this.props.type === "day") {
+            let { day, month, year } = this.props.chosen_date_data
+
+            if (schedule.day === day && schedule.month === month && schedule.year === year) {
+                return (
+                    <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                        <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                    </Swipeable>
+                )
+            }
+
+            else if (repeat.type === "daily") {
+                let start_date_time = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)).getTime(),
+                    current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime(),
+                    diff_day = Math.floor((current_date_time - start_date_time) / (86400 * 1000))
+
+                if (diff_day > 0 && diff_day % repeat.interval.value === 0) {
+                    return (
+                        <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                            <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                        </Swipeable>
+                    )
+                }
+            }
+
+            else if (repeat.type === "weekly") {
+                let start_date_time = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)).getTime(),
+                    current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime(),
+                    interval_value = repeat.interval.value,
+                    diff = (current_date_time - start_date_time) / (86400 * 1000 * 7)
+
+                if (diff > 0 && diff % interval_value === 0) {
+                    return (
+                        <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                            <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                        </Swipeable>
+                    )
+                }
+            }
+
+            else if (repeat.type === "monthly") {
+                let start_date = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)),
+                    current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)),
+                    interval_value = repeat.interval.value,
+                    diff_year = current_date.getFullYear() - start_date.getFullYear(),
+                    diff_month = (current_date.getMonth() + diff_year * 12) - start_date.getMonth()
+
+
+                if (diff_month > 0 && diff_month % interval_value === 0) {
+                    if (current_date.getDate() === start_date.getDate()) {
+                        return (
+                            <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                            </Swipeable>
+                        )
+                    }
+                    else {
+                        if (current_date.getDate() === new Date(current_date.getFullYear(), current_date.getMonth() + 1, 0).getDate()) {
+                            return (
+                                <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                    <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                                </Swipeable>
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        else if (this.props.type === "week") {
+            let { day, month, week, year } = this.props.chosen_date_data
+
+            if (schedule.week === week && schedule.year === year) {
+                return (
+                    <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                        <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                    </Swipeable>
+                )
+            }
+
+            else if (repeat.type === "weekly-w") {
+                let interval_value = repeat.interval.value,
+                    start_date = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)),
+                    current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year))
+
+                if (month >= schedule.month && year >= schedule.year && current_date.getTime() > start_date.getTime()) {
+                    if (Math.abs(this.getWeek(current_date) - schedule.week) % interval_value === 0) {
+                        return (
+                            <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                            </Swipeable>
+                        )
+                    }
+                }
+
+            }
+
+            else if (repeat.type === "monthly-w") {
+                let interval_value = repeat.interval.value,
+                    current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)),
+                    diff_year = year - schedule.year,
+                    diff_month = (month + diff_year * 12) - schedule.month,
+                    current_no_week_in_month = this.getNoWeekInMonth(current_date),
+                    last_no_week_in_month = this.getNoWeekInMonth(new Date(year, month + 1, 0))
+
+                if (diff_month > 0 && diff_month % interval_value === 0) {
+                    if (current_no_week_in_month === schedule.noWeekInMonth) {
+                        return (
+                            <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                            </Swipeable>
+                        )
+                    }
+
+                    else if (current_no_week_in_month === last_no_week_in_month && schedule.noWeekInMonth === 5) {
+                        return (
+                            <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                            </Swipeable>
+                        )
+                    }
+                }
+            }
+        }
+
+        else {
+            let { month, year } = this.props.chosen_date_data
+
+            if (schedule.month === month && schedule.year === year) {
+                return (
+                    <Swipeable key={`month-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                        <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                    </Swipeable>
+                )
+            }
+
+            else if (repeat.type === "monthly-m") {
+                let interval_value = repeat.interval.value,
+                    diff_year = year - schedule.year,
+                    diff_month = (month + diff_year * 12) - schedule.month
+
+                if (diff_month > 0 && diff_month % interval_value === 0) {
+                    return (
+                        <Swipeable key={`month-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                            <TaskCard task_data={task} index={index} checked={false} onPress={this.openModal} title={title} goal={goal} />
+                        </Swipeable>
+                    )
+                }
+            }
+        }
+    }
+
+    componentDidMount() {
+        this.setState({
+            tasks_array: Map(this.props.tasks).valueSeq().map((task, index) => this.handleTaskUpdate(task, index))
+        })
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.tasks !== prevProps.tasks) {
+            this.setState({
+                tasks_array: Map(this.props.tasks).valueSeq().map((task, index) => this.handleTaskUpdate(task, index))
+            })
+        }
+    }
+
+    render() {
+        return (
+            <>
+                {this.state.tasks_array}
+            </>
+        )
+    }
+}
 
 const styles = StyleSheet.create({
     container: {

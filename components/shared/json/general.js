@@ -116,3 +116,25 @@ const priority = {
     },
 
 }
+
+const day_completed = {
+    task_id_0: {
+        year: {
+            month: day
+        }
+    }
+}
+
+const week_completed = {
+    task_id_1: {
+        year: {
+            week: month
+        }
+    }
+}
+
+const month_completed = {
+    task_id_2: {
+        year: month
+    }
+}
