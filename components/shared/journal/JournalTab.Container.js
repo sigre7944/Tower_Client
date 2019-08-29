@@ -9,6 +9,7 @@ const mapStateToProps = (state, ownProps) => {
             tasks: state.day_tasks,
             categories: state.categories,
             priorities: state.priorities,
+            completed_tasks: state.completed_day_tasks,
         })
     }
 
@@ -18,6 +19,7 @@ const mapStateToProps = (state, ownProps) => {
             tasks: state.week_tasks,
             categories: state.categories,
             priorities: state.priorities,
+            completed_tasks: state.completed_week_tasks,
         })
     }
 
@@ -26,6 +28,7 @@ const mapStateToProps = (state, ownProps) => {
         tasks: state.month_tasks,
         categories: state.categories,
         priorities: state.priorities,
+        completed_tasks: state.completed_month_tasks,
     })
 }
 

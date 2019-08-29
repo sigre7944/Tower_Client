@@ -174,13 +174,38 @@ export default class JournalTab extends React.PureComponent {
                     <ScrollView style={styles.scrollViewTasks}>
                         <ToDoTasks
                             tasks={this.props.tasks}
+                            completed_tasks={this.props.completed_tasks}
+                            type={this.props.type}
+                            chosen_date_data={this.state.chosen_date_data}
+                            openModal={this.openModal}
+                            setLogtimeModalToVisible={this.setLogtimeModalToVisible}
+                        />
+
+                        <View
+                            style={{
+                                marginVertical: 20,
+                                marginLeft: 20,
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    color: "black",
+                                    fontWeight: "800",
+                                }}
+                            >
+                                Completed
+                            </Text>
+                        </View>
+
+                        <CompletedTasks
+                            tasks={this.props.tasks}
+                            completed_tasks={this.props.completed_tasks}
                             type={this.props.type}
                             chosen_date_data={this.state.chosen_date_data}
                             openModal={this.openModal}
                             setLogtimeModalToVisible={this.setLogtimeModalToVisible}
                         />
                     </ScrollView>
-
                 </View>
 
                 {this.state.isModalOpened ?
@@ -263,35 +288,50 @@ class ToDoTasks extends React.PureComponent {
         return null
     }
 
+    getWeek = (date) => {
+        let target = new Date(date);
+        let dayNr = (date.getDay() + 6) % 7;
+        target.setDate(target.getDate() - dayNr + 3);
+        let firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() != 4) {
+            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+        }
+        return 1 + Math.ceil((firstThursday - target) / 604800000);
+    }
+
+    getMonday = (date) => {
+        let dayInWeek = new Date(date).getDay()
+        let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
+        return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
+    }
+
+    getNoWeekInMonth = (date) => {
+        let nearest_monday = this.getMonday(date)
+        let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
+
+        return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
+    }
+
     handleTaskUpdate = (task, index) => {
-        let { schedule, repeat, startTime, title, goal } = task
+        let { schedule, repeat, startTime, title, goal, id } = task,
+            completed_tasks = Map(this.props.completed_tasks).toJS()
 
         if (this.props.type === "day") {
-            let { day, month, year } = this.props.chosen_date_data
+            let { day, month, year } = this.props.chosen_date_data,
+                chosen_day_timestamp = new Date(year, month, day).getTime()
 
-            if (schedule.day === day && schedule.month === month && schedule.year === year) {
-                return (
-                    <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                        <TaskCard
-                            action_type="UPDATE_COMPLETED_DAY_TASK"
-                            type={this.props.type}
-                            task_data={task}
-                            index={index}
-                            checked={false}
-                            onPress={this.openModal}
-                            title={title}
-                            goal={goal}
-                        />
-                    </Swipeable>
-                )
-            }
+            if (!completed_tasks.hasOwnProperty(id) ||
+                (completed_tasks.hasOwnProperty(id) && !completed_tasks[id].hasOwnProperty(chosen_day_timestamp)) ||
+                (completed_tasks.hasOwnProperty(id) && completed_tasks[id].hasOwnProperty(chosen_day_timestamp) && parseInt(completed_tasks[id][chosen_day_timestamp].current) < parseInt(goal.max))
+            ) {
+                let current_goal_value = 0
 
-            else if (repeat.type === "daily") {
-                let start_date_time = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)).getTime(),
-                    current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime(),
-                    diff_day = Math.floor((current_date_time - start_date_time) / (86400 * 1000))
+                if (completed_tasks.hasOwnProperty(id) && completed_tasks[id].hasOwnProperty(chosen_day_timestamp)) {
+                    current_goal_value = completed_tasks[id][chosen_day_timestamp].current
+                }
 
-                if (diff_day > 0 && diff_day % repeat.interval.value === 0) {
+                if (schedule.day === day && schedule.month === month && schedule.year === year) {
                     return (
                         <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
                             <TaskCard
@@ -301,46 +341,20 @@ class ToDoTasks extends React.PureComponent {
                                 index={index}
                                 checked={false}
                                 onPress={this.openModal}
+                                current_goal_value={current_goal_value}
                                 title={title}
-                                goal={goal} />
+                                goal={goal}
+                            />
                         </Swipeable>
                     )
                 }
-            }
 
-            else if (repeat.type === "weekly") {
-                let start_date_time = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)).getTime(),
-                    current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime(),
-                    interval_value = repeat.interval.value,
-                    diff = (current_date_time - start_date_time) / (86400 * 1000 * 7)
+                else if (repeat.type === "daily") {
+                    let start_date_time = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)).getTime(),
+                        current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime(),
+                        diff_day = Math.floor((current_date_time - start_date_time) / (86400 * 1000))
 
-                if (diff > 0 && diff % interval_value === 0) {
-                    return (
-                        <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                            <TaskCard
-                                action_type="UPDATE_COMPLETED_DAY_TASK"
-                                type={this.props.type}
-                                task_data={task}
-                                index={index}
-                                checked={false}
-                                onPress={this.openModal}
-                                title={title}
-                                goal={goal} />
-                        </Swipeable>
-                    )
-                }
-            }
-
-            else if (repeat.type === "monthly") {
-                let start_date = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)),
-                    current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)),
-                    interval_value = repeat.interval.value,
-                    diff_year = current_date.getFullYear() - start_date.getFullYear(),
-                    diff_month = (current_date.getMonth() + diff_year * 12) - start_date.getMonth()
-
-
-                if (diff_month > 0 && diff_month % interval_value === 0) {
-                    if (current_date.getDate() === start_date.getDate()) {
+                    if (diff_day > 0 && diff_day % repeat.interval.value === 0) {
                         return (
                             <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
                                 <TaskCard
@@ -350,13 +364,48 @@ class ToDoTasks extends React.PureComponent {
                                     index={index}
                                     checked={false}
                                     onPress={this.openModal}
+                                    current_goal_value={current_goal_value}
                                     title={title}
                                     goal={goal} />
                             </Swipeable>
                         )
                     }
-                    else {
-                        if (current_date.getDate() === new Date(current_date.getFullYear(), current_date.getMonth() + 1, 0).getDate()) {
+                }
+
+                else if (repeat.type === "weekly") {
+                    let start_date_time = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)).getTime(),
+                        current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime(),
+                        interval_value = repeat.interval.value,
+                        diff = (current_date_time - start_date_time) / (86400 * 1000 * 7)
+
+                    if (diff > 0 && diff % interval_value === 0) {
+                        return (
+                            <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                <TaskCard
+                                    action_type="UPDATE_COMPLETED_DAY_TASK"
+                                    type={this.props.type}
+                                    task_data={task}
+                                    index={index}
+                                    checked={false}
+                                    onPress={this.openModal}
+                                    current_goal_value={current_goal_value}
+                                    title={title}
+                                    goal={goal} />
+                            </Swipeable>
+                        )
+                    }
+                }
+
+                else if (repeat.type === "monthly") {
+                    let start_date = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)),
+                        current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)),
+                        interval_value = repeat.interval.value,
+                        diff_year = current_date.getFullYear() - start_date.getFullYear(),
+                        diff_month = (current_date.getMonth() + diff_year * 12) - start_date.getMonth()
+
+
+                    if (diff_month > 0 && diff_month % interval_value === 0) {
+                        if (current_date.getDate() === start_date.getDate()) {
                             return (
                                 <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
                                     <TaskCard
@@ -366,6 +415,131 @@ class ToDoTasks extends React.PureComponent {
                                         index={index}
                                         checked={false}
                                         onPress={this.openModal}
+                                        current_goal_value={current_goal_value}
+                                        title={title}
+                                        goal={goal} />
+                                </Swipeable>
+                            )
+                        }
+                        else {
+                            if (current_date.getDate() === new Date(current_date.getFullYear(), current_date.getMonth() + 1, 0).getDate()) {
+                                return (
+                                    <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                        <TaskCard
+                                            action_type="UPDATE_COMPLETED_DAY_TASK"
+                                            type={this.props.type}
+                                            task_data={task}
+                                            index={index}
+                                            checked={false}
+                                            onPress={this.openModal}
+                                            current_goal_value={current_goal_value}
+                                            title={title}
+                                            goal={goal} />
+                                    </Swipeable>
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        else if (this.props.type === "week") {
+            let { day, month, week, year } = this.props.chosen_date_data,
+                chosen_week_date = new Date(year, month, day),
+                chosen_week_timestamp = new Date(year, month, this.getMonday(chosen_week_date).getDate()).getTime()
+
+            if (!completed_tasks.hasOwnProperty(id) ||
+                (completed_tasks.hasOwnProperty(id) && !completed_tasks[id].hasOwnProperty(chosen_week_timestamp)) ||
+                (completed_tasks.hasOwnProperty(id) && completed_tasks[id].hasOwnProperty(chosen_week_timestamp) && parseInt(completed_tasks[id][chosen_week_timestamp].current) < parseInt(goal.max))
+            ) {
+                let current_goal_value = 0
+
+                if (completed_tasks.hasOwnProperty(id) && completed_tasks[id].hasOwnProperty(chosen_week_timestamp)) {
+                    current_goal_value = completed_tasks[id][chosen_week_timestamp].current
+                }
+
+                if (schedule.week === week && schedule.year === year) {
+                    return (
+                        <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                            <TaskCard
+                                action_type="UPDATE_COMPLETED_WEEK_TASK"
+                                type={this.props.type} task_data={task}
+                                index={index}
+                                checked={false}
+                                onPress={this.openModal}
+                                current_goal_value={current_goal_value}
+                                title={title}
+                                goal={goal} />
+                        </Swipeable>
+                    )
+                }
+
+                else if (repeat.type === "weekly-w") {
+                    let interval_value = repeat.interval.value,
+                        start_date = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)),
+                        current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year))
+
+                    if (month >= schedule.month && year >= schedule.year && current_date.getTime() > start_date.getTime()) {
+                        if (Math.abs(this.getWeek(current_date) - schedule.week) % interval_value === 0) {
+                            return (
+                                <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                    <TaskCard
+                                        action_type="UPDATE_COMPLETED_WEEK_TASK"
+                                        type={this.props.type}
+                                        task_data={task}
+                                        index={index}
+                                        checked={false}
+                                        onPress={this.openModal}
+                                        current_goal_value={current_goal_value}
+                                        title={title}
+                                        goal={goal}
+                                    />
+                                </Swipeable>
+                            )
+                        }
+                    }
+
+                }
+
+                else if (repeat.type === "monthly-w") {
+                    let interval_value = repeat.interval.value,
+                        current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)),
+                        diff_year = year - schedule.year,
+                        diff_month = (month + diff_year * 12) - schedule.month,
+                        current_no_week_in_month = this.getNoWeekInMonth(current_date),
+                        last_no_week_in_month = this.getNoWeekInMonth(new Date(year, month + 1, 0))
+
+                    if (diff_month > 0 && diff_month % interval_value === 0) {
+                        if (current_no_week_in_month === schedule.noWeekInMonth) {
+                            return (
+                                <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                    <TaskCard
+                                        action_type="UPDATE_COMPLETED_WEEK_TASK"
+                                        type={this.props.type}
+                                        task_data={task}
+                                        index={index}
+                                        checked={false}
+                                        onPress={this.openModal}
+                                        current_goal_value={current_goal_value}
+                                        title={title}
+                                        goal={goal} />
+                                </Swipeable>
+                            )
+                        }
+
+                        else if (current_no_week_in_month === last_no_week_in_month && schedule.noWeekInMonth === 5) {
+                            return (
+                                <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                    <TaskCard
+                                        action_type="UPDATE_COMPLETED_WEEK_TASK"
+                                        type={this.props.type}
+                                        task_data={task}
+                                        index={index}
+                                        checked={false}
+                                        onPress={this.openModal}
+                                        current_goal_value={current_goal_value}
                                         title={title}
                                         goal={goal} />
                                 </Swipeable>
@@ -374,121 +548,24 @@ class ToDoTasks extends React.PureComponent {
                     }
                 }
             }
-        }
 
-        else if (this.props.type === "week") {
-            let { day, month, week, year } = this.props.chosen_date_data
 
-            if (schedule.week === week && schedule.year === year) {
-                return (
-                    <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                        <TaskCard
-                            action_type="UPDATE_COMPLETED_WEEK_TASK"
-                            type={this.props.type} task_data={task}
-                            index={index}
-                            checked={false}
-                            onPress={this.openModal}
-                            title={title}
-                            goal={goal} />
-                    </Swipeable>
-                )
-            }
-
-            else if (repeat.type === "weekly-w") {
-                let interval_value = repeat.interval.value,
-                    start_date = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)),
-                    current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year))
-
-                if (month >= schedule.month && year >= schedule.year && current_date.getTime() > start_date.getTime()) {
-                    if (Math.abs(this.getWeek(current_date) - schedule.week) % interval_value === 0) {
-                        return (
-                            <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                <TaskCard
-                                    action_type="UPDATE_COMPLETED_WEEK_TASK"
-                                    type={this.props.type}
-                                    task_data={task}
-                                    index={index}
-                                    checked={false}
-                                    onPress={this.openModal}
-                                    title={title}
-                                    goal={goal}
-                                />
-                            </Swipeable>
-                        )
-                    }
-                }
-
-            }
-
-            else if (repeat.type === "monthly-w") {
-                let interval_value = repeat.interval.value,
-                    current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)),
-                    diff_year = year - schedule.year,
-                    diff_month = (month + diff_year * 12) - schedule.month,
-                    current_no_week_in_month = this.getNoWeekInMonth(current_date),
-                    last_no_week_in_month = this.getNoWeekInMonth(new Date(year, month + 1, 0))
-
-                if (diff_month > 0 && diff_month % interval_value === 0) {
-                    if (current_no_week_in_month === schedule.noWeekInMonth) {
-                        return (
-                            <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                <TaskCard
-                                    action_type="UPDATE_COMPLETED_WEEK_TASK"
-                                    type={this.props.type}
-                                    task_data={task}
-                                    index={index}
-                                    checked={false}
-                                    onPress={this.openModal}
-                                    title={title}
-                                    goal={goal} />
-                            </Swipeable>
-                        )
-                    }
-
-                    else if (current_no_week_in_month === last_no_week_in_month && schedule.noWeekInMonth === 5) {
-                        return (
-                            <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                                <TaskCard
-                                    action_type="UPDATE_COMPLETED_WEEK_TASK"
-                                    type={this.props.type}
-                                    task_data={task}
-                                    index={index}
-                                    checked={false}
-                                    onPress={this.openModal}
-                                    title={title}
-                                    goal={goal} />
-                            </Swipeable>
-                        )
-                    }
-                }
-            }
         }
 
         else {
-            let { month, year } = this.props.chosen_date_data
+            let { month, year } = this.props.chosen_date_data,
+                chosen_month_timestamp = new Date(year, month).getTime()
+            if (!completed_tasks.hasOwnProperty(id) ||
+                (completed_tasks.hasOwnProperty(id) && !completed_tasks[id].hasOwnProperty(chosen_month_timestamp)) ||
+                (completed_tasks.hasOwnProperty(id) && completed_tasks[id].hasOwnProperty(chosen_month_timestamp) && parseInt(completed_tasks[id][chosen_month_timestamp].current) < parseInt(goal.max))
+            ) {
+                let current_goal_value = 0
 
-            if (schedule.month === month && schedule.year === year) {
-                return (
-                    <Swipeable key={`month-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
-                        <TaskCard
-                            action_type="UPDATE_COMPLETED_MONTH_TASK"
-                            type={this.props.type}
-                            task_data={task}
-                            index={index}
-                            checked={false}
-                            onPress={this.openModal}
-                            title={title}
-                            goal={goal} />
-                    </Swipeable>
-                )
-            }
+                if (completed_tasks.hasOwnProperty(id) && completed_tasks[id].hasOwnProperty(chosen_month_timestamp)) {
+                    current_goal_value = completed_tasks[id][chosen_month_timestamp].current
+                }
 
-            else if (repeat.type === "monthly-m") {
-                let interval_value = repeat.interval.value,
-                    diff_year = year - schedule.year,
-                    diff_month = (month + diff_year * 12) - schedule.month
-
-                if (diff_month > 0 && diff_month % interval_value === 0) {
+                if (schedule.month === month && schedule.year === year) {
                     return (
                         <Swipeable key={`month-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
                             <TaskCard
@@ -498,13 +575,39 @@ class ToDoTasks extends React.PureComponent {
                                 index={index}
                                 checked={false}
                                 onPress={this.openModal}
+                                current_goal_value={current_goal_value}
                                 title={title}
                                 goal={goal} />
                         </Swipeable>
                     )
                 }
+
+                else if (repeat.type === "monthly-m") {
+                    let interval_value = repeat.interval.value,
+                        diff_year = year - schedule.year,
+                        diff_month = (month + diff_year * 12) - schedule.month
+
+                    if (diff_month > 0 && diff_month % interval_value === 0) {
+                        return (
+                            <Swipeable key={`month-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                <TaskCard
+                                    action_type="UPDATE_COMPLETED_MONTH_TASK"
+                                    type={this.props.type}
+                                    task_data={task}
+                                    index={index}
+                                    checked={false}
+                                    onPress={this.openModal}
+                                    current_goal_value={current_goal_value}
+                                    title={title}
+                                    goal={goal} />
+                            </Swipeable>
+                        )
+                    }
+                }
             }
         }
+
+        return null
     }
 
     componentDidMount() {
@@ -525,6 +628,161 @@ class ToDoTasks extends React.PureComponent {
         return (
             <>
                 {this.state.tasks_array}
+            </>
+        )
+    }
+}
+
+
+class CompletedTasks extends React.PureComponent {
+    state = {
+        completed_tasks_array: []
+    }
+
+    openModal = (task) => {
+        this.props.openModal(task)
+    }
+
+    setLogtimeModalToVisible = () => {
+        this.props.setLogtimeModalToVisible()
+    }
+
+    renderLeftActions = (progress, dragX) => {
+        const trans = dragX.interpolate({
+            inputRange: [0, 50, 100, 101],
+            outputRange: [-20, 0, 0, 1],
+        });
+
+        return null
+    }
+
+    getWeek = (date) => {
+        let target = new Date(date);
+        let dayNr = (date.getDay() + 6) % 7;
+        target.setDate(target.getDate() - dayNr + 3);
+        let firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() != 4) {
+            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+        }
+        return 1 + Math.ceil((firstThursday - target) / 604800000);
+    }
+
+    getMonday = (date) => {
+        let dayInWeek = new Date(date).getDay()
+        let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
+        return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
+    }
+
+    getNoWeekInMonth = (date) => {
+        let nearest_monday = this.getMonday(date)
+        let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
+
+        return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
+    }
+
+
+    handleCompletedTaskUpdate = (completed_task, index) => {
+        let task = Map(this.props.tasks).get(completed_task.id),
+            { title, goal } = task
+
+        if (this.props.type === "day") {
+            let { day, month, year } = this.props.chosen_date_data,
+                chosen_day_timestamp = new Date(year, month, day).getTime()
+
+            if (completed_task.hasOwnProperty(chosen_day_timestamp) &&
+                parseInt(completed_task[chosen_day_timestamp].current) >= parseInt(completed_task[chosen_day_timestamp].max)
+            ) {
+                let current_goal_value = completed_task[chosen_day_timestamp].current
+                return (
+                    <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                        <TaskCard
+                            action_type="UPDATE_COMPLETED_DAY_TASK"
+                            type={this.props.type}
+                            task_data={task}
+                            index={index}
+                            checked={false}
+                            onPress={this.openModal}
+                            current_goal_value={current_goal_value}
+                            title={title}
+                            goal={goal}
+                        />
+                    </Swipeable>
+                )
+            }
+        }
+
+        else if (this.props.type === "week") {
+            let { day, month, week, year } = this.props.chosen_date_data,
+                chosen_week_date = new Date(year, month, day),
+                chosen_week_timestamp = new Date(year, month, this.getMonday(chosen_week_date).getDate()).getTime()
+
+            if (completed_task.hasOwnProperty(chosen_week_timestamp) &&
+                parseInt(completed_task[chosen_week_timestamp].current) >= parseInt(completed_task[chosen_week_timestamp].max)
+            ) {
+                let current_goal_value = completed_task[chosen_week_timestamp].current
+                return (
+                    <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                        <TaskCard
+                            action_type="UPDATE_COMPLETED_WEEK_TASK"
+                            type={this.props.type} task_data={task}
+                            index={index}
+                            checked={false}
+                            onPress={this.openModal}
+                            current_goal_value={current_goal_value}
+                            title={title}
+                            goal={goal} />
+                    </Swipeable>
+                )
+            }
+        }
+
+        else {
+            let { month, year } = this.props.chosen_date_data,
+                chosen_month_timestamp = new Date(year, month).getTime()
+
+            if (completed_task.hasOwnProperty(chosen_month_timestamp) &&
+                parseInt(completed_task[chosen_month_timestamp].current) >= parseInt(completed_task[chosen_month_timestamp].max)
+            ) {
+                let current_goal_value = completed_task[chosen_month_timestamp].current
+                return (
+                    <Swipeable key={`month-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                        <TaskCard
+                            action_type="UPDATE_COMPLETED_MONTH_TASK"
+                            type={this.props.type}
+                            task_data={task}
+                            index={index}
+                            checked={false}
+                            onPress={this.openModal}
+                            title={title}
+                            current_goal_value={current_goal_value}
+                            goal={goal} />
+                    </Swipeable>
+                )
+            }
+        }
+
+        return null
+    }
+
+    componentDidMount() {
+        this.setState({
+            completed_tasks_array: Map(this.props.completed_tasks).valueSeq().map((completed_task, index) => this.handleCompletedTaskUpdate(completed_task, index))
+        })
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.completed_tasks !== prevProps.completed_tasks) {
+            this.setState({
+                completed_tasks_array: Map(this.props.completed_tasks).valueSeq().map((completed_task, index) => this.handleCompletedTaskUpdate(completed_task, index))
+            })
+        }
+    }
+
+    render() {
+        return (
+            <>
+                {this.state.completed_tasks_array}
             </>
         )
     }
