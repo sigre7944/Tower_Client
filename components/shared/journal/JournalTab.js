@@ -172,15 +172,16 @@ export default class JournalTab extends React.PureComponent {
                     justifyContent: "center",
                 }}>
                     <ScrollView style={styles.scrollViewTasks}>
-                        <ToDoTasks
+                        {/* Uncompleted to-do tasks */}
+                        <TaskCardHolder
                             tasks={this.props.tasks}
                             completed_tasks={this.props.completed_tasks}
                             type={this.props.type}
                             chosen_date_data={this.state.chosen_date_data}
                             openModal={this.openModal}
                             setLogtimeModalToVisible={this.setLogtimeModalToVisible}
+                            flag="uncompleted"
                         />
-
                         <View
                             style={{
                                 marginVertical: 20,
@@ -196,14 +197,15 @@ export default class JournalTab extends React.PureComponent {
                                 Completed
                             </Text>
                         </View>
-
-                        <CompletedTasks
+                        {/* Completed to-do tasks */}
+                        <TaskCardHolder
                             tasks={this.props.tasks}
                             completed_tasks={this.props.completed_tasks}
                             type={this.props.type}
                             chosen_date_data={this.state.chosen_date_data}
                             openModal={this.openModal}
                             setLogtimeModalToVisible={this.setLogtimeModalToVisible}
+                            flag="completed"
                         />
                     </ScrollView>
                 </View>
@@ -252,10 +254,12 @@ export default class JournalTab extends React.PureComponent {
     }
 }
 
-class ToDoTasks extends React.PureComponent {
+class TaskCardHolder extends React.PureComponent {
 
     state = {
-        tasks_array: []
+        task_card_array: [],
+
+        is_chosen_date_today: true
     }
 
     openModal = (task) => {
@@ -313,7 +317,7 @@ class ToDoTasks extends React.PureComponent {
         return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
     }
 
-    handleTaskUpdate = (task, index) => {
+    handleUncompletedTaskUpdate = (task, index) => {
         let { schedule, repeat, startTime, title, goal, id } = task,
             completed_tasks = Map(this.props.completed_tasks).toJS()
 
@@ -610,78 +614,6 @@ class ToDoTasks extends React.PureComponent {
         return null
     }
 
-    componentDidMount() {
-        this.setState({
-            tasks_array: Map(this.props.tasks).valueSeq().map((task, index) => this.handleTaskUpdate(task, index))
-        })
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (this.props.tasks !== prevProps.tasks) {
-            this.setState({
-                tasks_array: Map(this.props.tasks).valueSeq().map((task, index) => this.handleTaskUpdate(task, index))
-            })
-        }
-    }
-
-    render() {
-        return (
-            <>
-                {this.state.tasks_array}
-            </>
-        )
-    }
-}
-
-
-class CompletedTasks extends React.PureComponent {
-    state = {
-        completed_tasks_array: []
-    }
-
-    openModal = (task) => {
-        this.props.openModal(task)
-    }
-
-    setLogtimeModalToVisible = () => {
-        this.props.setLogtimeModalToVisible()
-    }
-
-    renderLeftActions = (progress, dragX) => {
-        const trans = dragX.interpolate({
-            inputRange: [0, 50, 100, 101],
-            outputRange: [-20, 0, 0, 1],
-        });
-
-        return null
-    }
-
-    getWeek = (date) => {
-        let target = new Date(date);
-        let dayNr = (date.getDay() + 6) % 7;
-        target.setDate(target.getDate() - dayNr + 3);
-        let firstThursday = target.valueOf();
-        target.setMonth(0, 1);
-        if (target.getDay() != 4) {
-            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
-        }
-        return 1 + Math.ceil((firstThursday - target) / 604800000);
-    }
-
-    getMonday = (date) => {
-        let dayInWeek = new Date(date).getDay()
-        let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
-        return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
-    }
-
-    getNoWeekInMonth = (date) => {
-        let nearest_monday = this.getMonday(date)
-        let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
-
-        return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
-    }
-
-
     handleCompletedTaskUpdate = (completed_task, index) => {
         let task = Map(this.props.tasks).get(completed_task.id),
             { title, goal } = task
@@ -765,24 +697,47 @@ class CompletedTasks extends React.PureComponent {
         return null
     }
 
+    checkIfChosenDateIsToday = (chosen_date_data, type) => {
+        if(type === "day"){
+            let {day, month, year} = chosen_date_data
+            
+        }
+    }
+
     componentDidMount() {
-        this.setState({
-            completed_tasks_array: Map(this.props.completed_tasks).valueSeq().map((completed_task, index) => this.handleCompletedTaskUpdate(completed_task, index))
-        })
+        if (this.props.flag === "uncompleted") {
+            this.setState({
+                task_card_array: Map(this.props.tasks).valueSeq().map((task, index) => this.handleUncompletedTaskUpdate(task, index))
+            })
+        }
+
+        else {
+            this.setState({
+                task_card_array: Map(this.props.completed_tasks).valueSeq().map((completed_task, index) => this.handleCompletedTaskUpdate(completed_task, index))
+            })
+        }
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.props.completed_tasks !== prevProps.completed_tasks) {
+        if ((this.props.flag === "uncompleted") && (this.props.tasks !== prevProps.tasks)) {
             this.setState({
-                completed_tasks_array: Map(this.props.completed_tasks).valueSeq().map((completed_task, index) => this.handleCompletedTaskUpdate(completed_task, index))
+                task_card_array: Map(this.props.tasks).valueSeq().map((task, index) => this.handleUncompletedTaskUpdate(task, index))
             })
+        }
+        else if ((this.props.flag === "completed") && (this.props.completed_tasks !== prevProps.completed_tasks)) {
+            this.setState({
+                task_card_array: Map(this.props.completed_tasks).valueSeq().map((completed_task, index) => this.handleCompletedTaskUpdate(completed_task, index))
+            })
+        }
+
+        if(this.props.chosen_date_data !== prevProps.chosen_date_data){
         }
     }
 
     render() {
         return (
             <>
-                {this.state.completed_tasks_array}
+                {this.state.task_card_array}
             </>
         )
     }
