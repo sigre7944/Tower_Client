@@ -88,7 +88,6 @@ export default class JournalTab extends React.PureComponent {
 
     state = {
         isModalOpened: false,
-        isLogtimeModalOpened: false,
 
         should_update: 0,
 
@@ -110,15 +109,6 @@ export default class JournalTab extends React.PureComponent {
     closeModal = () => {
         this.setState({ isModalOpened: false })
     }
-
-    setLogtimeModalToVisible = () => {
-        this.setState({ isLogtimeModalOpened: true })
-    }
-
-    // setLogtimeModalToInvisible = () => {
-    //     this.setState({ isLogtimeModalOpened: false })
-    // }
-
 
     componentDidMount() {
         const didFocusScreen = this.props.navigation.addListener(
@@ -180,7 +170,6 @@ export default class JournalTab extends React.PureComponent {
                             type={this.props.type}
                             chosen_date_data={this.state.chosen_date_data}
                             openModal={this.openModal}
-                            setLogtimeModalToVisible={this.setLogtimeModalToVisible}
                             flag="uncompleted"
                         />
                         <View
@@ -205,7 +194,6 @@ export default class JournalTab extends React.PureComponent {
                             type={this.props.type}
                             chosen_date_data={this.state.chosen_date_data}
                             openModal={this.openModal}
-                            setLogtimeModalToVisible={this.setLogtimeModalToVisible}
                             flag="completed"
                         />
                     </ScrollView>
@@ -227,29 +215,6 @@ export default class JournalTab extends React.PureComponent {
 
                     <></>
                 }
-
-                {/* <Modal
-                    animationType="slide"
-                    transparent={false}
-                    visible={this.state.isLogtimeModalOpened}
-                    onRequestClose={() => {
-                        Alert.alert('Modal has been closed.');
-                    }}
-                >
-                    <View
-                        style={{
-                            flex: 1,
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            alignItems: 'center'
-                        }}
-                    >
-                        <Text>This is the pop up logtime dialog</Text>
-                        <Button onPress={this.setLogtimeModalToInvisible} title="Close">
-                            Close
-                            </Button>
-                    </View>
-                </Modal> */}
             </View>
         )
     }
@@ -267,10 +232,6 @@ class TaskCardHolder extends React.PureComponent {
         this.props.openModal(task)
     }
 
-    setLogtimeModalToVisible = () => {
-        this.props.setLogtimeModalToVisible()
-    }
-
     renderLeftActions = (progress, dragX) => {
         const trans = dragX.interpolate({
             // inputRange: [0, 50, 100, 101],
@@ -279,19 +240,6 @@ class TaskCardHolder extends React.PureComponent {
             outputRange: [-100, 1],
             extrapolate: 'clamp',
         });
-
-        // return (
-        //     <Button style={[
-        //         styles.actionText,
-        //         {
-        //             transform: [{ translateX: Math.round(Number.parseFloat(JSON.stringify(trans))) }],
-        //         },
-        //     ]} onPress={() => { }} title="LogTime">
-
-        //         Archive
-
-        //     </Button>
-        // );
 
         return <LeftPanelSwipe trans={trans} />
     }
@@ -356,7 +304,6 @@ class TaskCardHolder extends React.PureComponent {
                             leftThreshold={80}
                             rightThreshold={60}
                             onSwipeableLeftOpen={this._onSwipeableLeftOpen}
-                            onSwipeableOpen={this.setLogtimeModalToVisible}
                         >
                             <TaskCard
                                 action_type="UPDATE_COMPLETED_DAY_TASK"
@@ -381,7 +328,10 @@ class TaskCardHolder extends React.PureComponent {
 
                     if (diff_day > 0 && diff_day % repeat.interval.value === 0) {
                         return (
-                            <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                            <Swipeable
+                                key={`day-task-${index}`}
+                                renderLeftActions={this.renderLeftActions}
+                            >
                                 <TaskCard
                                     action_type="UPDATE_COMPLETED_DAY_TASK"
                                     type={this.props.type}
@@ -407,7 +357,10 @@ class TaskCardHolder extends React.PureComponent {
 
                     if (diff > 0 && diff % interval_value === 0) {
                         return (
-                            <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                            <Swipeable
+                                key={`day-task-${index}`}
+                                renderLeftActions={this.renderLeftActions}
+                            >
                                 <TaskCard
                                     action_type="UPDATE_COMPLETED_DAY_TASK"
                                     type={this.props.type}
@@ -436,7 +389,10 @@ class TaskCardHolder extends React.PureComponent {
                     if (diff_month > 0 && diff_month % interval_value === 0) {
                         if (current_date.getDate() === start_date.getDate()) {
                             return (
-                                <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                <Swipeable
+                                    key={`day-task-${index}`}
+                                    renderLeftActions={this.renderLeftActions}
+                                >
                                     <TaskCard
                                         action_type="UPDATE_COMPLETED_DAY_TASK"
                                         type={this.props.type}
@@ -455,7 +411,10 @@ class TaskCardHolder extends React.PureComponent {
                         else {
                             if (current_date.getDate() === new Date(current_date.getFullYear(), current_date.getMonth() + 1, 0).getDate()) {
                                 return (
-                                    <Swipeable key={`day-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                    <Swipeable
+                                        key={`day-task-${index}`}
+                                        renderLeftActions={this.renderLeftActions}
+                                    >
                                         <TaskCard
                                             action_type="UPDATE_COMPLETED_DAY_TASK"
                                             type={this.props.type}
@@ -495,7 +454,10 @@ class TaskCardHolder extends React.PureComponent {
 
                 if (schedule.week === week && schedule.year === year) {
                     return (
-                        <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                        <Swipeable
+                            key={`week-task-${index}`}
+                            renderLeftActions={this.renderLeftActions}
+                        >
                             <TaskCard
                                 action_type="UPDATE_COMPLETED_WEEK_TASK"
                                 type={this.props.type} task_data={task}
@@ -519,7 +481,10 @@ class TaskCardHolder extends React.PureComponent {
                     if (month >= schedule.month && year >= schedule.year && current_date.getTime() > start_date.getTime()) {
                         if (Math.abs(this.getWeek(current_date) - schedule.week) % interval_value === 0) {
                             return (
-                                <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                <Swipeable
+                                    key={`week-task-${index}`}
+                                    renderLeftActions={this.renderLeftActions}
+                                >
                                     <TaskCard
                                         action_type="UPDATE_COMPLETED_WEEK_TASK"
                                         type={this.props.type}
@@ -550,7 +515,10 @@ class TaskCardHolder extends React.PureComponent {
                     if (diff_month > 0 && diff_month % interval_value === 0) {
                         if (current_no_week_in_month === schedule.noWeekInMonth) {
                             return (
-                                <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                <Swipeable
+                                    key={`week-task-${index}`}
+                                    renderLeftActions={this.renderLeftActions}
+                                >
                                     <TaskCard
                                         action_type="UPDATE_COMPLETED_WEEK_TASK"
                                         type={this.props.type}
@@ -569,7 +537,10 @@ class TaskCardHolder extends React.PureComponent {
 
                         else if (current_no_week_in_month === last_no_week_in_month && schedule.noWeekInMonth === 5) {
                             return (
-                                <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                                <Swipeable
+                                    key={`week-task-${index}`}
+                                    renderLeftActions={this.renderLeftActions}
+                                >
                                     <TaskCard
                                         action_type="UPDATE_COMPLETED_WEEK_TASK"
                                         type={this.props.type}
@@ -607,7 +578,10 @@ class TaskCardHolder extends React.PureComponent {
 
                 if (schedule.month === month && schedule.year === year) {
                     return (
-                        <Swipeable key={`month-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                        <Swipeable
+                            key={`month-task-${index}`}
+                            renderLeftActions={this.renderLeftActions}
+                        >
                             <TaskCard
                                 action_type="UPDATE_COMPLETED_MONTH_TASK"
                                 type={this.props.type}
@@ -631,7 +605,10 @@ class TaskCardHolder extends React.PureComponent {
 
                     if (diff_month > 0 && diff_month % interval_value === 0) {
                         return (
-                            <Swipeable key={`month-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                            <Swipeable
+                                key={`month-task-${index}`}
+                                renderLeftActions={this.renderLeftActions}
+                            >
                                 <TaskCard
                                     action_type="UPDATE_COMPLETED_MONTH_TASK"
                                     type={this.props.type}
@@ -672,7 +649,6 @@ class TaskCardHolder extends React.PureComponent {
                             key={`day-task-${index}`}
                             renderLeftActions={this.renderLeftActions}
                             renderRightActions={this._renderRightActions}
-                            onSwipeableOpen={this.setLogtimeModalToVisible}
                         >
                             <TaskCard
                                 action_type="UPDATE_COMPLETED_DAY_TASK"
@@ -701,7 +677,10 @@ class TaskCardHolder extends React.PureComponent {
                 ) {
                     let current_goal_value = completed_task[chosen_week_timestamp].current
                     return (
-                        <Swipeable key={`week-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                        <Swipeable
+                            key={`week-task-${index}`}
+                            renderLeftActions={this.renderLeftActions}
+                        >
                             <TaskCard
                                 action_type="UPDATE_COMPLETED_WEEK_TASK"
                                 type={this.props.type} task_data={task}
@@ -727,7 +706,10 @@ class TaskCardHolder extends React.PureComponent {
                 ) {
                     let current_goal_value = completed_task[chosen_month_timestamp].current
                     return (
-                        <Swipeable key={`month-task-${index}`} renderLeftActions={this.renderLeftActions} onSwipeableOpen={this.setLogtimeModalToVisible}>
+                        <Swipeable 
+                        key={`month-task-${index}`} 
+                        renderLeftActions={this.renderLeftActions}
+                         >
                             <TaskCard
                                 action_type="UPDATE_COMPLETED_MONTH_TASK"
                                 type={this.props.type}

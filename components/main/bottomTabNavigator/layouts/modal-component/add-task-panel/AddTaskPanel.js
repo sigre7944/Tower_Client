@@ -863,14 +863,16 @@ class BottomOptionElement extends React.PureComponent {
 
     _onPress = () => {
         if (this.props.addTask) {
+            let add_data,
+                date = new Date()
+
             if (this.props.currentAnnotation === "day" && this.props.title_value.length > 0) {
-                let add_data
 
                 if (this.props.day_tasks.length === 0) {
                     add_data = {
                         ... this.props.currentDayTask, ...
                         {
-                            createdAt: new Date().getTime(),
+                            createdAt: date.getTime(),
                             id: uuidv1(),
                             title: this.props.title_value,
                             description: this.props.description_value
@@ -881,7 +883,7 @@ class BottomOptionElement extends React.PureComponent {
                 else {
                     add_data = {
                         ... this.props.currentDayTask, ... {
-                            createdAt: new Date().getTime(),
+                            createdAt: date.getTime(),
                             id: uuidv1(),
                             title: this.props.title_value,
                             description: this.props.description_value
@@ -891,8 +893,6 @@ class BottomOptionElement extends React.PureComponent {
 
 
                 this.props.addTask("ADD_NEW_DAY_TASK", add_data)
-
-                let date = new Date()
 
                 let reset_data = {
                     title: "",
@@ -930,12 +930,10 @@ class BottomOptionElement extends React.PureComponent {
 
             else if (this.props.currentAnnotation === "week" && this.props.title_value.length > 0) {
 
-                let add_data
-
                 if (this.props.week_tasks.length === 0) {
                     add_data = {
                         ... this.props.currentWeekTask, ... {
-                            createdAt: new Date().getTime(),
+                            createdAt: date.getTime(),
                             id: uuidv1(),
                             title: this.props.title_value,
                             description: this.props.description_value
@@ -946,7 +944,7 @@ class BottomOptionElement extends React.PureComponent {
                 else {
                     add_data = {
                         ... this.props.currentWeekTask, ... {
-                            createdAt: new Date().getTime(),
+                            createdAt: date.getTime(),
                             id: uuidv1(),
                             title: this.props.title_value,
                             description: this.props.description_value
@@ -955,8 +953,6 @@ class BottomOptionElement extends React.PureComponent {
                 }
 
                 this.props.addTask("ADD_NEW_WEEK_TASK", add_data)
-
-                let date = new Date()
 
                 let reset_data = {
                     title: "",
@@ -996,12 +992,10 @@ class BottomOptionElement extends React.PureComponent {
 
             else if (this.props.currentAnnotation === "month" && this.props.title_value.length > 0) {
 
-                let add_data
-
                 if (this.props.month_tasks.length === 0) {
                     add_data = {
                         ... this.props.currentMonthTask, ... {
-                            createdAt: new Date().getTime(),
+                            createdAt: date.getTime(),
                             id: uuidv1(),
                             title: this.props.title_value,
                             description: this.props.description_value
@@ -1012,7 +1006,7 @@ class BottomOptionElement extends React.PureComponent {
                 else {
                     add_data = {
                         ... this.props.currentMonthTask, ... {
-                            createdAt: new Date().getTime(),
+                            createdAt: date.getTime(),
                             id: uuidv1(),
                             title: this.props.title_value,
                             description: this.props.description_value
@@ -1021,8 +1015,6 @@ class BottomOptionElement extends React.PureComponent {
                 }
 
                 this.props.addTask("ADD_NEW_MONTH_TASK", add_data)
-
-                let date = new Date()
 
                 let reset_data = {
                     title: "",
@@ -1059,6 +1051,14 @@ class BottomOptionElement extends React.PureComponent {
 
             this.props.updateDescription("")
             this.props.updateTitle("")
+
+
+            let category_key = add_data.category
+            let category_data = { ... this.props.categories[category_key] }
+
+            category_data.quantity += 1
+
+            this.props.updateCategory(category_key, category_data)
         }
 
         this.props.chooseOption()

@@ -4,6 +4,7 @@ import { updateDescription } from './actions/updateDescription'
 import { updateType } from './actions/updateType'
 import { addTask } from './actions/addTask'
 import { updateTask } from '../../../../../shared/actions/updateTask'
+import { updateCategory } from '../../../../../shared/actions/updateCategory'
 import AddTaskPanel from './AddTaskPanel'
 
 
@@ -41,6 +42,10 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 
     updateTask: (type, data) => {
         dispatch(updateTask(type, data))
+    },
+
+    updateCategory: (id, data) => {
+        dispatch(updateCategory(id, data))
     }
 })
 
