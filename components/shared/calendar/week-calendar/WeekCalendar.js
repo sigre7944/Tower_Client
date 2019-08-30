@@ -647,9 +647,9 @@ export default class WeekCalendar extends Component {
             return
         }
 
-        if (noWeekInMonth > 4) {
-            noWeekInMonth = 4
-        }
+        // if (noWeekInMonth > 4) {
+        //     noWeekInMonth = 4
+        // }
 
         let weekData = {
             noWeek: 0,

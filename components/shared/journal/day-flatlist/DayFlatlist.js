@@ -115,7 +115,7 @@ export default class DayFlatlist extends React.Component {
 
     initMonthData = (month, year) => {
         let first_day_of_month = new Date(year, month, 1).getDate(),
-            last_day_of_month = new Date(year, month, 0).getDate()
+            last_day_of_month = new Date(year, month + 1, 0).getDate()
 
         this.month_data.push({
             month_text: this.month_text_arr[month],

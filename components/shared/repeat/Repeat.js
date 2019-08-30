@@ -45,7 +45,7 @@ export default class Repeat extends Component {
             let data = {
                 type: value === "weeks" ? "weekly-w" : "monthly-w",
                 interval: {
-                    value: value === "weeks" && this.repetion_data.interval.value ? this.repetion_data.interval.value : this.repetion_data.interval.value / 86400 / 1000 / 7
+                    value: this.repetion_data.interval.value
 
                 }
             }
@@ -57,7 +57,7 @@ export default class Repeat extends Component {
             let data = {
                 type: value === "weeks" ? "weekly-w" : "monthly-w",
                 interval: {
-                    value: value === "weeks" && this.repetion_data.interval.value ? this.repetion_data.interval.value * 86400 * 1000 * 7 : this.repetion_data.interval.value
+                    value: this.repetion_data.interval.value
                 }
             }
 
@@ -461,7 +461,7 @@ class DayRepeatEveryHolder extends React.PureComponent {
             this.props.setRepetionData({
                 type: "daily",
                 interval: {
-                    value: 86400 * 1000,
+                    value: 1,
                 }
             })
         }
@@ -476,7 +476,7 @@ class DayRepeatEveryHolder extends React.PureComponent {
             this.props.setRepetionData({
                 type: "weekly",
                 interval: {
-                    value: 86400 * 1000 * 7,
+                    value: 1,
                     daysInWeek: []
                 }
             })
@@ -533,8 +533,8 @@ class DayRepeatEveryHolder extends React.PureComponent {
             this.chooseDaily()
     }
 
-    componentDidUpdate(prevProps, prevState){
-        if(this.props.toggle_clear !== prevProps.toggle_clear){
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.toggle_clear !== prevProps.toggle_clear) {
             this.chooseDaily(0)
         }
     }
@@ -671,7 +671,7 @@ class DailyRepeatOption extends React.PureComponent {
         this.data = {
             type: "daily",
             interval: {
-                value: 86400 * 1000 * parseInt(value)
+                value: parseInt(value)
             }
         }
 
@@ -691,7 +691,7 @@ class DailyRepeatOption extends React.PureComponent {
 
         if (repeat && repeat.interval && parseInt(repeat.interval.value) > 0 && repeat.type === "daily") {
             this.setState({
-                value: `${parseInt(repeat.interval.value) / (86400 * 1000)}`
+                value: `${parseInt(repeat.interval.value)}`
             })
         }
 
@@ -708,7 +708,7 @@ class DailyRepeatOption extends React.PureComponent {
             this._setRepetitionData(this.state.value)
         }
 
-        if(this.props.toggle_clear !== prevProps.toggle_clear){
+        if (this.props.toggle_clear !== prevProps.toggle_clear) {
             this.setState({
                 value: "1"
             })
@@ -801,7 +801,7 @@ class DayWeeklyRepeatOption extends React.PureComponent {
         this.data = {
             type: "weekly",
             interval: {
-                value: 86400 * 1000 * 7 * parseInt(this.state.value),
+                value: parseInt(this.state.value),
                 daysInWeek: this.daysInWeek
             }
         }
@@ -813,7 +813,7 @@ class DayWeeklyRepeatOption extends React.PureComponent {
         this.data = {
             type: "weekly",
             interval: {
-                value: 86400 * 1000 * 7 * parseInt(value),
+                value: parseInt(value),
                 daysInWeek: this.daysInWeek
             }
         }
@@ -835,7 +835,7 @@ class DayWeeklyRepeatOption extends React.PureComponent {
         if (repeat && repeat.type === "weekly" && repeat.interval && parseInt(repeat.interval.value) > 0) {
 
             this.setState({
-                value: `${parseInt(repeat.interval.value) / (86400 * 1000 * 7)}`
+                value: `${parseInt(repeat.interval.value)}`
             })
         }
 
@@ -1214,7 +1214,7 @@ class WeeklyRepeatOption extends React.PureComponent {
 
     data = {}
 
-    number_nth_convensions = ["first", "second", "third", "last"]
+    number_nth_convensions = ["first", "second", "third", "last", "last"]
 
     state = {
         value: "1"
@@ -1235,7 +1235,7 @@ class WeeklyRepeatOption extends React.PureComponent {
             {
                 type: "weekly-w",
                 interval: {
-                    value: 86400 * 1000 * 7 * parseInt(value)
+                    value: parseInt(value)
                 }
             } : {
                 type: "monthly-w",
@@ -1261,7 +1261,7 @@ class WeeklyRepeatOption extends React.PureComponent {
 
         if (repeat && repeat.type === "weekly-w" && parseInt(repeat.interval.value) > 0) {
             this.setState({
-                value: `${parseInt(repeat.interval.value) / (86400 * 1000 * 7)}`
+                value: `${parseInt(repeat.interval.value)}`
             })
             this.props.setWeeklyRepeatPickerValue("weeks")
         }
@@ -1291,9 +1291,7 @@ class WeeklyRepeatOption extends React.PureComponent {
             this._setRepetitionData(this.state.value)
         }
 
-
-
-        if(this.props.toggle_clear !== prevProps.toggle_clear){
+        if (this.props.toggle_clear !== prevProps.toggle_clear) {
             this.setState({
                 value: "1"
             })
@@ -1486,7 +1484,7 @@ class MonthlyRepeatOption extends React.PureComponent {
         }
 
         this._setRepetitionData(this.state.value)
-        
+
         this.willHideListener = Keyboard.addListener(
             "keyboardWillHide",
             this.toDoWillHide
@@ -1498,7 +1496,7 @@ class MonthlyRepeatOption extends React.PureComponent {
             this._setRepetitionData(this.state.value)
         }
 
-        if(this.props.toggle_clear !== prevProps.toggle_clear){
+        if (this.props.toggle_clear !== prevProps.toggle_clear) {
             this.setState({
                 value: "1"
             })

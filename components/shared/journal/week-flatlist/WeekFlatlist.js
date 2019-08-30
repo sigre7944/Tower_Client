@@ -37,9 +37,11 @@ export default class WeekFlatlist extends React.Component {
         }))
 
         let week = this.week_data[week_index].week,
-            year = this.week_data[week_index].year
+            year = this.week_data[week_index].year,
+            day = this.week_data[week_index].start_day,
+            month = this.week_data[week_index].month
 
-        this.props.setChosenDateData({ week, year })
+        this.props.setChosenDateData({ week, year, day, month })
 
         this.scrollToIndex(week_index)
     }

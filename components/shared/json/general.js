@@ -33,7 +33,7 @@ const task = {
         // these properties are used for 'Day' type task
         type: "weekly",
         interval: {
-            value: 86400 * 1000 * 7 * 2, // timestamp for weekly repetition. 86400 * 1000 * 7 = miliseconds in a week, 2 = number of repetitive weeks
+            value: 7 * 2, // timestamp for weekly repetition. 86400 * 1000 * 7 = miliseconds in a week, 2 = number of repetitive weeks
             daysInWeek: [0, 1, 2, 3] // indexes for days in a week. Sunday = 0, Monday = 1, Tuesday = 2
         },
 
@@ -49,7 +49,7 @@ const task = {
         // these properties are used for 'Week' type task
         type: "weekly-w",
         interval: {
-            value: 86400 * 1000 * 7 * 2
+            value: 2
         },
 
         // these properties are used for 'Month' type task
@@ -115,4 +115,26 @@ const priority = {
         urgency: 1
     },
 
+}
+
+const day_completed = {
+    task_id_0: {
+        year: {
+            month: day
+        }
+    }
+}
+
+const week_completed = {
+    task_id_1: {
+        year: {
+            week: month
+        }
+    }
+}
+
+const month_completed = {
+    task_id_2: {
+        year: month
+    }
 }
