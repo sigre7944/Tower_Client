@@ -159,14 +159,17 @@ export default class TaskDetailModal extends Component {
 
     delete = () => {
         if (this.props.type === "day") {
+            this.props.deleteCompletedTask("DELETE_COMPLETED_DAY_TASK", this.edit_task.id)
             this.props.deleteTask("DELETE_DAY_TASK", this.edit_task.id)
         }
 
         else if (this.props.type === "week") {
+            this.props.deleteCompletedTask("DELETE_COMPLETED_WEEK_TASK", this.edit_task.id)
             this.props.deleteTask("DELETE_WEEK_TASK", this.edit_task.id)
         }
 
         else {
+            this.props.deleteCompletedTask("DELETE_COMPLETED_MONTH_TASK", this.edit_task.id)
             this.props.deleteTask("DELETE_MONTH_TASK", this.edit_task.id)
         }
 

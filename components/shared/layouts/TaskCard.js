@@ -6,7 +6,8 @@ import { Map } from 'immutable'
 
 export default class TaskCard extends React.PureComponent {
     state = {
-        checked: false
+        checked: false,
+        uncomplete_checked: false
     }
 
     _onPress = () => {
@@ -39,101 +40,254 @@ export default class TaskCard extends React.PureComponent {
     }
 
     checkComplete = () => {
-        this.setState(prevState => ({
-            checked: !prevState.checked
-        }))
+        if (this.props.is_chosen_date_today) {
+            this.setState(prevState => ({
+                checked: !prevState.checked
+            }))
 
-        let task = {... this.props.task_data},
-            current_date = new Date(),
-            data = {},
-            overwrite_obj = {},
-            currentGoal = 0,
-            completed_tasks = Map(this.props.completed_tasks)
+            let task = { ... this.props.task_data },
+                current_date = new Date(),
+                data = {},
+                overwrite_obj = {},
+                currentGoal = 0,
+                completed_tasks = Map(this.props.completed_tasks)
 
-        if (this.props.type === "day") {
-            let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+            if (this.props.flag === "uncompleted") {
+                if (this.props.type === "day") {
+                    let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
 
-            if (completed_tasks.has(task.id)) {
-                data = completed_tasks.get(task.id)
+                    if (completed_tasks.has(task.id)) {
+                        data = completed_tasks.get(task.id)
 
-                if (data.hasOwnProperty(day_timestamp)) {
-                    currentGoal = data[day_timestamp].current
+                        if (data.hasOwnProperty(day_timestamp)) {
+                            currentGoal = data[day_timestamp].current
+                        }
+
+                        overwrite_obj[day_timestamp] = {
+                            current: currentGoal + 1
+                        }
+
+                        data = { ...data, ...overwrite_obj }
+                    }
+
+                    else {
+                        data.id = task.id
+                        data[day_timestamp] = {
+                            max: task.goal.max,
+                            current: currentGoal + 1
+                        }
+                    }
                 }
 
-                overwrite_obj[day_timestamp] = {
-                    max: task.goal.max,
-                    current: currentGoal + 1
+                else if (this.props.type === "week") {
+                    let week_timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
+
+                    if (completed_tasks.has(task.id)) {
+                        data = completed_tasks.get(task.id)
+
+                        if (data.hasOwnProperty(week_timestamp)) {
+                            currentGoal = data[week_timestamp].current
+                        }
+
+                        overwrite_obj[week_timestamp] = {
+                            current: currentGoal + 1
+                        }
+
+                        data = { ...data, ...overwrite_obj }
+                    }
+
+                    else {
+                        data.id = task.id
+                        data[week_timestamp] = {
+                            max: task.goal.max,
+                            current: currentGoal + 1
+                        }
+                    }
                 }
 
-                data = { ...data, ...overwrite_obj }
+                else {
+                    let month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
+
+                    if (completed_tasks.has(task.id)) {
+                        data = completed_tasks.get(task.id)
+
+                        if (data.hasOwnProperty(month_timestamp)) {
+                            currentGoal = data[month_timestamp].current
+                        }
+
+                        overwrite_obj[month_timestamp] = {
+                            current: currentGoal + 1
+                        }
+
+                        data = { ...data, ...overwrite_obj }
+                    }
+
+                    else {
+                        data.id = task.id
+                        data[month_timestamp] = {
+                            current: currentGoal + 1
+                        }
+                    }
+                }
+
             }
 
             else {
-                data.id = task.id
-                data[day_timestamp] = {
-                    max: task.goal.max,
-                    current: currentGoal + 1
+                if (this.props.type === "day") {
+                    let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+
+                    if (completed_tasks.has(task.id)) {
+                        data = completed_tasks.get(task.id)
+
+                        if (data.hasOwnProperty(day_timestamp)) {
+                            currentGoal = data[day_timestamp].current
+                        }
+
+                        overwrite_obj[day_timestamp] = {
+                            current: currentGoal - 1
+                        }
+
+                        data = { ...data, ...overwrite_obj }
+                    }
+                }
+
+                else if (this.props.type === "week") {
+                    let week_timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
+
+                    if (completed_tasks.has(task.id)) {
+                        data = completed_tasks.get(task.id)
+
+                        if (data.hasOwnProperty(week_timestamp)) {
+                            currentGoal = data[week_timestamp].current
+                        }
+
+                        overwrite_obj[week_timestamp] = {
+                            current: currentGoal - 1
+                        }
+
+                        data = { ...data, ...overwrite_obj }
+                    }
+                }
+
+                else {
+                    let month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
+
+                    if (completed_tasks.has(task.id)) {
+                        data = completed_tasks.get(task.id)
+
+                        if (data.hasOwnProperty(month_timestamp)) {
+                            currentGoal = data[month_timestamp].current
+                        }
+
+                        overwrite_obj[month_timestamp] = {
+                            current: currentGoal - 1
+                        }
+
+                        data = { ...data, ...overwrite_obj }
+                    }
                 }
             }
+
+            this.props.updateCompletedTask(data)
         }
-
-        else if (this.props.type === "week") {
-            let week_timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
-
-            if (completed_tasks.has(task.id)) {
-                data = completed_tasks.get(task.id)
-
-                if (data.hasOwnProperty(week_timestamp)) {
-                    currentGoal = data[week_timestamp].current
-                }
-
-                overwrite_obj[week_timestamp] = {
-                    max: task.goal.max,
-                    current: currentGoal + 1
-                }
-
-                data = { ...data, ...overwrite_obj }
-            }
-
-            else {
-                data.id = task.id
-                data[week_timestamp] = {
-                    max: task.goal.max,
-                    current: currentGoal + 1
-                }
-            }
-        }
-
-        else {
-            let month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
-
-            if (completed_tasks.has(task.id)) {
-                data = completed_tasks.get(task.id)
-
-                if (data.hasOwnProperty(month_timestamp)) {
-                    currentGoal = data[month_timestamp].current
-                }
-
-                overwrite_obj[month_timestamp] = {
-                    max: task.goal.max,
-                    current: currentGoal + 1
-                }
-
-                data = { ...data, ...overwrite_obj }
-            }
-
-            else {
-                data.id = task.id
-                data[month_timestamp] = {
-                    max: task.goal.max,
-                    current: currentGoal + 1
-                }
-            }
-        }
-
-        this.props.updateCompletedTask(data)
     }
 
+    unCheckComplete = () => {
+        if (this.props.is_chosen_date_today) {
+            this.setState(prevState => ({
+                uncomplete_checked: !prevState.uncomplete_checked
+            }))
+
+            let task = { ... this.props.task_data },
+                current_date = new Date(),
+                data = {},
+                overwrite_obj = {},
+                currentGoal = 0,
+                completed_tasks = Map(this.props.completed_tasks)
+
+            if (this.props.flag === "uncompleted") {
+                if (this.props.type === "day") {
+                    let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+
+                    if (completed_tasks.has(task.id)) {
+                        data = completed_tasks.get(task.id)
+
+                        if (data.hasOwnProperty(day_timestamp)) {
+                            currentGoal = data[day_timestamp].current
+                        }
+
+                        if (currentGoal <= 0) {
+                            overwrite_obj[day_timestamp] = {
+                                current: currentGoal
+                            }
+                        }
+
+                        else {
+                            overwrite_obj[day_timestamp] = {
+                                current: currentGoal - 1
+                            }
+                        }
+                        
+                        data = { ...data, ...overwrite_obj }
+                    }
+                }
+
+                else if (this.props.type === "week") {
+                    let week_timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
+
+                    if (completed_tasks.has(task.id)) {
+                        data = completed_tasks.get(task.id)
+
+                        if (data.hasOwnProperty(week_timestamp)) {
+                            currentGoal = data[week_timestamp].current
+                        }
+
+                        if (currentGoal <= 0) {
+                            overwrite_obj[week_timestamp] = {
+                                current: currentGoal
+                            }
+                        }
+
+                        else {
+                            overwrite_obj[week_timestamp] = {
+                                current: currentGoal - 1
+                            }
+                        }
+
+                        data = { ...data, ...overwrite_obj }
+                    }
+                }
+
+                else {
+                    let month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
+
+                    if (completed_tasks.has(task.id)) {
+                        data = completed_tasks.get(task.id)
+
+                        if (data.hasOwnProperty(month_timestamp)) {
+                            currentGoal = data[month_timestamp].current
+                        }
+
+                        if (currentGoal <= 0) {
+                            overwrite_obj[month_timestamp] = {
+                                current: currentGoal
+                            }
+                        }
+
+                        else {
+                            overwrite_obj[month_timestamp] = {
+                                current: currentGoal - 1
+                            }
+                        }
+
+                        data = { ...data, ...overwrite_obj }
+                    }
+                }
+            }
+
+            this.props.updateCompletedTask(data)
+        }
+    }
 
     render() {
         return (
@@ -152,6 +306,21 @@ export default class TaskCard extends React.PureComponent {
                     <Text style={styles.descriptionText}>{this.props.title ? this.props.title : 'Example task'}</Text>
                     <Text style={styles.descriptionAmount}>{this.props.goal ? `${this.props.current_goal_value}/${this.props.goal.max}` : "0/3"}</Text>
                 </View>
+                {this.props.flag === "uncompleted" ?
+                    <View
+                        style={styles.checkBox}
+                    >
+                        <CheckBox
+                            center
+                            checkedIcon='dot-circle-o'
+                            uncheckedIcon='circle-o'
+                            checked={this.state.uncomplete_checked}
+                            onPress={this.unCheckComplete}
+                        />
+                    </View>
+                    :
+                    null
+                }
                 <View style={styles.share}>
                     <FontAwesome name={'link'} style={styles.icon} />
                 </View>

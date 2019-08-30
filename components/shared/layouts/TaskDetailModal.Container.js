@@ -11,7 +11,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch, ownProps) => ({
     updateEdittingTask: (data) => dispatch(updateTask(ownProps.action_type, data)),
 
-    deleteTask: (type, data) => dispatch(deleteTask(type, data))
+    deleteTask: (type, data) => dispatch(deleteTask(type, data)),
+    deleteCompletedTask: (type, data) => dispatch(deleteTask(type, data)),
 })
 
 export default connect(
