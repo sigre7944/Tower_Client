@@ -42,16 +42,11 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
     if (!ownProps.edit) {
         return ({
-            createCategory: (data) => dispatch(createCategory(data)),
-            updateCategory: (id, data) => dispatch(updateCategory(id, data)),
             updateTask: (data) => dispatch(updateTask(action_type, data))
         })
     }
 
-    return ({
-        createCategory: (data) => dispatch(createCategory(data)),
-        updateCategory: (id, data) => dispatch(updateCategory(id, data)),
-    })
+    return {}
 }
 
 export default connect(

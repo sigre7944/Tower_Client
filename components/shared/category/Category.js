@@ -8,11 +8,13 @@ import {
     TextInput,
     Keyboard,
     Modal,
-    TouchableWithoutFeedback,
+    TouchableOpacity,
     FlatList,
     Dimensions,
     Animated
 } from 'react-native';
+
+import AddCategoryPanel from './add-category/AddCategoryPanel.Container'
 
 export default class Category extends React.Component {
 
@@ -35,6 +37,14 @@ export default class Category extends React.Component {
 
         should_flat_list_rerender: 0,
 
+        add_category_bool: false
+
+    }
+
+    chooseAddCategory = () => {
+        this.setState(prevState => ({
+            add_category_bool: !prevState.add_category_bool
+        }))
     }
 
     _keyExtractor = (item, index) => `flatlist-category-${index}`
@@ -55,7 +65,19 @@ export default class Category extends React.Component {
 
         else {
             return (
-                <></>
+                <TouchableOpacity
+                    style={{
+                        justifyContent: "center",
+                        height: 30,
+                        marginTop: 20,
+                    }}
+
+                    onPress={this.chooseAddCategory}
+                >
+                    <Text>
+                        Add new category
+                    </Text>
+                </TouchableOpacity>
             )
         }
     }
@@ -132,114 +154,119 @@ export default class Category extends React.Component {
                         paddingVertical: 30,
                     }}
                 >
-                    <View
-                        style={{
-                            flex: 1,
-                        }}
-                    >
+                    {this.state.add_category_bool ?
+                        <AddCategoryPanel 
+                            chooseAddCategory={this.chooseAddCategory}
+                        />
+                        :
                         <View
                             style={{
-                                height: 20,
-                                justifyContent: "center",
+                                flex: 1,
                             }}
                         >
-                            <Text>Category</Text>
-                        </View>
-
-                        <View
-                            style={{
-                                height: 200,
-                                marginTop: 20,
-                            }}
-                        >
-                            <FlatList
-                                keyExtractor={this._keyExtractor}
-                                renderItem={this._renderItem}
-                                data={this.state.category_arr}
-                                extraData={this.state.should_flat_list_rerender}
-                                removeClippedSubviews={true}
-                            />
-                        </View>
-
-                        <View
-                            style={{
-                                height: 60,
-                                marginBottom: 10,
-                                backgroundColor: 'white',
-                                flexDirection: "row",
-                                justifyContent: "flex-end",
-                                alignItems: 'center'
-                            }}
-                        >
-                            <TouchableHighlight
+                            <View
                                 style={{
-                                    alignItems: "center",
+                                    height: 20,
                                     justifyContent: "center",
-                                    height: 50,
-                                    width: 50,
-                                    borderRadius: 25,
-                                    backgroundColor: 'gray',
-                                    marginRight: 20
                                 }}
-
-                                onPress={this.clear}
                             >
-                                <Text
-                                    style={{
-                                        color: "white"
-                                    }}
-                                >
-                                    Clear
-                            </Text>
-                            </TouchableHighlight>
+                                <Text>Category</Text>
+                            </View>
 
-                            <TouchableHighlight
+                            <View
                                 style={{
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    height: 50,
-                                    width: 50,
-                                    borderRadius: 25,
-                                    backgroundColor: 'gray',
-                                    marginRight: 20
+                                    height: 200,
+                                    marginTop: 20,
                                 }}
-
-                                onPress={this.cancel}
                             >
-                                <Text
-                                    style={{
-                                        color: "white"
-                                    }}
-                                >
-                                    X
-                            </Text>
-                            </TouchableHighlight>
+                                <FlatList
+                                    keyExtractor={this._keyExtractor}
+                                    renderItem={this._renderItem}
+                                    data={this.state.category_arr}
+                                    extraData={this.state.should_flat_list_rerender}
+                                    removeClippedSubviews={true}
+                                />
+                            </View>
 
-                            <TouchableHighlight
+                            <View
                                 style={{
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    height: 50,
-                                    width: 50,
-                                    borderRadius: 25,
-                                    backgroundColor: 'gray',
-                                    marginRight: 10
+                                    height: 60,
+                                    marginBottom: 10,
+                                    backgroundColor: 'white',
+                                    flexDirection: "row",
+                                    justifyContent: "flex-end",
+                                    alignItems: 'center'
                                 }}
-
-                                onPress={this.save}
                             >
-                                <Text
+                                <TouchableHighlight
                                     style={{
-                                        color: "white"
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        height: 50,
+                                        width: 50,
+                                        borderRadius: 25,
+                                        backgroundColor: 'gray',
+                                        marginRight: 20
                                     }}
+
+                                    onPress={this.clear}
                                 >
-                                    OK
+                                    <Text
+                                        style={{
+                                            color: "white"
+                                        }}
+                                    >
+                                        Clear
                             </Text>
-                            </TouchableHighlight>
+                                </TouchableHighlight>
+
+                                <TouchableHighlight
+                                    style={{
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        height: 50,
+                                        width: 50,
+                                        borderRadius: 25,
+                                        backgroundColor: 'gray',
+                                        marginRight: 20
+                                    }}
+
+                                    onPress={this.cancel}
+                                >
+                                    <Text
+                                        style={{
+                                            color: "white"
+                                        }}
+                                    >
+                                        X
+                            </Text>
+                                </TouchableHighlight>
+
+                                <TouchableHighlight
+                                    style={{
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        height: 50,
+                                        width: 50,
+                                        borderRadius: 25,
+                                        backgroundColor: 'gray',
+                                        marginRight: 10
+                                    }}
+
+                                    onPress={this.save}
+                                >
+                                    <Text
+                                        style={{
+                                            color: "white"
+                                        }}
+                                    >
+                                        OK
+                            </Text>
+                                </TouchableHighlight>
+                            </View>
                         </View>
-                    </View>
+                    }
 
-                    
                 </Animated.View>
             </>
         )
