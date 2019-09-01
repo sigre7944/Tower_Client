@@ -46,6 +46,13 @@ export default class AddCategoryPanel extends React.PureComponent {
         }))
     }
 
+    clear = () => {
+        this.setState({
+            new_cate_name: "",
+            chosen_color: "red"
+        })
+    }
+
     cancel = () => {
         this.props.chooseAddCategory()
     }
@@ -199,6 +206,8 @@ export default class AddCategoryPanel extends React.PureComponent {
                                             justifyContent: "center",
                                             alignItems: "center",
                                         }}
+
+                                        onPress={this.clear}
                                     >
                                         <Text>
                                             Clear
