@@ -66,7 +66,7 @@ export const completed_day_tasks = (state = Map(), action) => {
         case 'DELETE_COMPLETED_DAY_TASK':
             return state.delete(action.id)
 
-        case 'DELETE_ALL_COMPLETE_DAY_TASKS_WITH_CATEGORY':
+        case 'DELETE_ALL_COMPLETED_DAY_TASKS_WITH_CATEGORY':
             return state.filterNot((task) => task.category === action.id)
 
         default:
@@ -82,7 +82,7 @@ export const completed_week_tasks = (state = Map(), action) => {
         case 'DELETE_COMPLETED_WEEK_TASK':
             return state.delete(action.id)
 
-        case 'DELETE_ALL_COMPLETE_WEEK_TASKS_WITH_CATEGORY':
+        case 'DELETE_ALL_COMPLETED_WEEK_TASKS_WITH_CATEGORY':
             return state.filterNot((task) => task.category === action.id)
 
         default:
@@ -98,7 +98,7 @@ export const completed_month_tasks = (state = Map(), action) => {
         case 'DELETE_COMPLETED_MONTH_TASK':
             return state.delete(action.id)
 
-        case 'DELETE_ALL_COMPLETE_MONTH_TASKS_WITH_CATEGORY':
+        case 'DELETE_ALL_COMPLETED_MONTH_TASKS_WITH_CATEGORY':
             return state.filterNot((task) => task.category === action.id)
 
         default:

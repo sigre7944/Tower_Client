@@ -37,7 +37,6 @@ export default class AddTaskPanel extends Component {
         keyboardHeight: 0,
 
         tag_data: [],
-
     }
 
     setTaskTextInputRef = (ref) => {
@@ -921,7 +920,6 @@ class BottomOptionElement extends React.PureComponent {
                     },
                     goal: {
                         max: 1,
-                        current: 0
                     }
                 }
 
@@ -983,7 +981,6 @@ class BottomOptionElement extends React.PureComponent {
                     },
                     goal: {
                         max: 1,
-                        current: 0
                     }
                 }
 
@@ -1042,7 +1039,6 @@ class BottomOptionElement extends React.PureComponent {
                     },
                     goal: {
                         max: 1,
-                        current: 0
                     }
                 }
 

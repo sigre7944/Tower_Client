@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {DrawerActions} from 'react-navigation-drawer'
+import { DrawerActions } from 'react-navigation-drawer'
 import {
     TouchableOpacity,
     Text,
@@ -9,17 +9,20 @@ import {
     FlatList,
     Dimensions
 } from 'react-native'
-
 import AddCategoryPanel from '../shared/category/add-category/AddCategoryPanel.Container'
 
 export default class Drawer extends React.PureComponent {
+
+    chosen_delete_category_key = {}
 
     state = {
         open_modal_bool: false,
 
         edit_task_bool: false,
 
-        edit_category_data: {}
+        edit_category_data: {},
+
+        delete_category_bool: false,
     }
 
     chooseEditCategory = (category_data) => {
@@ -44,6 +47,32 @@ export default class Drawer extends React.PureComponent {
             edit_category_data: {},
             open_modal_bool: false
         })
+    }
+
+    toggleDeleteCategoryBool = (category_key) => {
+        this.setState({
+            delete_category_bool: true
+        })
+
+        this.chosen_delete_category_key = category_key
+    }
+
+    dissmissDeleteCategoryBool = () => {
+        this.setState({
+            delete_category_bool: false
+        })
+    }
+
+    deleteCategory = () => {
+        this.props.deleteAllTasksInCategory("DELETE_ALL_DAY_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
+        this.props.deleteAllTasksInCategory("DELETE_ALL_WEEK_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
+        this.props.deleteAllTasksInCategory("DELETE_ALL_MONTH_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
+        this.props.deleteAllTasksInCategory("DELETE_ALL_COMPLETED_DAY_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
+        this.props.deleteAllTasksInCategory("DELETE_ALL_COMPLETED_WEEK_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
+        this.props.deleteAllTasksInCategory("DELETE_ALL_COMPLETED_MONTH_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
+        this.props.deleteCategory(this.chosen_delete_category_key)
+
+        this.dissmissDeleteCategoryBool()
     }
 
     render() {
@@ -87,6 +116,8 @@ export default class Drawer extends React.PureComponent {
                     {... this.props}
                     toggleModalBool={this.toggleModalBool}
                     chooseEditCategory={this.chooseEditCategory}
+
+                    toggleDeleteCategoryBool={this.toggleDeleteCategoryBool}
                 />
 
                 {this.state.open_modal_bool ?
@@ -136,7 +167,100 @@ export default class Drawer extends React.PureComponent {
 
                     :
 
-                    null
+                    <>
+                        {this.state.delete_category_bool ?
+                            <Modal
+                                transparent={true}
+                            >
+                                <View
+                                    style={{
+                                        flex: 1,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        position: "relative",
+                                    }}
+                                >
+                                    <TouchableOpacity
+                                        style={{
+                                            flex: 1,
+                                            width: Dimensions.get("window").width,
+                                            backgroundColor: "black",
+                                            opacity: 0.5
+                                        }}
+
+                                        onPress={this.dissmissDeleteCategoryBool}
+                                    >
+
+                                    </TouchableOpacity>
+
+                                    <View
+                                        style={{
+                                            position: 'absolute',
+                                            width: 300,
+                                            height: 200,
+                                            backgroundColor: 'white',
+                                            borderRadius: 10,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            paddingHorizontal: 30,
+                                            paddingVertical: 20,
+                                        }}
+                                    >
+                                        <Text>
+                                            Are you sure deleting all tasks in this category?
+                                        </Text>
+
+                                        <View
+                                            style={{
+                                                marginTop: 20,
+                                                flexDirection: "row",
+                                                justifyContent: "space-between",
+                                            }}
+                                        >
+                                            <TouchableOpacity
+                                                style={{
+                                                    width: 40,
+                                                    height: 40,
+                                                    borderRadius: 20,
+                                                    justifyContent: "center",
+                                                    alignItems: "center",
+                                                    backgroundColor: "pink"
+                                                }}
+
+                                                onPress={this.dissmissDeleteCategoryBool}
+                                            >
+                                                <Text>
+                                                    No
+                                                </Text>
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity
+                                                style={{
+                                                    width: 40,
+                                                    height: 40,
+                                                    borderRadius: 20,
+                                                    justifyContent: "center",
+                                                    alignItems: "center",
+                                                    backgroundColor: "pink",
+                                                    marginLeft: 20,
+                                                }}
+
+                                                onPress={this.deleteCategory}
+                                            >
+                                                <Text>
+                                                    Yes
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                </View>
+                            </Modal>
+
+                            :
+
+                            null
+                        }
+                    </>
                 }
 
             </View>
@@ -171,6 +295,8 @@ class CategoryList extends React.PureComponent {
                     chooseEditCategory={this.props.chooseEditCategory}
                     chooseCategory={this.props.chooseCategory}
                     navigation={this.props.navigation}
+
+                    toggleDeleteCategoryBool={this.props.toggleDeleteCategoryBool}
                 />
             )
         }
@@ -266,6 +392,10 @@ class CategoryRow extends React.PureComponent {
         this.props.navigation.dispatch(DrawerActions.closeDrawer())
     }
 
+    chooseDeleteCategory = () => {
+        this.props.toggleDeleteCategoryBool(this.props.category_key)
+    }
+
     render() {
         return (
             <TouchableOpacity
@@ -309,6 +439,18 @@ class CategoryRow extends React.PureComponent {
                         >
                             <Text>
                                 edit
+                            </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={{
+                                marginLeft: 10,
+                            }}
+
+                            onPress={this.chooseDeleteCategory}
+                        >
+                            <Text>
+                                delete
                             </Text>
                         </TouchableOpacity>
                     </View>

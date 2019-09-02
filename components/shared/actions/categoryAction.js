@@ -13,3 +13,8 @@ export const updateCategory = (id, data) => ({
     id,
     data
 })
+
+export const deleteCategory = (id) => ({
+    type: "DELETE_CATEGORY",
+    id
+})
