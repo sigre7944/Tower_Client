@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { changeRouteAction } from '../actions/changeRouteAction'
+import { changeRouteAction } from '../actions/otherAction'
 import JournalTab from './JournalTab'
 
 const mapStateToProps = (state, ownProps) => {

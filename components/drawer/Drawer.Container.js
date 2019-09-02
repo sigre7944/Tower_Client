@@ -1,7 +1,10 @@
 import { connect } from 'react-redux'
-import { updateCategory } from '../shared/actions/updateCategory'
-import { createCategory } from '../shared/actions/createCategory'
-import { chooseCategory } from '../shared/actions/chooseCategory'
+import {
+    updateCategory,
+    createCategory,
+    chooseCategory
+} from '../shared/actions/categoryAction'
+
 import Drawer from './DrawerVer2'
 
 const mapStateToProps = (state, ownProps) => ({

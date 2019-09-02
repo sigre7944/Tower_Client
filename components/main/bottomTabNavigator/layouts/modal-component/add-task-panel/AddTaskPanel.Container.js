@@ -1,10 +1,11 @@
 import { connect } from 'react-redux'
-import { updateTitle } from './actions/updateTitle'
-import { updateDescription } from './actions/updateDescription'
-import { updateType } from './actions/updateType'
-import { addTask } from './actions/addTask'
-import { updateTask } from '../../../../../shared/actions/updateTask'
-import { updateCategory } from '../../../../../shared/actions/updateCategory'
+import {
+    updateTitle,
+    updateDescription,
+    updateType
+} from '../../../../../shared/actions/otherAction'
+import { updateTask } from '../../../../../shared/actions/taskAction'
+import { updateCategory } from '../../../../../shared/actions/categoryAction'
 import AddTaskPanel from './AddTaskPanel'
 
 
@@ -37,7 +38,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
 
     addTask: (type, data) => {
-        dispatch(addTask(type, data))
+        dispatch(updateTask(type, data))
     },
 
     updateTask: (type, data) => {

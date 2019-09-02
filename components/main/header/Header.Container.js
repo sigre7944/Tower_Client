@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import {toggleReturn} from './actions/toggleReturn'
+import { toggleReturn } from '../../shared/actions/otherAction'
 import Header from './Header'
 
 const mapStateToProps = (state, ownProps) => ({

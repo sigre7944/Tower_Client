@@ -1,8 +1,12 @@
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import TaskDetailModal from './TaskDetailModal'
-import {updateTask} from '../actions/updateTask'
-import {deleteTask} from '../actions/deleteTask'
-import {updateCategory} from '../actions/updateCategory'
+
+import {
+    updateTask,
+    deleteTask
+} from '../actions/taskAction'
+
+import { updateCategory } from '../actions/categoryAction'
 
 const mapStateToProps = (state) => ({
     categories: state.categories,

@@ -1,8 +1,7 @@
 import { connect } from 'react-redux'
 import Category from './Category'
-import { createCategory } from '../actions/createCategory'
-import { updateCategory } from '../actions/updateCategory'
-import { updateTask } from '../actions/updateTask'
+
+import {updateTask} from '../actions/taskAction'
 
 let action_type = ""
 

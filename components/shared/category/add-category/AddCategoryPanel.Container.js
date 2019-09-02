@@ -1,7 +1,10 @@
 import { connect } from 'react-redux'
 import AddCategoryPanel from './AddCategoryPanel'
-import { createCategory } from '../../actions/createCategory'
-import { updateCategory } from '../../actions/updateCategory'
+
+import {
+    createCategory,
+    updateCategory
+} from '../../actions/categoryAction'
 
 const mapStateToProps = (state) => ({
     categories: state.categories,
