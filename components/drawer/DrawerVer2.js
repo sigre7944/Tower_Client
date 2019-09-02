@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { NavigationActions } from 'react-navigation';
 import {
     Alert,
     TouchableOpacity,
@@ -14,9 +13,44 @@ import {
     ScrollView,
     FlatList,
     Platform,
+    Dimensions
 } from 'react-native'
 
+import AddCategoryPanel from '../shared/category/add-category/AddCategoryPanel.Container'
+
 export default class Drawer extends React.PureComponent {
+
+    state = {
+        open_modal_bool: false,
+
+        edit_task_bool: false,
+
+        edit_category_data: {}
+    }
+
+    chooseEditCategory = (category_data) => {
+        this.setState(prevState => ({
+            edit_category_data: {... category_data},
+            edit_task_bool: !prevState.edit_task_bool
+        }))
+
+        this.toggleModalBool()
+    }
+
+    toggleModalBool = () => {
+        this.setState({
+            open_modal_bool: true
+        })
+    }
+
+    dismissModal = () => {
+        this.toggleModalBool()
+        this.setState({
+            edit_task_bool: false,
+            edit_category_data: {},
+            open_modal_bool: false
+        })
+    }
 
     render() {
         return (
@@ -57,7 +91,60 @@ export default class Drawer extends React.PureComponent {
 
                 <CategoryList
                     {... this.props}
+                    toggleModalBool={this.toggleModalBool}
+                    chooseEditCategory={this.chooseEditCategory}
                 />
+
+                {this.state.open_modal_bool ?
+                    <Modal
+                        transparent={true}
+                    >
+                        <View
+                            style={{
+                                flex: 1,
+                                justifyContent: "center",
+                                alignItems: "center",
+                                position: "relative",
+                            }}
+                        >
+                            <TouchableOpacity
+                                style={{
+                                    flex: 1,
+                                    width: Dimensions.get("window").width,
+                                    backgroundColor: "black",
+                                    opacity: 0.5
+                                }}
+
+                                onPress={this.dismissModal}
+                            >
+
+                            </TouchableOpacity>
+
+                            <View
+                                style={{
+                                    position: 'absolute',
+                                    width: 338,
+                                    height: 390,
+                                    backgroundColor: 'white',
+                                    borderRadius: 10,
+                                }}
+                            >
+
+                                <AddCategoryPanel
+                                    hideAction={this.dismissModal}
+                                    edit={this.state.edit_task_bool}
+                                    category={this.state.edit_category_data}
+                                />
+                            </View>
+                        </View>
+
+                    </Modal>
+
+                    :
+
+                    null
+                }
+
             </View>
         )
     }
@@ -78,13 +165,17 @@ class CategoryList extends React.PureComponent {
             return (
                 <CategoryRow
                     data={item}
+                    category_key={Object.keys(this.props.categories)[index]}
                     category_index={index}
+                    chooseEditCategory={this.props.chooseEditCategory}
                 />
             )
         }
 
         return (
-            <AddCategoryRow />
+            <AddCategoryRow
+                toggleModalBool={this.props.toggleModalBool}
+            />
         )
     }
 
@@ -110,12 +201,12 @@ class CategoryList extends React.PureComponent {
         }))
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.loadCategories(this.props.categories)
     }
 
-    componentDidUpdate(prevProps, prevState){
-        if(this.props.categories !== prevProps.categories){
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.categories !== prevProps.categories) {
             this.loadCategories(this.props.categories)
         }
     }
@@ -133,6 +224,10 @@ class CategoryList extends React.PureComponent {
 }
 
 class CategoryRow extends React.Component {
+
+    editCategory = () => {
+        this.props.chooseEditCategory({data: this.props.data, key: this.props.category_key})
+    }
 
     render() {
         return (
@@ -156,10 +251,27 @@ class CategoryRow extends React.Component {
                         </Text>
                     </View>
 
-                    <View>
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                        }}
+                    >
                         <Text>
                             {this.props.data.quantity}
                         </Text>
+
+                        <TouchableOpacity
+                            style={{
+                                marginLeft: 10,
+                            }}
+
+                            onPress={this.editCategory}
+                        >
+                            <Text>
+                                edit
+                            </Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -168,6 +280,10 @@ class CategoryRow extends React.Component {
 }
 
 class AddCategoryRow extends React.PureComponent {
+
+    _onPress = () => {
+        this.props.toggleModalBool()
+    }
 
     render() {
         return (
@@ -178,6 +294,8 @@ class AddCategoryRow extends React.PureComponent {
                     marginTop: 10,
                     justifyContent: "center"
                 }}
+
+                onPress={this._onPress}
             >
                 <Text>
                     Add Category

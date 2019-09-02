@@ -54,37 +54,64 @@ export default class AddCategoryPanel extends React.PureComponent {
     }
 
     cancel = () => {
-        this.props.chooseAddCategory()
+        this.props.hideAction()
     }
 
     save = () => {
-        if (this.state.new_cate_name.length > 0) {
-            let categories_length = 0
+        if (!this.props.edit) {
+            if (this.state.new_cate_name.length > 0) {
+                let categories_length = 0
 
-            for (let key in this.props.categories) {
-                if (this.props.categories.hasOwnProperty(key)) {
-                    categories_length += 1
+                for (let key in this.props.categories) {
+                    if (this.props.categories.hasOwnProperty(key)) {
+                        categories_length += 1
+                    }
                 }
+
+                let new_key = `cate_${categories_length}`,
+                    data = {}
+
+                data[new_key] = {
+                    name: this.state.new_cate_name,
+                    color: this.state.chosen_color,
+                    quantity: 0,
+                }
+
+                this.props.createCategory(data)
+                this.props.hideAction()
+
             }
 
-            let new_key = `cate_${categories_length}`,
-                data = {}
+            else {
+                this.text_input_ref.blur()
+            }
+        }
 
-            data[new_key] = {
-                name: this.state.new_cate_name,
-                color: this.state.chosen_color,
-                quantity: 0,
+        else{
+            if(this.state.new_cate_name.length > 0){
+                let data = {
+                    name: this.state.new_cate_name,
+                    color: this.state.chosen_color,
+                    quantity: this.props.category.data.quantity
+                }
+
+                this.props.updateCategory(this.props.category.key, data)
+                this.props.hideAction()
             }
 
-            this.props.createCategory(data)
-            this.props.chooseAddCategory()
-
+            else {
+                this.text_input_ref.blur()
+            }
         }
+    }
 
-        else {
-            this.text_input_ref.blur()
+    componentDidMount() {
+        if(this.props.edit){
+            this.setState({
+                new_cate_name: this.props.category.data.name,
+                chosen_color: this.props.category.data.color
+            })
         }
-
     }
 
 

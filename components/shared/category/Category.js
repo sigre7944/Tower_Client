@@ -155,8 +155,9 @@ export default class Category extends React.Component {
                     }}
                 >
                     {this.state.add_category_bool ?
-                        <AddCategoryPanel 
-                            chooseAddCategory={this.chooseAddCategory}
+                        <AddCategoryPanel
+                            hideAction={this.chooseAddCategory}
+                            edit={false}
                         />
                         :
                         <View
