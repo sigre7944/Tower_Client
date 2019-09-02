@@ -8,7 +8,7 @@ import {currentDayTask, currentWeekTask, currentMonthTask} from './currentTasks'
 import {currentAnnotation} from './currentAnnotation'
 import {headerText, headerPressed} from './headerText'
 import {addTaskDescription, addTaskTitle} from './addTaskPanel'
-
+import {currentChosenCategory} from './currentChosenCategory'
 
 const rootReducer = combineReducers({
     currentRoute,
@@ -35,7 +35,9 @@ const rootReducer = combineReducers({
     headerPressed,
 
     addTaskDescription,
-    addTaskTitle
+    addTaskTitle,
+
+    currentChosenCategory
 })
 
 export default rootReducer

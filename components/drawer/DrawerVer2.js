@@ -1,18 +1,12 @@
 import React, { Component } from 'react';
+import {DrawerActions} from 'react-navigation-drawer'
 import {
-    Alert,
     TouchableOpacity,
     Text,
     View,
-    StyleSheet,
-    ImageBackground,
     Modal,
-    TouchableHighlight,
-    Image,
     TextInput,
-    ScrollView,
     FlatList,
-    Platform,
     Dimensions
 } from 'react-native'
 
@@ -30,7 +24,7 @@ export default class Drawer extends React.PureComponent {
 
     chooseEditCategory = (category_data) => {
         this.setState(prevState => ({
-            edit_category_data: {... category_data},
+            edit_category_data: { ...category_data },
             edit_task_bool: !prevState.edit_task_bool
         }))
 
@@ -152,7 +146,6 @@ export default class Drawer extends React.PureComponent {
 
 class CategoryList extends React.PureComponent {
 
-
     state = {
         category_arr: [],
         should_flatlist_update: 0
@@ -161,13 +154,23 @@ class CategoryList extends React.PureComponent {
     _keyExtractor = (item, index) => `category-${index}`
 
     _renderItem = ({ item, index }) => {
-        if (index < this.state.category_arr.length - 1) {
+        if (index === 0) {
+            return (
+                <GeneralCategoryRow
+                    chooseCategory={this.props.chooseCategory}
+                    navigation={this.props.navigation}
+                />
+            )
+        }
+        else if (index < this.state.category_arr.length - 1 && index > 0) {
             return (
                 <CategoryRow
                     data={item}
-                    category_key={Object.keys(this.props.categories)[index]}
+                    category_key={Object.keys(this.props.categories)[index - 1]}
                     category_index={index}
                     chooseEditCategory={this.props.chooseEditCategory}
+                    chooseCategory={this.props.chooseCategory}
+                    navigation={this.props.navigation}
                 />
             )
         }
@@ -181,6 +184,10 @@ class CategoryList extends React.PureComponent {
 
     loadCategories = (categories) => {
         let category_arr = []
+
+        category_arr.push({
+            name: "General"
+        })
 
         for (var key in categories) {
             if (categories.hasOwnProperty(key)) {
@@ -223,10 +230,40 @@ class CategoryList extends React.PureComponent {
     }
 }
 
-class CategoryRow extends React.Component {
+class GeneralCategoryRow extends React.PureComponent {
+    _onPress = () => {
+        this.props.chooseCategory("general")
+        this.props.navigation.dispatch(DrawerActions.closeDrawer())
+    }
+    render() {
+        return (
+            <TouchableOpacity
+                style={{
+                    flex: 1,
+                    height: 50,
+                    marginTop: 10,
+                    justifyContent: "center"
+                }}
+
+                onPress={this._onPress}
+            >
+                <Text>
+                    General
+                </Text>
+            </TouchableOpacity>
+        )
+    }
+}
+
+class CategoryRow extends React.PureComponent {
 
     editCategory = () => {
-        this.props.chooseEditCategory({data: this.props.data, key: this.props.category_key})
+        this.props.chooseEditCategory({ data: this.props.data, key: this.props.category_key })
+    }
+
+    _chooseCategory = () => {
+        this.props.chooseCategory(this.props.category_key)
+        this.props.navigation.dispatch(DrawerActions.closeDrawer())
     }
 
     render() {
@@ -236,6 +273,8 @@ class CategoryRow extends React.Component {
                     height: 50,
                     marginTop: 10,
                 }}
+
+                onPress={this._chooseCategory}
             >
                 <View
                     style={{

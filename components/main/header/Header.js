@@ -27,10 +27,6 @@ export default class Header extends React.Component {
     };
 
 
-    _onPress = () => {
-        this.props.toggleReturn()
-    }
-
     setModalVisible = (visible) => {
         this.setState({ modalVisible: visible });
     }
@@ -66,6 +62,7 @@ export default class Header extends React.Component {
                     <JournalHeader
                         _openDrawer={this._openDrawer}
                         _openEditModal={this._openEditModal}
+                        toggleReturn={this.props.toggleReturn}
                         headerText={this.props.headerText}
                     />
 
@@ -74,8 +71,6 @@ export default class Header extends React.Component {
                     null
                 }
                 <Modal
-                    //animationType="slide"
-                    //transparent={true}
                     style={{ marginTop: 300, borderRadius: 10 }}
                     backButtonClose={true}
                     coverScreen={true}
@@ -114,6 +109,9 @@ class JournalHeader extends React.PureComponent {
     _openEditModal = () => {
         this.props._openEditModal()
     }
+    _toggleReturn = () => {
+        this.props.toggleReturn()
+    }
 
     render() {
         return (
@@ -142,7 +140,7 @@ class JournalHeader extends React.PureComponent {
 
                     }}
 
-                    onPress={this._onPress}
+                    onPress={this._toggleReturn}
                 >
                     <Text
                         style={{

@@ -87,8 +87,8 @@ export default class AddCategoryPanel extends React.PureComponent {
             }
         }
 
-        else{
-            if(this.state.new_cate_name.length > 0){
+        else {
+            if (this.state.new_cate_name.length > 0) {
                 let data = {
                     name: this.state.new_cate_name,
                     color: this.state.chosen_color,
@@ -106,7 +106,7 @@ export default class AddCategoryPanel extends React.PureComponent {
     }
 
     componentDidMount() {
-        if(this.props.edit){
+        if (this.props.edit) {
             this.setState({
                 new_cate_name: this.props.category.data.name,
                 chosen_color: this.props.category.data.color
@@ -136,7 +136,14 @@ export default class AddCategoryPanel extends React.PureComponent {
                         }}
                     >
                         <View>
-                            <Text>Add Category</Text>
+                            {this.props.edit ?
+                                <Text>Edit Category</Text>
+
+                                :
+
+                                <Text>Add Category</Text>
+
+                            }
                         </View>
 
                         <View

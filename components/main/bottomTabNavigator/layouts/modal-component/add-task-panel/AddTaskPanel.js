@@ -863,7 +863,7 @@ class BottomOptionElement extends React.PureComponent {
 
     _onPress = () => {
         if (this.props.addTask) {
-            let add_data,
+            let add_data = {},
                 date = new Date()
 
             if (this.props.currentAnnotation === "day" && this.props.title_value.length > 0) {
@@ -1052,13 +1052,14 @@ class BottomOptionElement extends React.PureComponent {
             this.props.updateDescription("")
             this.props.updateTitle("")
 
-
-            let category_key = add_data.category
-            let category_data = { ... this.props.categories[category_key] }
-
-            category_data.quantity += 1
-
-            this.props.updateCategory(category_key, category_data)
+            if(add_data.category){
+                let category_key = add_data.category
+                let category_data = { ... this.props.categories[category_key] }
+    
+                category_data.quantity += 1
+    
+                this.props.updateCategory(category_key, category_data)
+            }
         }
 
         this.props.chooseOption()
