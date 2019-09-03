@@ -11,6 +11,8 @@ import {
     ScrollView
 } from 'react-native';
 
+const uuidv1 = require('uuid')
+
 
 let dayAnnotationColor = '#b0b0b0',
     weekAnnotationColor = '#9a9a9a',
@@ -34,11 +36,20 @@ export default class AddTaskPanel extends Component {
         AddTaskPanelDisplayProperty: 'flex',
         keyboardHeight: 0,
 
-        tag_data: []
+        tag_data: [],
+
     }
 
     setTaskTextInputRef = (ref) => {
         this.taskTextInputRef = ref
+    }
+
+    onChangeTitle = (value) => {
+        this.props.updateTitle(value)
+    }
+
+    onChangeDescription = (value) => {
+        this.props.updateDescription(value)
     }
 
     disableAddTaskPanel = () => {
@@ -68,7 +79,6 @@ export default class AddTaskPanel extends Component {
             })
 
             this.props.updateType("UPDATE_NEW_DAY_TASK", annotation)
-
         }
 
         else if (annotation === "week") {
@@ -92,13 +102,26 @@ export default class AddTaskPanel extends Component {
         }
 
         this.props.setCurrentAnnotation(annotation)
-        this.props.changeAnnotation(annotation)
     }
 
     toDoWhenWillShowKeyboard = (e) => {
         this.setState({
             keyboardHeight: e.endCoordinates.height
         })
+    }
+
+
+    getMonday = (date) => {
+        let dayInWeek = new Date(date).getDay()
+        let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
+        return new Date(new Date(date).getTime() - (diff * 86400 * 1000)).getDate()
+    }
+
+    getNoWeekInMonth = (date) => {
+        let nearest_monday = this.getMonday(date)
+        let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
+
+        return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
     }
 
     addTagDataToRender = (type, { startTime, schedule, repeat, end, category, priority, goal }) => {
@@ -117,7 +140,7 @@ export default class AddTaskPanel extends Component {
 
             if (repeat) {
                 if (repeat.type === "daily") {
-                    let value = repeat.interval.value / 86400 / 1000
+                    let value = repeat.interval.value
                     tag_data.push(
                         <TagElement
                             key="tag-repeat"
@@ -127,7 +150,7 @@ export default class AddTaskPanel extends Component {
                 }
 
                 else if (repeat.type === "weekly") {
-                    let value = repeat.interval.value / 86400 / 1000 / 7
+                    let value = repeat.interval.value
                     tag_data.push(
                         <TagElement
                             key="tag-repeat"
@@ -234,7 +257,7 @@ export default class AddTaskPanel extends Component {
 
             if (repeat) {
                 if (repeat.type === "weekly-w") {
-                    let value = repeat.interval.value / 86400 / 1000 / 7
+                    let value = repeat.interval.value
                     tag_data.push(
                         <TagElement
                             key="tag-repeat"
@@ -249,6 +272,36 @@ export default class AddTaskPanel extends Component {
                         <TagElement
                             key="tag-repeat"
                             content={`every ${value} month(s)`}
+                        />
+                    )
+                }
+            }
+
+            if (end) {
+                if (end.type === "never") {
+                    tag_data.push(
+                        <TagElement
+                            key="tag-end"
+                            content={`never end`}
+                        />
+                    )
+                }
+
+                else if (end.type === "on") {
+                    let end_date = new Date(end.endAt)
+                    tag_data.push(
+                        <TagElement
+                            key="tag-end"
+                            content={`end at ${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]}`}
+                        />
+                    )
+                }
+
+                else if (end.type === "after") {
+                    tag_data.push(
+                        <TagElement
+                            key="tag-end"
+                            content={`end after ${end.occurrence} occurrences`}
                         />
                     )
                 }
@@ -313,6 +366,36 @@ export default class AddTaskPanel extends Component {
                         content={`every ${value} month(s)`}
                     />
                 )
+            }
+
+            if (end) {
+                if (end.type === "never") {
+                    tag_data.push(
+                        <TagElement
+                            key="tag-end"
+                            content={`never end`}
+                        />
+                    )
+                }
+
+                else if (end.type === "on") {
+                    let end_date = new Date(end.endAt)
+                    tag_data.push(
+                        <TagElement
+                            key="tag-end"
+                            content={`end at ${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]}`}
+                        />
+                    )
+                }
+
+                else if (end.type === "after") {
+                    tag_data.push(
+                        <TagElement
+                            key="tag-end"
+                            content={`end after ${end.occurrence} occurrences`}
+                        />
+                    )
+                }
             }
 
             if (category) {
@@ -420,6 +503,9 @@ export default class AddTaskPanel extends Component {
                 }
             }
         }
+
+
+
     }
 
     componentWillUnmount() {
@@ -433,7 +519,7 @@ export default class AddTaskPanel extends Component {
                 width: Dimensions.get('window').width,
                 bottom: this.state.keyboardHeight,
                 display: this.state.AddTaskPanelDisplayProperty,
-                height: 300,
+                height: 400,
             }}>
                 <View style={{
                     height: 100,
@@ -508,7 +594,7 @@ export default class AddTaskPanel extends Component {
                 <View style={{
                     position: 'absolute',
                     bottom: 0,
-                    height: 250,
+                    height: 350,
                     width: Dimensions.get('window').width,
                     backgroundColor: 'white',
                     borderTopRightRadius: 20,
@@ -519,31 +605,44 @@ export default class AddTaskPanel extends Component {
                     paddingBottom: 50,
                     overflow: "scroll"
                 }}>
-                    <ScrollView>
-                        <TaskTitleElement
-                            setTaskTextInputRef={this.setTaskTextInputRef}
-                            taskTextInputRef={this.taskTextInputRef}
-                            currentAnnotation={this.props.currentAnnotation}
-                            updateTitle={this.props.updateTitle}
-                        />
+                    <TaskTitleElement
+                        setTaskTextInputRef={this.setTaskTextInputRef}
+                        taskTextInputRef={this.taskTextInputRef}
+                        currentAnnotation={this.props.currentAnnotation}
 
-                        <TaskDescriptionElement
-                            currentAnnotation={this.props.currentAnnotation}
-                            updateDescription={this.props.updateDescription}
-                        />
+                        title_value={this.props.addTaskTitle}
+                        onChangeTitle={this.onChangeTitle}
+                    />
 
-                        <View
-                            style={{
-                                flexWrap: "wrap",
-                                flexDirection: "row",
-                                paddingHorizontal: 33,
-                                paddingBottom: 20,
-                            }}
+                    <TaskDescriptionElement
+                        currentAnnotation={this.props.currentAnnotation}
+
+                        description_value={this.props.addTaskDescription}
+                        onChangeDescription={this.onChangeDescription}
+                    />
+
+                    <View
+                        style={{
+                            flex: 2
+                        }}
+                    >
+                        <ScrollView
+                            keyboardShouldPersistTaps="always"
                         >
-                            {this.state.tag_data}
-                        </View>
+                            <View
+                                style={{
+                                    flexWrap: "wrap",
+                                    flexDirection: "row",
+                                    paddingHorizontal: 33,
+                                    paddingBottom: 20,
+                                }}
+                            >
+                                {this.state.tag_data}
+                            </View>
 
-                    </ScrollView>
+                        </ScrollView>
+                    </View>
+
 
                     <View style={{
                         position: "absolute",
@@ -589,6 +688,13 @@ export default class AddTaskPanel extends Component {
                             taskTextInputRef={this.taskTextInputRef}
                             disableAddTaskPanel={this.disableAddTaskPanel}
                             {... this.props}
+
+                            title_value={this.props.addTaskTitle}
+                            description_value={this.props.addTaskDescription}
+
+                            updateTitle={this.props.updateTitle}
+                            updateDescription={this.props.updateDescription}
+
                             title="Ok"
                         />
                     </View>
@@ -599,8 +705,6 @@ export default class AddTaskPanel extends Component {
 }
 
 
-
-
 class TaskTitleElement extends React.PureComponent {
     constructor(props) {
         super(props)
@@ -609,14 +713,11 @@ class TaskTitleElement extends React.PureComponent {
     }
 
     state = {
-        value: ""
+        // value: ""
     }
 
     _onChange = (e) => {
-        this.setState({
-            value: e.nativeEvent.text
-        })
-
+        this.props.onChangeTitle(e.nativeEvent.text)
     }
 
     setTaskTextInputRef = (ref) => {
@@ -626,29 +727,12 @@ class TaskTitleElement extends React.PureComponent {
 
     _onLayout = () => {
         setTimeout(() => { this.textInputRef.focus() }, 50)
-
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (this.state.value !== prevState.value) {
-            if (this.props.currentAnnotation === "day") {
-                this.props.updateTitle("UPDATE_NEW_DAY_TASK", this.state.value)
-            }
-
-            else if (this.props.currentAnnotation === "week") {
-                this.props.updateTitle("UPDATE_NEW_WEEK_TASK", this.state.value)
-            }
-
-            else if (this.props.currentAnnotation === "month") {
-                this.props.updateTitle("UPDATE_NEW_MONTH_TASK", this.state.value)
-            }
-        }
     }
 
     render() {
         return (
             <View style={{
-                flex: 1,
+                height: 52,
                 marginHorizontal: 20,
                 marginTop: 10,
             }}>
@@ -671,7 +755,7 @@ class TaskTitleElement extends React.PureComponent {
                     }}
                     placeholder="Add a task here"
                     autoCorrect={false}
-                    value={this.state.value}
+                    value={this.props.title_value}
                     onChange={this._onChange}
                     onLayout={this._onLayout}
                 />
@@ -686,31 +770,13 @@ class TaskDescriptionElement extends React.PureComponent {
     }
 
     _onChange = (e) => {
-        this.setState({
-            value: e.nativeEvent.text
-        })
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (this.state.value !== prevState.value) {
-            if (this.props.currentAnnotation === "day") {
-                this.props.updateDescription("UPDATE_NEW_DAY_TASK", this.state.value)
-            }
-
-            else if (this.props.currentAnnotation === "week") {
-                this.props.updateDescription("UPDATE_NEW_WEEK_TASK", this.state.value)
-            }
-
-            else if (this.props.currentAnnotation === "month") {
-                this.props.updateDescription("UPDATE_NEW_MONTH_TASK", this.state.value)
-            }
-        }
+        this.props.onChangeDescription(e.nativeEvent.text)
     }
 
     render() {
         return (
             <View style={{
-                flex: 1,
+                height: 52,
                 margin: 20,
             }}>
                 <Text style={{
@@ -729,7 +795,7 @@ class TaskDescriptionElement extends React.PureComponent {
 
                     placeholder="Add task description"
                     autoCorrect={false}
-                    value={this.state.value}
+                    value={this.props.description_value}
                     onChange={this._onChange}
                 />
             </View>
@@ -770,20 +836,231 @@ class TagElement extends React.PureComponent {
 
 class BottomOptionElement extends React.PureComponent {
 
-    _onPress = () => {
-        if(this.props.addTask){
-            if(this.props.currentAnnotation === "day"){
-                this.props.addTask(this.props.currentDayTask)
-            }
-
-            else if(this.props.currentAnnotation === "week"){
-                this.props.addTask(this.props.currentWeekTask)
-            }
-
-            else if(this.props.currentAnnotation === "month"){
-                this.props.addTask(this.props.currentMonthTask)
-            }
+    getWeek = (date) => {
+        let target = new Date(date);
+        let dayNr = (date.getDay() + 6) % 7;
+        target.setDate(target.getDate() - dayNr + 3);
+        let firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() != 4) {
+            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
         }
+        return 1 + Math.ceil((firstThursday - target) / 604800000);
+    }
+
+    getMonday = (date) => {
+        let dayInWeek = new Date(date).getDay()
+        let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
+        return new Date(new Date(date).getTime() - (diff * 86400 * 1000)).getDate()
+    }
+
+    getNoWeekInMonth = (date) => {
+        let nearest_monday = this.getMonday(date)
+        let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
+
+        return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
+    }
+
+    _onPress = () => {
+        if (this.props.addTask) {
+            if (this.props.currentAnnotation === "day" && this.props.title_value.length > 0) {
+                let add_data
+
+                if (this.props.day_tasks.length === 0) {
+                    add_data = {
+                        ... this.props.currentDayTask, ...
+                        {
+                            createdAt: new Date().getTime(),
+                            id: uuidv1(),
+                            title: this.props.title_value,
+                            description: this.props.description_value
+                        }
+                    }
+                }
+
+                else {
+                    add_data = {
+                        ... this.props.currentDayTask, ... {
+                            createdAt: new Date().getTime(),
+                            id: uuidv1(),
+                            title: this.props.title_value,
+                            description: this.props.description_value
+                        }
+                    }
+                }
+
+
+                this.props.addTask("ADD_NEW_DAY_TASK", add_data)
+
+                let date = new Date()
+
+                let reset_data = {
+                    title: "",
+                    description: "",
+                    startTime: date.getTime(),
+                    trackingTime: date.getTime(),
+                    type: "day",
+                    schedule: {
+                        day: date.getDate(),
+                        month: date.getMonth(),
+                        year: date.getFullYear()
+                    },
+                    category: "cate_0",
+                    repeat: {
+                        type: "daily",
+                        interval: {
+                            value: 1
+                        }
+                    },
+                    end: {
+                        type: "never"
+                    },
+                    priority: {
+                        value: "pri_01",
+                        reward: 0,
+                    },
+                    goal: {
+                        max: 1,
+                        current: 0
+                    }
+                }
+
+                this.props.updateTask("UPDATE_NEW_DAY_TASK", reset_data)
+            }
+
+            else if (this.props.currentAnnotation === "week" && this.props.title_value.length > 0) {
+
+                let add_data
+
+                if (this.props.week_tasks.length === 0) {
+                    add_data = {
+                        ... this.props.currentWeekTask, ... {
+                            createdAt: new Date().getTime(),
+                            id: uuidv1(),
+                            title: this.props.title_value,
+                            description: this.props.description_value
+                        }
+                    }
+                }
+
+                else {
+                    add_data = {
+                        ... this.props.currentWeekTask, ... {
+                            createdAt: new Date().getTime(),
+                            id: uuidv1(),
+                            title: this.props.title_value,
+                            description: this.props.description_value
+                        }
+                    }
+                }
+
+                this.props.addTask("ADD_NEW_WEEK_TASK", add_data)
+
+                let date = new Date()
+
+                let reset_data = {
+                    title: "",
+                    description: "",
+                    startTime: date.getTime(),
+                    trackingTime: date.getTime(),
+                    type: "week",
+                    schedule: {
+                        day: date.getDate(),
+                        week: this.getWeek(date),
+                        month: date.getMonth(),
+                        year: date.getFullYear(),
+                        noWeekInMonth: this.getNoWeekInMonth(date)
+                    },
+                    category: "cate_0",
+                    repeat: {
+                        type: "weekly-w",
+                        interval: {
+                            value: 1
+                        }
+                    },
+                    end: {
+                        type: "never"
+                    },
+                    priority: {
+                        value: "pri_01",
+                        reward: 0,
+                    },
+                    goal: {
+                        max: 1,
+                        current: 0
+                    }
+                }
+
+                this.props.updateTask("UPDATE_NEW_WEEK_TASK", reset_data)
+            }
+
+            else if (this.props.currentAnnotation === "month" && this.props.title_value.length > 0) {
+
+                let add_data
+
+                if (this.props.month_tasks.length === 0) {
+                    add_data = {
+                        ... this.props.currentMonthTask, ... {
+                            createdAt: new Date().getTime(),
+                            id: uuidv1(),
+                            title: this.props.title_value,
+                            description: this.props.description_value
+                        }
+                    }
+                }
+
+                else {
+                    add_data = {
+                        ... this.props.currentMonthTask, ... {
+                            createdAt: new Date().getTime(),
+                            id: uuidv1(),
+                            title: this.props.title_value,
+                            description: this.props.description_value
+                        }
+                    }
+                }
+
+                this.props.addTask("ADD_NEW_MONTH_TASK", add_data)
+
+                let date = new Date()
+
+                let reset_data = {
+                    title: "",
+                    description: "",
+                    startTime: date.getTime(),
+                    trackingTime: date.getTime(),
+                    type: "month",
+                    schedule: {
+                        month: date.getMonth(),
+                        year: date.getFullYear()
+                    },
+                    category: "cate_0",
+                    repeat: {
+                        type: "monthly-m",
+                        interval: {
+                            value: 1
+                        }
+                    },
+                    end: {
+                        type: "never"
+                    },
+                    priority: {
+                        value: "pri_01",
+                        reward: 0,
+                    },
+                    goal: {
+                        max: 1,
+                        current: 0
+                    }
+                }
+
+                this.props.updateTask("UPDATE_NEW_MONTH_TASK", reset_data)
+            }
+
+            this.props.updateDescription("")
+            this.props.updateTitle("")
+        }
+
         this.props.chooseOption()
         this.props.taskTextInputRef.blur()
         this.props.disableAddTaskPanel()

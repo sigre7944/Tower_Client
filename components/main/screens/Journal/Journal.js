@@ -1,8 +1,3 @@
-import React from 'react';
-import AddAllTodo from './containers/AddAllTodo.Container'
-import DisplayAllTodos from './containers/DisplayAllTodos.Container'
-import DisplayAllCompletedTodos from './containers/DisplayAllCompletedTodos.Container'
-
 import {createMaterialTopTabNavigator} from 'react-navigation'
 
 import Daily from './layouts/Daily/Daily.Container'
@@ -11,12 +6,12 @@ import Monthly from './layouts/Monthly/Monthly'
 
 
 const JournalTopNavigator = createMaterialTopTabNavigator({
-    Daily: {screen: Daily},
-    Weekly: {screen: Weekly},
-    Monthly: {screen: Monthly}
+    Day: {screen: Daily},
+    Week: {screen: Weekly},
+    Month: {screen: Monthly}
 },
 {
-    initialRouteName: "Daily",
+    initialRouteName: "Day",
     tabBarOptions: {
         upperCaseLabel: false,
         labelStyle: {

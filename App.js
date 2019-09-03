@@ -5,7 +5,7 @@ import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import rootReducer from './reducers'
 import Drawer from './components/drawer/Drawer'
-import Header from './components/main/header/Header'
+import Header from './components/main/header/Header.Container'
 
 import * as FileSystem from 'expo-file-system';
 

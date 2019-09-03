@@ -1,6 +1,4 @@
-export const updateTitle = (type, title) => ({
-    type,
-    data: {
-        title
-    }
+export const updateTitle = (title) => ({
+    type: "CHANGE_ADD_TASK_TITLE",
+    title
 })

@@ -1,24 +1,20 @@
 import React from 'react'
-import {
-    View,
-    Text,
-    StatusBar,
-    SafeAreaView,
-    Button
-} from 'react-native';
 
+import JournalTab from '../../../../../shared/journal/JournalTab.Container'
 
-export default class Monthly extends React.Component{
+export default class Weekly extends React.Component {
     static navigationOptions = {
         swipeEnabled: false,
     }
 
-    
-    render(){
-        return(
-            <View>
-                <Text>Monthly</Text>
-            </View>
+
+    render() {
+        return (
+            <JournalTab 
+                type="month"
+                action_type="ADD_EDIT_MONTH_TASK"
+                {...this.props}
+            />
         )
     }
 }

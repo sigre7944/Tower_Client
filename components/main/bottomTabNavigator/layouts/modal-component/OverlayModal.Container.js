@@ -2,12 +2,19 @@ import {connect} from 'react-redux'
 
 import OverlayModal from './OverlayModal'
 
+const updateAccordingTask = (type, data) => ({
+    type,
+    data
+})
+
 const mapStateToProps = (state) => ({
-    currentTask: state.currentTask
+    currentDayTask: state.currentDayTask,
+    currentWeekTask: state.currentWeekTask,
+    currentMonthTask: state.currentMonthTask,
 })
 
 const mapDispatchToProps = (dispatch) => ({
-
+    updateAccordingTask: (type, data) => dispatch(updateAccordingTask(type, data))
 })
 
 export default connect(
