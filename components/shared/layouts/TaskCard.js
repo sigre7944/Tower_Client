@@ -5,6 +5,13 @@ import { CheckBox } from 'react-native-elements'
 import { Map } from 'immutable'
 
 export default class TaskCard extends React.PureComponent {
+    priority_order = {
+        pri_01: 0,
+        pri_02: 1,
+        pri_03: 2,
+        pri_04: 3
+    }
+
     state = {
         checked: false,
         uncomplete_checked: false
@@ -50,7 +57,11 @@ export default class TaskCard extends React.PureComponent {
                 data = {},
                 overwrite_obj = {},
                 currentGoal = 0,
-                completed_tasks = Map(this.props.completed_tasks)
+                completed_tasks = Map(this.props.completed_tasks),
+                stats = Map(this.props.stats),
+                stats_data = {},
+                stats_timestamp = 0,
+                stats_action_type = "UPDATE_DAY_STATS"
 
             if (this.props.flag === "uncompleted") {
                 if (this.props.type === "day") {
@@ -75,6 +86,25 @@ export default class TaskCard extends React.PureComponent {
                         data[day_timestamp] = {
                             current: currentGoal + 1,
                             category: task.category
+                        }
+                    }
+
+                    stats_timestamp = day_timestamp
+                    stats_action_type = "UPDATE_DAY_STATS"
+
+                    if(stats.has(day_timestamp)){
+                        stats_data = stats.get(day_timestamp)
+                        let {current} = stats_data
+                        current[this.priority_order[task.priority.value]] += 1
+
+                        stats_data.current = current
+                    }
+
+                    else{
+                        let current = [0, 0, 0, 0]
+                        current[this.priority_order[task.priority.value]] += 1
+                        stats_data= {
+                            current
                         }
                     }
                 }
@@ -103,6 +133,25 @@ export default class TaskCard extends React.PureComponent {
                             current: currentGoal + 1
                         }
                     }
+
+                    stats_timestamp = week_timestamp
+                    stats_action_type = "UPDATE_WEEK_STATS"
+
+                    if(stats.has(week_timestamp)){
+                        stats_data = stats.get(week_timestamp)
+                        let {current} = stats_data
+                        current[this.priority_order[task.priority.value]] += 1
+
+                        stats_data.current = current
+                    }
+
+                    else{
+                        let current = [0, 0, 0, 0]
+                        current[this.priority_order[task.priority.value]] += 1
+                        stats_data= {
+                            current
+                        }
+                    }
                 }
 
                 else {
@@ -129,6 +178,25 @@ export default class TaskCard extends React.PureComponent {
                             current: currentGoal + 1
                         }
                     }
+
+                    stats_timestamp = month_timestamp
+                    stats_action_type = "UPDATE_MONTH_STATS"
+
+                    if(stats.has(month_timestamp)){
+                        stats_data = stats.get(month_timestamp)
+                        let {current} = stats_data
+                        current[this.priority_order[task.priority.value]] += 1
+
+                        stats_data.current = current
+                    }
+
+                    else{
+                        let current = [0, 0, 0, 0]
+                        current[this.priority_order[task.priority.value]] += 1
+                        stats_data= {
+                            current
+                        }
+                    }
                 }
 
             }
@@ -150,6 +218,17 @@ export default class TaskCard extends React.PureComponent {
 
                         data = { ...data, ...overwrite_obj }
                     }
+
+                    stats_timestamp = day_timestamp
+                    stats_action_type = "UPDATE_DAY_STATS"
+
+                    if(stats.has(day_timestamp)){
+                        stats_data = stats.get(day_timestamp)
+                        let {current} = stats_data
+                        current[this.priority_order[task.priority.value]] -= 1
+
+                        stats_data.current = current
+                    }
                 }
 
                 else if (this.props.type === "week") {
@@ -167,6 +246,17 @@ export default class TaskCard extends React.PureComponent {
                         }
 
                         data = { ...data, ...overwrite_obj }
+                    }
+
+                    stats_timestamp = week_timestamp
+                    stats_action_type = "UPDATE_WEEK_STATS"
+
+                    if(stats.has(week_timestamp)){
+                        stats_data = stats.get(week_timestamp)
+                        let {current} = stats_data
+                        current[this.priority_order[task.priority.value]] -= 1
+
+                        stats_data.current = current
                     }
                 }
 
@@ -186,9 +276,21 @@ export default class TaskCard extends React.PureComponent {
 
                         data = { ...data, ...overwrite_obj }
                     }
+
+                    stats_timestamp = month_timestamp
+                    stats_action_type = "UPDATE_MONTH_STATS"
+
+                    if(stats.has(month_timestamp)){
+                        stats_data = stats.get(month_timestamp)
+                        let {current} = stats_data
+                        current[this.priority_order[task.priority.value]] -= 1
+
+                        stats_data.current = current
+                    }
                 }
             }
-
+            
+            this.props.updateStats(stats_action_type, stats_timestamp, stats_data)
             this.props.updateCompletedTask(data)
         }
     }
@@ -228,7 +330,7 @@ export default class TaskCard extends React.PureComponent {
                                 current: currentGoal - 1
                             }
                         }
-                        
+
                         data = { ...data, ...overwrite_obj }
                     }
                 }

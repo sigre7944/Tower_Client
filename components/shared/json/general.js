@@ -186,7 +186,7 @@ const day_completed_tasks = {
         // The completion_timestamp_x will be calculated based on a rule, involving the day, month, year of the completion time.
         completion_timestamp_1: {
             current: 1 //the current goal value of the task. For example, a task has a goal of 5 times completion each occurrence. The value shows that
-                        // at the time of completion_timestamp_1, the task has been completed 1 time (1/5)
+            // at the time of completion_timestamp_1, the task has been completed 1 time (1/5)
         },
 
         completion_timestamp_2: {
@@ -257,7 +257,7 @@ const week_completed_tasks = {
         // The completion_timestamp_x will be calculated based on a rule, involving the first monday of the week, month, year of the completion time.
         completion_timestamp_1: {
             current: 1 //the current goal value of the task. For example, a task has a goal of 5 times completion each occurrence. The value shows that
-                        // at the time of completion_timestamp_1, the task has been completed 1 time (1/5)
+            // at the time of completion_timestamp_1, the task has been completed 1 time (1/5)
         },
 
         completion_timestamp_2: {
@@ -322,11 +322,44 @@ const month_completed_tasks = {
         // The completion_timestamp_x will be calculated based on a rule, involving the first monday of the month, year of the completion time.
         completion_timestamp_1: {
             current: 1 //the current goal value of the task. For example, a task has a goal of 5 times completion each occurrence. The value shows that
-                        // at the time of completion_timestamp_1, the task has been completed 1 time (1/5)
+            // at the time of completion_timestamp_1, the task has been completed 1 time (1/5)
         },
 
         completion_timestamp_2: {
             current: 1
         },
+    }
+}
+
+const day_stats = {
+    day_timestamp: {
+        // doFirst: 3,
+        // plan: 2,
+        // delay: 4,
+        // delegate: 1,
+        current: [3, 2, 4, 1],
+        total: 10,
+    }
+}
+
+const week_stats = {
+    week_timestamp: {
+        // doFirst: 1,
+        // plan: 2,
+        // delay: 0,
+        // delegate: 0,
+        current: [1, 2, 0, 0],
+        total: 10,
+    }
+}
+
+const month_stats = {
+    month_timestamp: {
+        // doFirst: 1,
+        // plan: 3,
+        // delay: 4,
+        // delegate: 0,
+        current: [1, 3, 4, 0],
+        total: 10,
     }
 }

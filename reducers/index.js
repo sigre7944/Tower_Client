@@ -28,6 +28,12 @@ import {
     headerText
 } from './otherReducer'
 
+import {
+    day_stats,
+    month_stats,
+    week_stats
+} from './statsReducer'
+
 const rootReducer = combineReducers({
     currentRoute,
     currentWeekInMonth,
@@ -54,8 +60,11 @@ const rootReducer = combineReducers({
 
     addTaskDescription,
     addTaskTitle,
+    currentChosenCategory,
 
-    currentChosenCategory
+    day_stats,
+    month_stats,
+    week_stats,
 })
 
 export default rootReducer
