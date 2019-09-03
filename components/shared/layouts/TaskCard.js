@@ -289,7 +289,7 @@ export default class TaskCard extends React.PureComponent {
                     }
                 }
             }
-            
+
             this.props.updateStats(stats_action_type, stats_timestamp, stats_data)
             this.props.updateCompletedTask(data)
         }

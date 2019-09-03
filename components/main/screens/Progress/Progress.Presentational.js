@@ -9,6 +9,7 @@ import {
   Animated
 } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler'
+import { Map } from 'immutable'
 
 export default class Progress extends React.Component {
   year_array = [new Date().getFullYear(), new Date().getFullYear() + 1, new Date().getFullYear() - 1]
@@ -76,6 +77,7 @@ export default class Progress extends React.Component {
             month={this.state.month}
             year={this.state.year}
             toggleChooseMonth={this.toggleChooseMonth}
+            {...this.props}
           />
 
         </ScrollView >
@@ -157,9 +159,8 @@ class Calendar extends React.PureComponent {
       last_monday = this.getMonday(new Date(year, month + 1, 0)),
 
       first_week = this.getWeek(first_monday),
-      last_week = this.getWeek(last_monday)
-
-    monday_of_week = first_monday
+      last_week = this.getWeek(last_monday),
+      monday_of_week = first_monday
 
     if (first_week > last_week) {
       last_week += first_week
@@ -168,7 +169,10 @@ class Calendar extends React.PureComponent {
         let week = i % first_week === 0 ? first_week : i % first_week
         month_data_array.push({
           week_row: true,
-          week
+          week,
+          start_day: monday_of_week.getDate(),
+          start_month: monday_of_week.getMonth(),
+          start_year: monday_of_week.getFullYear(),
         })
 
         for (let j = 0; j < 7; j++) {
@@ -190,7 +194,10 @@ class Calendar extends React.PureComponent {
       for (let i = first_week; i <= last_week; i++) {
         month_data_array.push({
           week_row: true,
-          week: i
+          week: i,
+          start_day: monday_of_week.getDate(),
+          start_month: monday_of_week.getMonth(),
+          start_year: monday_of_week.getFullYear(),
         })
 
         for (let j = 0; j < 7; j++) {
@@ -247,10 +254,34 @@ class MonthHolder extends React.Component {
 
   state = {
     day_text_array: null,
+    month_points: 0,
   }
 
   _toggleChooseMonth = () => {
     this.props.toggleChooseMonth()
+  }
+
+  updateMonthPoints = () => {
+    let date = new Date(this.props.year, this.props.month).getTime(),
+      month_stats = Map(this.props.month_stats)
+    if (month_stats.has(date)) {
+      let stat = month_stats.get(date),
+        total_points = stat.current.reduce(((total, amount) => total + amount), 0)
+
+      this.setState({
+        month_points: total_points
+      })
+    }
+
+    else {
+      this.setState({
+        month_points: 0
+      })
+    }
+  }
+
+  componentDidMount() {
+    this.updateMonthPoints()
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -295,6 +326,11 @@ class MonthHolder extends React.Component {
         day_text_array: [...day_text_array],
       })
     }
+
+    if (this.props.month_stats !== prevProps.month_stats || (this.props.month !== prevProps.month) || (this.props.year !== prevProps.year)) {
+      this.updateMonthPoints()
+    }
+
   }
 
 
@@ -314,11 +350,27 @@ class MonthHolder extends React.Component {
           }}
         >
           <TouchableOpacity
+            style={{
+              flexDirection: "row",
+            }}
             onPress={this._toggleChooseMonth}
           >
             <Text>
               {`${this.month_texts[this.props.month]} - ${this.props.year}`}
             </Text>
+
+            {this.state.month_points > 0 ?
+              <Text
+                style={{
+                  marginLeft: 5,
+                }}
+              >
+                {`${this.state.month_points}pt`}
+              </Text>
+              :
+              null
+            }
+
           </TouchableOpacity>
         </View>
 
@@ -335,6 +387,7 @@ class MonthHolder extends React.Component {
                 <Week
                   key={`week-${index}`}
                   data={data}
+                  {... this.props}
                 />
               )
             }
@@ -355,6 +408,42 @@ class MonthHolder extends React.Component {
 
 class Day extends React.PureComponent {
 
+  state = {
+    day_points: 0,
+  }
+
+  updateDayPoints = () => {
+    let { data } = this.props,
+      date = new Date(data.year, data.month, data.day).getTime(),
+      day_stats = Map(this.props.day_stats)
+
+    if (day_stats.has(date)) {
+      let stat = day_stats.get(date),
+        total_points = stat.current.reduce(((total, amount) => total + amount), 0)
+
+      this.setState({
+        day_points: total_points
+      })
+    }
+
+    else {
+      this.setState({
+        day_points: 0
+      })
+    }
+  }
+
+  componentDidMount() {
+    this.updateDayPoints()
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.day_stats !== prevProps.day_stats || this.props.data !== prevProps.data) {
+      this.updateDayPoints()
+    }
+
+  }
+
   render() {
     return (
       <TouchableOpacity
@@ -370,10 +459,9 @@ class Day extends React.PureComponent {
             width: 32,
             height: 77,
             borderRadius: 17,
-            backgroundColor: "#C4C4C4",
+            backgroundColor: this.state.day_points > 0 ? "#C4C4C4" : "white",
             paddingHorizontal: 3,
             paddingVertical: 3,
-            justifyContent: "center",
             alignItems: "center",
           }}
         >
@@ -392,13 +480,19 @@ class Day extends React.PureComponent {
             </Text>
           </View>
 
-          <Text
-            style={{
-              marginTop: 20,
-            }}
-          >
-            3pt
-              </Text>
+          {this.state.day_points > 0 ?
+            <Text
+              style={{
+                marginTop: 20,
+              }}
+            >
+              {`${this.state.day_points}pt`}
+            </Text>
+            :
+
+            null
+          }
+
         </View>
       </TouchableOpacity>
     )
@@ -406,6 +500,41 @@ class Day extends React.PureComponent {
 }
 
 class Week extends React.PureComponent {
+  state = {
+    week_points: 0,
+  }
+
+  updateWeekPoints = () => {
+    let { data } = this.props,
+      date = new Date(data.start_year, data.start_month, data.start_day).getTime(),
+      week_stats = Map(this.props.week_stats)
+    if (week_stats.has(date)) {
+
+      let stat = week_stats.get(date),
+        total_points = stat.current.reduce(((total, amount) => total + amount), 0)
+
+      this.setState({
+        week_points: total_points
+      })
+    }
+
+    else {
+      this.setState({
+        week_points: 0
+      })
+    }
+  }
+
+  componentDidMount() {
+    this.updateWeekPoints()
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.week_stats !== prevProps.week_stats || this.props.data !== prevProps.data) {
+      this.updateWeekPoints()
+    }
+  }
+
   render() {
     return (
       <TouchableOpacity
@@ -421,10 +550,9 @@ class Week extends React.PureComponent {
             width: 32,
             height: 77,
             borderRadius: 17,
-            backgroundColor: "#C4C4C4",
+            backgroundColor: this.state.week_points > 0 ? "#54BAAC" : "white",
             paddingHorizontal: 3,
             paddingVertical: 3,
-            justifyContent: "center",
             alignItems: "center",
           }}
         >
@@ -443,13 +571,18 @@ class Week extends React.PureComponent {
             </Text>
           </View>
 
-          <Text
-            style={{
-              marginTop: 20,
-            }}
-          >
-            3pt
-              </Text>
+          {this.state.week_points > 0 ?
+            <Text
+              style={{
+                marginTop: 20,
+              }}
+            >
+              {`${this.state.week_points}pt`}
+            </Text>
+            :
+            null
+          }
+
         </View>
       </TouchableOpacity>
     )
