@@ -11,7 +11,7 @@ import {
 import { PanGestureHandler, State } from 'react-native-gesture-handler'
 import { Map } from 'immutable'
 
-export default class Progress extends React.Component {
+export default class Progress extends React.PureComponent {
   year_array = [new Date().getFullYear(), new Date().getFullYear() + 1, new Date().getFullYear() - 1]
 
   state = {
@@ -118,8 +118,6 @@ export default class Progress extends React.Component {
                 chooseMonth={this.chooseMonth}
                 dismissChooseMonth={this.dismissChooseMonth}
                 year_array={this.year_array}
-                month={this.state.month}
-                year={this.state.year}
               />
             </View>
           </Modal>
@@ -621,7 +619,6 @@ class MonthCalendar extends React.PureComponent {
     let year_array = [... this.state.year_array]
 
     if (swipe_direction === 1) {
-
       if (main_index === 0) {
         year_array[2] = year_array[main_index] - 1
       }
@@ -638,6 +635,7 @@ class MonthCalendar extends React.PureComponent {
     this.setState({
       year_array: [...year_array]
     })
+
   }
 
 
@@ -784,6 +782,14 @@ class MonthCalendar extends React.PureComponent {
     })
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.year_array !== prevProps.year_array) {
+      this.setState({
+        year_array: [...this.props.year_array]
+      })
+    }
+  }
+
   render() {
     return (
       <View
@@ -925,6 +931,10 @@ class MonthsInYear extends React.PureComponent {
   componentDidUpdate(prevProps, prevState) {
     if (this.props.year !== prevProps.year) {
       this.initMonthsInYear(this.props.year)
+    }
+
+    if(this.props.year_array !== prevProps.year_array){
+      console.log(this.props.year_array)
     }
   }
 
