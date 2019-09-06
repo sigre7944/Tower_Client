@@ -71,7 +71,7 @@ export default class Progress extends React.Component {
             }}
           >
             Point earned:
-        </Text>
+          </Text>
 
           <Calendar
             month={this.state.month}
@@ -80,6 +80,11 @@ export default class Progress extends React.Component {
             {...this.props}
           />
 
+          <SummaryHolder
+            day_stats={this.props.day_stats}
+            week_stats={this.props.week_stats}
+            month_stats={this.props.month_stats}
+          />
         </ScrollView >
 
         {this.state.choose_month_bool ?
@@ -111,12 +116,15 @@ export default class Progress extends React.Component {
                 chooseMonth={this.chooseMonth}
                 dismissChooseMonth={this.dismissChooseMonth}
                 year_array={this.year_array}
+                month={this.state.month}
+                year={this.state.year}
               />
             </View>
           </Modal>
           :
           null
         }
+
       </>
     );
   }
@@ -981,6 +989,173 @@ class Month extends React.PureComponent {
           {`Week ${this.props.data.start_week} - ${this.props.data.end_week}`}
         </Text>
       </TouchableOpacity>
+    )
+  }
+}
+
+class SummaryHolder extends React.PureComponent {
+
+  state = {
+    day_total_completions: 0,
+    week_total_completions: 0,
+    month_total_completions: 0
+  }
+
+  getWeek = (date) => {
+    let target = new Date(date);
+    let dayNr = (date.getDay() + 6) % 7;
+    target.setDate(target.getDate() - dayNr + 3);
+    let firstThursday = target.valueOf();
+    target.setMonth(0, 1);
+    if (target.getDay() != 4) {
+      target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+    }
+    return 1 + Math.ceil((firstThursday - target) / 604800000);
+  }
+
+  getMonday = (date) => {
+    let dayInWeek = new Date(date).getDay()
+    let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
+    return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
+  }
+
+  getNoWeekInMonth = (date) => {
+    let nearest_monday = this.getMonday(date)
+    let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
+
+    return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
+  }
+
+  componentDidMount() {
+    let { month, year, day_stats, week_stats, month_stats } = this.props,
+      first_day_of_month = new Date(year, month, 1),
+      last_day_of_month = new Date(year, month + 1, 0),
+      day_stats_map = Map(day_stats),
+      week_stats_map = Map(week_stats),
+      month_stats_map = Map(month_stats),
+      day_total_completions = 0,
+      week_total_completions = 0,
+      month_total_completions = 0,
+
+
+
+    for (let i = first_day_of_month.getDate(); i <= last_day_of_month.getDate(); i++) {
+      let day_timestamp = new Date(year, month, i).getTime()
+
+      if (day_stats_map.has(day_timestamp)) {
+        let data = day_stats_map.get(day_timestamp),
+          total_sum = data.current.reduce(((total, amount) => total + amount), 0)
+
+        day_total_completions += total_sum
+      }
+    }
+
+    let first_monday = this.getMonday(first_day_of_month),
+      last_monday = this.getMonday(last_day_of_month),
+      first_week_of_month = this.getWeek(first_monday),
+      last_week_of_month = this.getWeek(last_monday)
+
+    for (let i = 0; i < (last_week_of_month - first_week_of_month); i++) {
+      let week_timestamp = first_monday.getTime() + 86400 * 1000 * i
+
+      if (week_stats_map.has(week_timestamp)) {
+        let data = week_stats_map.get(week_timestamp),
+          total_sum = data.current.reduce(((total, amount) => total + amount), 0)
+
+        week_total_completions += total_sum
+      }
+    }
+
+    let month_timestamp = new Date(year, month)
+    if (month_stats_map.has(month_timestamp)) {
+      let data = month_stats_map.get(month_timestamp),
+        total_sum = data.current.reduce(((total, amount) => total + amount), 0)
+
+      month_total_completions += total_sum
+    }
+
+    this.setState({
+      day_total_completions,
+      week_total_completions,
+      month_total_completions
+    })
+  }
+
+  render() {
+    return (
+      <View
+        style={{
+          height: 165,
+          flex: 1,
+          borderTopWidth: 1,
+          borderBottomWidth: 1,
+          marginTop: 66,
+          borderColor: "black",
+        }}
+      >
+        <View
+          style={{
+            width: 79,
+            height: 20,
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 24,
+            marginLeft: 16,
+          }}
+        >
+          <Text
+            style={{
+            }}
+          >
+            Summary:
+            </Text>
+        </View>
+
+
+        <View
+          style={{
+            height: 81,
+            marginTop: 16,
+            flexDirection: "row",
+          }}
+        >
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text>{this.state.day_total_completions}</Text>
+            <Text>Daily completed</Text>
+          </View>
+
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              borderLeftWidth: 1,
+              borderRightWidth: 1,
+              borderColor: "black"
+            }}
+          >
+            <Text>{this.state.week_total_completions}</Text>
+            <Text>Weekly completed</Text>
+          </View>
+
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text>{this.state.month_total_completions}</Text>
+            <Text>Monthly completed</Text>
+          </View>
+        </View>
+      </View>
     )
   }
 }
