@@ -84,6 +84,8 @@ export default class Progress extends React.Component {
             day_stats={this.props.day_stats}
             week_stats={this.props.week_stats}
             month_stats={this.props.month_stats}
+            month={this.state.month}
+            year={this.state.year}
           />
         </ScrollView >
 
@@ -1026,18 +1028,11 @@ class SummaryHolder extends React.PureComponent {
     return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
   }
 
-  componentDidMount() {
-    let { month, year, day_stats, week_stats, month_stats } = this.props,
+  updateDayTaskCompletions = (month, year, day_stats_map) => {
+    let day_total_completions = 0,
       first_day_of_month = new Date(year, month, 1),
       last_day_of_month = new Date(year, month + 1, 0),
-      day_stats_map = Map(day_stats),
-      week_stats_map = Map(week_stats),
-      month_stats_map = Map(month_stats),
-      day_total_completions = 0,
-      week_total_completions = 0,
-      month_total_completions = 0,
-
-
+      total_sum = 0
 
     for (let i = first_day_of_month.getDate(); i <= last_day_of_month.getDate(); i++) {
       let day_timestamp = new Date(year, month, i).getTime()
@@ -1050,14 +1045,23 @@ class SummaryHolder extends React.PureComponent {
       }
     }
 
-    let first_monday = this.getMonday(first_day_of_month),
+    this.setState({
+      day_total_completions
+    })
+  }
+
+  updateWeekTaskCompletions = (month, year, week_stats_map) => {
+    let first_day_of_month = new Date(year, month, 1),
+      last_day_of_month = new Date(year, month + 1, 0),
+      first_monday = this.getMonday(first_day_of_month),
       last_monday = this.getMonday(last_day_of_month),
       first_week_of_month = this.getWeek(first_monday),
-      last_week_of_month = this.getWeek(last_monday)
+      last_week_of_month = this.getWeek(last_monday),
+      week_total_completions = 0,
+      total_sum = 0
 
-    for (let i = 0; i < (last_week_of_month - first_week_of_month); i++) {
-      let week_timestamp = first_monday.getTime() + 86400 * 1000 * i
-
+    for (let i = 0; i <= (last_week_of_month - first_week_of_month); i++) {
+      let week_timestamp = first_monday.getTime() + 86400 * 1000 * 7 * i
       if (week_stats_map.has(week_timestamp)) {
         let data = week_stats_map.get(week_timestamp),
           total_sum = data.current.reduce(((total, amount) => total + amount), 0)
@@ -1066,7 +1070,16 @@ class SummaryHolder extends React.PureComponent {
       }
     }
 
-    let month_timestamp = new Date(year, month)
+    this.setState({
+      week_total_completions
+    })
+  }
+
+  updateMonthTaskCompletions = (month, year, month_stats_map) => {
+    let month_timestamp = new Date(year, month),
+      month_total_completions = 0,
+      total_sum = 0
+
     if (month_stats_map.has(month_timestamp)) {
       let data = month_stats_map.get(month_timestamp),
         total_sum = data.current.reduce(((total, amount) => total + amount), 0)
@@ -1075,10 +1088,34 @@ class SummaryHolder extends React.PureComponent {
     }
 
     this.setState({
-      day_total_completions,
-      week_total_completions,
       month_total_completions
     })
+  }
+
+  componentDidMount() {
+    this.updateDayTaskCompletions(this.props.month, this.props.year, Map(this.props.day_stats))
+    this.updateWeekTaskCompletions(this.props.month, this.props.year, Map(this.props.week_stats))
+    this.updateMonthTaskCompletions(this.props.month, this.props.year, Map(this.props.month_stats))
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.day_stats !== prevProps.day_stats) {
+      this.updateDayTaskCompletions(this.props.month, this.props.year, Map(this.props.day_stats))
+    }
+
+    if (this.props.week_stats !== prevProps.week_stats) {
+      this.updateWeekTaskCompletions(this.props.month, this.props.year, Map(this.props.week_stats))
+    }
+
+    if (this.props.month_stats !== prevProps.month_stats) {
+      this.updateMonthTaskCompletions(this.props.month, this.props.year, Map(this.props.month_stats))
+    }
+
+    if (this.props.month !== prevProps.month || this.props.year !== prevProps.year) {
+      this.updateDayTaskCompletions(this.props.month, this.props.year, Map(this.props.day_stats))
+      this.updateWeekTaskCompletions(this.props.month, this.props.year, Map(this.props.week_stats))
+      this.updateMonthTaskCompletions(this.props.month, this.props.year, Map(this.props.month_stats))
+    }
   }
 
   render() {
