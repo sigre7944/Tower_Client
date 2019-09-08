@@ -92,20 +92,36 @@ export default class TaskCard extends React.PureComponent {
                     stats_timestamp = day_timestamp
                     stats_action_type = "UPDATE_DAY_STATS"
 
-                    if(stats.has(day_timestamp)){
+                    if (stats.has(day_timestamp)) {
                         stats_data = stats.get(day_timestamp)
-                        let {current} = stats_data
+                        let { current } = stats_data
                         current[this.priority_order[task.priority.value]] += 1
 
                         stats_data.current = current
                     }
 
-                    else{
+                    else {
                         let current = [0, 0, 0, 0]
                         current[this.priority_order[task.priority.value]] += 1
-                        stats_data= {
+                        stats_data = {
                             current
                         }
+                    }
+
+                    if (stats_data[task.id]) {
+                        if (stats_data[task.id][day_timestamp])
+                            stats_data[task.id][day_timestamp] += 1
+                        else{
+                            stats_data[task.id][day_timestamp] = 1
+                            stats_data[task.id].id = task.id
+                        }
+                    }
+
+                    else {
+                        let task_day_timestamp = {}
+                        task_day_timestamp[day_timestamp] = 1
+                        stats_data[task.id] = task_day_timestamp
+                        stats_data[task.id].id = task.id
                     }
                 }
 
@@ -137,20 +153,38 @@ export default class TaskCard extends React.PureComponent {
                     stats_timestamp = week_timestamp
                     stats_action_type = "UPDATE_WEEK_STATS"
 
-                    if(stats.has(week_timestamp)){
+                    if (stats.has(week_timestamp)) {
                         stats_data = stats.get(week_timestamp)
-                        let {current} = stats_data
+                        let { current } = stats_data
                         current[this.priority_order[task.priority.value]] += 1
 
                         stats_data.current = current
                     }
 
-                    else{
+                    else {
                         let current = [0, 0, 0, 0]
                         current[this.priority_order[task.priority.value]] += 1
-                        stats_data= {
+                        stats_data = {
                             current
                         }
+                    }
+
+                    let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+
+                    if (stats_data[task.id]) {
+                        if (stats_data[task.id][day_timestamp])
+                            stats_data[task.id][day_timestamp] += 1
+                        else{
+                            stats_data[task.id][day_timestamp] = 1
+                            stats_data[task.id].id = task.id
+                        }
+                    }
+
+                    else {
+                        let task_day_timestamp = {}
+                        task_day_timestamp[day_timestamp] = 1
+                        stats_data[task.id] = task_day_timestamp
+                        stats_data[task.id].id = task.id
                     }
                 }
 
@@ -182,20 +216,38 @@ export default class TaskCard extends React.PureComponent {
                     stats_timestamp = month_timestamp
                     stats_action_type = "UPDATE_MONTH_STATS"
 
-                    if(stats.has(month_timestamp)){
+                    if (stats.has(month_timestamp)) {
                         stats_data = stats.get(month_timestamp)
-                        let {current} = stats_data
+                        let { current } = stats_data
                         current[this.priority_order[task.priority.value]] += 1
 
                         stats_data.current = current
                     }
 
-                    else{
+                    else {
                         let current = [0, 0, 0, 0]
                         current[this.priority_order[task.priority.value]] += 1
-                        stats_data= {
+                        stats_data = {
                             current
                         }
+                    }
+
+                    let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+
+                    if (stats_data[task.id]) {
+                        if (stats_data[task.id][day_timestamp])
+                            stats_data[task.id][day_timestamp] += 1
+                        else{
+                            stats_data[task.id][day_timestamp] = 1
+                            stats_data[task.id].id = task.id
+                        }
+                    }
+
+                    else {
+                        let task_day_timestamp = {}
+                        task_day_timestamp[day_timestamp] = 1
+                        stats_data[task.id] = task_day_timestamp
+                        stats_data[task.id].id = task.id
                     }
                 }
 
@@ -222,12 +274,27 @@ export default class TaskCard extends React.PureComponent {
                     stats_timestamp = day_timestamp
                     stats_action_type = "UPDATE_DAY_STATS"
 
-                    if(stats.has(day_timestamp)){
+                    if (stats.has(day_timestamp)) {
                         stats_data = stats.get(day_timestamp)
-                        let {current} = stats_data
+                        let { current } = stats_data
                         current[this.priority_order[task.priority.value]] -= 1
 
                         stats_data.current = current
+                    }
+
+                    if (stats_data[task.id]) {
+                        let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+                        if (stats_data[task.id][day_timestamp]){
+                            stats_data[task.id][day_timestamp] -= 1
+
+                            if(stats_data[task.id][day_timestamp] <= 0){
+                                delete stats_data[task.id][day_timestamp]
+                            }
+                        }
+
+                        if(Object.keys(stats_data[task.id]).length === 1){
+                            delete stats_data[task.id]
+                        }
                     }
                 }
 
@@ -251,12 +318,27 @@ export default class TaskCard extends React.PureComponent {
                     stats_timestamp = week_timestamp
                     stats_action_type = "UPDATE_WEEK_STATS"
 
-                    if(stats.has(week_timestamp)){
+                    if (stats.has(week_timestamp)) {
                         stats_data = stats.get(week_timestamp)
-                        let {current} = stats_data
+                        let { current } = stats_data
                         current[this.priority_order[task.priority.value]] -= 1
 
                         stats_data.current = current
+                    }
+
+                    if (stats_data[task.id]) {
+                        let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+                        if (stats_data[task.id][day_timestamp]){
+                            stats_data[task.id][day_timestamp] -= 1
+
+                            if(stats_data[task.id][day_timestamp] <= 0){
+                                delete stats_data[task.id][day_timestamp]
+                            }
+                        }
+
+                        if(Object.keys(stats_data[task.id]).length === 1){
+                            delete stats_data[task.id]
+                        }
                     }
                 }
 
@@ -280,12 +362,27 @@ export default class TaskCard extends React.PureComponent {
                     stats_timestamp = month_timestamp
                     stats_action_type = "UPDATE_MONTH_STATS"
 
-                    if(stats.has(month_timestamp)){
+                    if (stats.has(month_timestamp)) {
                         stats_data = stats.get(month_timestamp)
-                        let {current} = stats_data
+                        let { current } = stats_data
                         current[this.priority_order[task.priority.value]] -= 1
 
                         stats_data.current = current
+                    }
+
+                    if (stats_data[task.id]) {
+                        let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+                        if (stats_data[task.id][day_timestamp]){
+                            stats_data[task.id][day_timestamp] -= 1
+
+                            if(stats_data[task.id][day_timestamp] <= 0){
+                                delete stats_data[task.id][day_timestamp]
+                            }
+                        }
+
+                        if(Object.keys(stats_data[task.id]).length === 1){
+                            delete stats_data[task.id]
+                        }
                     }
                 }
             }

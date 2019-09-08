@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler'
 import { Map } from 'immutable'
+import { StackedBarChart } from 'react-native-svg-charts'
 
 export default class Progress extends React.PureComponent {
   year_array = [new Date().getFullYear(), new Date().getFullYear() + 1, new Date().getFullYear() - 1]
@@ -87,6 +88,8 @@ export default class Progress extends React.PureComponent {
             month={this.state.month}
             year={this.state.year}
           />
+
+          <Charts />
         </ScrollView >
 
         {this.state.choose_month_bool ?
@@ -933,7 +936,7 @@ class MonthsInYear extends React.PureComponent {
       this.initMonthsInYear(this.props.year)
     }
 
-    if(this.props.year_array !== prevProps.year_array){
+    if (this.props.year_array !== prevProps.year_array) {
       console.log(this.props.year_array)
     }
   }
@@ -1201,6 +1204,68 @@ class SummaryHolder extends React.PureComponent {
             <Text>{this.state.month_total_completions}</Text>
             <Text>Monthly completed</Text>
           </View>
+        </View>
+      </View>
+    )
+  }
+}
+
+class Charts extends React.PureComponent {
+  data = [
+    {
+      month: new Date(2015, 0, 1),
+      apples: 3840,
+      bananas: 1920,
+      cherries: 960,
+      dates: 400,
+      oranges: 400,
+    },
+    {
+      month: new Date(2015, 1, 1),
+      apples: 1600,
+      bananas: 1440,
+      cherries: 960,
+      dates: 400,
+    },
+    {
+      month: new Date(2015, 2, 1),
+      apples: 640,
+      bananas: 960,
+      cherries: 3640,
+      dates: 400,
+    },
+    {
+      month: new Date(2015, 3, 1),
+      apples: 3320,
+      bananas: 480,
+      cherries: 640,
+      dates: 400,
+    },
+  ]
+
+  colors = ['#7b4173', '#a55194', '#ce6dbd', '#de9ed6']
+  keys = ['apples', 'bananas', 'cherries', 'dates']
+  render() {
+    return (
+      <View>
+        <Text
+          style={{
+            marginLeft: 16,
+            marginTop: 24
+          }}
+        >
+          Number of completed tasks
+        </Text>
+
+        <View>
+          <StackedBarChart
+            style={{ height: 200 }}
+            keys={this.keys}
+            colors={this.colors}
+            data={this.data}
+            showGrid={false}
+            contentInset={{ top: 30, bottom: 30 }}
+          />
         </View>
       </View>
     )
