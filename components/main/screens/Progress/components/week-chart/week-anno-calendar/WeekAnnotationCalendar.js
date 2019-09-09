@@ -2,12 +2,8 @@ import React from 'react';
 import {
     View,
     Text,
-    ScrollView,
     TouchableOpacity,
-    Modal,
-    Dimensions,
     Animated,
-    StyleSheet,
 } from 'react-native';
 import { PanGestureHandler, State, TouchableOpacity as KMTouchableOpacity } from 'react-native-gesture-handler'
 

@@ -994,26 +994,6 @@ class Month extends React.PureComponent {
           {`Week ${this.props.data.start_week} - ${this.props.data.end_week}`}
         </Text>
       </KGMTouchableOpacity>
-      // <TapGestureHandler
-      //   onHandlerStateChange={this._onSingleTap}
-      // >
-      //   <Animated.View
-      //     style={{
-      //       height: 80,
-      //       width: 350 / 3,
-      //       alignItems: "center",
-      //       opacity: this.opacity_value
-      //     }}
-      //   >
-      //     <Text>
-      //       {this.short_month_texts[this.props.data.month]}
-      //     </Text>
-
-      //     <Text>
-      //       {`Week ${this.props.data.start_week} - ${this.props.data.end_week}`}
-      //     </Text>
-      //   </Animated.View>
-      // </TapGestureHandler>
     )
   }
 }
