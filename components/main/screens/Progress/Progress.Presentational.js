@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler'
 import { Map } from 'immutable'
-import { StackedBarChart } from 'react-native-svg-charts'
+import { StackedBarChart, XAxis, YAxis } from 'react-native-svg-charts'
 
 export default class Progress extends React.PureComponent {
   year_array = [new Date().getFullYear(), new Date().getFullYear() + 1, new Date().getFullYear() - 1]
@@ -48,11 +48,6 @@ export default class Progress extends React.PureComponent {
         this.props.changeRouteAction(payload.state.routeName)
       }
     )
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props.currentRoute !== prevProps.currentRoute) {
-    }
   }
 
   render() {
@@ -1118,10 +1113,12 @@ class SummaryHolder extends React.PureComponent {
 
     if (this.props.week_stats !== prevProps.week_stats) {
       this.updateWeekTaskCompletions(this.props.month, this.props.year, Map(this.props.week_stats))
+      console.log(this.props.week_stats)
     }
 
     if (this.props.month_stats !== prevProps.month_stats) {
       this.updateMonthTaskCompletions(this.props.month, this.props.year, Map(this.props.month_stats))
+      console.log(this.props.month_stats)
     }
 
     if (this.props.month !== prevProps.month || this.props.year !== prevProps.year) {
@@ -1243,6 +1240,9 @@ class Charts extends React.PureComponent {
     },
   ]
 
+  x_data = [0, 1, 2, 3]
+  y_data = [10, 11]
+
   colors = ['#7b4173', '#a55194', '#ce6dbd', '#de9ed6']
   keys = ['apples', 'bananas', 'cherries', 'dates']
   render() {
@@ -1257,14 +1257,48 @@ class Charts extends React.PureComponent {
           Number of completed tasks
         </Text>
 
-        <View>
-          <StackedBarChart
-            style={{ height: 200 }}
-            keys={this.keys}
-            colors={this.colors}
-            data={this.data}
-            showGrid={false}
-            contentInset={{ top: 30, bottom: 30 }}
+        <View
+          style={{
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+            }}
+          >
+            <YAxis
+              data={this.y_data}
+              contentInset={{
+                top: 20,
+                bottom: 20,
+              }}
+              numberOfTicks={3}
+              style={{
+                width: 30,
+              }}
+            />
+            <StackedBarChart
+              style={{
+                height: 200,
+                flex: 1,
+              }}
+              keys={this.keys}
+              colors={this.colors}
+              data={this.data}
+              showGrid={true}
+              animate={true}
+              contentInset={{
+                top: 20,
+                bottom: 20,
+              }}
+            />
+          </View>
+          <XAxis
+            data={this.x_data}
+            style={{
+              marginLeft: 30,
+            }}
+            contentInset={{ left: 10, right: 10 }}
           />
         </View>
       </View>

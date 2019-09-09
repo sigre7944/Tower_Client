@@ -107,22 +107,6 @@ export default class TaskCard extends React.PureComponent {
                             current
                         }
                     }
-
-                    if (stats_data[task.id]) {
-                        if (stats_data[task.id][day_timestamp])
-                            stats_data[task.id][day_timestamp] += 1
-                        else{
-                            stats_data[task.id][day_timestamp] = 1
-                            stats_data[task.id].id = task.id
-                        }
-                    }
-
-                    else {
-                        let task_day_timestamp = {}
-                        task_day_timestamp[day_timestamp] = 1
-                        stats_data[task.id] = task_day_timestamp
-                        stats_data[task.id].id = task.id
-                    }
                 }
 
                 else if (this.props.type === "week") {
@@ -164,27 +148,32 @@ export default class TaskCard extends React.PureComponent {
                     else {
                         let current = [0, 0, 0, 0]
                         current[this.priority_order[task.priority.value]] += 1
-                        stats_data = {
-                            current
-                        }
+                        stats_data = { current }
                     }
 
                     let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
 
-                    if (stats_data[task.id]) {
-                        if (stats_data[task.id][day_timestamp])
-                            stats_data[task.id][day_timestamp] += 1
-                        else{
-                            stats_data[task.id][day_timestamp] = 1
-                            stats_data[task.id].id = task.id
+                    if (stats_data.hasOwnProperty("day_stats")) {
+                        if (stats_data["day_stats"].hasOwnProperty(day_timestamp)) {
+                            let { current } = stats_data["day_stats"][day_timestamp]
+                            current[this.priority_order[task.priority.value]] += 1
+                            stats_data["day_stats"][day_timestamp].current = current
+                        }
+
+                        else {
+                            let current = [0, 0, 0, 0]
+                            current[this.priority_order[task.priority.value]] += 1
+                            stats_data["day_stats"][day_timestamp] = { current }
                         }
                     }
 
                     else {
-                        let task_day_timestamp = {}
-                        task_day_timestamp[day_timestamp] = 1
-                        stats_data[task.id] = task_day_timestamp
-                        stats_data[task.id].id = task.id
+                        let current = [0, 0, 0, 0],
+                            day_stats_data = {}
+                        current[this.priority_order[task.priority.value]] += 1
+                        day_stats_data[day_timestamp] = { current }
+
+                        stats_data["day_stats"] = { ...day_stats_data }
                     }
                 }
 
@@ -234,20 +223,27 @@ export default class TaskCard extends React.PureComponent {
 
                     let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
 
-                    if (stats_data[task.id]) {
-                        if (stats_data[task.id][day_timestamp])
-                            stats_data[task.id][day_timestamp] += 1
-                        else{
-                            stats_data[task.id][day_timestamp] = 1
-                            stats_data[task.id].id = task.id
+                    if (stats_data.hasOwnProperty("day_stats")) {
+                        if (stats_data["day_stats"].hasOwnProperty(day_timestamp)) {
+                            let { current } = stats_data["day_stats"][day_timestamp]
+                            current[this.priority_order[task.priority.value]] += 1
+                            stats_data["day_stats"][day_timestamp].current = current
+                        }
+
+                        else {
+                            let current = [0, 0, 0, 0]
+                            current[this.priority_order[task.priority.value]] += 1
+                            stats_data["day_stats"][day_timestamp] = { current }
                         }
                     }
 
                     else {
-                        let task_day_timestamp = {}
-                        task_day_timestamp[day_timestamp] = 1
-                        stats_data[task.id] = task_day_timestamp
-                        stats_data[task.id].id = task.id
+                        let current = [0, 0, 0, 0],
+                            day_stats_data = {}
+                        current[this.priority_order[task.priority.value]] += 1
+                        day_stats_data[day_timestamp] = { current }
+
+                        stats_data["day_stats"] = { ...day_stats_data }
                     }
                 }
 
@@ -281,21 +277,6 @@ export default class TaskCard extends React.PureComponent {
 
                         stats_data.current = current
                     }
-
-                    if (stats_data[task.id]) {
-                        let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
-                        if (stats_data[task.id][day_timestamp]){
-                            stats_data[task.id][day_timestamp] -= 1
-
-                            if(stats_data[task.id][day_timestamp] <= 0){
-                                delete stats_data[task.id][day_timestamp]
-                            }
-                        }
-
-                        if(Object.keys(stats_data[task.id]).length === 1){
-                            delete stats_data[task.id]
-                        }
-                    }
                 }
 
                 else if (this.props.type === "week") {
@@ -326,18 +307,37 @@ export default class TaskCard extends React.PureComponent {
                         stats_data.current = current
                     }
 
-                    if (stats_data[task.id]) {
+                    if (stats_data.hasOwnProperty("day_stats")) {
                         let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
-                        if (stats_data[task.id][day_timestamp]){
-                            stats_data[task.id][day_timestamp] -= 1
 
-                            if(stats_data[task.id][day_timestamp] <= 0){
-                                delete stats_data[task.id][day_timestamp]
+                        if (stats_data["day_stats"].hasOwnProperty(day_timestamp)) {
+                            let { current } = stats_data["day_stats"][day_timestamp]
+                            current[this.priority_order[task.priority.value]] -= 1
+
+                            if (current[this.priority_order[task.priority.value]] <= 0) {
+                                current[this.priority_order[task.priority.value]] = 0
+                            }
+
+                            let all_zero = false
+
+                            current.every((value) => {
+                                if (value === 0) {
+                                    all_zero = true
+                                    return true
+                                }
+                                else {
+                                    all_zero = false
+                                    return false
+                                }
+                            })
+
+                            if (all_zero) {
+                                delete stats_data["day_stats"][day_timestamp]
                             }
                         }
 
-                        if(Object.keys(stats_data[task.id]).length === 1){
-                            delete stats_data[task.id]
+                        if (Object.keys(stats_data["day_stats"]).length === 0) {
+                            delete stats_data["day_stats"]
                         }
                     }
                 }
@@ -370,18 +370,37 @@ export default class TaskCard extends React.PureComponent {
                         stats_data.current = current
                     }
 
-                    if (stats_data[task.id]) {
+                    if (stats_data.hasOwnProperty("day_stats")) {
                         let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
-                        if (stats_data[task.id][day_timestamp]){
-                            stats_data[task.id][day_timestamp] -= 1
 
-                            if(stats_data[task.id][day_timestamp] <= 0){
-                                delete stats_data[task.id][day_timestamp]
+                        if (stats_data["day_stats"].hasOwnProperty(day_timestamp)) {
+                            let { current } = stats_data["day_stats"][day_timestamp]
+                            current[this.priority_order[task.priority.value]] -= 1
+
+                            if (current[this.priority_order[task.priority.value]] <= 0) {
+                                current[this.priority_order[task.priority.value]] = 0
+                            }
+
+                            let all_zero = false
+
+                            current.every((value) => {
+                                if (value === 0) {
+                                    all_zero = true
+                                    return true
+                                }
+                                else {
+                                    all_zero = false
+                                    return false
+                                }
+                            })
+
+                            if (all_zero) {
+                                delete stats_data["day_stats"][day_timestamp]
                             }
                         }
 
-                        if(Object.keys(stats_data[task.id]).length === 1){
-                            delete stats_data[task.id]
+                        if (Object.keys(stats_data["day_stats"]).length === 0) {
+                            delete stats_data["day_stats"]
                         }
                     }
                 }
@@ -403,7 +422,11 @@ export default class TaskCard extends React.PureComponent {
                 data = {},
                 overwrite_obj = {},
                 currentGoal = 0,
-                completed_tasks = Map(this.props.completed_tasks)
+                completed_tasks = Map(this.props.completed_tasks),
+                stats = Map(this.props.stats),
+                stats_data = {},
+                stats_timestamp = 0,
+                stats_action_type = "UPDATE_DAY_STATS"
 
             if (this.props.flag === "uncompleted") {
                 if (this.props.type === "day") {
@@ -430,6 +453,8 @@ export default class TaskCard extends React.PureComponent {
 
                         data = { ...data, ...overwrite_obj }
                     }
+
+
                 }
 
                 else if (this.props.type === "week") {
@@ -455,6 +480,51 @@ export default class TaskCard extends React.PureComponent {
                         }
 
                         data = { ...data, ...overwrite_obj }
+                    }
+
+                    stats_timestamp = week_timestamp
+                    stats_action_type = "UPDATE_WEEK_STATS"
+
+                    if (stats.has(week_timestamp)) {
+                        stats_data = stats.get(week_timestamp)
+                        let { current } = stats_data
+                        current[this.priority_order[task.priority.value]] -= 1
+
+                        stats_data.current = current
+                    }
+
+                    if (stats_data.hasOwnProperty("day_stats")) {
+                        let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+
+                        if (stats_data["day_stats"].hasOwnProperty(day_timestamp)) {
+                            let { current } = stats_data["day_stats"][day_timestamp]
+                            current[this.priority_order[task.priority.value]] -= 1
+
+                            if (current[this.priority_order[task.priority.value]] <= 0) {
+                                current[this.priority_order[task.priority.value]] = 0
+                            }
+
+                            let all_zero = false
+
+                            current.every((value) => {
+                                if (value === 0) {
+                                    all_zero = true
+                                    return true
+                                }
+                                else {
+                                    all_zero = false
+                                    return false
+                                }
+                            })
+
+                            if (all_zero) {
+                                delete stats_data["day_stats"][day_timestamp]
+                            }
+                        }
+
+                        if (Object.keys(stats_data["day_stats"]).length === 0) {
+                            delete stats_data["day_stats"]
+                        }
                     }
                 }
 
@@ -482,9 +552,54 @@ export default class TaskCard extends React.PureComponent {
 
                         data = { ...data, ...overwrite_obj }
                     }
+
+                    stats_timestamp = month_timestamp
+                    stats_action_type = "UPDATE_MONTH_STATS"
+
+                    if (stats.has(month_timestamp)) {
+                        stats_data = stats.get(month_timestamp)
+                        let { current } = stats_data
+                        current[this.priority_order[task.priority.value]] -= 1
+
+                        stats_data.current = current
+                    }
+
+                    if (stats_data.hasOwnProperty("day_stats")) {
+                        let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+
+                        if (stats_data["day_stats"].hasOwnProperty(day_timestamp)) {
+                            let { current } = stats_data["day_stats"][day_timestamp]
+                            current[this.priority_order[task.priority.value]] -= 1
+
+                            if (current[this.priority_order[task.priority.value]] <= 0) {
+                                current[this.priority_order[task.priority.value]] = 0
+                            }
+
+                            let all_zero = false
+
+                            current.every((value) => {
+                                if (value === 0) {
+                                    all_zero = true
+                                    return true
+                                }
+                                else {
+                                    all_zero = false
+                                    return false
+                                }
+                            })
+
+                            if (all_zero) {
+                                delete stats_data["day_stats"][day_timestamp]
+                            }
+                        }
+
+                        if (Object.keys(stats_data["day_stats"]).length === 0) {
+                            delete stats_data["day_stats"]
+                        }
+                    }
                 }
             }
-
+            this.props.updateStats(stats_action_type, stats_timestamp, stats_data)
             this.props.updateCompletedTask(data)
         }
     }
