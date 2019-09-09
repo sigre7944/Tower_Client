@@ -9,10 +9,11 @@ import {
   Animated,
   StyleSheet,
 } from 'react-native';
-import { PanGestureHandler, State } from 'react-native-gesture-handler'
 import { Map } from 'immutable'
 import { StackedBarChart, XAxis, YAxis } from 'react-native-svg-charts'
 import PointEarnedSection from './components/point-earned-section/PointEarnedSection'
+import WeekAnnotationCalendar from './components/week-anno-calendar/WeekAnnotationCalendar'
+
 export default class Progress extends React.PureComponent {
   year_array = [new Date().getFullYear(), new Date().getFullYear() + 1, new Date().getFullYear() - 1]
 
@@ -317,12 +318,19 @@ class ChartSection extends React.PureComponent {
   colors = ['red', '#7b4173', '#a55194', '#ce6dbd', '#de9ed6']
   keys = ['month', 'apples', 'bananas', 'cherries', 'dates']
 
+  month_texts = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
   state = {
     current_annotation_index: 0,
     last_annotation_index: -1,
 
     calendar_chosen_bool: false,
+
+    week_anno_current_time_text: ""
   }
+
+  month_array = [new Date().getMonth(), new Date().getMonth() + 1, new Date().getMonth() - 1]
+  year_array = [new Date().getFullYear(), new Date().getFullYear(), new Date().getFullYear()]
 
   chooseAnnotation = (index) => {
     if (this.state.current_annotation_index !== index) {
@@ -343,6 +351,58 @@ class ChartSection extends React.PureComponent {
     this.setState({
       calendar_chosen_bool: false
     })
+  }
+
+  chooseWeek = (f_day, f_month, f_year, l_day, l_month, l_year) => {
+    if (f_month === 11) {
+      this.month_array = [f_month, 0, f_month - 1]
+      this.year_array = [f_year, f_year + 1, f_year]
+    }
+    else if(f_month === 0){
+      this.month_array = [f_month, f_month + 1, 11]
+      this.year_array = [f_year, f_year, f_year - 1]
+    }
+
+    this.month_array = [f_month, f_month + 1, f_month - 1]
+    this.year_array = [f_year, f_year, f_year]
+
+    this.setState({
+      week_anno_current_time_text: `${this.month_texts[f_month]} ${f_day} ${f_year} - ${this.month_texts[l_month]} ${l_day} ${l_year}`
+    })
+  }
+
+  getWeek = (date) => {
+    let target = new Date(date);
+    let dayNr = (date.getDay() + 6) % 7;
+    target.setDate(target.getDate() - dayNr + 3);
+    let firstThursday = target.valueOf();
+    target.setMonth(0, 1);
+    if (target.getDay() != 4) {
+      target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+    }
+    return 1 + Math.ceil((firstThursday - target) / 604800000);
+  }
+
+  getMonday = (date) => {
+    let dayInWeek = new Date(date).getDay()
+    let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
+    return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
+  }
+
+  getSunday = (date) => {
+    let dayInWeek = new Date(date).getDay()
+    let diff = (7 - dayInWeek) === 7 ? 0 : 7 - dayInWeek
+    return new Date(new Date(date).getTime() + (diff * 86400 * 1000))
+  }
+  componentDidMount() {
+    let current = new Date(),
+      monday = this.getMonday(current),
+      sunday = this.getSunday(current)
+
+    this.setState({
+      week_anno_current_time_text: `${this.month_texts[monday.getMonth()]} ${monday.getDate()} ${monday.getFullYear()} - ${this.month_texts[sunday.getMonth()]} ${sunday.getDate()} ${sunday.getFullYear()}`
+    })
+
   }
 
   render() {
@@ -408,9 +468,14 @@ class ChartSection extends React.PureComponent {
 
             onPress={this.chooseCalendar}
           >
-            <Text>
-              May 5 - May 11
-            </Text>
+            {this.state.current_annotation_index === 0 ?
+              <Text>
+                {this.state.week_anno_current_time_text}
+              </Text>
+              :
+              null
+            }
+
           </TouchableOpacity>
 
           {this.state.calendar_chosen_bool ?
@@ -437,19 +502,19 @@ class ChartSection extends React.PureComponent {
                 >
                 </TouchableOpacity>
 
-                <View
-                  style={{
-                    position: "absolute",
-                    width: 338,
-                    height: 300,
-                    backgroundColor: "white",
-                    borderRadius: 20,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <WeekAnnotationCalendar />
-                </View>
+                {this.state.current_annotation_index === 0 ?
+                  <WeekAnnotationCalendar
+                    month_array={this.month_array}
+                    year_array={this.year_array}
+                    chooseWeek={this.chooseWeek}
+                    dismissCalendar={this.dismissCalendar}
+                  />
+
+                  :
+
+                  null
+                }
+
               </View>
             </Modal>
 

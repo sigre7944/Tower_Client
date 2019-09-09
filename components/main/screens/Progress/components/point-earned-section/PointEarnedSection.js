@@ -9,7 +9,7 @@ import {
   Animated,
   StyleSheet,
 } from 'react-native';
-import { PanGestureHandler, State, TapGestureHandler } from 'react-native-gesture-handler'
+import { PanGestureHandler, State, TapGestureHandler, TouchableOpacity as KGMTouchableOpacity } from 'react-native-gesture-handler'
 import { Map } from 'immutable'
 
 export default class PointEarnedSection extends React.PureComponent {
@@ -129,13 +129,6 @@ class Calendar extends React.PureComponent {
     return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
   }
 
-  getNoWeekInMonth = (date) => {
-    let nearest_monday = this.getMonday(date)
-    let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
-
-    return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
-  }
-
   initDaysInMonth = (month, year) => {
     let month_data_array = []
 
@@ -147,10 +140,19 @@ class Calendar extends React.PureComponent {
       monday_of_week = first_monday
 
     if (first_week > last_week) {
-      last_week += first_week
+      let first_week_of_next_year = this.getWeek(this.getMonday(new Date(year, 0, 1))),
+        last_week_of_current_year
+      if (first_week_of_next_year >= 1 && first_week_of_next_year < 10) {
+        last_week_of_current_year = this.getWeek(this.getMonday(new Date(new Date(year, 0, 1)).getTime() - 86400 * 1000 * 7))
+        last_week += last_week_of_current_year
+      }
+      else {
+        last_week_of_current_year = first_week_of_next_year
+        last_week += last_week_of_current_year
+      }
 
       for (let i = first_week; i <= last_week; i++) {
-        let week = i % first_week === 0 ? first_week : i % first_week
+        let week = i % last_week_of_current_year === 0 ? last_week_of_current_year : i % last_week_of_current_year
         month_data_array.push({
           week_row: true,
           week,
@@ -874,13 +876,6 @@ class MonthsInYear extends React.PureComponent {
     return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
   }
 
-  getNoWeekInMonth = (date) => {
-    let nearest_monday = this.getMonday(date)
-    let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
-
-    return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
-  }
-
   initMonthsInYear = (year) => {
     let year_data_array = []
     for (let i = 0; i < 12; i++) {
@@ -982,26 +977,43 @@ class Month extends React.PureComponent {
 
   render() {
     return (
-      <TapGestureHandler
-        onHandlerStateChange={this._onSingleTap}
-      >
-        <Animated.View
-          style={{
-            height: 80,
-            width: 350 / 3,
-            alignItems: "center",
-            opacity: this.opacity_value
-          }}
-        >
-          <Text>
-            {this.short_month_texts[this.props.data.month]}
-          </Text>
+      <KGMTouchableOpacity
+        style={{
+          height: 80,
+          width: 350 / 3,
+          alignItems: "center",
+        }}
 
-          <Text>
-            {`Week ${this.props.data.start_week} - ${this.props.data.end_week}`}
-          </Text>
-        </Animated.View>
-      </TapGestureHandler>
+        onPress={this._onPress}
+      >
+        <Text>
+          {this.short_month_texts[this.props.data.month]}
+        </Text>
+
+        <Text>
+          {`Week ${this.props.data.start_week} - ${this.props.data.end_week}`}
+        </Text>
+      </KGMTouchableOpacity>
+      // <TapGestureHandler
+      //   onHandlerStateChange={this._onSingleTap}
+      // >
+      //   <Animated.View
+      //     style={{
+      //       height: 80,
+      //       width: 350 / 3,
+      //       alignItems: "center",
+      //       opacity: this.opacity_value
+      //     }}
+      //   >
+      //     <Text>
+      //       {this.short_month_texts[this.props.data.month]}
+      //     </Text>
+
+      //     <Text>
+      //       {`Week ${this.props.data.start_week} - ${this.props.data.end_week}`}
+      //     </Text>
+      //   </Animated.View>
+      // </TapGestureHandler>
     )
   }
 }
