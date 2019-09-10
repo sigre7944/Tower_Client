@@ -15,18 +15,11 @@ export default class MonthChart extends React.PureComponent {
 
     state = {
         calendar_chosen_bool: false,
-        month_anno_current_time_text: `${this.month_texts[new Date().getMonth()]} ${new Date().getFullYear()}`,
-        month: new Date().getMonth(),
-        year: new Date().getFullYear()
     }
 
     chooseMonth = (month, year) => {
-        this.props.setMonthAnnoYearData(month, year)
-        this.setState({
-            month,
-            year,
-            month_anno_current_time_text: `${this.month_texts[month]} ${year}`,
-        })
+        this.props.setMonthAnnoYearData(year)
+        this.props.setMonthAnnoText(month, year)
     }
 
     chooseCalendar = () => {
@@ -54,7 +47,7 @@ export default class MonthChart extends React.PureComponent {
                     onPress={this.chooseCalendar}
                 >
                     <Text>
-                        {this.state.month_anno_current_time_text}
+                        {this.props.month_anno_current_time_text}
                     </Text>
                 </TouchableOpacity>
 

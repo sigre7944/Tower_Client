@@ -330,34 +330,61 @@ class ChartSection extends React.PureComponent {
   }
 
   short_month_texts = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  month_texts = ["January", "Febuary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
   current = new Date()
-  week_month_array = [new Date().getMonth(), new Date().getMonth() + 1, new Date().getMonth() - 1]
-  week_year_array = [new Date().getFullYear(), new Date().getFullYear(), new Date().getFullYear()]
-  week_anno_current_time_text = this.initWeekAnnoText()
-  month_year_array = [new Date().getFullYear(), new Date().getFullYear() + 1, new Date().getFullYear() - 1]
-
 
   state = {
     current_annotation_index: 0,
     last_annotation_index: -1,
+
+    week_month_array: [this.current.getMonth(), this.current.getMonth() + 1, this.current.getMonth() - 1],
+    week_year_array: [this.current.getFullYear(), this.current.getFullYear(), this.current.getFullYear()],
+    week_anno_current_time_text: this.initWeekAnnoText(),
+    month_year_array: [this.current.getFullYear(), this.current.getFullYear() + 1, this.current.getFullYear() - 1],
+    month_anno_current_time_text: `${this.month_texts[this.current.getMonth()]} ${this.current.getFullYear()}`
   }
 
   setWeekAnnoMonthYearData = (month, year) => {
+    let week_month_array = [0, 0, 0],
+      week_year_array = [0, 0, 0]
     if (month === 11) {
-      this.week_month_array = [month, 0, month - 1]
-      this.week_year_array = [year, year + 1, year]
+      week_month_array = [month, 0, month - 1]
+      week_year_array = [year, year + 1, year]
     }
     else if (month === 0) {
-      this.week_month_array = [month, month + 1, 11]
-      this.week_year_array = [year, year, year - 1]
+      week_month_array = [month, month + 1, 11]
+      week_year_array = [year, year, year - 1]
+    }
+    else {
+      week_month_array = [month, month + 1, month - 1]
+      week_year_array = [year, year, year]
     }
 
-    this.week_month_array = [month, month + 1, month - 1]
-    this.week_year_array = [year, year, year]
+    this.setState({
+      week_month_array: [...week_month_array],
+      week_year_array: [...week_year_array]
+    })
   }
 
   setMonthAnnoYearData = (year) => {
-    this.month_year_array = [year, year + 1, year - 1]
+    let month_year_array = [0, 0, 0]
+    month_year_array = [year, year + 1, year - 1]
+
+    this.setState({
+      month_year_array: [...month_year_array],
+    })
+  }
+
+  setWeekAnnoText = (f_day, f_month, f_year, l_day, l_month, l_year) => {
+    this.setState({
+      week_anno_current_time_text: `${this.short_month_texts[f_month]} ${f_day} ${f_year} - ${this.short_month_texts[l_month]} ${l_day} ${l_year}`
+    })
+  }
+
+  setMonthAnnoText = (month, year) => {
+    this.setState({
+      month_anno_current_time_text: `${this.month_texts[month]} ${year}`
+    })
   }
 
   chooseAnnotation = (index) => {
@@ -426,8 +453,10 @@ class ChartSection extends React.PureComponent {
           {this.state.current_annotation_index === 0 ?
             <WeekChart
               setWeekAnnoMonthYearData={this.setWeekAnnoMonthYearData}
-              month_array={this.week_month_array}
-              year_array={this.week_year_array}
+              setWeekAnnoText={this.setWeekAnnoText}
+              week_anno_current_time_text={this.state.week_anno_current_time_text}
+              month_array={this.state.week_month_array}
+              year_array={this.state.week_year_array}
             />
 
             :
@@ -436,7 +465,9 @@ class ChartSection extends React.PureComponent {
               {this.state.current_annotation_index === 1 ?
                 <MonthChart
                   setMonthAnnoYearData={this.setMonthAnnoYearData}
-                  year_array={this.month_year_array}
+                  setMonthAnnoText={this.setMonthAnnoText}
+                  year_array={this.state.month_year_array}
+                  month_anno_current_time_text={this.state.month_anno_current_time_text}
                 />
 
                 :
