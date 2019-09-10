@@ -450,10 +450,6 @@ class MonthHolder extends React.Component {
         month_row_data_array: [],
     }
 
-    _toggleChooseMonth = () => {
-        this.props.toggleChooseMonth()
-    }
-
     componentDidUpdate(prevProps, prevState) {
         if (this.props.month_data_array !== prevProps.month_data_array) {
             let day_text_array = []
@@ -525,7 +521,6 @@ class MonthHolder extends React.Component {
                         style={{
                             flexDirection: "row",
                         }}
-                        onPress={this._toggleChooseMonth}
                     >
                         <Text>
                             {`${this.month_texts[this.props.month]} - ${this.props.year}`}

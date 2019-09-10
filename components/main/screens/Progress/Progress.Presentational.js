@@ -7,9 +7,8 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Map } from 'immutable'
-import { StackedBarChart, XAxis, YAxis } from 'react-native-svg-charts'
 import PointEarnedSection from './components/point-earned-section/PointEarnedSection'
-import WeekChart from './components/week-chart/WeekChart'
+import WeekChart from './components/week-chart/WeekChart.Container'
 import MonthChart from './components/month-chart/MonthChart'
 import YearChart from './components/year-chart/YearChart'
 
@@ -260,43 +259,6 @@ class SummaryHolder extends React.PureComponent {
 }
 
 class ChartSection extends React.PureComponent {
-  data = [
-    {
-      month: 1000,
-      apples: 3840,
-      bananas: 1920,
-      cherries: 960,
-      dates: 400,
-      oranges: 400,
-    },
-    {
-      month: 1000,
-      apples: 1600,
-      bananas: 1440,
-      cherries: 960,
-      dates: 400,
-    },
-    {
-      month: 1000,
-      apples: 640,
-      bananas: 960,
-      cherries: 3640,
-      dates: 400,
-    },
-    {
-      month: 1000,
-      apples: 3320,
-      bananas: 480,
-      cherries: 640,
-      dates: 400,
-    },
-  ]
-
-  x_data = [0, 1, 2, 3]
-  y_data = [10, 11]
-
-  colors = ['red', '#7b4173', '#a55194', '#ce6dbd', '#de9ed6']
-  keys = ['month', 'apples', 'bananas', 'cherries', 'dates']
 
   getWeek = (date) => {
     let target = new Date(date);
@@ -340,11 +302,15 @@ class ChartSection extends React.PureComponent {
     week_month_array: [this.current.getMonth(), this.current.getMonth() + 1, this.current.getMonth() - 1],
     week_year_array: [this.current.getFullYear(), this.current.getFullYear(), this.current.getFullYear()],
     week_anno_current_time_text: this.initWeekAnnoText(),
+    current_chosen_week_data: {},
+
+
     month_year_array: [this.current.getFullYear(), this.current.getFullYear() + 1, this.current.getFullYear() - 1],
-    month_anno_current_time_text: `${this.month_texts[this.current.getMonth()]} ${this.current.getFullYear()}`
+    month_anno_current_time_text: `${this.month_texts[this.current.getMonth()]} ${this.current.getFullYear()}`,
+    current_chosen_month_data: {}
   }
 
-  setWeekAnnoMonthYearData = (month, year) => {
+  setWeekAnnoMonthYearData = (day, month, year) => {
     let week_month_array = [0, 0, 0],
       week_year_array = [0, 0, 0]
     if (month === 11) {
@@ -360,18 +326,28 @@ class ChartSection extends React.PureComponent {
       week_year_array = [year, year, year]
     }
 
+    let current_chosen_week_data = {
+      day,
+      month,
+      year
+    }
+
     this.setState({
       week_month_array: [...week_month_array],
-      week_year_array: [...week_year_array]
+      week_year_array: [...week_year_array],
+      current_chosen_week_data: { ...current_chosen_week_data }
     })
   }
 
-  setMonthAnnoYearData = (year) => {
+  setMonthAnnoYearData = (month, year) => {
     let month_year_array = [0, 0, 0]
     month_year_array = [year, year + 1, year - 1]
 
+    let current_chosen_month_data = { month, year }
+
     this.setState({
       month_year_array: [...month_year_array],
+      current_chosen_month_data: { ...current_chosen_month_data }
     })
   }
 
@@ -394,6 +370,25 @@ class ChartSection extends React.PureComponent {
         current_annotation_index: index
       }))
     }
+  }
+
+  componentDidMount() {
+    let current = new Date(),
+      monday = this.getMonday(current),
+      current_chosen_week_data = {
+        day: monday.getDate(),
+        month: monday.getMonth(),
+        year: monday.getFullYear()
+      },
+      current_chosen_month_data = {
+        month: current.getMonth(),
+        year: current.getFullYear()
+      }
+
+    this.setState({
+      current_chosen_week_data: { ...current_chosen_week_data },
+      current_chosen_month_data: { ...current_chosen_month_data }
+    })
   }
 
   render() {
@@ -449,81 +444,38 @@ class ChartSection extends React.PureComponent {
               chooseAnnotation={this.chooseAnnotation}
             />
           </View>
-
-          {this.state.current_annotation_index === 0 ?
-            <WeekChart
-              setWeekAnnoMonthYearData={this.setWeekAnnoMonthYearData}
-              setWeekAnnoText={this.setWeekAnnoText}
-              week_anno_current_time_text={this.state.week_anno_current_time_text}
-              month_array={this.state.week_month_array}
-              year_array={this.state.week_year_array}
-            />
-
-            :
-
-            <>
-              {this.state.current_annotation_index === 1 ?
-                <MonthChart
-                  setMonthAnnoYearData={this.setMonthAnnoYearData}
-                  setMonthAnnoText={this.setMonthAnnoText}
-                  year_array={this.state.month_year_array}
-                  month_anno_current_time_text={this.state.month_anno_current_time_text}
-                />
-
-                :
-
-                <YearChart />
-              }
-            </>
-          }
-
         </View>
 
+        {this.state.current_annotation_index === 0 ?
+          <WeekChart
+            setWeekAnnoMonthYearData={this.setWeekAnnoMonthYearData}
+            setWeekAnnoText={this.setWeekAnnoText}
+            week_anno_current_time_text={this.state.week_anno_current_time_text}
+            month_array={this.state.week_month_array}
+            year_array={this.state.week_year_array}
+            current_chosen_week_data={this.state.current_chosen_week_data}
+          />
 
-        <View
-          style={{
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-            }}
-          >
-            {/* <YAxis
-              data={this.y_data}
-              contentInset={{
-                top: 20,
-                bottom: 20,
-              }}
-              numberOfTicks={3}
-              style={{
-                width: 30,
-              }}
-            /> */}
-            <StackedBarChart
-              style={{
-                height: 200,
-                flex: 1,
-              }}
-              keys={this.keys}
-              colors={this.colors}
-              data={this.data}
-              showGrid={true}
-              animate={true}
-              contentInset={{
-                top: 20,
-                bottom: 20,
-              }}
-            />
-          </View>
-          {/* <XAxis
-            data={this.x_data}
-            style={{
-              marginLeft: 30,
-            }}
-            contentInset={{ left: 10, right: 10 }}
-          /> */}
-        </View>
+          :
+
+          <>
+            {this.state.current_annotation_index === 1 ?
+              <MonthChart
+                setMonthAnnoYearData={this.setMonthAnnoYearData}
+                setMonthAnnoText={this.setMonthAnnoText}
+                year_array={this.state.month_year_array}
+                month_anno_current_time_text={this.state.month_anno_current_time_text}
+                current_chosen_month_data={this.state.current_chosen_month_data}
+              />
+
+              :
+
+              <YearChart />
+            }
+          </>
+        }
+
+
       </View>
     )
   }

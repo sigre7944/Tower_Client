@@ -338,7 +338,6 @@ const day_stats = {
         // delay: 4,
         // delegate: 1,
         current: [3, 2, 4, 1],
-        total: 10,
     }
 }
 
@@ -349,7 +348,6 @@ const week_stats = {
         // delay: 0,
         // delegate: 0,
         current: [1, 2, 0, 0],
-        total: 10,
     }
 }
 
@@ -360,6 +358,33 @@ const month_stats = {
         // delay: 4,
         // delegate: 0,
         current: [1, 3, 4, 0],
-        total: 10,
+    }
+}
+
+const week_chart_stats = {
+    week_timestamp: {
+        //monday
+        0: {
+            current: [1, 0, 1, 0]
+        },
+
+    }
+}
+
+const month_chart_stats = {
+    month_timestamp: {
+        //first day of month
+        1: {
+            current: [1, 0, 1, 0]
+        }
+    }
+}
+
+const year_chart_stats = {
+    year_timestamp: {
+        //January
+        0: {
+            current: [1, 0, 1, 0]
+        }
     }
 }
