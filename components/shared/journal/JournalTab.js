@@ -924,7 +924,7 @@ class TaskCardRenderingArray extends React.PureComponent {
             <>
                 {this.props.task_data_array.map((task_data, index) => (
                     <TaskCard
-                        key={`task-card-${index}`}
+                        key={`task-card-${task_data.task.id}`}
                         action_type={task_data.action_type}
                         type={this.props.type}
                         task_data={task_data.task}
