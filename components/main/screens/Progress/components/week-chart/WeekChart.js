@@ -6,48 +6,18 @@ import {
     Modal,
     Dimensions,
 } from 'react-native';
-import { StackedBarChart, XAxis, YAxis } from 'react-native-svg-charts'
+import { StackedBarChart } from 'react-native-svg-charts'
 import { Map } from 'immutable'
 import WeekAnnotationCalendar from './week-anno-calendar/WeekAnnotationCalendar'
 
 export default class WeekChart extends React.PureComponent {
-    // data = [
-    //     {
-    //         month: 1000,
-    //         apples: 3840,
-    //         bananas: 1920,
-    //         cherries: 960,
-    //         dates: 400,
-    //         oranges: 400,
-    //     },
-    //     {
-    //         month: 1000,
-    //         apples: 1600,
-    //         bananas: 1440,
-    //         cherries: 960,
-    //         dates: 400,
-    //     },
-    //     {
-    //         month: 1000,
-    //         apples: 640,
-    //         bananas: 960,
-    //         cherries: 3640,
-    //         dates: 400,
-    //     },
-    //     {
-    //         month: 1000,
-    //         apples: 3320,
-    //         bananas: 480,
-    //         cherries: 640,
-    //         dates: 400,
-    //     },
-    // ]
-
     x_data = [0, 1, 2, 3]
-    y_data = [10, 11]
+    // y_data = [10, 11]
+    y_data = []
+    y_max = -1
 
-    colors = ['#C4C4C4', '#ADB0B3', '#8B9199', '#000000']
-    keys = ['pri_04', 'pri_03', 'pri_02', 'pri_01']
+    colors = ['#C4C4C4', '#ADB0B3', '#8B9199', '#000000', 'white']
+    keys = ['pri_04', 'pri_03', 'pri_02', 'pri_01', 'max']
 
     month_texts = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
@@ -55,6 +25,7 @@ export default class WeekChart extends React.PureComponent {
         calendar_chosen_bool: false,
         chart_data: []
     }
+
 
     chooseCalendar = () => {
         this.setState({
@@ -77,14 +48,15 @@ export default class WeekChart extends React.PureComponent {
         let { day, month, year } = this.props.current_chosen_week_data,
             week_timestamp = new Date(year, month, day).getTime(),
             week_chart_stats_map = Map(this.props.week_chart_stats),
-            chart_data = []
+            chart_data = [],
+            y_max_array = []
 
         for (let i = 0; i < 7; i++) {
             chart_data.push({
-                pri_04: 1,
-                pri_03: 1,
-                pri_02: 1,
-                pri_01: 1,
+                pri_04: 0,
+                pri_03: 0,
+                pri_02: 0,
+                pri_01: 0,
             })
         }
 
@@ -100,17 +72,59 @@ export default class WeekChart extends React.PureComponent {
                     index = i + 1
                 }
                 if (data.hasOwnProperty(index)) {
-                    let { current } = data[index]
+                    let current = [...data[index].current]
                     chart_data[index] = {
                         pri_04: current[3],
                         pri_03: current[2],
                         pri_02: current[1],
                         pri_01: current[0],
                     }
+
+                    y_max_array.push(this.getMax(current))
                 }
             }
         }
 
+        this.y_max = this.getMax(y_max_array)
+
+        this.updateYDataAndChartData(chart_data)
+        this.setState({
+            chart_data: [...chart_data]
+        })
+    }
+
+    getMax = (data) => {
+        data.sort((a, b) => a - b)
+        return data[data.length - 1]
+    }
+
+    updateYDataAndChartData = (chart_data) => {
+        let number_of_ticks = 0,
+            closet_max = 0,
+            diff_with_ten = this.y_max % 10,
+            y_data = []
+
+        closet_max = this.y_max + (10 - diff_with_ten)
+
+        for (let i = 0; i < chart_data.length; i++) {
+            let data = chart_data[i]
+            data.max = closet_max
+            chart_data[i] = data
+        }
+
+        if (closet_max <= 10) {
+            number_of_ticks = 3
+        }
+
+        else {
+            number_of_ticks = 5
+        }
+
+        for (let i = closet_max; i >= 0; i -= (closet_max / (number_of_ticks - 1))) {
+            y_data.push(i)
+        }
+
+        this.y_data = y_data
         this.setState({
             chart_data: [...chart_data]
         })
@@ -124,12 +138,6 @@ export default class WeekChart extends React.PureComponent {
         if ((this.props.current_chosen_week_data !== prevProps.current_chosen_week_data)
             || (this.props.week_chart_stats !== prevProps.week_chart_stats)) {
             this.updateChartData()
-        }
-
-        if(this.props.month_chart_stats !== prevProps.month_chart_stats){
-        }
-
-        if(this.props.year_chart_stats !== prevProps.year_chart_stats){
         }
     }
 
@@ -191,27 +199,20 @@ export default class WeekChart extends React.PureComponent {
 
                 <View
                     style={{
+                        marginTop: 20,
                     }}
                 >
                     <View
                         style={{
                             flexDirection: "row",
+                            height: 200,
                         }}
                     >
-                        {/* <YAxis
-              data={this.y_data}
-              contentInset={{
-                top: 20,
-                bottom: 20,
-              }}
-              numberOfTicks={3}
-              style={{
-                width: 30,
-              }}
-            /> */}
+                        <YAxis
+                            data={this.y_data}
+                        />
                         <StackedBarChart
                             style={{
-                                height: 200,
                                 flex: 1,
                             }}
                             keys={this.keys}
@@ -221,7 +222,7 @@ export default class WeekChart extends React.PureComponent {
                             animate={true}
                             contentInset={{
                                 top: 20,
-                                bottom: 20,
+                                bottom: 0,
                             }}
                             svg={{
                                 strokeOpacity: 0.5,
@@ -238,6 +239,46 @@ export default class WeekChart extends React.PureComponent {
             contentInset={{ left: 10, right: 10 }}
           /> */}
                 </View>
+            </View>
+        )
+    }
+}
+
+class YAxis extends React.PureComponent {
+
+
+    componentDidMount() {
+    }
+
+    componentDidUpdate() {
+
+    }
+
+    render() {
+        return (
+            <View
+                style={{
+                    width: 50,
+                    borderRightWidth: 1,
+                    borderRightColor: "black",
+                }}
+            >
+                {this.props.data.map((value, index) => {
+                    return (
+                        <View
+                            style={{
+                                flex: 1,
+                                width: 50,
+                                justifyContent: "flex-end",
+                                alignItems: "center",
+                            }}
+                        >
+                            <Text>
+                                {value}
+                            </Text>
+                        </View>
+                    )
+                })}
             </View>
         )
     }

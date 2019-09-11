@@ -455,7 +455,6 @@ class ChartSection extends React.PureComponent {
             year_array={this.state.week_year_array}
             current_chosen_week_data={this.state.current_chosen_week_data}
           />
-
           :
 
           <>
