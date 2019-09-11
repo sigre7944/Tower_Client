@@ -46,368 +46,518 @@ export default class TaskCard extends React.PureComponent {
         return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
     }
 
+    doUpdateOnCompletedTask = (flag, type, operation) => {
+        let task = { ... this.props.task_data },
+            current_date = new Date(),
+            data = {},
+            overwrite_obj = {},
+            currentGoal = 0,
+            completed_tasks = Map(this.props.completed_tasks),
+            timestamp = 0
+
+        if (type === "day") {
+            timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+        }
+
+        else if (type === "week") {
+            timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
+        }
+
+        else {
+            timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
+        }
+
+        if (operation === "inc") {
+            if (flag === "uncompleted") {
+                if (completed_tasks.has(task.id)) {
+                    data = completed_tasks.get(task.id)
+
+                    if (data.hasOwnProperty(timestamp)) {
+                        currentGoal = data[timestamp].current
+                    }
+
+                    overwrite_obj[timestamp] = {
+                        current: currentGoal + 1
+                    }
+
+                    data = { ...data, ...overwrite_obj }
+                }
+
+                else {
+                    data.id = task.id
+                    data[timestamp] = {
+                        current: currentGoal + 1,
+                        category: task.category
+                    }
+                }
+            }
+
+            else {
+                if (completed_tasks.has(task.id)) {
+                    data = completed_tasks.get(task.id)
+
+                    if (data.hasOwnProperty(timestamp)) {
+                        currentGoal = data[timestamp].current
+                    }
+
+                    if (currentGoal <= 0) {
+                        overwrite_obj[timestamp] = {
+                            current: 0
+                        }
+                    }
+
+                    else {
+                        overwrite_obj[timestamp] = {
+                            current: currentGoal - 1
+                        }
+                    }
+
+                    data = { ...data, ...overwrite_obj }
+                }
+            }
+        }
+
+        else {
+            if (flag === "uncompleted") {
+                if (completed_tasks.has(task.id)) {
+                    data = completed_tasks.get(task.id)
+
+                    if (data.hasOwnProperty(timestamp)) {
+                        currentGoal = data[timestamp].current
+                    }
+
+                    if (currentGoal <= 0) {
+                        overwrite_obj[timestamp] = {
+                            current: 0
+                        }
+                    }
+
+                    else {
+                        overwrite_obj[timestamp] = {
+                            current: currentGoal - 1
+                        }
+                    }
+
+                    data = { ...data, ...overwrite_obj }
+                }
+            }
+        }
+
+        this.props.updateCompletedTask(data)
+    }
+
+    doUpdateOnStats = (flag, type, operation) => {
+        let task = { ... this.props.task_data },
+            current_date = new Date(),
+            stats = Map(this.props.stats),
+            stats_data = {},
+            stats_timestamp = 0,
+            stats_action_type = "UPDATE_DAY_STATS"
+
+        if (type === "day") {
+            stats_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+            stats_action_type = "UPDATE_DAY_STATS"
+        }
+
+        else if (type === "week") {
+            stats_timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
+            stats_action_type = "UPDATE_WEEK_STATS"
+        }
+
+        else {
+            stats_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
+            stats_action_type = "UPDATE_MONTH_STATS"
+        }
+
+        if (operation === "inc") {
+            if (flag === "uncompleted") {
+                if (stats.has(stats_timestamp)) {
+                    stats_data = stats.get(stats_timestamp)
+                    let { current } = stats_data
+                    current[this.priority_order[task.priority.value]] += 1
+
+                    stats_data.current = current
+                }
+
+                else {
+                    let current = [0, 0, 0, 0]
+                    current[this.priority_order[task.priority.value]] += 1
+                    stats_data = {
+                        current
+                    }
+                }
+            }
+
+            else {
+                if (stats.has(stats_timestamp)) {
+                    stats_data = stats.get(stats_timestamp)
+                    let { current } = stats_data
+                    current[this.priority_order[task.priority.value]] -= 1
+                    if (current[this.priority_order[task.priority.value]] < 0) {
+                        current[this.priority_order[task.priority.value]] = 0
+                    }
+                    stats_data.current = current
+                }
+            }
+        }
+
+        else {
+            if (flag === "uncompleted") {
+                if (stats.has(stats_timestamp)) {
+                    stats_data = stats.get(stats_timestamp)
+                    let { current } = stats_data
+                    current[this.priority_order[task.priority.value]] -= 1
+                    if (current[this.priority_order[task.priority.value]] < 0) {
+                        current[this.priority_order[task.priority.value]] = 0
+                    }
+                    stats_data.current = current
+                }
+            }
+        }
+
+        this.props.updateStats(stats_action_type, timestamp, stats_data)
+    }
+
+    doUpdateOnChartStats = (flag, operation) => {
+        let task = { ... this.props.task_data },
+            current_date = new Date(),
+            week_chart_stats = Map(this.props.week_chart_stats),
+            month_chart_stats = Map(this.props.month_chart_stats),
+            year_chart_stats = Map(this.props.year_chart_stats),
+            week_chart_stats_data = {},
+            month_chart_stats_data = {},
+            year_chart_stats_data = {},
+            week_timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime(),
+            month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime(),
+            year_timestamp = current_date.getFullYear()
+
+        week_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(week_chart_stats, week_timestamp, current_date.getDay(), flag, operation)
+        month_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(month_chart_stats, month_timestamp, current_date.getMonth(), flag, operation)
+        year_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(year_chart_stats, year_timestamp, current_date.getFullYear(), flag, operation)
+
+        this.props.updateChartStats("UPDATE_WEEK_CHART_STATS", week_timestamp, week_chart_stats_data)
+        this.props.updateChartStats("UPDATE_MONTH_CHART_STATS", month_timestamp, month_chart_stats_data)
+        this.props.updateChartStats("UPDATE_YEAR_CHART_STATS", year_timestamp, year_chart_stats_data)
+    }
+
+    doCompareAndUpdateOnChartStatsData = (chart_stats, timestamp, key, flag, operation) => {
+        let chart_stats_data = {}
+
+        if (operation === "inc") {
+            if (flag === "uncompleted") {
+                if (chart_stats.has(timestamp)) {
+                    chart_stats_data = chart_stats.get(timestamp)
+
+                    if (chart_stats_data.hasOwnProperty(key)) {
+                        let { current } = chart_stats_data[key]
+                        current[this.priority_order[task.priority.value]] += 1
+                        chart_stats_data[key].current = current
+                    }
+
+                    else {
+                        let current = [0, 0, 0, 0]
+                        current[this.priority_order[task.priority.value]] += 1
+                        chart_stats_data[key] = { current }
+                    }
+                }
+
+                else {
+                    let current = [0, 0, 0, 0],
+                        data = {}
+
+                    current[this.priority_order[task.priority.value]] += 1
+                    data[key] = { current }
+                    chart_stats_data[timestamp] = { data }
+                }
+            }
+
+            else {
+                if (chart_stats.has(timestamp)) {
+                    chart_stats_data = chart_stats.get(timestamp)
+
+                    if (chart_stats_data.hasOwnProperty(key)) {
+                        let { current } = chart_stats_data[key]
+                        current[this.priority_order[task.priority.value]] -= 1
+
+                        if (current[this.priority_order[task.priority.value]] < 0) {
+                            current[this.priority_order[task.priority.value]] = 0
+                        }
+                        chart_stats_data[key] = current
+                    }
+                }
+            }
+
+        }
+
+        else {
+            if (chart_stats.has(timestamp)) {
+                chart_stats_data = chart_stats.get(timestamp)
+
+                if (chart_stats_data.hasOwnProperty(key)) {
+                    let { current } = chart_stats_data[key]
+                    current[this.priority_order[task.priority.value]] -= 1
+
+                    if (current[this.priority_order[task.priority.value]] < 0) {
+                        current[this.priority_order[task.priority.value]] = 0
+                    }
+                    chart_stats_data[key] = current
+                }
+            }
+        }
+
+
+        return chart_stats_data
+    }
+
     checkComplete = () => {
         if (this.props.is_chosen_date_today) {
             this.setState(prevState => ({
                 checked: !prevState.checked
             }))
 
-            let task = { ... this.props.task_data },
-                current_date = new Date(),
-                data = {},
-                overwrite_obj = {},
-                currentGoal = 0,
-                completed_tasks = Map(this.props.completed_tasks),
-                stats = Map(this.props.stats),
-                stats_data = {},
-                stats_timestamp = 0,
-                stats_action_type = "UPDATE_DAY_STATS"
-
-            if (this.props.flag === "uncompleted") {
-                if (this.props.type === "day") {
-                    let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
-
-                    if (completed_tasks.has(task.id)) {
-                        data = completed_tasks.get(task.id)
-
-                        if (data.hasOwnProperty(day_timestamp)) {
-                            currentGoal = data[day_timestamp].current
-                        }
-
-                        overwrite_obj[day_timestamp] = {
-                            current: currentGoal + 1
-                        }
-
-                        data = { ...data, ...overwrite_obj }
-                    }
-
-                    else {
-                        data.id = task.id
-                        data[day_timestamp] = {
-                            current: currentGoal + 1,
-                            category: task.category
-                        }
-                    }
-
-                    stats_timestamp = day_timestamp
-                    stats_action_type = "UPDATE_DAY_STATS"
-
-                    if (stats.has(day_timestamp)) {
-                        stats_data = stats.get(day_timestamp)
-                        let { current } = stats_data
-                        current[this.priority_order[task.priority.value]] += 1
-
-                        stats_data.current = current
-                    }
-
-                    else {
-                        let current = [0, 0, 0, 0]
-                        current[this.priority_order[task.priority.value]] += 1
-                        stats_data = {
-                            current
-                        }
-                    }
-                }
-
-                else if (this.props.type === "week") {
-                    let week_timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
-
-                    if (completed_tasks.has(task.id)) {
-                        data = completed_tasks.get(task.id)
-
-                        if (data.hasOwnProperty(week_timestamp)) {
-                            currentGoal = data[week_timestamp].current
-                        }
-
-                        overwrite_obj[week_timestamp] = {
-                            current: currentGoal + 1
-                        }
-
-                        data = { ...data, ...overwrite_obj }
-                    }
-
-                    else {
-                        data.id = task.id
-                        data[week_timestamp] = {
-                            category: task.category,
-                            current: currentGoal + 1
-                        }
-                    }
-
-                    stats_timestamp = week_timestamp
-                    stats_action_type = "UPDATE_WEEK_STATS"
-
-                    if (stats.has(week_timestamp)) {
-                        stats_data = stats.get(week_timestamp)
-                        let { current } = stats_data
-                        current[this.priority_order[task.priority.value]] += 1
-
-                        stats_data.current = current
-                    }
-
-                    else {
-                        let current = [0, 0, 0, 0]
-                        current[this.priority_order[task.priority.value]] += 1
-                        stats_data = { current }
-                    }
-
-                    let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
-
-                    if (stats_data.hasOwnProperty("day_stats")) {
-                        if (stats_data["day_stats"].hasOwnProperty(day_timestamp)) {
-                            let { current } = stats_data["day_stats"][day_timestamp]
-                            current[this.priority_order[task.priority.value]] += 1
-                            stats_data["day_stats"][day_timestamp].current = current
-                        }
-
-                        else {
-                            let current = [0, 0, 0, 0]
-                            current[this.priority_order[task.priority.value]] += 1
-                            stats_data["day_stats"][day_timestamp] = { current }
-                        }
-                    }
-
-                    else {
-                        let current = [0, 0, 0, 0],
-                            day_stats_data = {}
-                        current[this.priority_order[task.priority.value]] += 1
-                        day_stats_data[day_timestamp] = { current }
-
-                        stats_data["day_stats"] = { ...day_stats_data }
-                    }
-                }
-
-                else {
-                    let month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
-
-                    if (completed_tasks.has(task.id)) {
-                        data = completed_tasks.get(task.id)
-
-                        if (data.hasOwnProperty(month_timestamp)) {
-                            currentGoal = data[month_timestamp].current
-                        }
-
-                        overwrite_obj[month_timestamp] = {
-                            current: currentGoal + 1
-                        }
-
-                        data = { ...data, ...overwrite_obj }
-                    }
-
-                    else {
-                        data.id = task.id
-                        data[month_timestamp] = {
-                            category: task.category,
-                            current: currentGoal + 1
-                        }
-                    }
-
-                    stats_timestamp = month_timestamp
-                    stats_action_type = "UPDATE_MONTH_STATS"
-
-                    if (stats.has(month_timestamp)) {
-                        stats_data = stats.get(month_timestamp)
-                        let { current } = stats_data
-                        current[this.priority_order[task.priority.value]] += 1
-
-                        stats_data.current = current
-                    }
-
-                    else {
-                        let current = [0, 0, 0, 0]
-                        current[this.priority_order[task.priority.value]] += 1
-                        stats_data = {
-                            current
-                        }
-                    }
-
-                    let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
-
-                    if (stats_data.hasOwnProperty("day_stats")) {
-                        if (stats_data["day_stats"].hasOwnProperty(day_timestamp)) {
-                            let { current } = stats_data["day_stats"][day_timestamp]
-                            current[this.priority_order[task.priority.value]] += 1
-                            stats_data["day_stats"][day_timestamp].current = current
-                        }
-
-                        else {
-                            let current = [0, 0, 0, 0]
-                            current[this.priority_order[task.priority.value]] += 1
-                            stats_data["day_stats"][day_timestamp] = { current }
-                        }
-                    }
-
-                    else {
-                        let current = [0, 0, 0, 0],
-                            day_stats_data = {}
-                        current[this.priority_order[task.priority.value]] += 1
-                        day_stats_data[day_timestamp] = { current }
-
-                        stats_data["day_stats"] = { ...day_stats_data }
-                    }
-                }
-
-            }
-
-            else {
-                if (this.props.type === "day") {
-                    let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
-
-                    if (completed_tasks.has(task.id)) {
-                        data = completed_tasks.get(task.id)
-
-                        if (data.hasOwnProperty(day_timestamp)) {
-                            currentGoal = data[day_timestamp].current
-                        }
-
-                        overwrite_obj[day_timestamp] = {
-                            current: currentGoal - 1
-                        }
-
-                        data = { ...data, ...overwrite_obj }
-                    }
-
-                    stats_timestamp = day_timestamp
-                    stats_action_type = "UPDATE_DAY_STATS"
-
-                    if (stats.has(day_timestamp)) {
-                        stats_data = stats.get(day_timestamp)
-                        let { current } = stats_data
-                        current[this.priority_order[task.priority.value]] -= 1
-
-                        stats_data.current = current
-                    }
-                }
-
-                else if (this.props.type === "week") {
-                    let week_timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
-
-                    if (completed_tasks.has(task.id)) {
-                        data = completed_tasks.get(task.id)
-
-                        if (data.hasOwnProperty(week_timestamp)) {
-                            currentGoal = data[week_timestamp].current
-                        }
-
-                        overwrite_obj[week_timestamp] = {
-                            current: currentGoal - 1
-                        }
-
-                        data = { ...data, ...overwrite_obj }
-                    }
-
-                    stats_timestamp = week_timestamp
-                    stats_action_type = "UPDATE_WEEK_STATS"
-
-                    if (stats.has(week_timestamp)) {
-                        stats_data = stats.get(week_timestamp)
-                        let { current } = stats_data
-                        current[this.priority_order[task.priority.value]] -= 1
-
-                        stats_data.current = current
-                    }
-
-                    if (stats_data.hasOwnProperty("day_stats")) {
-                        let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
-
-                        if (stats_data["day_stats"].hasOwnProperty(day_timestamp)) {
-                            let { current } = stats_data["day_stats"][day_timestamp]
-                            current[this.priority_order[task.priority.value]] -= 1
-
-                            if (current[this.priority_order[task.priority.value]] <= 0) {
-                                current[this.priority_order[task.priority.value]] = 0
-                            }
-
-                            let all_zero = false
-
-                            current.every((value) => {
-                                if (value === 0) {
-                                    all_zero = true
-                                    return true
-                                }
-                                else {
-                                    all_zero = false
-                                    return false
-                                }
-                            })
-
-                            if (all_zero) {
-                                delete stats_data["day_stats"][day_timestamp]
-                            }
-                        }
-
-                        if (Object.keys(stats_data["day_stats"]).length === 0) {
-                            delete stats_data["day_stats"]
-                        }
-                    }
-                }
-
-                else {
-                    let month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
-
-                    if (completed_tasks.has(task.id)) {
-                        data = completed_tasks.get(task.id)
-
-                        if (data.hasOwnProperty(month_timestamp)) {
-                            currentGoal = data[month_timestamp].current
-                        }
-
-                        overwrite_obj[month_timestamp] = {
-                            current: currentGoal - 1
-                        }
-
-                        data = { ...data, ...overwrite_obj }
-                    }
-
-                    stats_timestamp = month_timestamp
-                    stats_action_type = "UPDATE_MONTH_STATS"
-
-                    if (stats.has(month_timestamp)) {
-                        stats_data = stats.get(month_timestamp)
-                        let { current } = stats_data
-                        current[this.priority_order[task.priority.value]] -= 1
-
-                        stats_data.current = current
-                    }
-
-                    if (stats_data.hasOwnProperty("day_stats")) {
-                        let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
-
-                        if (stats_data["day_stats"].hasOwnProperty(day_timestamp)) {
-                            let { current } = stats_data["day_stats"][day_timestamp]
-                            current[this.priority_order[task.priority.value]] -= 1
-
-                            if (current[this.priority_order[task.priority.value]] <= 0) {
-                                current[this.priority_order[task.priority.value]] = 0
-                            }
-
-                            let all_zero = false
-
-                            current.every((value) => {
-                                if (value === 0) {
-                                    all_zero = true
-                                    return true
-                                }
-                                else {
-                                    all_zero = false
-                                    return false
-                                }
-                            })
-
-                            if (all_zero) {
-                                delete stats_data["day_stats"][day_timestamp]
-                            }
-                        }
-
-                        if (Object.keys(stats_data["day_stats"]).length === 0) {
-                            delete stats_data["day_stats"]
-                        }
-                    }
-                }
-            }
-
-            this.props.updateStats(stats_action_type, stats_timestamp, stats_data)
-            this.props.updateCompletedTask(data)
+            this.doUpdateOnCompletedTask(this.props.flag, this.props.type, "inc")
+            this.doUpdateOnStats(this.props.flag, this.props.type, "inc")
+            this.doUpdateOnChartStats(this.props.flag, "inc")
+            // let task = { ... this.props.task_data },
+            //     current_date = new Date(),
+            //     data = {},
+            //     overwrite_obj = {},
+            //     currentGoal = 0,
+            //     completed_tasks = Map(this.props.completed_tasks),
+            //     stats = Map(this.props.stats),
+            //     stats_data = {},
+            //     stats_timestamp = 0,
+            //     stats_action_type = "UPDATE_DAY_STATS"
+
+            // if (this.props.flag === "uncompleted") {
+            //     if (this.props.type === "day") {
+            //         let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+
+            //         if (completed_tasks.has(task.id)) {
+            //             data = completed_tasks.get(task.id)
+
+            //             if (data.hasOwnProperty(day_timestamp)) {
+            //                 currentGoal = data[day_timestamp].current
+            //             }
+
+            //             overwrite_obj[day_timestamp] = {
+            //                 current: currentGoal + 1
+            //             }
+
+            //             data = { ...data, ...overwrite_obj }
+            //         }
+
+            //         else {
+            //             data.id = task.id
+            //             data[day_timestamp] = {
+            //                 current: currentGoal + 1,
+            //                 category: task.category
+            //             }
+            //         }
+
+            //         stats_timestamp = day_timestamp
+            //         stats_action_type = "UPDATE_DAY_STATS"
+
+            //         if (stats.has(day_timestamp)) {
+            //             stats_data = stats.get(day_timestamp)
+            //             let { current } = stats_data
+            //             current[this.priority_order[task.priority.value]] += 1
+
+            //             stats_data.current = current
+            //         }
+
+            //         else {
+            //             let current = [0, 0, 0, 0]
+            //             current[this.priority_order[task.priority.value]] += 1
+            //             stats_data = {
+            //                 current
+            //             }
+            //         }
+            //     }
+
+            //     else if (this.props.type === "week") {
+            //         let week_timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
+
+            //         if (completed_tasks.has(task.id)) {
+            //             data = completed_tasks.get(task.id)
+
+            //             if (data.hasOwnProperty(week_timestamp)) {
+            //                 currentGoal = data[week_timestamp].current
+            //             }
+
+            //             overwrite_obj[week_timestamp] = {
+            //                 current: currentGoal + 1
+            //             }
+
+            //             data = { ...data, ...overwrite_obj }
+            //         }
+
+            //         else {
+            //             data.id = task.id
+            //             data[week_timestamp] = {
+            //                 category: task.category,
+            //                 current: currentGoal + 1
+            //             }
+            //         }
+
+            //         stats_timestamp = week_timestamp
+            //         stats_action_type = "UPDATE_WEEK_STATS"
+
+            //         if (stats.has(week_timestamp)) {
+            //             stats_data = stats.get(week_timestamp)
+            //             let { current } = stats_data
+            //             current[this.priority_order[task.priority.value]] += 1
+
+            //             stats_data.current = current
+            //         }
+
+            //         else {
+            //             let current = [0, 0, 0, 0]
+            //             current[this.priority_order[task.priority.value]] += 1
+            //             stats_data = { current }
+            //         }
+            //     }
+
+            //     else {
+            //         let month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
+
+            //         if (completed_tasks.has(task.id)) {
+            //             data = completed_tasks.get(task.id)
+
+            //             if (data.hasOwnProperty(month_timestamp)) {
+            //                 currentGoal = data[month_timestamp].current
+            //             }
+
+            //             overwrite_obj[month_timestamp] = {
+            //                 current: currentGoal + 1
+            //             }
+
+            //             data = { ...data, ...overwrite_obj }
+            //         }
+
+            //         else {
+            //             data.id = task.id
+            //             data[month_timestamp] = {
+            //                 category: task.category,
+            //                 current: currentGoal + 1
+            //             }
+            //         }
+
+            //         stats_timestamp = month_timestamp
+            //         stats_action_type = "UPDATE_MONTH_STATS"
+
+            //         if (stats.has(month_timestamp)) {
+            //             stats_data = stats.get(month_timestamp)
+            //             let { current } = stats_data
+            //             current[this.priority_order[task.priority.value]] += 1
+
+            //             stats_data.current = current
+            //         }
+
+            //         else {
+            //             let current = [0, 0, 0, 0]
+            //             current[this.priority_order[task.priority.value]] += 1
+            //             stats_data = {
+            //                 current
+            //             }
+            //         }
+            //     }
+
+            // }
+
+            // else {
+            //     if (this.props.type === "day") {
+            //         let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+
+            //         if (completed_tasks.has(task.id)) {
+            //             data = completed_tasks.get(task.id)
+
+            //             if (data.hasOwnProperty(day_timestamp)) {
+            //                 currentGoal = data[day_timestamp].current
+            //             }
+
+            //             overwrite_obj[day_timestamp] = {
+            //                 current: currentGoal - 1
+            //             }
+
+            //             data = { ...data, ...overwrite_obj }
+            //         }
+
+            //         stats_timestamp = day_timestamp
+            //         stats_action_type = "UPDATE_DAY_STATS"
+
+            //         if (stats.has(day_timestamp)) {
+            //             stats_data = stats.get(day_timestamp)
+            //             let { current } = stats_data
+            //             current[this.priority_order[task.priority.value]] -= 1
+
+            //             stats_data.current = current
+            //         }
+            //     }
+
+            //     else if (this.props.type === "week") {
+            //         let week_timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
+
+            //         if (completed_tasks.has(task.id)) {
+            //             data = completed_tasks.get(task.id)
+
+            //             if (data.hasOwnProperty(week_timestamp)) {
+            //                 currentGoal = data[week_timestamp].current
+            //             }
+
+            //             overwrite_obj[week_timestamp] = {
+            //                 current: currentGoal - 1
+            //             }
+
+            //             data = { ...data, ...overwrite_obj }
+            //         }
+
+            //         stats_timestamp = week_timestamp
+            //         stats_action_type = "UPDATE_WEEK_STATS"
+
+            //         if (stats.has(week_timestamp)) {
+            //             stats_data = stats.get(week_timestamp)
+            //             let { current } = stats_data
+            //             current[this.priority_order[task.priority.value]] -= 1
+
+            //             stats_data.current = current
+            //         }
+
+            //     }
+
+            //     else {
+            //         let month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
+
+            //         if (completed_tasks.has(task.id)) {
+            //             data = completed_tasks.get(task.id)
+
+            //             if (data.hasOwnProperty(month_timestamp)) {
+            //                 currentGoal = data[month_timestamp].current
+            //             }
+
+            //             overwrite_obj[month_timestamp] = {
+            //                 current: currentGoal - 1
+            //             }
+
+            //             data = { ...data, ...overwrite_obj }
+            //         }
+
+            //         stats_timestamp = month_timestamp
+            //         stats_action_type = "UPDATE_MONTH_STATS"
+
+            //         if (stats.has(month_timestamp)) {
+            //             stats_data = stats.get(month_timestamp)
+            //             let { current } = stats_data
+            //             current[this.priority_order[task.priority.value]] -= 1
+
+            //             stats_data.current = current
+            //         }
+
+            //     }
+            // }
+
+            // this.props.updateStats(stats_action_type, stats_timestamp, stats_data)
+            // this.props.updateCompletedTask(data)
         }
     }
 
@@ -417,190 +567,125 @@ export default class TaskCard extends React.PureComponent {
                 uncomplete_checked: !prevState.uncomplete_checked
             }))
 
-            let task = { ... this.props.task_data },
-                current_date = new Date(),
-                data = {},
-                overwrite_obj = {},
-                currentGoal = 0,
-                completed_tasks = Map(this.props.completed_tasks),
-                stats = Map(this.props.stats),
-                stats_data = {},
-                stats_timestamp = 0,
-                stats_action_type = "UPDATE_DAY_STATS"
+            this.doUpdateOnCompletedTask(this.props.flag, this.props.type, "dec")
+            this.doUpdateOnStats(this.props.flag, this.props.type, "dec")
+            this.doUpdateOnChartStats(this.props.flag, "dec")
+            // let task = { ... this.props.task_data },
+            //     current_date = new Date(),
+            //     data = {},
+            //     overwrite_obj = {},
+            //     currentGoal = 0,
+            //     completed_tasks = Map(this.props.completed_tasks),
+            //     stats = Map(this.props.stats),
+            //     stats_data = {},
+            //     stats_timestamp = 0,
+            //     stats_action_type = "UPDATE_DAY_STATS"
 
-            if (this.props.flag === "uncompleted") {
-                if (this.props.type === "day") {
-                    let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+            // if (this.props.flag === "uncompleted") {
+            //     if (this.props.type === "day") {
+            //         let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
 
-                    if (completed_tasks.has(task.id)) {
-                        data = completed_tasks.get(task.id)
+            //         if (completed_tasks.has(task.id)) {
+            //             data = completed_tasks.get(task.id)
 
-                        if (data.hasOwnProperty(day_timestamp)) {
-                            currentGoal = data[day_timestamp].current
-                        }
+            //             if (data.hasOwnProperty(day_timestamp)) {
+            //                 currentGoal = data[day_timestamp].current
+            //             }
 
-                        if (currentGoal <= 0) {
-                            overwrite_obj[day_timestamp] = {
-                                current: currentGoal
-                            }
-                        }
+            //             if (currentGoal <= 0) {
+            //                 overwrite_obj[day_timestamp] = {
+            //                     current: currentGoal
+            //                 }
+            //             }
 
-                        else {
-                            overwrite_obj[day_timestamp] = {
-                                current: currentGoal - 1
-                            }
-                        }
+            //             else {
+            //                 overwrite_obj[day_timestamp] = {
+            //                     current: currentGoal - 1
+            //                 }
+            //             }
 
-                        data = { ...data, ...overwrite_obj }
-                    }
+            //             data = { ...data, ...overwrite_obj }
+            //         }
 
 
-                }
+            //     }
 
-                else if (this.props.type === "week") {
-                    let week_timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
+            //     else if (this.props.type === "week") {
+            //         let week_timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
 
-                    if (completed_tasks.has(task.id)) {
-                        data = completed_tasks.get(task.id)
+            //         if (completed_tasks.has(task.id)) {
+            //             data = completed_tasks.get(task.id)
 
-                        if (data.hasOwnProperty(week_timestamp)) {
-                            currentGoal = data[week_timestamp].current
-                        }
+            //             if (data.hasOwnProperty(week_timestamp)) {
+            //                 currentGoal = data[week_timestamp].current
+            //             }
 
-                        if (currentGoal <= 0) {
-                            overwrite_obj[week_timestamp] = {
-                                current: currentGoal
-                            }
-                        }
+            //             if (currentGoal <= 0) {
+            //                 overwrite_obj[week_timestamp] = {
+            //                     current: currentGoal
+            //                 }
+            //             }
 
-                        else {
-                            overwrite_obj[week_timestamp] = {
-                                current: currentGoal - 1
-                            }
-                        }
+            //             else {
+            //                 overwrite_obj[week_timestamp] = {
+            //                     current: currentGoal - 1
+            //                 }
+            //             }
 
-                        data = { ...data, ...overwrite_obj }
-                    }
+            //             data = { ...data, ...overwrite_obj }
+            //         }
 
-                    stats_timestamp = week_timestamp
-                    stats_action_type = "UPDATE_WEEK_STATS"
+            //         stats_timestamp = week_timestamp
+            //         stats_action_type = "UPDATE_WEEK_STATS"
 
-                    if (stats.has(week_timestamp)) {
-                        stats_data = stats.get(week_timestamp)
-                        let { current } = stats_data
-                        current[this.priority_order[task.priority.value]] -= 1
+            //         if (stats.has(week_timestamp)) {
+            //             stats_data = stats.get(week_timestamp)
+            //             let { current } = stats_data
+            //             current[this.priority_order[task.priority.value]] -= 1
 
-                        stats_data.current = current
-                    }
+            //             stats_data.current = current
+            //         }
+            //     }
 
-                    if (stats_data.hasOwnProperty("day_stats")) {
-                        let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+            //     else {
+            //         let month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
 
-                        if (stats_data["day_stats"].hasOwnProperty(day_timestamp)) {
-                            let { current } = stats_data["day_stats"][day_timestamp]
-                            current[this.priority_order[task.priority.value]] -= 1
+            //         if (completed_tasks.has(task.id)) {
+            //             data = completed_tasks.get(task.id)
 
-                            if (current[this.priority_order[task.priority.value]] <= 0) {
-                                current[this.priority_order[task.priority.value]] = 0
-                            }
+            //             if (data.hasOwnProperty(month_timestamp)) {
+            //                 currentGoal = data[month_timestamp].current
+            //             }
 
-                            let all_zero = false
+            //             if (currentGoal <= 0) {
+            //                 overwrite_obj[month_timestamp] = {
+            //                     current: currentGoal
+            //                 }
+            //             }
 
-                            current.every((value) => {
-                                if (value === 0) {
-                                    all_zero = true
-                                    return true
-                                }
-                                else {
-                                    all_zero = false
-                                    return false
-                                }
-                            })
+            //             else {
+            //                 overwrite_obj[month_timestamp] = {
+            //                     current: currentGoal - 1
+            //                 }
+            //             }
 
-                            if (all_zero) {
-                                delete stats_data["day_stats"][day_timestamp]
-                            }
-                        }
+            //             data = { ...data, ...overwrite_obj }
+            //         }
 
-                        if (Object.keys(stats_data["day_stats"]).length === 0) {
-                            delete stats_data["day_stats"]
-                        }
-                    }
-                }
+            //         stats_timestamp = month_timestamp
+            //         stats_action_type = "UPDATE_MONTH_STATS"
 
-                else {
-                    let month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
+            //         if (stats.has(month_timestamp)) {
+            //             stats_data = stats.get(month_timestamp)
+            //             let { current } = stats_data
+            //             current[this.priority_order[task.priority.value]] -= 1
 
-                    if (completed_tasks.has(task.id)) {
-                        data = completed_tasks.get(task.id)
-
-                        if (data.hasOwnProperty(month_timestamp)) {
-                            currentGoal = data[month_timestamp].current
-                        }
-
-                        if (currentGoal <= 0) {
-                            overwrite_obj[month_timestamp] = {
-                                current: currentGoal
-                            }
-                        }
-
-                        else {
-                            overwrite_obj[month_timestamp] = {
-                                current: currentGoal - 1
-                            }
-                        }
-
-                        data = { ...data, ...overwrite_obj }
-                    }
-
-                    stats_timestamp = month_timestamp
-                    stats_action_type = "UPDATE_MONTH_STATS"
-
-                    if (stats.has(month_timestamp)) {
-                        stats_data = stats.get(month_timestamp)
-                        let { current } = stats_data
-                        current[this.priority_order[task.priority.value]] -= 1
-
-                        stats_data.current = current
-                    }
-
-                    if (stats_data.hasOwnProperty("day_stats")) {
-                        let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
-
-                        if (stats_data["day_stats"].hasOwnProperty(day_timestamp)) {
-                            let { current } = stats_data["day_stats"][day_timestamp]
-                            current[this.priority_order[task.priority.value]] -= 1
-
-                            if (current[this.priority_order[task.priority.value]] <= 0) {
-                                current[this.priority_order[task.priority.value]] = 0
-                            }
-
-                            let all_zero = false
-
-                            current.every((value) => {
-                                if (value === 0) {
-                                    all_zero = true
-                                    return true
-                                }
-                                else {
-                                    all_zero = false
-                                    return false
-                                }
-                            })
-
-                            if (all_zero) {
-                                delete stats_data["day_stats"][day_timestamp]
-                            }
-                        }
-
-                        if (Object.keys(stats_data["day_stats"]).length === 0) {
-                            delete stats_data["day_stats"]
-                        }
-                    }
-                }
-            }
-            this.props.updateStats(stats_action_type, stats_timestamp, stats_data)
-            this.props.updateCompletedTask(data)
+            //             stats_data.current = current
+            //         }
+            //     }
+            // }
+            // this.props.updateStats(stats_action_type, stats_timestamp, stats_data)
+            // this.props.updateCompletedTask(data)
         }
     }
 

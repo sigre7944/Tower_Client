@@ -367,7 +367,6 @@ const week_chart_stats = {
         0: {
             current: [1, 0, 1, 0]
         },
-
     }
 }
 
@@ -385,6 +384,20 @@ const year_chart_stats = {
         //January
         0: {
             current: [1, 0, 1, 0]
+        }
+    }
+}
+
+const chart_stats = {
+    year_timestamp: {
+        //January
+        0: {
+            week_timestamp: {
+                //Monday
+                0: {
+                    current: [1, 0, 1, 0]
+                }
+            }
         }
     }
 }
