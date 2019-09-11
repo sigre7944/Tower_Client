@@ -34,6 +34,13 @@ import {
     week_stats
 } from './statsReducer'
 
+import {
+    month_chart_stats,
+    week_chart_stats,
+    year_chart_stats
+} from './chartStatsReducer'
+
+
 const rootReducer = combineReducers({
     currentRoute,
     currentWeekInMonth,
@@ -65,6 +72,10 @@ const rootReducer = combineReducers({
     day_stats,
     month_stats,
     week_stats,
+
+    month_chart_stats,
+    week_chart_stats,
+    year_chart_stats
 })
 
 export default rootReducer

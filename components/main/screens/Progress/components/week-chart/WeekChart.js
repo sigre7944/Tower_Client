@@ -76,7 +76,7 @@ export default class WeekChart extends React.PureComponent {
     updateChartData = () => {
         let { day, month, year } = this.props.current_chosen_week_data,
             week_timestamp = new Date(year, month, day).getTime(),
-            week_stats_map = Map(this.props.week_stats),
+            week_chart_stats_map = Map(this.props.week_chart_stats),
             chart_data = []
 
         for (let i = 0; i < 7; i++) {
@@ -87,15 +87,21 @@ export default class WeekChart extends React.PureComponent {
                 pri_01: 1,
             })
         }
-        if (week_stats_map.has(week_timestamp)) {
-            let { day_stats } = week_stats_map.get(week_timestamp)
+
+        if (week_chart_stats_map.has(week_timestamp)) {
+            let data = week_chart_stats_map.get(week_timestamp)
 
             for (let i = 0; i < 7; i++) {
-                let day_timestamp = week_timestamp + 86400 * 1000 * i
-
-                if (day_stats.hasOwnProperty(day_timestamp)) {
-                    let { current } = day_stats[day_timestamp]
-                    chart_data[i] = {
+                let index = 0
+                if (i === 6) {
+                    index = 0
+                }
+                else {
+                    index = i + 1
+                }
+                if (data.hasOwnProperty(index)) {
+                    let { current } = data[index]
+                    chart_data[index] = {
                         pri_04: current[3],
                         pri_03: current[2],
                         pri_02: current[1],
@@ -110,14 +116,20 @@ export default class WeekChart extends React.PureComponent {
         })
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.updateChartData()
     }
 
     componentDidUpdate(prevProps, prevState) {
         if ((this.props.current_chosen_week_data !== prevProps.current_chosen_week_data)
-            || (this.props.week_stats !== prevProps.week_stats)) {
+            || (this.props.week_chart_stats !== prevProps.week_chart_stats)) {
             this.updateChartData()
+        }
+
+        if(this.props.month_chart_stats !== prevProps.month_chart_stats){
+        }
+
+        if(this.props.year_chart_stats !== prevProps.year_chart_stats){
         }
     }
 

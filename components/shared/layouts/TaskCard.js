@@ -215,15 +215,15 @@ export default class TaskCard extends React.PureComponent {
             }
         }
 
-        this.props.updateStats(stats_action_type, timestamp, stats_data)
+        this.props.updateStats(stats_action_type, stats_timestamp, stats_data)
     }
 
     doUpdateOnChartStats = (flag, operation) => {
         let task = { ... this.props.task_data },
             current_date = new Date(),
-            week_chart_stats = Map(this.props.week_chart_stats),
-            month_chart_stats = Map(this.props.month_chart_stats),
-            year_chart_stats = Map(this.props.year_chart_stats),
+            week_chart_stats = this.props.week_chart_stats,
+            month_chart_stats = this.props.month_chart_stats,
+            year_chart_stats = this.props.year_chart_stats,
             week_chart_stats_data = {},
             month_chart_stats_data = {},
             year_chart_stats_data = {},
@@ -231,23 +231,23 @@ export default class TaskCard extends React.PureComponent {
             month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime(),
             year_timestamp = current_date.getFullYear()
 
-        week_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(week_chart_stats, week_timestamp, current_date.getDay(), flag, operation)
-        month_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(month_chart_stats, month_timestamp, current_date.getMonth(), flag, operation)
-        year_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(year_chart_stats, year_timestamp, current_date.getFullYear(), flag, operation)
+        week_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, week_chart_stats, week_timestamp, current_date.getDay(), flag, operation)
+        month_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, month_chart_stats, month_timestamp, current_date.getMonth(), flag, operation)
+        year_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, year_chart_stats, year_timestamp, current_date.getFullYear(), flag, operation)
 
         this.props.updateChartStats("UPDATE_WEEK_CHART_STATS", week_timestamp, week_chart_stats_data)
         this.props.updateChartStats("UPDATE_MONTH_CHART_STATS", month_timestamp, month_chart_stats_data)
         this.props.updateChartStats("UPDATE_YEAR_CHART_STATS", year_timestamp, year_chart_stats_data)
     }
 
-    doCompareAndUpdateOnChartStatsData = (chart_stats, timestamp, key, flag, operation) => {
-        let chart_stats_data = {}
+    doCompareAndUpdateOnChartStatsData = (task, chart_stats, timestamp, key, flag, operation) => {
+        let chart_stats_data = {},
+            chart_stats_map = Map(chart_stats)
 
         if (operation === "inc") {
             if (flag === "uncompleted") {
-                if (chart_stats.has(timestamp)) {
-                    chart_stats_data = chart_stats.get(timestamp)
-
+                if (chart_stats_map.has(timestamp)) {
+                    chart_stats_data = chart_stats_map.get(timestamp)
                     if (chart_stats_data.hasOwnProperty(key)) {
                         let { current } = chart_stats_data[key]
                         current[this.priority_order[task.priority.value]] += 1
@@ -262,18 +262,15 @@ export default class TaskCard extends React.PureComponent {
                 }
 
                 else {
-                    let current = [0, 0, 0, 0],
-                        data = {}
-
+                    let current = [0, 0, 0, 0]
                     current[this.priority_order[task.priority.value]] += 1
-                    data[key] = { current }
-                    chart_stats_data[timestamp] = { data }
+                    chart_stats_data[key] = { current }
                 }
             }
 
             else {
-                if (chart_stats.has(timestamp)) {
-                    chart_stats_data = chart_stats.get(timestamp)
+                if (chart_stats_map.has(timestamp)) {
+                    chart_stats_data = chart_stats_map.get(timestamp)
 
                     if (chart_stats_data.hasOwnProperty(key)) {
                         let { current } = chart_stats_data[key]
@@ -282,7 +279,7 @@ export default class TaskCard extends React.PureComponent {
                         if (current[this.priority_order[task.priority.value]] < 0) {
                             current[this.priority_order[task.priority.value]] = 0
                         }
-                        chart_stats_data[key] = current
+                        chart_stats_data[key].current = current
                     }
                 }
             }
@@ -290,8 +287,8 @@ export default class TaskCard extends React.PureComponent {
         }
 
         else {
-            if (chart_stats.has(timestamp)) {
-                chart_stats_data = chart_stats.get(timestamp)
+            if (chart_stats_map.has(timestamp)) {
+                chart_stats_data = chart_stats_map.get(timestamp)
 
                 if (chart_stats_data.hasOwnProperty(key)) {
                     let { current } = chart_stats_data[key]
@@ -300,7 +297,7 @@ export default class TaskCard extends React.PureComponent {
                     if (current[this.priority_order[task.priority.value]] < 0) {
                         current[this.priority_order[task.priority.value]] = 0
                     }
-                    chart_stats_data[key] = current
+                    chart_stats_data[key].current = current
                 }
             }
         }
