@@ -231,16 +231,18 @@ export default class TaskCard extends React.PureComponent {
             month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime(),
             year_timestamp = current_date.getFullYear()
 
-        week_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, week_chart_stats, week_timestamp, current_date.getDay(), flag, operation)
-        month_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, month_chart_stats, month_timestamp, current_date.getMonth(), flag, operation)
-        year_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, year_chart_stats, year_timestamp, current_date.getFullYear(), flag, operation)
 
-        this.props.updateChartStats("UPDATE_WEEK_CHART_STATS", week_timestamp, week_chart_stats_data)
+        week_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, week_chart_stats, week_timestamp, current_date.getDay(), flag, operation)
+        month_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, month_chart_stats, month_timestamp, current_date.getDate(), flag, operation)
+        year_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, year_chart_stats, year_timestamp, current_date.getMonth(), flag, operation)
+
+        this.props.updateChartStats("UPDATE_WEEK_CHART_STATS", week_timestamp, week_chart_stats_data)   
         this.props.updateChartStats("UPDATE_MONTH_CHART_STATS", month_timestamp, month_chart_stats_data)
         this.props.updateChartStats("UPDATE_YEAR_CHART_STATS", year_timestamp, year_chart_stats_data)
     }
 
     doCompareAndUpdateOnChartStatsData = (task, chart_stats, timestamp, key, flag, operation) => {
+        
         let chart_stats_data = {},
             chart_stats_map = Map(chart_stats)
 

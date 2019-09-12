@@ -101,9 +101,8 @@ const category = {
     // use id of each category as key
     inbox_123: {
         name: "Inbox",
-        // createdAt: 1500000,
         color: "red",
-        // tasks: ["task_123", "task_..."] //holding the ids of relative task ids
+        quantity: 0, // number of tasks
     }
 }
 

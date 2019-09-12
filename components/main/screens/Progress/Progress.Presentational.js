@@ -9,8 +9,8 @@ import {
 import { Map } from 'immutable'
 import PointEarnedSection from './components/point-earned-section/PointEarnedSection'
 import WeekChart from './components/week-chart/WeekChart.Container'
-import MonthChart from './components/month-chart/MonthChart'
-import YearChart from './components/year-chart/YearChart'
+import MonthChart from './components/month-chart/MonthChart.Container'
+import YearChart from './components/year-chart/YearChart.Container'
 
 export default class Progress extends React.PureComponent {
 
@@ -19,7 +19,6 @@ export default class Progress extends React.PureComponent {
     month: new Date().getMonth(),
     year: new Date().getFullYear(),
   }
-
 
 
   componentDidMount() {
@@ -307,7 +306,9 @@ class ChartSection extends React.PureComponent {
 
     month_year_array: [this.current.getFullYear(), this.current.getFullYear() + 1, this.current.getFullYear() - 1],
     month_anno_current_time_text: `${this.month_texts[this.current.getMonth()]} ${this.current.getFullYear()}`,
-    current_chosen_month_data: {}
+    current_chosen_month_data: {},
+
+    
   }
 
   setWeekAnnoMonthYearData = (day, month, year) => {
@@ -469,7 +470,9 @@ class ChartSection extends React.PureComponent {
 
               :
 
-              <YearChart />
+              <YearChart 
+                current_chosen_year = {this.current.getFullYear()}
+              />
             }
           </>
         }

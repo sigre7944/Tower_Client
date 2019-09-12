@@ -6,21 +6,18 @@ import {
     Modal,
     Dimensions,
 } from 'react-native';
-import { StackedBarChart, YAxis} from 'react-native-svg-charts'
+import { StackedBarChart, YAxis } from 'react-native-svg-charts'
 import { Map } from 'immutable'
 import WeekAnnotationCalendar from './week-anno-calendar/WeekAnnotationCalendar'
 
 export default class WeekChart extends React.PureComponent {
     short_day_text = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-    x_data = [1, 2, 3, 4, 5, 6, 0]
     y_data = []
     number_of_ticks = 0
     y_max = 0
 
     colors = ['#C4C4C4', '#ADB0B3', '#8B9199', '#000000']
     keys = ['pri_04', 'pri_03', 'pri_02', 'pri_01']
-
-    month_texts = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
     state = {
         calendar_chosen_bool: false,
@@ -45,12 +42,8 @@ export default class WeekChart extends React.PureComponent {
         this.props.setWeekAnnoText(f_day, f_month, f_year, l_day, l_month, l_year)
     }
 
-    updateChartData = () => {
-        let { day, month, year } = this.props.current_chosen_week_data,
-            week_timestamp = new Date(year, month, day).getTime(),
-            week_chart_stats_map = Map(this.props.week_chart_stats),
-            chart_data = [],
-            total_array = []
+    initChartData = () => {
+        let chart_data = []
 
         for (let i = 0; i < 7; i++) {
             chart_data.push({
@@ -61,19 +54,32 @@ export default class WeekChart extends React.PureComponent {
             })
         }
 
+        this.setState({
+            chart_data: [...chart_data]
+        }, () => { setTimeout(this.updateChartData, 10) })
+
+    }
+
+    updateChartData = () => {
+        let { day, month, year } = this.props.current_chosen_week_data,
+            week_timestamp = new Date(year, month, day).getTime(),
+            week_chart_stats_map = Map(this.props.week_chart_stats),
+            chart_data = [...this.state.chart_data],
+            total_array = []
+
         if (week_chart_stats_map.has(week_timestamp)) {
             let data = week_chart_stats_map.get(week_timestamp)
 
             for (let i = 0; i < 7; i++) {
-                let index = 0
-                if (i === 6) {
-                    index = 0
+                let index = i - 1
+
+                // Sunday
+                if (i === 0) {
+                    index = 7
                 }
-                else {
-                    index = i + 1
-                }
-                if (data.hasOwnProperty(index)) {
-                    let current = [...data[index].current]
+
+                if (data.hasOwnProperty(i)) {
+                    let current = [...data[i].current]
                     chart_data[index] = {
                         pri_04: current[3],
                         pri_03: current[2],
@@ -89,6 +95,7 @@ export default class WeekChart extends React.PureComponent {
         this.y_max = this.getMax(total_array)
 
         this.updateYDataAndChartData(chart_data)
+
         this.setState({
             chart_data: [...chart_data]
         })
@@ -118,23 +125,24 @@ export default class WeekChart extends React.PureComponent {
             this.number_of_ticks = 4
         }
 
-
         this.y_data = [0, this.y_max]
-        this.setState({
-            chart_data: [...chart_data]
-        })
     }
 
-    _formatLabelX = (value, index) => `${this.short_day_text[value]}`
-
     componentDidMount() {
-        this.updateChartData()
+        this.setState({
+            chart_data: []
+        }, () => { this.initChartData() })
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if ((this.props.current_chosen_week_data !== prevProps.current_chosen_week_data)
-            || (this.props.week_chart_stats !== prevProps.week_chart_stats)) {
+        if (this.props.week_chart_stats !== prevProps.week_chart_stats) {
             this.updateChartData()
+        }
+
+        if (this.props.current_chosen_week_data !== prevProps.current_chosen_week_data) {
+            this.setState({
+                chart_data: []
+            }, () => { this.initChartData() })
         }
     }
 
@@ -225,16 +233,11 @@ export default class WeekChart extends React.PureComponent {
                             keys={this.keys}
                             colors={this.colors}
                             data={this.state.chart_data}
-                            showGrid={true}
                             animate={true}
+                            animationDuration={500}
                             contentInset={{
                                 top: 7,
                                 bottom: 0,
-                            }}
-                            svg={{
-                                strokeOpacity: 0.5,
-                                strokeWidth: 3,
-                                scale: 0.5
                             }}
                             spacingInner={0.05}
                         />
@@ -246,10 +249,10 @@ export default class WeekChart extends React.PureComponent {
     }
 }
 
-class XAxis extends React.PureComponent{
+class XAxis extends React.PureComponent {
 
-    render(){
-        return(
+    render() {
+        return (
             <View
                 style={{
                     flexDirection: "row",
@@ -259,90 +262,51 @@ class XAxis extends React.PureComponent{
                     borderColor: "black",
                 }}
             >
-                <View
+                <XAxisDayTextHolder
+                    day_text="Mon"
+                />
+                <XAxisDayTextHolder
+                    day_text="Tue"
+                />
+                <XAxisDayTextHolder
+                    day_text="Wed"
+                />
+                <XAxisDayTextHolder
+                    day_text="Thu"
+                />
+                <XAxisDayTextHolder
+                    day_text="Fri"
+                />
+                <XAxisDayTextHolder
+                    day_text="Sat"
+                />
+                <XAxisDayTextHolder
+                    day_text="Sun"
+                />
+            </View>
+        )
+    }
+}
+
+class XAxisDayTextHolder extends React.PureComponent {
+
+    render() {
+        return (
+            <View
+                style={{
+                    flex: 1,
+                    height: 50,
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
+            >
+                <Text
                     style={{
-                        flex: 1,
-                        height: 50,
-                        justifyContent: "center",
-                        alignItems: "center",
+                        fontSize: 11
                     }}
                 >
-                    <Text>
-                        Mon
-                    </Text>
-                </View>
-                <View
-                    style={{
-                        flex: 1,
-                        height: 50,
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                >
-                    <Text>
-                        Tue
-                    </Text>
-                </View>
-                <View
-                    style={{
-                        flex: 1,
-                        height: 50,
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                >
-                    <Text>
-                        Wed
-                    </Text>
-                </View>
-                <View
-                    style={{
-                        flex: 1,
-                        height: 50,
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                >
-                    <Text>
-                        Thu
-                    </Text>
-                </View>
-                <View
-                    style={{
-                        flex: 1,
-                        height: 50,
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                >
-                    <Text>
-                        Fri
-                    </Text>
-                </View>
-                <View
-                    style={{
-                        flex: 1,
-                        height: 50,
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                >
-                    <Text>
-                        Sat
-                    </Text>
-                </View>
-                <View
-                    style={{
-                        flex: 1,
-                        height: 50,
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                >
-                    <Text>
-                        Sun
-                    </Text>
-                </View>
+                    {this.props.day_text}
+                </Text>
             </View>
         )
     }
