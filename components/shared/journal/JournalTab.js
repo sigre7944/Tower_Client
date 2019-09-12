@@ -860,6 +860,7 @@ class TaskCardHolder extends React.PureComponent {
             // this.setState({
             //     task_card_array: Map(this.props.tasks).valueSeq().map((task, index) => this.handleUncompletedTaskUpdate(task, index))
             // })
+
             let task_data_array = []
 
             Map(this.props.tasks).valueSeq().forEach((task, index) => {
@@ -875,7 +876,7 @@ class TaskCardHolder extends React.PureComponent {
                 task_data_array: [...task_data_array]
             })
         }
-        else if ((this.props.flag === "completed") && (this.props.completed_tasks !== prevProps.completed_tasks)) {
+        else if ((this.props.flag === "completed") && ((this.props.tasks !== prevProps.tasks) || (this.props.completed_tasks !== prevProps.completed_tasks))) {
             // this.setState({
             //     task_card_array: Map(this.props.completed_tasks).valueSeq().map((completed_task, index) => this.handleCompletedTaskUpdate(completed_task, index))
             // })
@@ -896,6 +897,39 @@ class TaskCardHolder extends React.PureComponent {
         }
 
         if (this.props.chosen_date_data !== prevProps.chosen_date_data) {
+            if (this.props.flag === "uncompleted") {
+                let task_data_array = []
+
+                Map(this.props.tasks).valueSeq().forEach((task, index) => {
+                    if (this.handleUncompletedTaskUpdate(task, index) === null) {
+                        return
+                    }
+                    else {
+                        task_data_array.push(this.handleUncompletedTaskUpdate(task, index))
+                    }
+                })
+
+                this.setState({
+                    task_data_array: [...task_data_array]
+                })
+            }
+
+            else {
+                let task_data_array = []
+
+                Map(this.props.completed_tasks).valueSeq().forEach((completed_task, index) => {
+                    if (this.handleCompletedTaskUpdate(completed_task, index) === null) {
+                        return
+                    }
+                    else {
+                        task_data_array.push(this.handleCompletedTaskUpdate(completed_task, index))
+                    }
+                })
+
+                this.setState({
+                    task_data_array: [...task_data_array]
+                })
+            }
             this.checkIfChosenDateIsToday(this.props.chosen_date_data, this.props.type)
         }
     }

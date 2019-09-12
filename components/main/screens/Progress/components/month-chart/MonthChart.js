@@ -43,7 +43,8 @@ export default class MonthChart extends React.PureComponent {
     ]
 
     x_data = [0, 1, 2, 3]
-    y_data = [10, 11]
+    y_data = [0, 80]
+    numberOfTicks= 2
     colors = ['red', '#7b4173', '#a55194', '#ce6dbd', '#de9ed6']
     keys = ['month', 'apples', 'bananas', 'cherries', 'dates']
 
@@ -133,17 +134,17 @@ export default class MonthChart extends React.PureComponent {
                             flexDirection: "row",
                         }}
                     >
-                        {/* <YAxis
-              data={this.y_data}
-              contentInset={{
-                top: 20,
-                bottom: 20,
-              }}
-              numberOfTicks={3}
-              style={{
-                width: 30,
-              }}
-            /> */}
+                        <YAxis
+                            data={this.y_data}
+                            contentInset={{
+                                top: 20,
+                                bottom: 20,
+                            }}
+                            numberOfTicks={this.numberOfTicks}
+                            style={{
+                                width: 30,
+                            }}
+                        />
                         <StackedBarChart
                             style={{
                                 height: 200,
@@ -159,6 +160,7 @@ export default class MonthChart extends React.PureComponent {
                                 top: 20,
                                 bottom: 20,
                             }}
+                            spacingInner={0.05}
                         />
                     </View>
                     {/* <XAxis

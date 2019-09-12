@@ -331,10 +331,6 @@ export default class TaskCard extends React.PureComponent {
         }
     }
 
-    componentDidMount(){
-        // console.log("mount")
-    }
-
     render() {
         return (
             <TouchableOpacity style={styles.container} onPress={this._onPress}>

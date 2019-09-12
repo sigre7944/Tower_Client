@@ -387,17 +387,3 @@ const year_chart_stats = {
         }
     }
 }
-
-const chart_stats = {
-    year_timestamp: {
-        //January
-        0: {
-            week_timestamp: {
-                //Monday
-                0: {
-                    current: [1, 0, 1, 0]
-                }
-            }
-        }
-    }
-}
