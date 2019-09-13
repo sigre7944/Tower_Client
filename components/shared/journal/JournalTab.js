@@ -302,26 +302,6 @@ class TaskCardHolder extends React.PureComponent {
 
                     if (schedule.day === day && schedule.month === month && schedule.year === year) {
                         return { action_type: "UPDATE_COMPLETED_DAY_TASK", task, current_goal_value, title, goal }
-
-                        // return (
-                        //     <Swipeable
-                        //         key={`day-task-${index}`}
-                        //         renderLeftActions={this.renderLeftActions}
-                        //     >
-                        //         <TaskCard
-                        //             action_type="UPDATE_COMPLETED_DAY_TASK"
-                        //             type={this.props.type}
-                        //             task_data={task}
-                        //             index={index}
-                        //             onPress={this.openModal}
-                        //             current_goal_value={current_goal_value}
-                        //             title={title}
-                        //             goal={goal}
-                        //             is_chosen_date_today={this.state.is_chosen_date_today}
-                        //             flag={this.props.flag}
-                        //         />
-                        //     </Swipeable>
-                        // )
                     }
 
                     else if (repeat.type === "daily") {
@@ -331,25 +311,6 @@ class TaskCardHolder extends React.PureComponent {
 
                         if (diff_day > 0 && diff_day % repeat.interval.value === 0) {
                             return { action_type: "UPDATE_COMPLETED_DAY_TASK", task, current_goal_value, title, goal }
-                            // return (
-                            //     <Swipeable
-                            //         key={`day-task-${index}`}
-                            //         renderLeftActions={this.renderLeftActions}
-                            //     >
-                            //         <TaskCard
-                            //             action_type="UPDATE_COMPLETED_DAY_TASK"
-                            //             type={this.props.type}
-                            //             task_data={task}
-                            //             index={index}
-                            //             onPress={this.openModal}
-                            //             current_goal_value={current_goal_value}
-                            //             title={title}
-                            //             goal={goal}
-                            //             is_chosen_date_today={this.state.is_chosen_date_today}
-                            //             flag={this.props.flag}
-                            //         />
-                            //     </Swipeable>
-                            // )
                         }
                     }
 
@@ -361,26 +322,6 @@ class TaskCardHolder extends React.PureComponent {
 
                         if (diff > 0 && diff % interval_value === 0) {
                             return { action_type: "UPDATE_COMPLETED_DAY_TASK", task, current_goal_value, title, goal }
-
-                            // return (
-                            //     <Swipeable
-                            //         key={`day-task-${index}`}
-                            //         renderLeftActions={this.renderLeftActions}
-                            //     >
-                            //         <TaskCard
-                            //             action_type="UPDATE_COMPLETED_DAY_TASK"
-                            //             type={this.props.type}
-                            //             task_data={task}
-                            //             index={index}
-                            //             onPress={this.openModal}
-                            //             current_goal_value={current_goal_value}
-                            //             title={title}
-                            //             goal={goal}
-                            //             is_chosen_date_today={this.state.is_chosen_date_today}
-                            //             flag={this.props.flag}
-                            //         />
-                            //     </Swipeable>
-                            // )
                         }
                     }
 
@@ -395,49 +336,10 @@ class TaskCardHolder extends React.PureComponent {
                         if (diff_month > 0 && diff_month % interval_value === 0) {
                             if (current_date.getDate() === start_date.getDate()) {
                                 return { action_type: "UPDATE_COMPLETED_DAY_TASK", task, current_goal_value, title, goal }
-                                // return (
-                                //     <Swipeable
-                                //         key={`day-task-${index}`}
-                                //         renderLeftActions={this.renderLeftActions}
-                                //     >
-                                //         <TaskCard
-                                //             action_type="UPDATE_COMPLETED_DAY_TASK"
-                                //             type={this.props.type}
-                                //             task_data={task}
-                                //             index={index}
-                                //             onPress={this.openModal}
-                                //             current_goal_value={current_goal_value}
-                                //             title={title}
-                                //             goal={goal}
-                                //             is_chosen_date_today={this.state.is_chosen_date_today}
-                                //             flag={this.props.flag}
-                                //         />
-                                //     </Swipeable>
-                                // )
                             }
                             else {
                                 if (current_date.getDate() === new Date(current_date.getFullYear(), current_date.getMonth() + 1, 0).getDate()) {
                                     return { action_type: "UPDATE_COMPLETED_DAY_TASK", task, current_goal_value, title, goal }
-
-                                    // return (
-                                    //     <Swipeable
-                                    //         key={`day-task-${index}`}
-                                    //         renderLeftActions={this.renderLeftActions}
-                                    //     >
-                                    //         <TaskCard
-                                    //             action_type="UPDATE_COMPLETED_DAY_TASK"
-                                    //             type={this.props.type}
-                                    //             task_data={task}
-                                    //             index={index}
-                                    //             onPress={this.openModal}
-                                    //             current_goal_value={current_goal_value}
-                                    //             title={title}
-                                    //             goal={goal}
-                                    //             is_chosen_date_today={this.state.is_chosen_date_today}
-                                    //             flag={this.props.flag}
-                                    //         />
-                                    //     </Swipeable>
-                                    // )
                                 }
                             }
                         }
@@ -463,25 +365,6 @@ class TaskCardHolder extends React.PureComponent {
 
                     if (schedule.week === week && schedule.year === year) {
                         return { action_type: "UPDATE_COMPLETED_WEEK_TASK", task, current_goal_value, title, goal }
-
-                        // return (
-                        //     <Swipeable
-                        //         key={`week-task-${index}`}
-                        //         renderLeftActions={this.renderLeftActions}
-                        //     >
-                        //         <TaskCard
-                        //             action_type="UPDATE_COMPLETED_WEEK_TASK"
-                        //             type={this.props.type} task_data={task}
-                        //             index={index}
-                        //             onPress={this.openModal}
-                        //             current_goal_value={current_goal_value}
-                        //             title={title}
-                        //             goal={goal}
-                        //             is_chosen_date_today={this.state.is_chosen_date_today}
-                        //             flag={this.props.flag}
-                        //         />
-                        //     </Swipeable>
-                        // )
                     }
 
                     else if (repeat.type === "weekly-w") {
@@ -493,26 +376,6 @@ class TaskCardHolder extends React.PureComponent {
                             if (Math.abs(this.getWeek(current_date) - schedule.week) % interval_value === 0) {
 
                                 return { action_type: "UPDATE_COMPLETED_WEEK_TASK", task, current_goal_value, title, goal }
-
-                                // return (
-                                //     <Swipeable
-                                //         key={`week-task-${index}`}
-                                //         renderLeftActions={this.renderLeftActions}
-                                //     >
-                                //         <TaskCard
-                                //             action_type="UPDATE_COMPLETED_WEEK_TASK"
-                                //             type={this.props.type}
-                                //             task_data={task}
-                                //             index={index}
-                                //             onPress={this.openModal}
-                                //             current_goal_value={current_goal_value}
-                                //             title={title}
-                                //             goal={goal}
-                                //             is_chosen_date_today={this.state.is_chosen_date_today}
-                                //             flag={this.props.flag}
-                                //         />
-                                //     </Swipeable>
-                                // )
                             }
                         }
 
@@ -530,51 +393,11 @@ class TaskCardHolder extends React.PureComponent {
                             if (current_no_week_in_month === schedule.noWeekInMonth) {
 
                                 return { action_type: "UPDATE_COMPLETED_WEEK_TASK", task, current_goal_value, title, goal }
-
-                                // return (
-                                //     <Swipeable
-                                //         key={`week-task-${index}`}
-                                //         renderLeftActions={this.renderLeftActions}
-                                //     >
-                                //         <TaskCard
-                                //             action_type="UPDATE_COMPLETED_WEEK_TASK"
-                                //             type={this.props.type}
-                                //             task_data={task}
-                                //             index={index}
-                                //             onPress={this.openModal}
-                                //             current_goal_value={current_goal_value}
-                                //             title={title}
-                                //             goal={goal}
-                                //             is_chosen_date_today={this.state.is_chosen_date_today}
-                                //             flag={this.props.flag}
-                                //         />
-                                //     </Swipeable>
-                                // )
                             }
 
                             else if (current_no_week_in_month === last_no_week_in_month && schedule.noWeekInMonth === 5) {
 
                                 return { action_type: "UPDATE_COMPLETED_WEEK_TASK", task, current_goal_value, title, goal }
-
-                                // return (
-                                //     <Swipeable
-                                //         key={`week-task-${index}`}
-                                //         renderLeftActions={this.renderLeftActions}
-                                //     >
-                                //         <TaskCard
-                                //             action_type="UPDATE_COMPLETED_WEEK_TASK"
-                                //             type={this.props.type}
-                                //             task_data={task}
-                                //             index={index}
-                                //             onPress={this.openModal}
-                                //             current_goal_value={current_goal_value}
-                                //             title={title}
-                                //             goal={goal}
-                                //             is_chosen_date_today={this.state.is_chosen_date_today}
-                                //             flag={this.props.flag}
-                                //         />
-                                //     </Swipeable>
-                                // )
                             }
                         }
                     }
@@ -597,26 +420,6 @@ class TaskCardHolder extends React.PureComponent {
                     if (schedule.month === month && schedule.year === year) {
 
                         return { action_type: "UPDATE_COMPLETED_MONTH_TASK", task, current_goal_value, title, goal }
-
-                        // return (
-                        //     <Swipeable
-                        //         key={`month-task-${index}`}
-                        //         renderLeftActions={this.renderLeftActions}
-                        //     >
-                        //         <TaskCard
-                        //             action_type="UPDATE_COMPLETED_MONTH_TASK"
-                        //             type={this.props.type}
-                        //             task_data={task}
-                        //             index={index}
-                        //             onPress={this.openModal}
-                        //             current_goal_value={current_goal_value}
-                        //             title={title}
-                        //             goal={goal}
-                        //             is_chosen_date_today={this.state.is_chosen_date_today}
-                        //             flag={this.props.flag}
-                        //         />
-                        //     </Swipeable>
-                        // )
                     }
 
                     else if (repeat.type === "monthly-m") {
@@ -627,26 +430,6 @@ class TaskCardHolder extends React.PureComponent {
                         if (diff_month > 0 && diff_month % interval_value === 0) {
 
                             return { action_type: "UPDATE_COMPLETED_MONTH_TASK", task, current_goal_value, title, goal }
-
-                            // return (
-                            //     <Swipeable
-                            //         key={`month-task-${index}`}
-                            //         renderLeftActions={this.renderLeftActions}
-                            //     >
-                            //         <TaskCard
-                            //             action_type="UPDATE_COMPLETED_MONTH_TASK"
-                            //             type={this.props.type}
-                            //             task_data={task}
-                            //             index={index}
-                            //             onPress={this.openModal}
-                            //             current_goal_value={current_goal_value}
-                            //             title={title}
-                            //             goal={goal}
-                            //             is_chosen_date_today={this.state.is_chosen_date_today}
-                            //             flag={this.props.flag}
-                            //         />
-                            //     </Swipeable>
-                            // )
                         }
                     }
                 }
@@ -672,27 +455,6 @@ class TaskCardHolder extends React.PureComponent {
                         let current_goal_value = completed_task[chosen_day_timestamp].current
 
                         return { action_type: "UPDATE_COMPLETED_DAY_TASK", task, current_goal_value, title, goal }
-
-                        // return (
-                        //     <Swipeable
-                        //         key={`day-task-${index}`}
-                        //         renderLeftActions={this.renderLeftActions}
-                        //         renderRightActions={this._renderRightActions}
-                        //     >
-                        //         <TaskCard
-                        //             action_type="UPDATE_COMPLETED_DAY_TASK"
-                        //             type={this.props.type}
-                        //             task_data={task}
-                        //             index={index}
-                        //             onPress={this.openModal}
-                        //             current_goal_value={current_goal_value}
-                        //             title={title}
-                        //             goal={goal}
-                        //             is_chosen_date_today={this.state.is_chosen_date_today}
-                        //             flag={this.props.flag}
-                        //         />
-                        //     </Swipeable>
-                        // )
                     }
                 }
 
@@ -707,24 +469,6 @@ class TaskCardHolder extends React.PureComponent {
                         let current_goal_value = completed_task[chosen_week_timestamp].current
 
                         return { action_type: "UPDATE_COMPLETED_WEEK_TASK", task, current_goal_value, title, goal }
-                        // return (
-                        //     <Swipeable
-                        //         key={`week-task-${index}`}
-                        //         renderLeftActions={this.renderLeftActions}
-                        //     >
-                        //         <TaskCard
-                        //             action_type="UPDATE_COMPLETED_WEEK_TASK"
-                        //             type={this.props.type} task_data={task}
-                        //             index={index}
-                        //             onPress={this.openModal}
-                        //             current_goal_value={current_goal_value}
-                        //             title={title}
-                        //             goal={goal}
-                        //             is_chosen_date_today={this.state.is_chosen_date_today}
-                        //             flag={this.props.flag}
-                        //         />
-                        //     </Swipeable>
-                        // )
                     }
                 }
 
@@ -738,25 +482,6 @@ class TaskCardHolder extends React.PureComponent {
                         let current_goal_value = completed_task[chosen_month_timestamp].current
 
                         return { action_type: "UPDATE_COMPLETED_MONTH_TASK", task, current_goal_value, title, goal }
-                        // return (
-                        //     <Swipeable
-                        //         key={`month-task-${index}`}
-                        //         renderLeftActions={this.renderLeftActions}
-                        //     >
-                        //         <TaskCard
-                        //             action_type="UPDATE_COMPLETED_MONTH_TASK"
-                        //             type={this.props.type}
-                        //             task_data={task}
-                        //             index={index}
-                        //             onPress={this.openModal}
-                        //             title={title}
-                        //             current_goal_value={current_goal_value}
-                        //             goal={goal}
-                        //             is_chosen_date_today={this.state.is_chosen_date_today}
-                        //             flag={this.props.flag}
-                        //         />
-                        //     </Swipeable>
-                        // )
                     }
                 }
             }
@@ -811,45 +536,41 @@ class TaskCardHolder extends React.PureComponent {
         })
     }
 
-    componentDidMount() {
+    doUpdateOnTaskDataArray = (tasks, flag) => {
         let task_data_array = []
 
-        if (this.props.flag === "uncompleted") {
-            // this.setState({
-            //     task_card_array: Map(this.props.tasks).valueSeq().map((task, index) => this.handleUncompletedTaskUpdate(task, index))
-            // })
-
-            Map(this.props.tasks).valueSeq().every((task, index) => {
+        Map(tasks).valueSeq().forEach((task, index) => {
+            if (flag === "uncompleted") {
                 if (this.handleUncompletedTaskUpdate(task, index) === null) {
                     return
                 }
                 else {
                     task_data_array.push(this.handleUncompletedTaskUpdate(task, index))
                 }
-            })
+            }
 
-            this.setState({
-                task_data_array: [...task_data_array]
-            })
-        }
-
-        else {
-            // this.setState({
-            //     task_card_array: Map(this.props.completed_tasks).valueSeq().map((completed_task, index) => this.handleCompletedTaskUpdate(completed_task, index))
-            // })
-
-            Map(this.props.completed_tasks).valueSeq().every((completed_task, index) => {
-                if (this.handleCompletedTaskUpdate(completed_task, index) === null) {
+            else {
+                if (this.handleCompletedTaskUpdate(task, index) === null) {
                     return
                 }
                 else {
-                    task_data_array.push(this.handleCompletedTaskUpdate(completed_task, index))
+                    task_data_array.push(this.handleCompletedTaskUpdate(task, index))
                 }
-            })
+            }
+        })
 
-            this.setState({
-                task_data_array: [...task_data_array]
-            })
+        this.setState({
+            task_data_array: [...task_data_array]
+        })
+    }
+
+    componentDidMount() {
+        if (this.props.flag === "uncompleted") {
+            this.doUpdateOnTaskDataArray(this.props.tasks, this.props.flag)
+        }
+
+        else {
+            this.doUpdateOnTaskDataArray(this.props.completed_tasks, this.props.flag)
         }
 
         this.checkIfChosenDateIsToday(this.props.chosen_date_data, this.props.type)
@@ -857,88 +578,38 @@ class TaskCardHolder extends React.PureComponent {
 
     componentDidUpdate(prevProps, prevState) {
         if ((this.props.flag === "uncompleted") && ((this.props.tasks !== prevProps.tasks) || (this.props.completed_tasks !== prevProps.completed_tasks))) {
-            // this.setState({
-            //     task_card_array: Map(this.props.tasks).valueSeq().map((task, index) => this.handleUncompletedTaskUpdate(task, index))
-            // })
-
-            let task_data_array = []
-
-            Map(this.props.tasks).valueSeq().forEach((task, index) => {
-                if (this.handleUncompletedTaskUpdate(task, index) === null) {
-                    return
-                }
-                else {
-                    task_data_array.push(this.handleUncompletedTaskUpdate(task, index))
-                }
-            })
-
-            this.setState({
-                task_data_array: [...task_data_array]
-            })
+            this.doUpdateOnTaskDataArray(this.props.tasks, this.props.flag)
         }
         else if ((this.props.flag === "completed") && ((this.props.tasks !== prevProps.tasks) || (this.props.completed_tasks !== prevProps.completed_tasks))) {
-            // this.setState({
-            //     task_card_array: Map(this.props.completed_tasks).valueSeq().map((completed_task, index) => this.handleCompletedTaskUpdate(completed_task, index))
-            // })
-            let task_data_array = []
-
-            Map(this.props.completed_tasks).valueSeq().forEach((completed_task, index) => {
-                if (this.handleCompletedTaskUpdate(completed_task, index) === null) {
-                    return
-                }
-                else {
-                    task_data_array.push(this.handleCompletedTaskUpdate(completed_task, index))
-                }
-            })
-
-            this.setState({
-                task_data_array: [...task_data_array]
-            })
+            this.doUpdateOnTaskDataArray(this.props.completed_tasks, this.props.flag)
         }
 
         if (this.props.chosen_date_data !== prevProps.chosen_date_data) {
             if (this.props.flag === "uncompleted") {
-                let task_data_array = []
-
-                Map(this.props.tasks).valueSeq().forEach((task, index) => {
-                    if (this.handleUncompletedTaskUpdate(task, index) === null) {
-                        return
-                    }
-                    else {
-                        task_data_array.push(this.handleUncompletedTaskUpdate(task, index))
-                    }
-                })
-
-                this.setState({
-                    task_data_array: [...task_data_array]
-                })
+                this.doUpdateOnTaskDataArray(this.props.tasks, this.props.flag)
             }
 
             else {
-                let task_data_array = []
-
-                Map(this.props.completed_tasks).valueSeq().forEach((completed_task, index) => {
-                    if (this.handleCompletedTaskUpdate(completed_task, index) === null) {
-                        return
-                    }
-                    else {
-                        task_data_array.push(this.handleCompletedTaskUpdate(completed_task, index))
-                    }
-                })
-
-                this.setState({
-                    task_data_array: [...task_data_array]
-                })
+                this.doUpdateOnTaskDataArray(this.props.completed_tasks, this.props.flag)
             }
+
             this.checkIfChosenDateIsToday(this.props.chosen_date_data, this.props.type)
+        }
+
+        if (this.props.current_chosen_category !== prevProps.current_chosen_category) {
+            if (this.props.flag === "uncompleted") {
+                this.doUpdateOnTaskDataArray(this.props.tasks, this.props.flag)
+            }
+
+            else {
+                this.doUpdateOnTaskDataArray(this.props.completed_tasks, this.props.flag)
+            }
         }
     }
 
     render() {
         return (
             <>
-                {/* {this.state.task_card_array} */}
-
                 <TaskCardRenderingArray
                     type={this.props.type}
                     flag={this.props.flag}
