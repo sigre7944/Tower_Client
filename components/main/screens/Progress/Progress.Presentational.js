@@ -308,7 +308,7 @@ class ChartSection extends React.PureComponent {
     month_anno_current_time_text: `${this.month_texts[this.current.getMonth()]} ${this.current.getFullYear()}`,
     current_chosen_month_data: {},
 
-    
+
   }
 
   setWeekAnnoMonthYearData = (day, month, year) => {
@@ -470,8 +470,8 @@ class ChartSection extends React.PureComponent {
 
               :
 
-              <YearChart 
-                current_chosen_year = {this.current.getFullYear()}
+              <YearChart
+                current_chosen_year={this.current.getFullYear()}
               />
             }
           </>

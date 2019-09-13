@@ -4,8 +4,8 @@ import {
     updateDescription,
     updateType
 } from '../../../../../shared/actions/otherAction'
-import { updateTask } from '../../../../../shared/actions/taskAction'
-import { updateCategory } from '../../../../../shared/actions/categoryAction'
+import { addTaskThunk } from './actions/addTaskThunk'
+
 import AddTaskPanel from './AddTaskPanel'
 
 
@@ -25,29 +25,19 @@ const mapStateToProps = (state) => ({
 
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    updateTitle: (type, data) => {
-        dispatch(updateTitle(type, data))
+    updateTitle: (data) => {
+        dispatch(updateTitle(data))
     },
 
-    updateDescription: (type, data) => {
-        dispatch(updateDescription(type, data))
+    updateDescription: (data) => {
+        dispatch(updateDescription(data))
     },
 
     updateType: (type, data) => {
         dispatch(updateType(type, data))
     },
 
-    addTask: (type, data) => {
-        dispatch(updateTask(type, data))
-    },
-
-    updateTask: (type, data) => {
-        dispatch(updateTask(type, data))
-    },
-
-    updateCategory: (id, data) => {
-        dispatch(updateCategory(id, data))
-    }
+    addTaskThunk: (data) => { dispatch(addTaskThunk(data)) }
 })
 
 export default connect(

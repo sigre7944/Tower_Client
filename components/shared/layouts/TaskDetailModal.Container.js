@@ -2,11 +2,9 @@ import { connect } from 'react-redux'
 import TaskDetailModal from './TaskDetailModal'
 
 import {
-    updateTask,
-    deleteTask
-} from '../actions/taskAction'
-
-import { updateCategory } from '../actions/categoryAction'
+    editThunk,
+    deleteTaskThunk
+} from './actions/taskDetailModalThunk'
 
 const mapStateToProps = (state) => ({
     categories: state.categories,
@@ -14,11 +12,9 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    updateEdittingTask: (data) => dispatch(updateTask(ownProps.action_type, data)),
+    editThunk: (data) => dispatch(editThunk(ownProps.action_type, data)),
 
-    deleteTask: (type, data) => dispatch(deleteTask(type, data)),
-    deleteCompletedTask: (type, data) => dispatch(deleteTask(type, data)),
-    updateCategory: (id, data) => dispatch(updateCategory(id, data))
+    deleteTaskThunk: (data) => dispatch(deleteTaskThunk(data))
 })
 
 export default connect(

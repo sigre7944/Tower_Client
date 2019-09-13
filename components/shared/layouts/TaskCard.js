@@ -236,13 +236,25 @@ export default class TaskCard extends React.PureComponent {
         month_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, month_chart_stats, month_timestamp, current_date.getDate(), flag, operation)
         year_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, year_chart_stats, year_timestamp, current_date.getMonth(), flag, operation)
 
-        this.props.updateChartStats("UPDATE_WEEK_CHART_STATS", week_timestamp, week_chart_stats_data)   
-        this.props.updateChartStats("UPDATE_MONTH_CHART_STATS", month_timestamp, month_chart_stats_data)
-        this.props.updateChartStats("UPDATE_YEAR_CHART_STATS", year_timestamp, year_chart_stats_data)
+        let sending_obj = {
+            week_action_type: "UPDATE_WEEK_CHART_STATS",
+            week_timestamp,
+            week_chart_stats_data,
+
+            month_action_type: "UPDATE_MONTH_CHART_STATS",
+            month_timestamp,
+            month_chart_stats_data,
+
+            year_action_type: "UPDATE_YEAR_CHART_STATS",
+            year_timestamp,
+            year_chart_stats_data
+        }
+
+        this.props.updateChartStatsThunk(sending_obj)
     }
 
     doCompareAndUpdateOnChartStatsData = (task, chart_stats, timestamp, key, flag, operation) => {
-        
+
         let chart_stats_data = {},
             chart_stats_map = Map(chart_stats)
 
@@ -281,7 +293,7 @@ export default class TaskCard extends React.PureComponent {
                         if (current[this.priority_order[task.priority.value]] < 0) {
                             current[this.priority_order[task.priority.value]] = 0
                         }
-                        
+
                         chart_stats_data[key].current = current
                     }
                 }

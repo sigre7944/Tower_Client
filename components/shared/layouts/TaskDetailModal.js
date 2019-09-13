@@ -142,20 +142,31 @@ export default class TaskDetailModal extends Component {
     }
 
     delete = () => {
+        let completed_task_action_type = "",
+            uncompleted_task_action_type = ""
+
         if (this.props.type === "day") {
-            this.props.deleteCompletedTask("DELETE_COMPLETED_DAY_TASK", this.edit_task.id)
-            this.props.deleteTask("DELETE_DAY_TASK", this.edit_task.id)
+            completed_task_action_type = "DELETE_COMPLETED_DAY_TASK"
+            uncompleted_task_action_type = "DELETE_DAY_TASK"
         }
 
         else if (this.props.type === "week") {
-            this.props.deleteCompletedTask("DELETE_COMPLETED_WEEK_TASK", this.edit_task.id)
-            this.props.deleteTask("DELETE_WEEK_TASK", this.edit_task.id)
+            completed_task_action_type = "DELETE_COMPLETED_WEEK_TASK"
+            uncompleted_task_action_type = "DELETE_WEEK_TASK"
         }
 
         else {
-            this.props.deleteCompletedTask("DELETE_COMPLETED_MONTH_TASK", this.edit_task.id)
-            this.props.deleteTask("DELETE_MONTH_TASK", this.edit_task.id)
+            completed_task_action_type = "DELETE_COMPLETED_MONTH_TASK"
+            uncompleted_task_action_type = "DELETE_MONTH_TASK"
         }
+
+        let sending_obj = {
+            completed_task_action_type,
+            uncompleted_task_action_type,
+            id: this.edit_task.id
+        }
+
+        this.props.deleteTaskThunk(sending_obj)
 
         this.props.resetTaskData()
         this.toggleDelete()
@@ -414,8 +425,7 @@ export default class TaskDetailModal extends Component {
                                 categories={this.props.categories}
                                 priorities={this.props.priorities}
                                 hideAction={this.toggleEdit}
-                                updateEdittingTask={this.props.updateEdittingTask}
-                                updateCategory={this.props.updateCategory}
+                                editThunk={this.props.editThunk}
                                 type={this.props.type}
                             />
                         }
@@ -533,7 +543,6 @@ class EditDetails extends React.PureComponent {
     save = () => {
         let new_category_key = this.edit_task.category
 
-        this.props.updateEdittingTask(this.edit_task)
 
         //Decrease old category's quantity
         let old_category_data = { ...this.props.categories[this.category_key] }
@@ -543,8 +552,15 @@ class EditDetails extends React.PureComponent {
         let new_category_data = { ...this.props.categories[new_category_key] }
         new_category_data.quantity += 1
 
-        this.props.updateCategory(this.category_key, old_category_data)
-        this.props.updateCategory(new_category_key, new_category_data)
+        let sending_obj = {
+            edit_task: this.edit_task,
+            new_category_key,
+            new_category_data,
+            old_category_key: this.category_key,
+            old_category_data
+        }
+
+        this.props.editThunk(sending_obj)
 
         this.cancel()
     }

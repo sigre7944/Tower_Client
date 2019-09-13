@@ -1,7 +1,8 @@
 import { connect } from 'react-redux'
 import { updateTask } from '../actions/taskAction'
 import { updateStats } from '../actions/statsAction'
-import { updateChartStats } from '../actions/chartStatsAction'
+import { updateChartStatsThunk } from './actions/taskCardThunk'
+
 import TaskCard from './TaskCard'
 
 const mapStateToProps = (state, ownProps) => {
@@ -44,7 +45,8 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => ({
     updateCompletedTask: (data) => dispatch(updateTask(ownProps.action_type, data)),
     updateStats: (type, timestamp, data) => dispatch(updateStats(type, timestamp, data)),
-    updateChartStats: (type, timestamp, data) => dispatch(updateChartStats(type, timestamp, data))
+
+    updateChartStatsThunk: (data) => dispatch(updateChartStatsThunk(data))
 })
 
 export default connect(
