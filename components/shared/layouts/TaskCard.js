@@ -39,13 +39,6 @@ export default class TaskCard extends React.PureComponent {
         return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
     }
 
-    getNoWeekInMonth = (date) => {
-        let nearest_monday = this.getMonday(date)
-        let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
-
-        return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
-    }
-
     doUpdateOnCompletedTask = (flag, type, operation) => {
         let task = { ... this.props.task_data },
             current_date = new Date(),

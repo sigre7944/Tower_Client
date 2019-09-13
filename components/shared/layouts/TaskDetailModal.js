@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { TouchableOpacity, Text, View, StyleSheet, ImageBackground, Dimensions, Image, TextInput, Modal as RNModal } from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { CheckBox } from 'react-native-elements';
-import Modal from 'react-native-modalbox';
 import DayCalendar from '../calendar/day-calendar/DayCalendar.Container'
 import WeekCalendar from '../calendar/week-calendar/WeekCalendar.Container'
 import MonthCalendar from '../calendar/month-calendar/MonthCalendar.Container'
@@ -10,6 +9,8 @@ import Category from '../category/Category.Container'
 import Priority from '../priority/Priority.Container'
 import Repeat from '../repeat/Repeat.Container'
 import Goal from '../goal/Goal.Container'
+
+import { Map } from 'immutable'
 
 export default class TaskDetailModal extends Component {
 
@@ -424,6 +425,10 @@ export default class TaskDetailModal extends Component {
                                 task_data={this.edit_task}
                                 categories={this.props.categories}
                                 priorities={this.props.priorities}
+                                stats={this.props.stats}
+                                week_chart_stats={this.props.week_chart_stats}
+                                month_chart_stats={this.props.month_chart_stats}
+                                year_chart_stats={this.props.year_chart_stats}
                                 hideAction={this.toggleEdit}
                                 editThunk={this.props.editThunk}
                                 type={this.props.type}
@@ -448,14 +453,23 @@ class EditDetails extends React.PureComponent {
 
     month_names_in_short = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
+
     edit_task = {}
     calendar_text = ""
     category = ""
     priority = ""
+    priority_id = ""
     repeat = ""
     goal = ""
 
     category_key = ""
+
+    priority_order = {
+        pri_01: 0,
+        pri_02: 1,
+        pri_03: 2,
+        pri_04: 3
+    }
 
     state = {
         title_value: "",
@@ -469,6 +483,24 @@ class EditDetails extends React.PureComponent {
         edit_goal: false,
 
         should_update: 0,
+    }
+
+    getWeek = (date) => {
+        let target = new Date(date);
+        let dayNr = (date.getDay() + 6) % 7;
+        target.setDate(target.getDate() - dayNr + 3);
+        let firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() != 4) {
+            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+        }
+        return 1 + Math.ceil((firstThursday - target) / 604800000);
+    }
+
+    getMonday = (date) => {
+        let dayInWeek = new Date(date).getDay()
+        let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
+        return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
     }
 
     _onChangeTitle = (e) => {
@@ -540,28 +572,160 @@ class EditDetails extends React.PureComponent {
         this.renderData(this.edit_task)
     }
 
+    // change the current property of today timestamp, previous timestamp untouched.
+    updateOnStatsData = (timestamp, new_priority_id) => {
+        let stats_map = Map(this.props.stats),
+            data = {}
+
+        if (stats_map.has(timestamp)) {
+            data = stats_map.get(timestamp)
+
+            let { current } = data
+
+            current[this.priority_order[this.priority_id]] -= 1
+
+            if (current[this.priority_order[this.priority_id]] < 0) {
+                current[this.priority_order[this.priority_id]] = 0
+            }
+
+            current[this.priority_order[new_priority_id]] += 1
+
+            data.current = current
+        }
+
+        return data
+    }
+
+    updateOnChartStatsData = (new_priority_id, chart_stats_map, timestamp, key) => {
+        let data = {}
+
+        if (chart_stats_map.has(timestamp)) {
+            data = chart_stats_map.get(timestamp)
+
+            if (data.hasOwnProperty(key)) {
+                let { current } = data[key]
+
+                current[this.priority_order[this.priority_id]] -= 1
+
+                if (current[this.priority_order[this.priority_id]] < 0) {
+                    current[this.priority_order[this.priority_id]] = 0
+                }
+
+                current[this.priority_order[new_priority_id]] += 1
+
+                data[key].current = current
+            }
+        }
+
+        return data
+    }
+
     save = () => {
-        let new_category_key = this.edit_task.category
+        let new_priority_id = this.edit_task.priority.value,
+            new_category_key = this.edit_task.category,
+            old_category_data = {},
+            new_category_data = {},
+            should_update_category = false,
+            update_category_data = {},
 
+            is_priority_changed = false,
+            update_stats_data = {},
 
-        //Decrease old category's quantity
-        let old_category_data = { ...this.props.categories[this.category_key] }
-        old_category_data.quantity -= 1
+            update_chart_stats_data = {},
 
-        //Increase new category's quantity
-        let new_category_data = { ...this.props.categories[new_category_key] }
-        new_category_data.quantity += 1
+            sending_obj = {
+                edit_task: this.edit_task,
+                should_update_category,
+                update_category_data,
+                is_priority_changed,
+                update_stats_data,
+                update_chart_stats_data
+            }
 
-        let sending_obj = {
-            edit_task: this.edit_task,
-            new_category_key,
-            new_category_data,
-            old_category_key: this.category_key,
-            old_category_data
+        if (this.category_key !== new_category_key) {
+            should_update_category = true
+
+            //Decrease old category's quantity
+            old_category_data = { ...this.props.categories[this.category_key] }
+            old_category_data.quantity -= 1
+
+            //Increase new category's quantity
+            new_category_data = { ...this.props.categories[new_category_key] }
+            new_category_data.quantity += 1
+
+            if (new_category_data.quantity < 0) {
+                new_category_data.quantity = 0
+            }
+
+            update_category_data = {
+                new_category_key,
+                new_category_data,
+                old_category_key: this.category_key,
+                old_category_data
+            }
+
+            sending_obj.should_update_category = should_update_category
+            sending_obj.update_category_data = update_category_data
+        }
+
+        // do update on stats and chart_stats when priority is changed
+        if (this.priority_id !== new_priority_id) {
+            is_priority_changed = true
+
+            let stats_action_type = "",
+                date = new Date(),
+                stats_timestamp = 0,
+                week_chart_timestamp = new Date(this.getMonday(date).getFullYear(), this.getMonday(date).getMonth(), this.getMonday(date).getDate()).getTime(),
+                month_chart_timestamp = new Date(date.getFullYear(), date.getMonth()).getTime(),
+                year_chart_timestamp = date.getFullYear()
+
+            if (this.props.type === "day") {
+                stats_timestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
+                stats_action_type = "UPDATE_DAY_STATS"
+            }
+
+            else if (this.props.type === "week") {
+                stats_timestamp = new Date(this.getMonday(date).getFullYear(), this.getMonday(date).getMonth(), this.getMonday(date).getDate()).getTime()
+                stats_action_type = "UPDATE_WEEK_STATS"
+            }
+
+            else {
+                stats_timestamp = new Date(date.getFullYear(), date.getMonth()).getTime()
+                stats_action_type = "UPDATE_MONTH_STATS"
+            }
+
+            let stats_data = this.updateOnStatsData(stats_timestamp, new_priority_id)
+
+            update_stats_data = {
+                stats_action_type,
+                stats_timestamp,
+                stats_data
+            }
+
+            let week_chart_stats_data = this.updateOnChartStatsData(new_priority_id, Map(this.props.week_chart_stats), week_chart_timestamp, date.getDay()),
+                month_chart_stats_data = this.updateOnChartStatsData(new_priority_id, Map(this.props.month_chart_stats), month_chart_timestamp, date.getDate()),
+                year_chart_stats_data = this.updateOnChartStatsData(new_priority_id, Map(this.props.year_chart_stats), year_chart_timestamp, date.getMonth())
+
+            update_chart_stats_data = {
+                week_chart_stats_action_type: "UPDATE_WEEK_CHART_STATS",
+                month_chart_stats_action_type: "UPDATE_MONTH_CHART_STATS",
+                year_chart_stats_action_type: "UPDATE_YEAR_CHART_STATS",
+                
+                week_chart_timestamp,
+                month_chart_timestamp,
+                year_chart_timestamp,
+
+                week_chart_stats_data,
+                month_chart_stats_data,
+                year_chart_stats_data
+            }
+
+            sending_obj.is_priority_changed = is_priority_changed
+            sending_obj.update_stats_data = update_stats_data
+            sending_obj.update_chart_stats_data = update_chart_stats_data
         }
 
         this.props.editThunk(sending_obj)
-
         this.cancel()
     }
 
@@ -625,6 +789,7 @@ class EditDetails extends React.PureComponent {
         this.edit_task = this.props.task_data
 
         this.category_key = this.edit_task.category
+        this.priority_id = this.edit_task.priority.value
 
         let { title, description } = this.edit_task
 
