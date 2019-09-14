@@ -233,6 +233,7 @@ export default class TaskDetailModal extends Component {
     returnTaskGoalCurrentValue = (task_id, stats_timestamp) => {
         let completed_tasks_map = Map(this.props.completed_tasks)
 
+
         if (completed_tasks_map.has(task_id)) {
             let data = completed_tasks_map.get(task_id)
 
@@ -608,6 +609,7 @@ export default class TaskDetailModal extends Component {
                                 categories={this.props.categories}
                                 priorities={this.props.priorities}
                                 stats={this.props.stats}
+                                completed_tasks = {this.props.completed_tasks}
                                 week_chart_stats={this.props.week_chart_stats}
                                 month_chart_stats={this.props.month_chart_stats}
                                 year_chart_stats={this.props.year_chart_stats}
@@ -807,7 +809,6 @@ class EditDetails extends React.PureComponent {
 
         if (completed_tasks_map.has(task_id)) {
             let data = completed_tasks_map.get(task_id)
-
             if (data.hasOwnProperty(stats_timestamp)) {
                 return data[stats_timestamp].current
             }
@@ -825,13 +826,13 @@ class EditDetails extends React.PureComponent {
             current_value = 0,
             should_update_category = false,
             update_category_data = {},
-            should_update_stats = true,
+            should_update_stats = false,
             update_stats_data = {},
             update_chart_stats_data = {},
             should_update_chart_stats = {
-                week: true,
-                month: true,
-                year: true
+                week: false,
+                month: false,
+                year: false
             },
             sending_obj = {
                 edit_task: this.edit_task,
@@ -871,6 +872,8 @@ class EditDetails extends React.PureComponent {
 
         // do update on stats and chart_stats when priority is changed
         if (this.priority_id !== new_priority_id) {
+            should_update_stats = true
+
             let stats_action_type = "",
                 date = new Date(),
                 stats_timestamp = 0,
@@ -898,8 +901,8 @@ class EditDetails extends React.PureComponent {
             let stats_data = this.updateOnStatsData(stats_timestamp, new_priority_id, current_value)
 
             // Only update if there is an existing obj.
-            if (Object.keys(stats_data).length === 0) {
-                should_update_stats = false
+            if (Object.keys(stats_data).length > 0) {
+                should_update_stats = true
             }
 
             sending_obj.should_update_stats = should_update_stats
@@ -914,16 +917,17 @@ class EditDetails extends React.PureComponent {
                 month_chart_stats_data = this.updateOnChartStatsData(new_priority_id, Map(this.props.month_chart_stats), month_chart_timestamp, date.getDate(), current_value),
                 year_chart_stats_data = this.updateOnChartStatsData(new_priority_id, Map(this.props.year_chart_stats), year_chart_timestamp, date.getMonth(), current_value)
 
-            if (Object.keys(week_chart_stats_data).length === 0) {
-                should_update_chart_stats.week = false
+
+            if (Object.keys(week_chart_stats_data).length > 0) {
+                should_update_chart_stats.week = true
             }
 
-            if (Object.keys(month_chart_stats_data).length === 0) {
-                should_update_chart_stats.month = false
+            if (Object.keys(month_chart_stats_data).length > 0) {
+                should_update_chart_stats.month = true
             }
 
-            if (Object.keys(year_chart_stats_data).length === 0) {
-                should_update_chart_stats.year = false
+            if (Object.keys(year_chart_stats_data).length > 0) {
+                should_update_chart_stats.year = true
             }
 
             sending_obj.should_update_chart_stats = should_update_chart_stats
