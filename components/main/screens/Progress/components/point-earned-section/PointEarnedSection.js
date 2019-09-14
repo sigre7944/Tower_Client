@@ -428,6 +428,8 @@ class Day extends React.PureComponent {
       this.updateDayPoints()
     }
 
+    if(this.props.day_stats !== prevProps.day_stats){
+    }
   }
 
   render() {

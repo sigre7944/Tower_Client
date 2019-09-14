@@ -9,19 +9,22 @@ import TaskDetailModal from './TaskDetailModal'
 
 
 const mapStateToProps = (state, ownProps) => {
-    let stats = {}
+    let stats = {},
+        completed_tasks = {}
 
     if (ownProps.type === "day") {
         stats = state.day_stats
-        
+        completed_tasks = state.completed_day_tasks
     }
 
     else if (ownProps.type === "week") {
         stats = state.week_stats
+        completed_tasks = state.completed_week_tasks
     }
 
-    else{
+    else {
         stats = state.month_stats
+        completed_tasks = state.completed_month_tasks
     }
 
     return (
@@ -29,6 +32,7 @@ const mapStateToProps = (state, ownProps) => {
             categories: state.categories,
             priorities: state.priorities,
             stats,
+            completed_tasks,
             week_chart_stats: state.week_chart_stats,
             month_chart_stats: state.month_chart_stats,
             year_chart_stats: state.year_chart_stats,

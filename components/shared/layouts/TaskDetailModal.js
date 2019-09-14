@@ -26,6 +26,13 @@ export default class TaskDetailModal extends Component {
 
     yes_delete_clicked = false
 
+    priority_order = {
+        pri_01: 0,
+        pri_02: 1,
+        pri_03: 2,
+        pri_04: 3
+    }
+
     state = {
         isOpened: false,
         isEditing: false,
@@ -40,6 +47,24 @@ export default class TaskDetailModal extends Component {
         should_update: 0,
 
         toggle_delete: false,
+    }
+
+    getWeek = (date) => {
+        let target = new Date(date);
+        let dayNr = (date.getDay() + 6) % 7;
+        target.setDate(target.getDate() - dayNr + 3);
+        let firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() != 4) {
+            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+        }
+        return 1 + Math.ceil((firstThursday - target) / 604800000);
+    }
+
+    getMonday = (date) => {
+        let dayInWeek = new Date(date).getDay()
+        let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
+        return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
     }
 
     toggleEdit = (visible) => {
@@ -142,30 +167,187 @@ export default class TaskDetailModal extends Component {
         }))
     }
 
+    updateDeletionOnStatsData = (timestamp, priority_id, current_value) => {
+        let stats_map = Map(this.props.stats),
+            data = {}
+        if (stats_map.has(timestamp)) {
+            data = stats_map.get(timestamp)
+
+            let { current } = data
+
+            current[this.priority_order[priority_id]] -= current_value
+
+            if (current[this.priority_order[priority_id]] < 0) {
+                current[this.priority_order[priority_id]] = 0
+            }
+
+            data.current = current
+        }
+
+        return data
+    }
+
+    updateDeletionOnChartStatsData = (priority_id, chart_stats_map, timestamp, key, current_value) => {
+        let data = {}
+
+        if (chart_stats_map.has(timestamp)) {
+            data = chart_stats_map.get(timestamp)
+
+            if (data.hasOwnProperty(key)) {
+                let { current } = data[key]
+
+                current[this.priority_order[priority_id]] -= current_value
+
+                if (current[this.priority_order[priority_id]] < 0) {
+                    current[this.priority_order[priority_id]] = 0
+                }
+
+                data[key].current = current
+            }
+        }
+
+        return data
+    }
+
+    updateDeletionOnCategoryData = (category_id) => {
+        let { categories } = this.props,
+            data = {}
+
+        if (categories.hasOwnProperty(category_id)) {
+            data = categories[category_id]
+
+            let { quantity } = data
+
+            quantity -= 1
+
+            if (quantity < 0) {
+                quantity = 0
+            }
+
+            data.quantity = quantity
+        }
+
+        return data
+    }
+
+    returnTaskGoalCurrentValue = (task_id, stats_timestamp) => {
+        let completed_tasks_map = Map(this.props.completed_tasks)
+
+        if (completed_tasks_map.has(task_id)) {
+            let data = completed_tasks_map.get(task_id)
+
+            if (data.hasOwnProperty(stats_timestamp)) {
+                return data[stats_timestamp].current
+            }
+        }
+
+        return 0
+    }
+
     delete = () => {
         let completed_task_action_type = "",
-            uncompleted_task_action_type = ""
+            uncompleted_task_action_type = "",
+            stats_action_type = "",
+            date = new Date(),
+            stats_timestamp = 0,
+            stats_data = {},
+            sending_obj = {},
+            should_update_stats = true,
+            update_stats_data = {},
+            should_update_chart_stats = {
+                week: true,
+                month: true,
+                year: true
+            },
+            update_chart_stats_data = {},
+            id = this.edit_task.id,
+            priority_id = this.edit_task.priority.value,
+            current_value = 0,
+            category_data = this.updateDeletionOnCategoryData(this.edit_task.category),
+            category_obj = {
+                id: this.edit_task.category,
+                data: category_data
+            }
 
         if (this.props.type === "day") {
             completed_task_action_type = "DELETE_COMPLETED_DAY_TASK"
             uncompleted_task_action_type = "DELETE_DAY_TASK"
+            stats_action_type = "UPDATE_DAY_STATS"
+            stats_timestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
         }
 
         else if (this.props.type === "week") {
             completed_task_action_type = "DELETE_COMPLETED_WEEK_TASK"
             uncompleted_task_action_type = "DELETE_WEEK_TASK"
+            stats_action_type = "UPDATE_WEEK_STATS"
+            stats_timestamp = new Date(this.getMonday(date).getFullYear(), this.getMonday(date).getMonth(), this.getMonday(date).getDate()).getTime()
         }
 
         else {
             completed_task_action_type = "DELETE_COMPLETED_MONTH_TASK"
             uncompleted_task_action_type = "DELETE_MONTH_TASK"
+            stats_action_type = "UPDATE_MONTH_STATS"
+            stats_timestamp = new Date(date.getFullYear(), date.getMonth()).getTime()
         }
 
-        let sending_obj = {
+        current_value = this.returnTaskGoalCurrentValue(id, stats_timestamp)
+        stats_data = this.updateDeletionOnStatsData(stats_timestamp, priority_id, current_value)
+
+        if (Object.keys(stats_data).length === 0) {
+            should_update_stats = false
+        }
+
+        update_stats_data = {
+            stats_action_type,
+            stats_timestamp,
+            stats_data
+        }
+
+        let week_chart_timestamp = new Date(this.getMonday(date).getFullYear(), this.getMonday(date).getMonth(), this.getMonday(date).getDate()).getTime(),
+            month_chart_timestamp = new Date(date.getFullYear(), date.getMonth()).getTime(),
+            year_chart_timestamp = date.getFullYear(),
+            week_chart_stats_data = this.updateDeletionOnChartStatsData(priority_id, this.props.week_chart_stats, week_chart_timestamp, date.getDay(), current_value),
+            month_chart_stats_data = this.updateDeletionOnChartStatsData(priority_id, this.props.month_chart_stats, month_chart_timestamp, date.getDate(), current_value),
+            year_chart_stats_data = this.updateDeletionOnChartStatsData(priority_id, this.props.year_chart_stats, year_chart_timestamp, date.getMonth(), current_value)
+
+        if (Object.keys(week_chart_stats_data).length === 0) {
+            should_update_chart_stats.week = false
+        }
+
+        if (Object.keys(month_chart_stats_data).length === 0) {
+            should_update_chart_stats.month = false
+        }
+
+        if (Object.keys(year_chart_stats_data).length === 0) {
+            should_update_chart_stats.year = false
+        }
+
+        update_chart_stats_data = {
+            week_chart_stats_action_type: "UPDATE_WEEK_CHART_STATS",
+            month_chart_stats_action_type: "UPDATE_MONTH_CHART_STATS",
+            year_chart_stats_action_type: "UPDATE_YEAR_CHART_STATS",
+
+            week_chart_timestamp,
+            month_chart_timestamp,
+            year_chart_timestamp,
+
+            week_chart_stats_data,
+            month_chart_stats_data,
+            year_chart_stats_data
+        }
+
+
+        sending_obj = {
             completed_task_action_type,
             uncompleted_task_action_type,
-            id: this.edit_task.id
+            id,
+            should_update_stats,
+            update_stats_data,
+            should_update_chart_stats,
+            update_chart_stats_data,
+            category_obj
         }
+
 
         this.props.deleteTaskThunk(sending_obj)
 
@@ -573,7 +755,7 @@ class EditDetails extends React.PureComponent {
     }
 
     // change the current property of today timestamp, previous timestamp untouched.
-    updateOnStatsData = (timestamp, new_priority_id) => {
+    updateOnStatsData = (timestamp, new_priority_id, current_value) => {
         let stats_map = Map(this.props.stats),
             data = {}
 
@@ -582,13 +764,13 @@ class EditDetails extends React.PureComponent {
 
             let { current } = data
 
-            current[this.priority_order[this.priority_id]] -= 1
+            current[this.priority_order[this.priority_id]] -= current_value
 
             if (current[this.priority_order[this.priority_id]] < 0) {
                 current[this.priority_order[this.priority_id]] = 0
             }
 
-            current[this.priority_order[new_priority_id]] += 1
+            current[this.priority_order[new_priority_id]] += current_value
 
             data.current = current
         }
@@ -596,7 +778,7 @@ class EditDetails extends React.PureComponent {
         return data
     }
 
-    updateOnChartStatsData = (new_priority_id, chart_stats_map, timestamp, key) => {
+    updateOnChartStatsData = (new_priority_id, chart_stats_map, timestamp, key, current_value) => {
         let data = {}
 
         if (chart_stats_map.has(timestamp)) {
@@ -605,13 +787,13 @@ class EditDetails extends React.PureComponent {
             if (data.hasOwnProperty(key)) {
                 let { current } = data[key]
 
-                current[this.priority_order[this.priority_id]] -= 1
+                current[this.priority_order[this.priority_id]] -= current_value
 
                 if (current[this.priority_order[this.priority_id]] < 0) {
                     current[this.priority_order[this.priority_id]] = 0
                 }
 
-                current[this.priority_order[new_priority_id]] += 1
+                current[this.priority_order[new_priority_id]] += current_value
 
                 data[key].current = current
             }
@@ -620,25 +802,44 @@ class EditDetails extends React.PureComponent {
         return data
     }
 
+    returnTaskGoalCurrentValue = (task_id, stats_timestamp) => {
+        let completed_tasks_map = Map(this.props.completed_tasks)
+
+        if (completed_tasks_map.has(task_id)) {
+            let data = completed_tasks_map.get(task_id)
+
+            if (data.hasOwnProperty(stats_timestamp)) {
+                return data[stats_timestamp].current
+            }
+        }
+
+        return 0
+    }
+
+
     save = () => {
         let new_priority_id = this.edit_task.priority.value,
             new_category_key = this.edit_task.category,
             old_category_data = {},
             new_category_data = {},
+            current_value = 0,
             should_update_category = false,
             update_category_data = {},
-
-            is_priority_changed = false,
+            should_update_stats = true,
             update_stats_data = {},
-
             update_chart_stats_data = {},
-
+            should_update_chart_stats = {
+                week: true,
+                month: true,
+                year: true
+            },
             sending_obj = {
                 edit_task: this.edit_task,
                 should_update_category,
                 update_category_data,
-                is_priority_changed,
+                should_update_stats,
                 update_stats_data,
+                should_update_chart_stats,
                 update_chart_stats_data
             }
 
@@ -670,8 +871,6 @@ class EditDetails extends React.PureComponent {
 
         // do update on stats and chart_stats when priority is changed
         if (this.priority_id !== new_priority_id) {
-            is_priority_changed = true
-
             let stats_action_type = "",
                 date = new Date(),
                 stats_timestamp = 0,
@@ -694,7 +893,16 @@ class EditDetails extends React.PureComponent {
                 stats_action_type = "UPDATE_MONTH_STATS"
             }
 
-            let stats_data = this.updateOnStatsData(stats_timestamp, new_priority_id)
+            current_value = this.returnTaskGoalCurrentValue(this.edit_task.id, stats_timestamp)
+
+            let stats_data = this.updateOnStatsData(stats_timestamp, new_priority_id, current_value)
+
+            // Only update if there is an existing obj.
+            if (Object.keys(stats_data).length === 0) {
+                should_update_stats = false
+            }
+
+            sending_obj.should_update_stats = should_update_stats
 
             update_stats_data = {
                 stats_action_type,
@@ -702,15 +910,29 @@ class EditDetails extends React.PureComponent {
                 stats_data
             }
 
-            let week_chart_stats_data = this.updateOnChartStatsData(new_priority_id, Map(this.props.week_chart_stats), week_chart_timestamp, date.getDay()),
-                month_chart_stats_data = this.updateOnChartStatsData(new_priority_id, Map(this.props.month_chart_stats), month_chart_timestamp, date.getDate()),
-                year_chart_stats_data = this.updateOnChartStatsData(new_priority_id, Map(this.props.year_chart_stats), year_chart_timestamp, date.getMonth())
+            let week_chart_stats_data = this.updateOnChartStatsData(new_priority_id, Map(this.props.week_chart_stats), week_chart_timestamp, date.getDay(), current_value),
+                month_chart_stats_data = this.updateOnChartStatsData(new_priority_id, Map(this.props.month_chart_stats), month_chart_timestamp, date.getDate(), current_value),
+                year_chart_stats_data = this.updateOnChartStatsData(new_priority_id, Map(this.props.year_chart_stats), year_chart_timestamp, date.getMonth(), current_value)
+
+            if (Object.keys(week_chart_stats_data).length === 0) {
+                should_update_chart_stats.week = false
+            }
+
+            if (Object.keys(month_chart_stats_data).length === 0) {
+                should_update_chart_stats.month = false
+            }
+
+            if (Object.keys(year_chart_stats_data).length === 0) {
+                should_update_chart_stats.year = false
+            }
+
+            sending_obj.should_update_chart_stats = should_update_chart_stats
 
             update_chart_stats_data = {
                 week_chart_stats_action_type: "UPDATE_WEEK_CHART_STATS",
                 month_chart_stats_action_type: "UPDATE_MONTH_CHART_STATS",
                 year_chart_stats_action_type: "UPDATE_YEAR_CHART_STATS",
-                
+
                 week_chart_timestamp,
                 month_chart_timestamp,
                 year_chart_timestamp,
@@ -720,7 +942,6 @@ class EditDetails extends React.PureComponent {
                 year_chart_stats_data
             }
 
-            sending_obj.is_priority_changed = is_priority_changed
             sending_obj.update_stats_data = update_stats_data
             sending_obj.update_chart_stats_data = update_chart_stats_data
         }
