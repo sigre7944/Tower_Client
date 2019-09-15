@@ -253,14 +253,18 @@ const week_tasks = {
 const week_completed_tasks = {
     task_id: {
         id: task_id,
+        category: category_id,
+        priority_value: priority_value,
         // The completion_timestamp_x will be calculated based on a rule, involving the first monday of the week, month, year of the completion time.
         completion_timestamp_1: {
-            current: 1 //the current goal value of the task. For example, a task has a goal of 5 times completion each occurrence. The value shows that
+            current: 1, //the current goal value of the task. For example, a task has a goal of 5 times completion each occurrence. The value shows that
             // at the time of completion_timestamp_1, the task has been completed 1 time (1/5)
+            priority_value: priority_value,
         },
 
         completion_timestamp_2: {
-            current: 1
+            current: 1,
+            priority_value: priority_value,
         },
     }
 }

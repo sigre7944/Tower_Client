@@ -1,0 +1,107 @@
+- Object structures for stats to work:
+    + Day: {
+        // 0:00:00 of the day
+        day_timestamp: {
+            current: [0, 0, 0, 0]
+        }
+    }
+
+    + Week: {
+        // Monday of the week
+        week_timestamp: {
+            current: [0, 0, 0, 0]
+        }
+    }
+
+    + Month: {
+        // Day 1 of the month
+        month_timestamp: {
+            current: [0, 0, 0, 0]
+        }
+    }
+
+- Object structures for charts to work:
+    + Week chart: {
+        // Monday of the week
+        week_timestamp: {
+            // sunday
+            0: {
+                current: [0, 0, 0, 0]
+            }
+        }
+    }
+
+    + Month chart: {
+        // Day 1 of the month
+        month_timestamp: {
+            // First day of month
+            1: {
+                current: [0, 0, 0, 0]
+            }
+        }
+    }
+
+    + Year chart: {
+        // 2019
+        year: {
+            // January
+            0: {
+                current: [0, 0, 0, 0]
+            }
+        }
+    }
+
+- Object structures for completed tasks:
+    + Day type: {
+        task_id: {
+            id: task_id,
+            category: category_id,
+
+            completed_day_timestamp: {
+                current: 0,
+                priority_value: priority_value
+            }
+        }
+    }
+
+    + Week type: {
+        task_id: {
+            id: task_id,
+            category: category_id,
+
+            completed_week_timestamp: {
+                // Total equals the sum of day_completed_array
+                current: 0,
+
+                // Always the most updated value
+                priority_value: priority_value,
+
+                // Sunday - Saturday
+                day_completed_array: [0, 0, 0, 0, 0, 0, 0]
+
+                // Sunday - Saturday
+                priority_value_array: [priority_value, priority_value, priority_value, priority_value, priority_value, priority_value, priority_value]
+            }
+        }
+    }
+
+    + Month type: {
+        task_id: {
+            id: task_id,
+            category: category_id,
+
+            completed_month_timestamp: {
+                // Total equals the sum of day_completed_array
+                current: 0,
+
+                // Always the most updated value
+                priority_value: priority_value,
+
+                // 1 - the last day of month
+                day_completed_array: [0, 0, 0, 0, 0, 0, 0, ...]
+
+                // 1 - the last day of month
+                priority_value_array: [priority_value, priority_value, priority_value, priority_value, priority_value, priority_value, priority_value, ...]
+            }
+        }
+    }

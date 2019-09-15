@@ -89,10 +89,12 @@ export default class TaskCard extends React.PureComponent {
                         priority_value: task.priority.value
                     }
 
-                    if(day_timestamp_for_day_data)
-                    data.day_completed_data = {
-                        
+                    if (day_timestamp_for_day_data) {
+                        data.day_completed_data = {}
+
+                        data.day_completed_data[day_timestamp_for_day_completed_data].current = currentGoal + 1
                     }
+
                 }
             }
 
