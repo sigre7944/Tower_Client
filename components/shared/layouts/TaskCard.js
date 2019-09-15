@@ -46,7 +46,8 @@ export default class TaskCard extends React.PureComponent {
             overwrite_obj = {},
             currentGoal = 0,
             completed_tasks = Map(this.props.completed_tasks),
-            timestamp = 0
+            timestamp = 0,
+            day_timestamp_for_day_completed_data = 0
 
         if (type === "day") {
             timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
@@ -54,10 +55,12 @@ export default class TaskCard extends React.PureComponent {
 
         else if (type === "week") {
             timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
+            day_timestamp_for_day_completed_data = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
         }
 
         else {
             timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
+            day_timestamp_for_day_completed_data = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
         }
 
         if (operation === "inc") {
@@ -70,7 +73,8 @@ export default class TaskCard extends React.PureComponent {
                     }
 
                     overwrite_obj[timestamp] = {
-                        current: currentGoal + 1
+                        current: currentGoal + 1,
+                        priority_value: task.priority.value
                     }
 
                     data = { ...data, ...overwrite_obj }
@@ -78,9 +82,16 @@ export default class TaskCard extends React.PureComponent {
 
                 else {
                     data.id = task.id
+                    data.category = task.category
                     data[timestamp] = {
                         current: currentGoal + 1,
-                        category: task.category
+                        // category: task.category,
+                        priority_value: task.priority.value
+                    }
+
+                    if(day_timestamp_for_day_data)
+                    data.day_completed_data = {
+                        
                     }
                 }
             }
@@ -95,13 +106,15 @@ export default class TaskCard extends React.PureComponent {
 
                     if (currentGoal <= 0) {
                         overwrite_obj[timestamp] = {
-                            current: 0
+                            current: 0,
+                            priority_value: task.priority.value
                         }
                     }
 
                     else {
                         overwrite_obj[timestamp] = {
-                            current: currentGoal - 1
+                            current: currentGoal - 1,
+                            priority_value: task.priority.value
                         }
                     }
 
@@ -121,13 +134,15 @@ export default class TaskCard extends React.PureComponent {
 
                     if (currentGoal <= 0) {
                         overwrite_obj[timestamp] = {
-                            current: 0
+                            current: 0,
+                            priority_value: task.priority.value
                         }
                     }
 
                     else {
                         overwrite_obj[timestamp] = {
-                            current: currentGoal - 1
+                            current: currentGoal - 1,
+                            priority_value: task.priority.value
                         }
                     }
 

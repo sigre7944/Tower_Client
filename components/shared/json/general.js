@@ -27,7 +27,7 @@ const task = {
         // these properties are used for 'Day' type task
         type: "daily", //weekly, monthly for 'day' type task. Used for editting task components
         interval: {
-            value: 86400 * 1000 * 2 // timestamp for repetition. 86400 * 1000 = miliseconds in a day, 2 = number of repetitive days
+            value:  2 // timestamp for repetition. 86400 * 1000 = miliseconds in a day, 2 = number of repetitive days
         },
 
         // these properties are used for 'Day' type task
