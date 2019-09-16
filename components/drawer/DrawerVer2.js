@@ -438,11 +438,6 @@ export default class Drawer extends React.PureComponent {
                     week_chart_stats.set(result_obj.week_chart_stats_timestamp, result_obj.week_chart_stats_data)
                     month_chart_stats.set(result_obj.month_chart_stats_timestamp, result_obj.month_chart_stats_data)
                     year_chart_stats.set(result_obj.year_chart_stats_timestamp, result_obj.year_chart_stats_data)
-
-                    // day_stats[result_obj.stats_timestamp] = result_obj.stats_data
-                    // week_chart_stats[result_obj.week_chart_stats_timestamp]  = result_obj.week_chart_stats_data
-                    // month_chart_stats[result_obj.month_chart_stats_timestamp] = result_obj.month_chart_stats_data
-                    // year_chart_stats[result_obj.year_chart_stats_timestamp] = result_obj.year_chart_stats_data
                 }
             }
         })
@@ -456,11 +451,6 @@ export default class Drawer extends React.PureComponent {
                     week_chart_stats.set(result_obj.week_chart_stats_timestamp, result_obj.week_chart_stats_data)
                     month_chart_stats.set(result_obj.month_chart_stats_timestamp, result_obj.month_chart_stats_data)
                     year_chart_stats.set(result_obj.year_chart_stats_timestamp, result_obj.year_chart_stats_data)
-
-                    // week_stats[result_obj.stats_timestamp] = result_obj.stats_data
-                    // week_chart_stats[result_obj.week_chart_stats_timestamp] = result_obj.week_chart_stats_data
-                    // month_chart_stats[result_obj.month_chart_stats_timestamp] = result_obj.month_chart_stats_data
-                    // year_chart_stats[result_obj.year_chart_stats_timestamp] = result_obj.year_chart_stats_data
                 }
             }
         })
@@ -474,23 +464,18 @@ export default class Drawer extends React.PureComponent {
                     week_chart_stats.set(result_obj.week_chart_stats_timestamp, result_obj.week_chart_stats_data)
                     month_chart_stats.set(result_obj.month_chart_stats_timestamp, result_obj.month_chart_stats_data)
                     year_chart_stats.set(result_obj.year_chart_stats_timestamp, result_obj.year_chart_stats_data)
-
-                    // month_tasks_map[result_obj.stats_timestamp] = result_obj.stats_data
-                    // week_chart_stats[result_obj.week_chart_stats_timestamp] = result_obj.week_chart_stats_data
-                    // month_chart_stats[result_obj.month_chart_stats_timestamp] = result_obj.month_chart_stats_data
-                    // year_chart_stats[result_obj.year_chart_stats_timestamp] = result_obj.year_chart_stats_data
                 }
             }
         })
 
         sending_obj = {
             category_id: this.chosen_delete_category_key,
-            day_stats,
-            week_stats,
-            month_stats,
-            week_chart_stats,
-            month_chart_stats,
-            year_chart_stats
+            day_stats: day_stats.toMap(),
+            week_stats: week_stats.toMap(),
+            month_stats: month_stats.toMap(),
+            week_chart_stats: week_chart_stats.toMap(),
+            month_chart_stats: month_chart_stats.toMap(),
+            year_chart_stats: year_chart_stats.toMap()
         }
 
         this.props.deleteAndAffectThePast(sending_obj)

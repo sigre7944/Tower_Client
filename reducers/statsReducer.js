@@ -6,8 +6,7 @@ export const day_stats = (state = Map(), action) => {
             return state.set(action.timestamp, { ...action.data })
 
         case "DELETE_ALL_DAY_TASKS_IN_CATEGORY":
-            // return fromJS(action.data)
-            return Map(action.data)
+            return action.data
 
         default:
             return state
@@ -20,8 +19,7 @@ export const week_stats = (state = Map(), action) => {
             return state.set(action.timestamp, { ...action.data })
 
         case "DELETE_ALL_WEEK_TASKS_IN_CATEGORY":
-            // return fromJS(action.data)
-            return Map(action.data)
+            return action.data
 
         default:
             return state
@@ -34,8 +32,7 @@ export const month_stats = (state = Map(), action) => {
             return state.set(action.timestamp, { ...action.data })
 
         case "DELETE_ALL_MONTH_TASKS_IN_CATEGORY":
-            // return fromJS(action.data)
-            return Map(action.data)
+            return action.data
 
         default:
             return state
