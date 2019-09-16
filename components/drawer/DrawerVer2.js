@@ -24,7 +24,6 @@ export default class Drawer extends React.PureComponent {
 
     chosen_delete_category_key = {}
 
-    belonged_task_id_array = []
 
     state = {
         open_modal_bool: false,
@@ -92,16 +91,15 @@ export default class Drawer extends React.PureComponent {
         return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
     }
 
-    deleteGoalCurrentValueOnStats = (id, type, schedule) => {
-        let start_timestamp = 0,
-            completed_tasks_map,
+    deleteGoalCurrentValueOnStatsAndCharts = (id, type) => {
+        let completed_tasks_map,
             stats_map,
             week_chart_stats_map = Map(this.props.week_chart_stats),
             month_chart_stats_map = Map(this.props.month_chart_stats),
-            year_chart_stats_map = Map(this.props.year_chart_stats)
+            year_chart_stats_map = Map(this.props.year_chart_stats),
+            return_obj = {}
 
         if (type === "day") {
-            start_timestamp = new Date(schedule.year, schedule.month, schedule.day).getTime()
             completed_tasks_map = Map(this.props.completed_day_tasks)
             stats_map = Map(this.props.day_stats)
 
@@ -109,7 +107,7 @@ export default class Drawer extends React.PureComponent {
                 let completed_task_data = completed_tasks_map.get(id)
 
                 for (let key in completed_task_data) {
-                    if (completed_task_data.hasOwnProperty(key) && key !== "id") {
+                    if (completed_task_data.hasOwnProperty(key) && key !== "id" && key !== "category" && key !== "priority_value") {
                         let completed_timestamp = key,
                             completed_value = completed_task_data[key].current,
                             priority_value = completed_task_data[key].priority_value,
@@ -120,6 +118,23 @@ export default class Drawer extends React.PureComponent {
                             day = new Date(completed_timestamp).getDate(),
                             week_completed_timestamp = new Date(near_monday.getFullYear(), near_monday.getMonth(), near_monday.getDate()).getTime(),
                             month_completed_timestamp = new Date(year, month).getTime()
+
+
+                        if (stats_map.has(completed_timestamp)) {
+                            let stats_data = stats_map.get(completed_timestamp),
+                                { current } = stats_data
+
+                            current[this.priority_order[priority_value]] -= completed_value
+
+                            if (current[this.priority_order[priority_value]] < 0) {
+                                current[this.priority_order[priority_value]] = 0
+                            }
+
+                            stats_data.current = current
+
+                            return_obj.stats_data = stats_data
+                            return_obj.stats_timestamp = completed_timestamp
+                        }
 
                         if (week_chart_stats_map.has(week_completed_timestamp)) {
                             let data = week_chart_stats_map.get(week_completed_timestamp)
@@ -133,7 +148,10 @@ export default class Drawer extends React.PureComponent {
                                     current[this.priority_order[priority_value]] = 0
                                 }
 
-                                data.current = current
+                                data[day_in_week].current = current
+
+                                return_obj.week_chart_stats_data = data
+                                return_obj.week_chart_stats_timestamp = week_completed_timestamp
                             }
                         }
 
@@ -149,7 +167,10 @@ export default class Drawer extends React.PureComponent {
                                     current[this.priority_order[priority_value]] = 0
                                 }
 
-                                data.current = current
+                                data[day].current = current
+
+                                return_obj.month_chart_stats_data = data
+                                return_obj.month_chart_stats_timestamp = month_completed_timestamp
                             }
                         }
 
@@ -165,7 +186,10 @@ export default class Drawer extends React.PureComponent {
                                     current[this.priority_order[priority_value]] = 0
                                 }
 
-                                data.current = current
+                                data[month].current = current
+
+                                return_obj.year_chart_stats_data = data
+                                return_obj.year_chart_stats_timestamp = year
                             }
                         }
                     }
@@ -174,70 +198,106 @@ export default class Drawer extends React.PureComponent {
         }
 
         else if (type === "week") {
-            start_timestamp = new Date(schedule.year, schedule.month, schedule.day).getTime()
             completed_tasks_map = Map(this.props.completed_week_tasks)
             stats_map = Map(this.props.week_stats)
 
-            let completed_task_data = completed_tasks_map.get(id)
+            if (completed_tasks_map.hasOwnProperty(id)) {
 
-            for (let key in completed_task_data) {
-                if (completed_task_data.hasOwnProperty(key) && key !== "id") {
-                    let completed_timestamp = key,
-                        completed_value = completed_task_data[key].current,
-                        priority_value = completed_task_data[key].priority_value,
-                        near_monday = this.getMonday(completed_timestamp),
-                        day_in_week = new Date(completed_timestamp).getDay(),
-                        year = new Date(completed_timestamp).getFullYear(),
-                        month = new Date(completed_timestamp).getMonth(),
-                        day = new Date(completed_timestamp).getDate(),
-                        week_completed_timestamp = new Date(near_monday.getFullYear(), near_monday.getMonth(), near_monday.getDate()).getTime(),
-                        month_completed_timestamp = new Date(year, month).getTime()
+                let completed_task_data = completed_tasks_map.get(id)
 
-                    if (week_chart_stats_map.has(week_completed_timestamp)) {
-                        let data = week_chart_stats_map.get(week_completed_timestamp)
+                for (let key in completed_task_data) {
+                    if (completed_task_data.hasOwnProperty(key) && key !== "id" && key !== "category" && key !== "priority_value") {
+                        let completed_timestamp = key
 
-                        if (data.hasOwnProperty(day_in_week)) {
-                            let { current } = data[day_in_week]
+                        if (completed_task_data[key].hasOwnProperty("day_completed_array") && completed_task_data[key].hasOwnProperty("priority_value_array")) {
+                            let { day_completed_array, priority_value_array } = completed_task_data[key]
 
-                            current[this.priority_order[priority_value]] -= completed_value
+                            day_completed_array.forEach((value, index) => {
+                                let i = index
+                                if (i === 0) i = 7
 
-                            if (current[this.priority_order[priority_value]] < 0) {
-                                current[this.priority_order[priority_value]] = 0
-                            }
+                                let date = new Date(completed_timestamp + (i - 1) * 86400 * 1000),
+                                    day = date.getDate(),
+                                    month = date.getMonth(),
+                                    year = date.getFullYear(),
+                                    month_timestamp = new Date(year, month).getTime(),
+                                    priority_value = priority_value_array[index]
 
-                            data.current = current
-                        }
-                    }
 
-                    if (month_chart_stats_map.has(month_completed_timestamp)) {
-                        let data = month_chart_stats_map.get(month_completed_timestamp)
+                                if (stats_map.has(completed_timestamp)) {
+                                    let stats_data = stats_map.get(completed_timestamp),
+                                        { current } = stats_data
 
-                        if (data.hasOwnProperty(day)) {
-                            let { current } = data[day]
+                                    current[this.priority_order[priority_value]] -= completed_value
 
-                            current[this.priority_order[priority_value]] -= completed_value
+                                    if (current[this.priority_order[priority_value]] < 0) {
+                                        current[this.priority_order[priority_value]] = 0
+                                    }
 
-                            if (current[this.priority_order[priority_value]] < 0) {
-                                current[this.priority_order[priority_value]] = 0
-                            }
+                                    stats_data.current = current
 
-                            data.current = current
-                        }
-                    }
+                                    return_obj.stats_data = stats_data
+                                    return_obj.stats_timestamp = completed_timestamp
+                                }
 
-                    if (year_chart_stats_map.has(year)) {
-                        let data = year_chart_stats_map.get(year)
 
-                        if (data.hasOwnProperty(month)) {
-                            let { current } = data[month]
+                                if (week_chart_stats_map.has(completed_timestamp)) {
+                                    let data = week_chart_stats_map.get(completed_timestamp)
 
-                            current[this.priority_order[priority_value]] -= completed_value
+                                    if (data.hasOwnProperty(index)) {
+                                        let { current } = data[index]
 
-                            if (current[this.priority_order[priority_value]] < 0) {
-                                current[this.priority_order[priority_value]] = 0
-                            }
+                                        current[this.priority_order[priority_value]] -= value
 
-                            data.current = current
+                                        if (current[this.priority_order[priority_value]] < 0) {
+                                            current[this.priority_order[priority_value]] = 0
+                                        }
+
+                                        data[index].current = current
+
+                                        return_obj.week_chart_stats_data = data
+                                        return_obj.week_chart_stats_timestamp = completed_timestamp
+                                    }
+                                }
+
+                                if (month_chart_stats_map.has(month_timestamp)) {
+                                    let data = month_chart_stats_map.get(month_timestamp)
+
+                                    if (data.hasOwnProperty(day)) {
+                                        let { current } = data[day]
+
+                                        current[this.priority_order[priority_value]] -= value
+
+                                        if (current[this.priority_order[priority_value]] < 0) {
+                                            current[this.priority_order[priority_value]] = 0
+                                        }
+
+                                        data[day].current = current
+
+                                        return_obj.month_chart_stats_data = data
+                                        return_obj.month_chart_stats_timestamp = month_timestamp
+                                    }
+                                }
+
+                                if (year_chart_stats_map.has(year)) {
+                                    let data = year_chart_stats_map.get(year)
+
+                                    if (data.hasOwnProperty(month)) {
+                                        let { current } = data[month]
+
+                                        current[this.priority_order[priority_value]] -= value
+
+                                        if (current[this.priority_order[priority_value]] < 0) {
+                                            current[this.priority_order[priority_value]] = 0
+                                        }
+
+                                        data[month].current = current
+
+                                        return_obj.year_chart_stats_data = data
+                                        return_obj.year_chart_stats_timestamp = year
+                                    }
+                                }
+                            })
                         }
                     }
                 }
@@ -245,60 +305,190 @@ export default class Drawer extends React.PureComponent {
         }
 
         else {
-            start_timestamp = new Date(schedule.year, schedule.month).getTime()
             completed_tasks_map = Map(this.props.completed_month_tasks)
             stats_map = Map(this.props.month_stats)
+
+            if (completed_tasks_map.has(id)) {
+
+                let completed_task_data = completed_tasks_map.get(id)
+
+                for (let key in completed_task_data) {
+                    if (completed_task_data.hasOwnProperty(key) && key !== "id" && key !== "category" && key !== "priority_value") {
+                        let completed_timestamp = key,
+                            completed_month = new Date(completed_timestamp).getMonth(),
+                            completed_year = new Date(completed_timestamp).getFullYear()
+
+                        if (completed_task_data[key].hasOwnProperty("day_completed_array") && completed_task_data[key].hasOwnProperty("priority_value_array")) {
+                            let { day_completed_array, priority_value_array } = completed_task_data[key]
+
+                            day_completed_array.forEach((value, index) => {
+                                let day = index + 1,
+                                    date = new Date(completed_year, completed_month, day),
+                                    near_monday = this.getMonday(date),
+                                    completed_week_timestamp = new Date(near_monday.getFullYear(), near_monday.getMonth(), near_monday.getDate()).getTime(),
+                                    day_in_week = date.getDay(),
+                                    priority_value = priority_value_array[index]
+
+
+                                if (stats_map.has(completed_timestamp)) {
+                                    let stats_data = stats_map.get(completed_timestamp),
+                                        { current } = stats_data
+
+                                    current[this.priority_order[priority_value]] -= completed_value
+
+                                    if (current[this.priority_order[priority_value]] < 0) {
+                                        current[this.priority_order[priority_value]] = 0
+                                    }
+
+                                    stats_data.current = current
+
+                                    return_obj.stats_data = stats_data
+                                    return_obj.stats_timestamp = completed_timestamp
+                                }
+
+                                if (week_chart_stats_map.has(completed_week_timestamp)) {
+                                    let data = week_chart_stats_map.get(completed_week_timestamp)
+
+                                    if (data.hasOwnProperty(day_in_week)) {
+                                        let { current } = data[day_in_week]
+
+                                        current[this.priority_order[priority_value]] -= value
+
+                                        if (current[this.priority_order[priority_value]] < 0) {
+                                            current[this.priority_order[priority_value]] = 0
+                                        }
+
+                                        data[day_in_week].current = current
+
+                                        return_obj.week_chart_stats_data = data
+                                        return_obj.week_chart_stats_timestamp = completed_week_timestamp
+                                    }
+                                }
+
+
+                                if (month_chart_stats_map.has(completed_timestamp)) {
+                                    let data = month_chart_stats_map.get(completed_timestamp)
+
+                                    if (data.hasOwnProperty(day)) {
+                                        let { current } = data[day]
+
+                                        current[this.priority_order[priority_value]] -= value
+
+                                        if (current[this.priority_order[priority_value]] < 0) {
+                                            current[this.priority_order[priority_value]] = 0
+                                        }
+
+                                        data[day].current = current
+
+                                        return_obj.month_chart_stats_data = data
+                                        return_obj.month_chart_stats_timestamp = completed_timestamp
+                                    }
+                                }
+
+                                if (year_chart_stats_map.has(completed_year)) {
+                                    let data = year_chart_stats_map.get(completed_year)
+
+                                    if (data.hasOwnProperty(completed_month)) {
+                                        let { current } = data[completed_month]
+
+                                        current[this.priority_order[priority_value]] -= value
+
+                                        if (current[this.priority_order[priority_value]] < 0) {
+                                            current[this.priority_order[priority_value]] = 0
+                                        }
+
+                                        data[completed_month].current = current
+
+                                        return_obj.year_chart_stats_data = data
+                                        return_obj.year_chart_stats_timestamp = completed_year
+                                    }
+                                }
+                            })
+                        }
+                    }
+                }
+            }
         }
 
 
-
+        return return_obj
     }
 
     deleteCategory = () => {
         let day_tasks_map = Map(this.props.day_tasks),
             week_tasks_map = Map(this.props.week_tasks),
-            month_tasks_map = Map(this.props.month_tasks)
+            month_tasks_map = Map(this.props.month_tasks),
+
+            day_stats = Map(this.props.day_stats),
+            week_stats = Map(this.props.week_stats),
+            month_stats = Map(this.props.month_stats),
+
+            week_chart_stats = Map(this.props.week_chart_stats),
+            month_chart_stats = Map(this.props.month_chart_stats),
+            year_chart_stats = Map(this.props.year_chart_stats),
+
+            sending_obj = {}
 
         day_tasks_map.valueSeq().forEach((task, index) => {
             if (task.category === this.chosen_delete_category_key) {
-                this.belonged_task_id_array.push({
-                    id: task.id,
-                    schedule: task.schedule,
-                    repeat: task.repeat,
-                    type: task.type
-                })
+                let result_obj = this.deleteGoalCurrentValueOnStatsAndCharts(task.id, task.type)
+
+                console.log(result_obj)
+
+                if (Object.keys(result_obj).length > 0) {
+                    day_stats.set(result_obj.stats_timestamp, result_obj.stats_data)
+                    week_chart_stats.set(result_obj.week_chart_stats_timestamp, result_obj.week_chart_stats_data)
+                    month_chart_stats.set(result_obj.month_chart_stats_timestamp, result_obj.month_chart_stats_data)
+                    year_chart_stats.set(result_obj.year_chart_stats_timestamp, result_obj.year_chart_stats_data)
+                }
             }
         })
 
         week_tasks_map.valueSeq().forEach((task, index) => {
             if (task.category === this.chosen_delete_category_key) {
-                this.belonged_task_id_array.push({
-                    id: task.id,
-                    schedule: task.schedule,
-                    repeat: task.repeat,
-                    type: task.type
-                })
+                let result_obj = this.deleteGoalCurrentValueOnStatsAndCharts(task.id, task.type)
+
+                if (Object.keys(result_obj).length > 0) {
+                    week_stats.set(result_obj.stats_timestamp, result_obj.stats_data)
+                    week_chart_stats.set(result_obj.week_chart_stats_timestamp, result_obj.week_chart_stats_data)
+                    month_chart_stats.set(result_obj.month_chart_stats_timestamp, result_obj.month_chart_stats_data)
+                    year_chart_stats.set(result_obj.year_chart_stats_timestamp, result_obj.year_chart_stats_data)
+                }
             }
         })
 
         month_tasks_map.valueSeq().forEach((task, index) => {
             if (task.category === this.chosen_delete_category_key) {
-                this.belonged_task_id_array.push({
-                    id: task.id,
-                    schedule: task.schedule,
-                    repeat: task.repeat,
-                    type: task.type
-                })
+                let result_obj = this.deleteGoalCurrentValueOnStatsAndCharts(task.id, task.type)
+
+                if (Object.keys(result_obj).length > 0) {
+                    month_stats.set(result_obj.stats_timestamp, result_obj.stats_data)
+                    week_chart_stats.set(result_obj.week_chart_stats_timestamp, result_obj.week_chart_stats_data)
+                    month_chart_stats.set(result_obj.month_chart_stats_timestamp, result_obj.month_chart_stats_data)
+                    year_chart_stats.set(result_obj.year_chart_stats_timestamp, result_obj.year_chart_stats_data)
+                }
             }
         })
 
-        this.props.deleteAllTasksInCategory("DELETE_ALL_DAY_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
-        this.props.deleteAllTasksInCategory("DELETE_ALL_WEEK_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
-        this.props.deleteAllTasksInCategory("DELETE_ALL_MONTH_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
-        this.props.deleteAllTasksInCategory("DELETE_ALL_COMPLETED_DAY_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
-        this.props.deleteAllTasksInCategory("DELETE_ALL_COMPLETED_WEEK_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
-        this.props.deleteAllTasksInCategory("DELETE_ALL_COMPLETED_MONTH_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
-        this.props.deleteCategory(this.chosen_delete_category_key)
+        sending_obj = {
+            category_id: this.chosen_delete_category_key,
+            day_stats,
+            week_stats,
+            month_stats,
+            week_chart_stats,
+            month_chart_stats,
+            year_chart_stats
+        }
+
+        // this.props.deleteAllTasksInCategory("DELETE_ALL_DAY_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
+        // this.props.deleteAllTasksInCategory("DELETE_ALL_WEEK_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
+        // this.props.deleteAllTasksInCategory("DELETE_ALL_MONTH_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
+        // this.props.deleteAllTasksInCategory("DELETE_ALL_COMPLETED_DAY_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
+        // this.props.deleteAllTasksInCategory("DELETE_ALL_COMPLETED_WEEK_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
+        // this.props.deleteAllTasksInCategory("DELETE_ALL_COMPLETED_MONTH_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
+        // this.props.deleteCategory(this.chosen_delete_category_key)
+
+        this.props.deleteAndAffectThePast(sending_obj)
 
         this.dissmissDeleteCategoryBool()
     }

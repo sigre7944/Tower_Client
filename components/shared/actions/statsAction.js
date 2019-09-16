@@ -3,3 +3,8 @@ export const updateStats = (type, timestamp, data) => ({
     timestamp,
     data
 })
+
+export const updateTaskDeletionsInStats = (type, data) => ({
+    type,
+    data
+})

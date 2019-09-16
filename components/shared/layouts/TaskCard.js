@@ -43,11 +43,9 @@ export default class TaskCard extends React.PureComponent {
         let task = { ... this.props.task_data },
             current_date = new Date(),
             data = {},
-            overwrite_obj = {},
             currentGoal = 0,
             completed_tasks = Map(this.props.completed_tasks),
-            timestamp = 0,
-            day_timestamp_for_day_completed_data = 0
+            timestamp = 0
 
         if (type === "day") {
             timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
@@ -69,30 +67,77 @@ export default class TaskCard extends React.PureComponent {
                     data = completed_tasks.get(task.id)
 
                     if (data.hasOwnProperty(timestamp)) {
-                        currentGoal = data[timestamp].current
+                        // currentGoal = data[timestamp].current
+
+                        let completed_data = data[timestamp],
+                            { current } = completed_data
+
+                        current += 1
+                        completed_data.current = current
+
+                        if (type === "week") {
+
+                            // overwrite_obj[timestamp] = {
+                            //     current: currentGoal,
+                            //     priority_value: task.priority.value
+                            // }
+
+                            let { day_completed_array, priority_value_array } = completed_data,
+                                day_in_week = current_date.getDay()
+
+                            day_completed_array[day_in_week] += 1
+                            priority_value_array[day_in_week] = task.priority.value
+
+                            completed_data.day_completed_array = day_completed_array
+                            completed_data.priority_value_array = priority_value_array
+                        }
+
+                        else if (type === "month") {
+                            let { day_completed_array, priority_value_array } = completed_data,
+                                day_in_month = current_date.getDate()
+
+                            day_completed_array[day_in_month - 1] += 1
+                            priority_value_array[day_in_month - 1] = task.priority.value
+
+                            completed_data.day_completed_array = day_completed_array
+                            completed_data.priority_value_array = priority_value_array
+                        }
+
+                        data = { ...data, ...completed_data }
                     }
 
-                    overwrite_obj[timestamp] = {
-                        current: currentGoal + 1,
-                        priority_value: task.priority.value
-                    }
-
-                    data = { ...data, ...overwrite_obj }
+                    // currentGoal += 1
+                    // data = { ...data, ...overwrite_obj }
                 }
 
                 else {
                     data.id = task.id
                     data.category = task.category
+                    data.priority_value = task.priority.value
+
                     data[timestamp] = {
                         current: currentGoal + 1,
                         // category: task.category,
-                        priority_value: task.priority.value
+                        // priority_value: task.priority.value
                     }
 
-                    if (day_timestamp_for_day_data) {
-                        data.day_completed_data = {}
+                    if (type === "week") {
+                        let day_in_week = current_date.getDay()
+                        data[timestamp].day_completed_array = [0, 0, 0, 0, 0, 0, 0]
+                        data[timestamp].day_completed_array[day_in_week] += 1
+                        data[timestamp].priority_value_array = [task.priority.value, task.priority.value, task.priority.value, task.priority.value, task.priority.value, task.priority.value, task.priority.value]
+                    }
 
-                        data.day_completed_data[day_timestamp_for_day_completed_data].current = currentGoal + 1
+                    else if (type === "month") {
+                        let day_in_month = current_date.getDate(),
+                            last_day_in_month = new Date(current_date.getFullYear(), current_date.getMonth() + 1, 0).getDate()
+
+                        data[timestamp].day_completed_array = new Array(last_day_in_month)
+                        data[timestamp].day_completed_array.fill(0)
+                        data[timestamp].day_completed_array[day_in_month- 1] += 1
+
+                        data[timestamp].priority_value_array = new Array(last_day_in_month)
+                        data[timestamp].priority_value_array.fill(task.priority.value)
                     }
 
                 }
@@ -103,24 +148,69 @@ export default class TaskCard extends React.PureComponent {
                     data = completed_tasks.get(task.id)
 
                     if (data.hasOwnProperty(timestamp)) {
-                        currentGoal = data[timestamp].current
-                    }
+                        // currentGoal = data[timestamp].current
+                        let completed_data = data[timestamp],
+                            { current } = completed_data
 
-                    if (currentGoal <= 0) {
-                        overwrite_obj[timestamp] = {
-                            current: 0,
-                            priority_value: task.priority.value
+
+                        current -= 1
+
+                        if (current < 0) {
+                            current = 0
                         }
-                    }
 
-                    else {
-                        overwrite_obj[timestamp] = {
-                            current: currentGoal - 1,
-                            priority_value: task.priority.value
+                        completed_data.current = current
+
+                        if (type === "week") {
+                            let { day_completed_array, priority_value_array } = completed_data,
+                                day_in_week = current_date.getDay()
+
+                            day_completed_array[day_in_week] -= 1
+
+                            if (day_completed_array[day_in_week] < 0) {
+                                day_completed_array[day_in_week] = 0
+                            }
+
+                            priority_value_array[day_in_week] = task.priority.value
+
+                            completed_data.day_completed_array = day_completed_array
+                            completed_data.priority_value_array = priority_value_array
                         }
+
+                        else if (type === "month") {
+                            let { day_completed_array, priority_value_array } = completed_data,
+                                day_in_month = current_date.getDate()
+
+                            day_completed_array[day_in_month - 1] -= 1
+
+                            if (day_completed_array[day_in_month - 1] < 0) {
+                                day_completed_array[day_in_month - 1] = 0
+                            }
+
+                            priority_value_array[day_in_month - 1] = task.priority.value
+
+                            completed_data.day_completed_array = day_completed_array
+                            completed_data.priority_value_array = priority_value_array
+                        }
+
+                        data = { ...data, ...completed_data }
                     }
 
-                    data = { ...data, ...overwrite_obj }
+                    // if (currentGoal <= 0) {
+                    //     overwrite_obj[timestamp] = {
+                    //         current: 0,
+                    //         priority_value: task.priority.value
+                    //     }
+                    // }
+
+                    // else {
+                    //     overwrite_obj[timestamp] = {
+                    //         current: currentGoal - 1,
+                    //         priority_value: task.priority.value
+                    //     }
+                    // }
+
+                    // data = { ...data, ...overwrite_obj }
                 }
             }
         }
@@ -131,24 +221,70 @@ export default class TaskCard extends React.PureComponent {
                     data = completed_tasks.get(task.id)
 
                     if (data.hasOwnProperty(timestamp)) {
-                        currentGoal = data[timestamp].current
-                    }
+                        // currentGoal = data[timestamp].current
 
-                    if (currentGoal <= 0) {
-                        overwrite_obj[timestamp] = {
-                            current: 0,
-                            priority_value: task.priority.value
+                        let completed_data = data[timestamp],
+                            { current } = completed_data
+
+
+                        current -= 1
+
+                        if (current < 0) {
+                            current = 0
                         }
-                    }
 
-                    else {
-                        overwrite_obj[timestamp] = {
-                            current: currentGoal - 1,
-                            priority_value: task.priority.value
+                        completed_data.current = current
+
+                        if (type === "week") {
+                            let { day_completed_array, priority_value_array } = completed_data,
+                                day_in_week = current_date.getDay()
+
+                            day_completed_array[day_in_week] -= 1
+
+                            if (day_completed_array[day_in_week] < 0) {
+                                day_completed_array[day_in_week] = 0
+                            }
+
+                            priority_value_array[day_in_week] = task.priority.value
+
+                            completed_data.day_completed_array = day_completed_array
+                            completed_data.priority_value_array = priority_value_array
                         }
+
+                        else if (type === "month") {
+                            let { day_completed_array, priority_value_array } = completed_data,
+                                day_in_month = current_date.getDate()
+
+                            day_completed_array[day_in_month - 1] -= 1
+
+                            if (day_completed_array[day_in_month - 1] < 0) {
+                                day_completed_array[day_in_month - 1] = 0
+                            }
+
+                            priority_value_array[day_in_month - 1] = task.priority.value
+
+                            completed_data.day_completed_array = day_completed_array
+                            completed_data.priority_value_array = priority_value_array
+                        }
+
+                        data = { ...data, ...completed_data }
                     }
 
-                    data = { ...data, ...overwrite_obj }
+                    // if (currentGoal <= 0) {
+                    //     overwrite_obj[timestamp] = {
+                    //         current: 0,
+                    //         priority_value: task.priority.value
+                    //     }
+                    // }
+
+                    // else {
+                    //     overwrite_obj[timestamp] = {
+                    //         current: currentGoal - 1,
+                    //         priority_value: task.priority.value
+                    //     }
+                    // }
+
+                    // data = { ...data, ...overwrite_obj }
                 }
             }
         }

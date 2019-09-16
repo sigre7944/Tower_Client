@@ -69,12 +69,13 @@
             id: task_id,
             category: category_id,
 
+            // Always the most updated value
+            priority_value: priority_value,
+            
             completed_week_timestamp: {
                 // Total equals the sum of day_completed_array
                 current: 0,
 
-                // Always the most updated value
-                priority_value: priority_value,
 
                 // Sunday - Saturday
                 day_completed_array: [0, 0, 0, 0, 0, 0, 0]
