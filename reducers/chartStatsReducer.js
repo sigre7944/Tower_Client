@@ -1,4 +1,4 @@
-import { Map } from 'immutable'
+import { Map, fromJS, isKeyed } from 'immutable'
 
 export const week_chart_stats = (state = Map(), action) => {
     switch (action.type) {
@@ -6,6 +6,7 @@ export const week_chart_stats = (state = Map(), action) => {
             return state.set(action.timestamp, { ...action.data })
 
         case "DELETE_CATEGORY_AFFECTS_WEEK_CHART":
+            // return fromJS(action.data)
             return Map(action.data)
 
         default:
@@ -19,6 +20,7 @@ export const month_chart_stats = (state = Map(), action) => {
             return state.set(action.timestamp, { ...action.data })
 
         case "DELETE_CATEGORY_AFFECTS_MONTH_CHART":
+            // return fromJS(action.data)
             return Map(action.data)
 
         default:
@@ -32,6 +34,7 @@ export const year_chart_stats = (state = Map(), action) => {
             return state.set(action.timestamp, { ...action.data })
 
         case "DELETE_CATEGORY_AFFECTS_YEAR_CHART":
+            // return fromJS(action.data)
             return Map(action.data)
 
         default:

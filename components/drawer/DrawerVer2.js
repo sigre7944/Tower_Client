@@ -104,13 +104,13 @@ export default class Drawer extends React.PureComponent {
             stats_map = Map(this.props.day_stats)
 
             if (completed_tasks_map.has(id)) {
-                let completed_task_data = completed_tasks_map.get(id)
+                let completed_task_data = completed_tasks_map.get(id),
+                    { priority_value } = completed_task_data
 
                 for (let key in completed_task_data) {
                     if (completed_task_data.hasOwnProperty(key) && key !== "id" && key !== "category" && key !== "priority_value") {
-                        let completed_timestamp = key,
+                        let completed_timestamp = parseInt(key),
                             completed_value = completed_task_data[key].current,
-                            priority_value = completed_task_data[key].priority_value,
                             near_monday = this.getMonday(completed_timestamp),
                             day_in_week = new Date(completed_timestamp).getDay(),
                             year = new Date(completed_timestamp).getFullYear(),
@@ -201,13 +201,12 @@ export default class Drawer extends React.PureComponent {
             completed_tasks_map = Map(this.props.completed_week_tasks)
             stats_map = Map(this.props.week_stats)
 
-            if (completed_tasks_map.hasOwnProperty(id)) {
-
+            if (completed_tasks_map.has(id)) {
                 let completed_task_data = completed_tasks_map.get(id)
 
                 for (let key in completed_task_data) {
                     if (completed_task_data.hasOwnProperty(key) && key !== "id" && key !== "category" && key !== "priority_value") {
-                        let completed_timestamp = key
+                        let completed_timestamp = parseInt(key)
 
                         if (completed_task_data[key].hasOwnProperty("day_completed_array") && completed_task_data[key].hasOwnProperty("priority_value_array")) {
                             let { day_completed_array, priority_value_array } = completed_task_data[key]
@@ -228,7 +227,7 @@ export default class Drawer extends React.PureComponent {
                                     let stats_data = stats_map.get(completed_timestamp),
                                         { current } = stats_data
 
-                                    current[this.priority_order[priority_value]] -= completed_value
+                                    current[this.priority_order[priority_value]] -= value
 
                                     if (current[this.priority_order[priority_value]] < 0) {
                                         current[this.priority_order[priority_value]] = 0
@@ -314,7 +313,7 @@ export default class Drawer extends React.PureComponent {
 
                 for (let key in completed_task_data) {
                     if (completed_task_data.hasOwnProperty(key) && key !== "id" && key !== "category" && key !== "priority_value") {
-                        let completed_timestamp = key,
+                        let completed_timestamp = parseInt(key),
                             completed_month = new Date(completed_timestamp).getMonth(),
                             completed_year = new Date(completed_timestamp).getFullYear()
 
@@ -334,7 +333,7 @@ export default class Drawer extends React.PureComponent {
                                     let stats_data = stats_map.get(completed_timestamp),
                                         { current } = stats_data
 
-                                    current[this.priority_order[priority_value]] -= completed_value
+                                    current[this.priority_order[priority_value]] -= value
 
                                     if (current[this.priority_order[priority_value]] < 0) {
                                         current[this.priority_order[priority_value]] = 0
@@ -419,13 +418,13 @@ export default class Drawer extends React.PureComponent {
             week_tasks_map = Map(this.props.week_tasks),
             month_tasks_map = Map(this.props.month_tasks),
 
-            day_stats = Map(this.props.day_stats),
-            week_stats = Map(this.props.week_stats),
-            month_stats = Map(this.props.month_stats),
+            day_stats = Map(this.props.day_stats).asMutable(),
+            week_stats = Map(this.props.week_stats).asMutable(),
+            month_stats = Map(this.props.month_stats).asMutable(),
 
-            week_chart_stats = Map(this.props.week_chart_stats),
-            month_chart_stats = Map(this.props.month_chart_stats),
-            year_chart_stats = Map(this.props.year_chart_stats),
+            week_chart_stats = Map(this.props.week_chart_stats).asMutable(),
+            month_chart_stats = Map(this.props.month_chart_stats).asMutable(),
+            year_chart_stats = Map(this.props.year_chart_stats).asMutable(),
 
             sending_obj = {}
 
@@ -433,13 +432,17 @@ export default class Drawer extends React.PureComponent {
             if (task.category === this.chosen_delete_category_key) {
                 let result_obj = this.deleteGoalCurrentValueOnStatsAndCharts(task.id, task.type)
 
-                console.log(result_obj)
-
                 if (Object.keys(result_obj).length > 0) {
+                    
                     day_stats.set(result_obj.stats_timestamp, result_obj.stats_data)
                     week_chart_stats.set(result_obj.week_chart_stats_timestamp, result_obj.week_chart_stats_data)
                     month_chart_stats.set(result_obj.month_chart_stats_timestamp, result_obj.month_chart_stats_data)
                     year_chart_stats.set(result_obj.year_chart_stats_timestamp, result_obj.year_chart_stats_data)
+
+                    // day_stats[result_obj.stats_timestamp] = result_obj.stats_data
+                    // week_chart_stats[result_obj.week_chart_stats_timestamp]  = result_obj.week_chart_stats_data
+                    // month_chart_stats[result_obj.month_chart_stats_timestamp] = result_obj.month_chart_stats_data
+                    // year_chart_stats[result_obj.year_chart_stats_timestamp] = result_obj.year_chart_stats_data
                 }
             }
         })
@@ -453,6 +456,11 @@ export default class Drawer extends React.PureComponent {
                     week_chart_stats.set(result_obj.week_chart_stats_timestamp, result_obj.week_chart_stats_data)
                     month_chart_stats.set(result_obj.month_chart_stats_timestamp, result_obj.month_chart_stats_data)
                     year_chart_stats.set(result_obj.year_chart_stats_timestamp, result_obj.year_chart_stats_data)
+
+                    // week_stats[result_obj.stats_timestamp] = result_obj.stats_data
+                    // week_chart_stats[result_obj.week_chart_stats_timestamp] = result_obj.week_chart_stats_data
+                    // month_chart_stats[result_obj.month_chart_stats_timestamp] = result_obj.month_chart_stats_data
+                    // year_chart_stats[result_obj.year_chart_stats_timestamp] = result_obj.year_chart_stats_data
                 }
             }
         })
@@ -466,6 +474,11 @@ export default class Drawer extends React.PureComponent {
                     week_chart_stats.set(result_obj.week_chart_stats_timestamp, result_obj.week_chart_stats_data)
                     month_chart_stats.set(result_obj.month_chart_stats_timestamp, result_obj.month_chart_stats_data)
                     year_chart_stats.set(result_obj.year_chart_stats_timestamp, result_obj.year_chart_stats_data)
+
+                    // month_tasks_map[result_obj.stats_timestamp] = result_obj.stats_data
+                    // week_chart_stats[result_obj.week_chart_stats_timestamp] = result_obj.week_chart_stats_data
+                    // month_chart_stats[result_obj.month_chart_stats_timestamp] = result_obj.month_chart_stats_data
+                    // year_chart_stats[result_obj.year_chart_stats_timestamp] = result_obj.year_chart_stats_data
                 }
             }
         })
@@ -479,14 +492,6 @@ export default class Drawer extends React.PureComponent {
             month_chart_stats,
             year_chart_stats
         }
-
-        // this.props.deleteAllTasksInCategory("DELETE_ALL_DAY_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
-        // this.props.deleteAllTasksInCategory("DELETE_ALL_WEEK_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
-        // this.props.deleteAllTasksInCategory("DELETE_ALL_MONTH_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
-        // this.props.deleteAllTasksInCategory("DELETE_ALL_COMPLETED_DAY_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
-        // this.props.deleteAllTasksInCategory("DELETE_ALL_COMPLETED_WEEK_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
-        // this.props.deleteAllTasksInCategory("DELETE_ALL_COMPLETED_MONTH_TASKS_WITH_CATEGORY", this.chosen_delete_category_key)
-        // this.props.deleteCategory(this.chosen_delete_category_key)
 
         this.props.deleteAndAffectThePast(sending_obj)
 
