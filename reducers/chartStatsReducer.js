@@ -5,8 +5,10 @@ export const week_chart_stats = (state = Map(), action) => {
         case "UPDATE_WEEK_CHART_STATS":
             return state.set(action.timestamp, { ...action.data })
 
-        case "DELETE_CATEGORY_AFFECTS_WEEK_CHART":
+        case "RETURN_NEW_WEEK_CHART_STATS":
             return action.data
+
+        
 
         default:
             return state
@@ -18,7 +20,7 @@ export const month_chart_stats = (state = Map(), action) => {
         case "UPDATE_MONTH_CHART_STATS":
             return state.set(action.timestamp, { ...action.data })
 
-        case "DELETE_CATEGORY_AFFECTS_MONTH_CHART":
+        case "RETURN_NEW_MONTH_CHART_STATS":
             return action.data
 
         default:
@@ -31,7 +33,7 @@ export const year_chart_stats = (state = Map(), action) => {
         case "UPDATE_YEAR_CHART_STATS":
             return state.set(action.timestamp, { ...action.data })
 
-        case "DELETE_CATEGORY_AFFECTS_YEAR_CHART":
+        case "RETURN_NEW_YEAR_CHART_STATS":
             return action.data
 
         default:

@@ -73,7 +73,11 @@ export default class TaskCard extends React.PureComponent {
                         current += 1
                         completed_data.current = current
 
-                        if (type === "week") {
+                        if (type === "day") {
+                            completed_data.priority_value = task.priority.value
+                        }
+
+                        else if (type === "week") {
                             let { day_completed_array, priority_value_array } = completed_data,
                                 day_in_week = current_date.getDay()
 
@@ -84,7 +88,7 @@ export default class TaskCard extends React.PureComponent {
                             completed_data.priority_value_array = priority_value_array
                         }
 
-                        else if (type === "month") {
+                        else {
                             let { day_completed_array, priority_value_array } = completed_data,
                                 day_in_month = current_date.getDate()
 
@@ -108,20 +112,24 @@ export default class TaskCard extends React.PureComponent {
                         current: currentGoal + 1,
                     }
 
-                    if (type === "week") {
+                    if (type === "day") {
+                        data[timestamp].priority_value = task.priority.value
+                    }
+
+                    else if (type === "week") {
                         let day_in_week = current_date.getDay()
                         data[timestamp].day_completed_array = [0, 0, 0, 0, 0, 0, 0]
                         data[timestamp].day_completed_array[day_in_week] += 1
                         data[timestamp].priority_value_array = [task.priority.value, task.priority.value, task.priority.value, task.priority.value, task.priority.value, task.priority.value, task.priority.value]
                     }
 
-                    else if (type === "month") {
+                    else {
                         let day_in_month = current_date.getDate(),
                             last_day_in_month = new Date(current_date.getFullYear(), current_date.getMonth() + 1, 0).getDate()
 
                         data[timestamp].day_completed_array = new Array(last_day_in_month)
                         data[timestamp].day_completed_array.fill(0)
-                        data[timestamp].day_completed_array[day_in_month- 1] += 1
+                        data[timestamp].day_completed_array[day_in_month - 1] += 1
 
                         data[timestamp].priority_value_array = new Array(last_day_in_month)
                         data[timestamp].priority_value_array.fill(task.priority.value)
@@ -147,7 +155,11 @@ export default class TaskCard extends React.PureComponent {
 
                         completed_data.current = current
 
-                        if (type === "week") {
+                        if (type === "day") {
+                            completed_data.priority_value = task.priority.value
+                        }
+
+                        else if (type === "week") {
                             let { day_completed_array, priority_value_array } = completed_data,
                                 day_in_week = current_date.getDay()
 
@@ -163,7 +175,7 @@ export default class TaskCard extends React.PureComponent {
                             completed_data.priority_value_array = priority_value_array
                         }
 
-                        else if (type === "month") {
+                        else {
                             let { day_completed_array, priority_value_array } = completed_data,
                                 day_in_month = current_date.getDate()
 
@@ -203,7 +215,11 @@ export default class TaskCard extends React.PureComponent {
 
                         completed_data.current = current
 
-                        if (type === "week") {
+                        if (type === "day") {
+                            completed_data.priority_value = task.priority.value
+                        }
+
+                        else if (type === "week") {
                             let { day_completed_array, priority_value_array } = completed_data,
                                 day_in_week = current_date.getDay()
 
@@ -219,7 +235,7 @@ export default class TaskCard extends React.PureComponent {
                             completed_data.priority_value_array = priority_value_array
                         }
 
-                        else if (type === "month") {
+                        else {
                             let { day_completed_array, priority_value_array } = completed_data,
                                 day_in_month = current_date.getDate()
 

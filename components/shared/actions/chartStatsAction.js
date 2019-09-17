@@ -4,7 +4,7 @@ export const updateChartStats = (type, timestamp, data) => ({
     data
 })
 
-export const updateTaskDeletionsInChartStats = (type, data) => ({
+export const returnNewChartStats = (type, data) => ({
     type,
     data
 })

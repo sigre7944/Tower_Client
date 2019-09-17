@@ -41,7 +41,7 @@ export const deleteTaskThunk = ({ completed_task_action_type,
     dispatch(batchActions(action_array))
 }
 
-export const editThunk = (action_type, { edit_task, should_update_category, update_category_data, should_update_stats, update_stats_data, should_update_chart_stats, update_chart_stats_data }) => (dispatch, getState) => {
+export const editThunkFromNowOn = (action_type, { edit_task, should_update_category, update_category_data, should_update_stats, update_stats_data, should_update_chart_stats, update_chart_stats_data }) => (dispatch, getState) => {
 
     let action_array = [
         updateTask(action_type, edit_task)

@@ -417,13 +417,13 @@ export default class Drawer extends React.PureComponent {
             week_tasks_map = Map(this.props.week_tasks),
             month_tasks_map = Map(this.props.month_tasks),
 
-            day_stats = Map(this.props.day_stats).asMutable(),
-            week_stats = Map(this.props.week_stats).asMutable(),
-            month_stats = Map(this.props.month_stats).asMutable(),
+            day_stats,
+            week_stats,
+            month_stats,
 
-            week_chart_stats = Map(this.props.week_chart_stats).asMutable(),
-            month_chart_stats = Map(this.props.month_chart_stats).asMutable(),
-            year_chart_stats = Map(this.props.year_chart_stats).asMutable(),
+            week_chart_stats,
+            month_chart_stats,
+            year_chart_stats,
 
             sending_obj = {}
 
@@ -442,7 +442,7 @@ export default class Drawer extends React.PureComponent {
             if (task.category === this.chosen_delete_category_key) {
                 let result_obj = this.deleteGoalCurrentValueOnStatsAndCharts(task.id, task.type)
 
-                day_stats = result_obj.stats.toMap()
+                week_stats = result_obj.stats.toMap()
                 week_chart_stats = result_obj.week_chart_stats.toMap()
                 month_chart_stats = result_obj.month_chart_stats.toMap()
                 year_chart_stats = result_obj.year_chart_stats.toMap()
@@ -453,7 +453,7 @@ export default class Drawer extends React.PureComponent {
             if (task.category === this.chosen_delete_category_key) {
                 let result_obj = this.deleteGoalCurrentValueOnStatsAndCharts(task.id, task.type)
 
-                day_stats = result_obj.stats.toMap()
+                month_stats = result_obj.stats.toMap()
                 week_chart_stats = result_obj.week_chart_stats.toMap()
                 month_chart_stats = result_obj.month_chart_stats.toMap()
                 year_chart_stats = result_obj.year_chart_stats.toMap()
