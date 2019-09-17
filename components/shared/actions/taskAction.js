@@ -12,3 +12,8 @@ export const deleteAllTasksInCategory = (type, category_id) => ({
     type,
     id: category_id
 })
+
+export const returnNewCompletedTask = (type, data) => ({
+    type,
+    data
+})

@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 
 import {
-    editThunkFromNowOn,
+    editThunk,
     deleteTaskThunk,
 } from './actions/taskDetailModalThunk'
 
@@ -41,7 +41,7 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    editThunkFromNowOn: (data) => dispatch(editThunkFromNowOn(ownProps.action_type, data)),
+    editThunk: (data) => dispatch(editThunk(ownProps.action_type, data)),
     deleteTaskThunk: (data) => dispatch(deleteTaskThunk(data))
 })
 

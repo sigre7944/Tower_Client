@@ -614,7 +614,7 @@ export default class TaskDetailModal extends Component {
                                 month_chart_stats={this.props.month_chart_stats}
                                 year_chart_stats={this.props.year_chart_stats}
                                 hideAction={this.toggleEdit}
-                                editThunkFromNowOn={this.props.editThunkFromNowOn}
+                                editThunk={this.props.editThunk}
                                 type={this.props.type}
                             />
                         }
@@ -764,68 +764,6 @@ class EditDetails extends React.PureComponent {
         this.edit_task = { ... this.edit_task, ...data }
 
         this.renderData(this.edit_task)
-    }
-
-    // change the current property of today timestamp, previous timestamp untouched.
-    updateOnStatsDataFromToday = (timestamp, new_priority_id, current_value) => {
-        let stats_map = Map(this.props.stats),
-            data = {}
-
-        if (stats_map.has(timestamp)) {
-            data = stats_map.get(timestamp)
-
-            let { current } = data
-
-            current[this.priority_order[this.priority_id]] -= current_value
-
-            if (current[this.priority_order[this.priority_id]] < 0) {
-                current[this.priority_order[this.priority_id]] = 0
-            }
-
-            current[this.priority_order[new_priority_id]] += current_value
-
-            data.current = current
-        }
-
-        return data
-    }
-
-    // From now on
-    updateOnChartStatsDataFromNowOn = (new_priority_id, chart_stats_map, timestamp, key, current_value) => {
-        let data = {}
-
-        if (chart_stats_map.has(timestamp)) {
-            data = chart_stats_map.get(timestamp)
-
-            if (data.hasOwnProperty(key)) {
-                let { current } = data[key]
-
-                current[this.priority_order[this.priority_id]] -= current_value
-
-                if (current[this.priority_order[this.priority_id]] < 0) {
-                    current[this.priority_order[this.priority_id]] = 0
-                }
-
-                current[this.priority_order[new_priority_id]] += current_value
-
-                data[key].current = current
-            }
-        }
-
-        return data
-    }
-
-    returnTaskGoalCurrentValue = (task_id, stats_timestamp) => {
-        let completed_tasks_map = Map(this.props.completed_tasks)
-
-        if (completed_tasks_map.has(task_id)) {
-            let data = completed_tasks_map.get(task_id)
-            if (data.hasOwnProperty(stats_timestamp)) {
-                return data[stats_timestamp].current
-            }
-        }
-
-        return 0
     }
 
     updateOnStatsAndChartsDataAllTime = (task_id, type, new_priority_value) => {
@@ -1130,11 +1068,10 @@ class EditDetails extends React.PureComponent {
         }
 
         return ({
-            stats: stats_map.toMap(),
-
-            week_chart_stats: week_chart_stats_map.toMap(),
-            month_chart_stats: month_chart_stats_map.toMap(),
-            year_chart_stats: year_chart_stats_map.toMap(),
+            stats: stats_map,
+            week_chart_stats: week_chart_stats_map,
+            month_chart_stats: month_chart_stats_map,
+            year_chart_stats: year_chart_stats_map,
         })
     }
 
@@ -1149,8 +1086,294 @@ class EditDetails extends React.PureComponent {
         if (completed_tasks_map.has(task_id)) {
             let completed_data = completed_tasks_map.get(task_id)
 
+            if (type === "day") {
+                completed_timestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
 
+                if (completed_data.hasOwnProperty(completed_timestamp)) {
+                    let current_value = completed_data[completed_timestamp].current,
+                        old_priority_value = completed_data[completed_timestamp].priority_value,
+                        near_monday = this.getMonday(date),
+                        week_completed_timestamp = new Date(near_monday.getFullYear(), near_monday.getMonth(), near_monday.getDate()).getTime(),
+                        day_in_week = date.getDay(),
+                        month_completed_timestamp = new Date(date.getFullYear(), date.getMonth()).getTime(),
+                        completed_year = date.getFullYear(),
+                        day_in_month = date.getDate(),
+                        completed_month = date.getMonth()
+
+                    if (stats_map.has(completed_timestamp)) {
+                        let stats_data = stats_map.get(completed_timestamp),
+                            { current } = stats_data
+
+                        current[this.priority_order[new_priority_value]] += current_value
+
+                        current[this.priority_order[old_priority_value]] -= current_value
+
+                        if (current[this.priority_order[old_priority_value]] < 0) {
+                            current[this.priority_order[old_priority_value]] = 0
+                        }
+
+                        stats_data.current = current
+
+                        stats_map.set(completed_timestamp, stats_data)
+                    }
+
+                    if (week_chart_stats_map.has(week_completed_timestamp)) {
+                        let data = week_chart_stats_map.get(week_completed_timestamp)
+
+                        if (data.hasOwnProperty(day_in_week)) {
+                            let { current } = data[day_in_week]
+
+                            current[this.priority_order[new_priority_value]] += current_value
+                            current[this.priority_order[old_priority_value]] -= current_value
+
+                            if (current[this.priority_order[old_priority_value]] < 0) {
+                                current[this.priority_order[old_priority_value]] = 0
+                            }
+
+                            data[day_in_week].current = current
+
+                            week_chart_stats_map.set(week_completed_timestamp, data)
+                        }
+                    }
+
+                    if (month_chart_stats_map.has(month_completed_timestamp)) {
+                        let data = month_chart_stats_map.get(month_completed_timestamp)
+
+                        if (data.hasOwnProperty(day_in_month)) {
+                            let { current } = data[day_in_month]
+
+                            current[this.priority_order[new_priority_value]] += current_value
+                            current[this.priority_order[old_priority_value]] -= current_value
+
+                            if (current[this.priority_order[old_priority_value]] < 0) {
+                                current[this.priority_order[old_priority_value]] = 0
+                            }
+
+                            data[day_in_month].current = current
+
+                            month_chart_stats_map.set(month_completed_timestamp, data)
+                        }
+                    }
+
+                    if (year_chart_stats_map.has(completed_year)) {
+                        let data = year_chart_stats_map.get(completed_year)
+
+                        if (data.hasOwnProperty(completed_month)) {
+                            let { current } = data[completed_month]
+
+                            current[this.priority_order[new_priority_value]] += current_value
+                            current[this.priority_order[old_priority_value]] -= current_value
+
+                            if (current[this.priority_order[old_priority_value]] < 0) {
+                                current[this.priority_order[old_priority_value]] = 0
+                            }
+
+                            data[completed_month].current = current
+
+                            year_chart_stats_map.set(completed_year, data)
+                        }
+                    }
+                }
+            }
+
+            else if (type === "week ") {
+                let near_monday = this.getMonday(date)
+                completed_timestamp = new Date(near_monday.getFullYear(), near_monday.getMonth(), near_monday.getDate()).getTime()
+
+                if (completed_data.hasOwnProperty(completed_timestamp)) {
+                    if (completed_data[completed_timestamp].hasOwnProperty("day_completed_array") && completed_data[completed_timestamp].hasOwnProperty("priority_value_array")) {
+                        let { day_completed_array, priority_value_array } = completed_data[completed_timestamp],
+                            day_in_week = date.getDay(),
+                            day = date.getDate(),
+                            month = date.getMonth(),
+                            year = date.getFullYear(),
+                            month_timestamp = new Date(year, month).getTime(),
+                            current_value = day_completed_array[day_in_week],
+                            old_priority_value = priority_value_array[day_in_week]
+
+                        if (stats_map.has(completed_timestamp)) {
+                            let stats_data = stats_map.get(completed_timestamp),
+                                { current } = stats_data
+
+                            current[this.priority_order[new_priority_value]] += current_value
+
+                            current[this.priority_order[old_priority_value]] -= current_value
+
+                            if (current[this.priority_order[old_priority_value]] < 0) {
+                                current[this.priority_order[old_priority_value]] = 0
+                            }
+
+                            stats_data.current = current
+
+                            stats_map.set(completed_timestamp, stats_data)
+                        }
+
+                        if (week_chart_stats_map.has(completed_timestamp)) {
+                            let data = week_chart_stats_map.get(completed_timestamp)
+
+                            if (data.hasOwnProperty(day_in_week)) {
+                                let { current } = data[day_in_week]
+
+                                current[this.priority_order[new_priority_value]] += current_value
+
+                                current[this.priority_order[old_priority_value]] -= current_value
+
+                                if (current[this.priority_order[old_priority_value]] < 0) {
+                                    current[this.priority_order[old_priority_value]] = 0
+                                }
+
+                                data[day_in_week].current = current
+
+                                week_chart_stats_map.set(completed_timestamp, data)
+                            }
+                        }
+
+                        if (month_chart_stats_map.has(month_timestamp)) {
+                            let data = month_chart_stats_map.get(month_timestamp)
+
+                            if (data.hasOwnProperty(day)) {
+                                let { current } = data[day]
+
+                                current[this.priority_order[new_priority_value]] += current_value
+
+                                current[this.priority_order[old_priority_value]] -= current_value
+
+                                if (current[this.priority_order[old_priority_value]] < 0) {
+                                    current[this.priority_order[old_priority_value]] = 0
+                                }
+
+                                data[day].current = current
+
+                                month_chart_stats_map.set(month_timestamp, data)
+                            }
+                        }
+
+                        if (year_chart_stats_map.has(year)) {
+                            let data = year_chart_stats_map.get(year)
+
+                            if (data.hasOwnProperty(month)) {
+                                let { current } = data[month]
+
+                                current[this.priority_order[new_priority_value]] += current_value
+
+                                current[this.priority_order[old_priority_value]] -= current_value
+
+                                if (current[this.priority_order[old_priority_value]] < 0) {
+                                    current[this.priority_order[old_priority_value]] = 0
+                                }
+
+                                data[month].current = current
+
+                                year_chart_stats_map.set(year, data)
+                            }
+                        }
+                    }
+                }
+            }
+
+            else {
+                completed_timestamp = new Date(date.getFullYear(), date.getMonth()).getTime()
+
+                if (completed_data.hasOwnProperty(completed_timestamp)) {
+                    if (completed_data[completed_timestamp].hasOwnProperty("day_completed_array") && completed_data[completed_timestamp].hasOwnProperty("priority_value_array")) {
+                        let { day_completed_array, priority_value_array } = completed_data[completed_timestamp],
+                            day = date.getDate(),
+                            date = new Date(completed_year, completed_month, day),
+                            near_monday = this.getMonday(date),
+                            completed_week_timestamp = new Date(near_monday.getFullYear(), near_monday.getMonth(), near_monday.getDate()).getTime(),
+                            day_in_week = date.getDay(),
+                            old_priority_value = priority_value_array[day - 1],
+                            current_value = day_completed_array[day - 1]
+
+
+                        if (stats_map.has(completed_timestamp)) {
+                            let stats_data = stats_map.get(completed_timestamp),
+                                { current } = stats_data
+
+                            current[this.priority_order[new_priority_value]] += current_value
+
+                            current[this.priority_order[old_priority_value]] -= current_value
+
+                            if (current[this.priority_order[old_priority_value]] < 0) {
+                                current[this.priority_order[old_priority_value]] = 0
+                            }
+
+                            stats_data.current = current
+
+                            stats_map.set(completed_timestamp, stats_data)
+                        }
+
+                        if (week_chart_stats_map.has(completed_week_timestamp)) {
+                            let data = week_chart_stats_map.get(completed_week_timestamp)
+
+                            if (data.hasOwnProperty(day_in_week)) {
+                                let { current } = data[day_in_week]
+
+                                current[this.priority_order[new_priority_value]] += current_value
+
+                                current[this.priority_order[old_priority_value]] -= current_value
+
+                                if (current[this.priority_order[old_priority_value]] < 0) {
+                                    current[this.priority_order[old_priority_value]] = 0
+                                }
+
+                                data[day_in_week].current = current
+
+                                week_chart_stats_map.set(completed_week_timestamp, data)
+                            }
+                        }
+
+
+                        if (month_chart_stats_map.has(completed_timestamp)) {
+                            let data = month_chart_stats_map.get(completed_timestamp)
+
+                            if (data.hasOwnProperty(day)) {
+                                let { current } = data[day]
+
+                                current[this.priority_order[new_priority_value]] += current_value
+
+                                current[this.priority_order[old_priority_value]] -= current_value
+
+                                if (current[this.priority_order[old_priority_value]] < 0) {
+                                    current[this.priority_order[old_priority_value]] = 0
+                                }
+
+                                data[day].current = current
+
+                                month_chart_stats_map.set(completed_timestamp, data)
+                            }
+                        }
+
+                        if (year_chart_stats_map.has(completed_year)) {
+                            let data = year_chart_stats_map.get(completed_year)
+
+                            if (data.hasOwnProperty(completed_month)) {
+                                let { current } = data[completed_month]
+
+                                current[this.priority_order[new_priority_value]] += current_value
+
+                                current[this.priority_order[old_priority_value]] -= current_value
+
+                                if (current[this.priority_order[old_priority_value]] < 0) {
+                                    current[this.priority_order[old_priority_value]] = 0
+                                }
+
+                                data[completed_month].current = current
+
+                                year_chart_stats_map.set(completed_year, data)
+                            }
+                        }
+                    }
+                }
+            }
         }
+
+        return ({
+            stats: stats_map,
+            week_chart_stats: week_chart_stats_map,
+            month_chart_stats: month_chart_stats_map,
+            year_chart_stats: year_chart_stats_map,
+        })
     }
 
     doChangesOnCompletedTaskFromToday = (task_id, type, new_priority_value, date) => {
@@ -1232,7 +1455,7 @@ class EditDetails extends React.PureComponent {
             }
         }
 
-        return completed_tasks_map.toMap()
+        return completed_tasks_map
     }
 
     doChangesOnCompletedTaskAllTime = (task_id, type, new_priority_value) => {
@@ -1261,40 +1484,28 @@ class EditDetails extends React.PureComponent {
         }
 
 
-        return completed_tasks_map.toMap()
+        return completed_tasks_map
     }
 
     save = () => {
         let new_priority_id = this.edit_task.priority.value,
             new_category_key = this.edit_task.category,
-            old_category_data = {},
-            new_category_data = {},
-            current_value = 0,
             should_update_category = false,
             update_category_data = {},
-            should_update_stats = false,
-            update_stats_data = {},
-            update_chart_stats_data = {},
-            should_update_chart_stats = {
-                week: false,
-                month: false,
-                year: false
-            },
+            stats_action_type = "",
             sending_obj = {
                 edit_task: this.edit_task,
                 should_update_category,
                 update_category_data,
-                should_update_stats,
-                update_stats_data,
-                should_update_chart_stats,
-                update_chart_stats_data
+                stats_action_type
             },
             stats,
+            completed_action_type = "",
             completed_tasks,
             week_chart_stats,
             month_chart_stats,
             year_chart_stats,
-
+            result_obj = {},
             date = new Date()
 
 
@@ -1303,11 +1514,11 @@ class EditDetails extends React.PureComponent {
             should_update_category = true
 
             //Decrease old category's quantity
-            old_category_data = { ...this.props.categories[this.category_key] }
+            let old_category_data = { ...this.props.categories[this.category_key] }
             old_category_data.quantity -= 1
 
             //Increase new category's quantity
-            new_category_data = { ...this.props.categories[new_category_key] }
+            let new_category_data = { ...this.props.categories[new_category_key] }
             new_category_data.quantity += 1
 
             if (new_category_data.quantity < 0) {
@@ -1328,106 +1539,48 @@ class EditDetails extends React.PureComponent {
         // do update on stats and chart_stats when priority is changed
         if (this.priority_id !== new_priority_id) {
 
-            // Apply all time
-            if (this.state.agree_on_changing_priority_history) {
-                // apply on completed tasks
+            if (this.edit_task.type === "day") {
+                stats_action_type = "RETURN_NEW_DAY_STATS"
+                completed_action_type = "RETURN_NEW_COMPLETED_DAY_TASKS"
+            }
 
-                completed_tasks = this.doChangesOnCompletedTaskAllTime(this.edit_task.id, this.edit_task.type, new_priority_id)
-
-                let result_obj = this.updateOnStatsAndChartsDataAllTime(this.edit_task.id, this.edit_task.type, new_priority_id)
-
-                stats = result_obj.stats.toMap()
-                week_chart_stats = result_obj.week_chart_stats.toMap()
-                month_chart_stats = result_obj.month_chart_stats.toMap()
-                year_chart_stats = result_obj.year_chart_stats.toMap()
+            else if (this.edit_task.type === "week") {
+                stats_action_type = "RETURN_NEW_WEEK_STATS"
+                completed_action_type = "RETURN_NEW_COMPLETED_WEEK_TASKS"
             }
 
             else {
-
-                completed_tasks = this.doChangesOnCompletedTaskFromToday(this.edit_task.id, this.edit_task.type, new_priority_id, date)
-
-
-
-                // should_update_stats = true
-
-                // let stats_action_type = "",
-                //     date = new Date(),
-                //     stats_timestamp = 0,
-                //     week_chart_timestamp = new Date(this.getMonday(date).getFullYear(), this.getMonday(date).getMonth(), this.getMonday(date).getDate()).getTime(),
-                //     month_chart_timestamp = new Date(date.getFullYear(), date.getMonth()).getTime(),
-                //     year_chart_timestamp = date.getFullYear()
-
-                // if (this.props.type === "day") {
-                //     stats_timestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
-                //     stats_action_type = "UPDATE_DAY_STATS"
-                // }
-
-                // else if (this.props.type === "week") {
-                //     stats_timestamp = new Date(this.getMonday(date).getFullYear(), this.getMonday(date).getMonth(), this.getMonday(date).getDate()).getTime()
-                //     stats_action_type = "UPDATE_WEEK_STATS"
-                // }
-
-                // else {
-                //     stats_timestamp = new Date(date.getFullYear(), date.getMonth()).getTime()
-                //     stats_action_type = "UPDATE_MONTH_STATS"
-                // }
-
-                // current_value = this.returnTaskGoalCurrentValue(this.edit_task.id, stats_timestamp)
-
-                // let stats_data = this.updateOnStatsDataFromToday(stats_timestamp, new_priority_id, current_value)
-
-                // // Only update if there is an existing obj.
-                // if (Object.keys(stats_data).length > 0) {
-                //     should_update_stats = true
-                // }
-
-                // sending_obj.should_update_stats = should_update_stats
-
-                // update_stats_data = {
-                //     stats_action_type,
-                //     stats_timestamp,
-                //     stats_data
-                // }
-
-                // let week_chart_stats_data = this.updateOnChartStatsDataFromNowOn(new_priority_id, Map(this.props.week_chart_stats), week_chart_timestamp, date.getDay(), current_value),
-                //     month_chart_stats_data = this.updateOnChartStatsDataFromNowOn(new_priority_id, Map(this.props.month_chart_stats), month_chart_timestamp, date.getDate(), current_value),
-                //     year_chart_stats_data = this.updateOnChartStatsDataFromNowOn(new_priority_id, Map(this.props.year_chart_stats), year_chart_timestamp, date.getMonth(), current_value)
-
-
-                // if (Object.keys(week_chart_stats_data).length > 0) {
-                //     should_update_chart_stats.week = true
-                // }
-
-                // if (Object.keys(month_chart_stats_data).length > 0) {
-                //     should_update_chart_stats.month = true
-                // }
-
-                // if (Object.keys(year_chart_stats_data).length > 0) {
-                //     should_update_chart_stats.year = true
-                // }
-
-                // sending_obj.should_update_chart_stats = should_update_chart_stats
-
-                // update_chart_stats_data = {
-                //     week_chart_stats_action_type: "UPDATE_WEEK_CHART_STATS",
-                //     month_chart_stats_action_type: "UPDATE_MONTH_CHART_STATS",
-                //     year_chart_stats_action_type: "UPDATE_YEAR_CHART_STATS",
-
-                //     week_chart_timestamp,
-                //     month_chart_timestamp,
-                //     year_chart_timestamp,
-
-                //     week_chart_stats_data,
-                //     month_chart_stats_data,
-                //     year_chart_stats_data
-                // }
-
-                // sending_obj.update_stats_data = update_stats_data
-                // sending_obj.update_chart_stats_data = update_chart_stats_data
+                stats_action_type = "RETURN_NEW_MONTH_STATS"
+                completed_action_type = "RETURN_NEW_COMPLETED_MONTH_TASKS"
             }
+
+            // Apply all time
+            if (this.state.agree_on_changing_priority_history) {
+                // apply on completed tasks
+                completed_tasks = this.doChangesOnCompletedTaskAllTime(this.edit_task.id, this.edit_task.type, new_priority_id).toMap()
+                result_obj = this.updateOnStatsAndChartsDataAllTime(this.edit_task.id, this.edit_task.type, new_priority_id)
+            }
+
+            else {
+                completed_tasks = this.doChangesOnCompletedTaskFromToday(this.edit_task.id, this.edit_task.type, new_priority_id, date).toMap()
+                result_obj = this.updateOnStatsAndChartDataFromToday(this.edit_task.id, this.edit_task.type, new_priority_id, date)
+            }
+
+            stats = result_obj.stats.toMap()
+            week_chart_stats = result_obj.week_chart_stats.toMap()
+            month_chart_stats = result_obj.month_chart_stats.toMap()
+            year_chart_stats = result_obj.year_chart_stats.toMap()
+
+            sending_obj.stats_action_type = stats_action_type
+            sending_obj.stats = stats
+            sending_obj.week_chart_stats = week_chart_stats
+            sending_obj.month_chart_stats = month_chart_stats
+            sending_obj.year_chart_stats = year_chart_stats
+            sending_obj.completed_action_type = completed_action_type
+            sending_obj.completed_tasks = completed_tasks
         }
 
-        // this.props.editThunkFromNowOn(sending_obj)
+        this.props.editThunk(sending_obj)
         this.cancel()
     }
 

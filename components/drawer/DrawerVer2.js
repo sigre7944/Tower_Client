@@ -417,9 +417,9 @@ export default class Drawer extends React.PureComponent {
             week_tasks_map = Map(this.props.week_tasks),
             month_tasks_map = Map(this.props.month_tasks),
 
-            day_stats,
-            week_stats,
-            month_stats,
+            day_stats = Map(this.props.day_stats),
+            week_stats = Map(this.props.week_stats),
+            month_stats = Map(this.props.month_stats),
 
             week_chart_stats,
             month_chart_stats,
