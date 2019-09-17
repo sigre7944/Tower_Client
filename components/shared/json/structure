@@ -56,7 +56,8 @@
         task_id: {
             id: task_id,
             category: category_id,
-
+            priority_value: priority_value,
+            
             completed_day_timestamp: {
                 current: 0,
                 priority_value: priority_value

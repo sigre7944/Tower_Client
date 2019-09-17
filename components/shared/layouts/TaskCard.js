@@ -67,8 +67,6 @@ export default class TaskCard extends React.PureComponent {
                     data = completed_tasks.get(task.id)
 
                     if (data.hasOwnProperty(timestamp)) {
-                        // currentGoal = data[timestamp].current
-
                         let completed_data = data[timestamp],
                             { current } = completed_data
 
@@ -76,12 +74,6 @@ export default class TaskCard extends React.PureComponent {
                         completed_data.current = current
 
                         if (type === "week") {
-
-                            // overwrite_obj[timestamp] = {
-                            //     current: currentGoal,
-                            //     priority_value: task.priority.value
-                            // }
-
                             let { day_completed_array, priority_value_array } = completed_data,
                                 day_in_week = current_date.getDay()
 
@@ -105,9 +97,6 @@ export default class TaskCard extends React.PureComponent {
 
                         data = { ...data, ...completed_data }
                     }
-
-                    // currentGoal += 1
-                    // data = { ...data, ...overwrite_obj }
                 }
 
                 else {
@@ -117,8 +106,6 @@ export default class TaskCard extends React.PureComponent {
 
                     data[timestamp] = {
                         current: currentGoal + 1,
-                        // category: task.category,
-                        // priority_value: task.priority.value
                     }
 
                     if (type === "week") {
@@ -148,7 +135,6 @@ export default class TaskCard extends React.PureComponent {
                     data = completed_tasks.get(task.id)
 
                     if (data.hasOwnProperty(timestamp)) {
-                        // currentGoal = data[timestamp].current
                         let completed_data = data[timestamp],
                             { current } = completed_data
 
@@ -195,22 +181,6 @@ export default class TaskCard extends React.PureComponent {
 
                         data = { ...data, ...completed_data }
                     }
-
-                    // if (currentGoal <= 0) {
-                    //     overwrite_obj[timestamp] = {
-                    //         current: 0,
-                    //         priority_value: task.priority.value
-                    //     }
-                    // }
-
-                    // else {
-                    //     overwrite_obj[timestamp] = {
-                    //         current: currentGoal - 1,
-                    //         priority_value: task.priority.value
-                    //     }
-                    // }
-
-                    // data = { ...data, ...overwrite_obj }
                 }
             }
         }
@@ -221,8 +191,6 @@ export default class TaskCard extends React.PureComponent {
                     data = completed_tasks.get(task.id)
 
                     if (data.hasOwnProperty(timestamp)) {
-                        // currentGoal = data[timestamp].current
-
                         let completed_data = data[timestamp],
                             { current } = completed_data
 
@@ -269,22 +237,6 @@ export default class TaskCard extends React.PureComponent {
 
                         data = { ...data, ...completed_data }
                     }
-
-                    // if (currentGoal <= 0) {
-                    //     overwrite_obj[timestamp] = {
-                    //         current: 0,
-                    //         priority_value: task.priority.value
-                    //     }
-                    // }
-
-                    // else {
-                    //     overwrite_obj[timestamp] = {
-                    //         current: currentGoal - 1,
-                    //         priority_value: task.priority.value
-                    //     }
-                    // }
-
-                    // data = { ...data, ...overwrite_obj }
                 }
             }
         }

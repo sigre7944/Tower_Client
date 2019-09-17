@@ -609,7 +609,7 @@ export default class TaskDetailModal extends Component {
                                 categories={this.props.categories}
                                 priorities={this.props.priorities}
                                 stats={this.props.stats}
-                                completed_tasks = {this.props.completed_tasks}
+                                completed_tasks={this.props.completed_tasks}
                                 week_chart_stats={this.props.week_chart_stats}
                                 month_chart_stats={this.props.month_chart_stats}
                                 year_chart_stats={this.props.year_chart_stats}
@@ -757,7 +757,7 @@ class EditDetails extends React.PureComponent {
     }
 
     // change the current property of today timestamp, previous timestamp untouched.
-    updateOnStatsData = (timestamp, new_priority_id, current_value) => {
+    updateOnStatsDataFromNowOn = (timestamp, new_priority_id, current_value) => {
         let stats_map = Map(this.props.stats),
             data = {}
 
@@ -780,7 +780,8 @@ class EditDetails extends React.PureComponent {
         return data
     }
 
-    updateOnChartStatsData = (new_priority_id, chart_stats_map, timestamp, key, current_value) => {
+    // From now on
+    updateOnChartStatsDataFromNowOn = (new_priority_id, chart_stats_map, timestamp, key, current_value) => {
         let data = {}
 
         if (chart_stats_map.has(timestamp)) {
@@ -803,6 +804,68 @@ class EditDetails extends React.PureComponent {
 
         return data
     }
+    // Start from now on
+    updatePriorityInCompletedTasksFromNowOn = (task_id, type, date, stats_timestamp, new_priority_value) => {
+        let completed_tasks_map = Map(this.props.completed_tasks)
+
+        if (completed_tasks_map.has(task_id)) {
+            let completed_data = completed_tasks_map.get(task_id)
+
+            if (type === "day") {
+                if (completed_data.hasOwnProperty(stats_timestamp)) {
+                    completed_data[stats_timestamp].priority_value = new_priority_value
+                }
+            }
+
+            else if (type === "week") {
+                let day_in_week = date.getDay()
+
+                if (completed_data.hasOwnProperty(stats_timestamp)) {
+                    completed_data[stats_timestamp].priority_value = new_priority_value
+
+                    if (completed_data[stats_timestamp].hasOwnProperty("priority_value_array")) {
+                        let { priority_value_array } = completed_data[stats_timestamp]
+
+                        if (day_in_week === 0) {
+                            priority_value_array[day_in_week] = new_priority_value
+                        }
+
+                        else {
+                            for (let i = day_in_week; i <= 7; i++) {
+                                let index = i % 7
+
+                                priority_value_array[index] = new_priority_value
+                            }
+                        }
+
+
+                        completed_data[stats_timestamp].priority_value_array = priority_value_array
+                    }
+                }
+            }
+
+            else {
+                let day_in_month = date.getDate(),
+                    last_day_in_month = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
+
+                if (completed_data.hasOwnProperty(stats_timestamp)) {
+                    completed_data[stats_timestamp].priority_value = new_priority_value
+
+                    if (completed_data[stats_timestamp].hasOwnProperty("priority_value_array")) {
+                        let { priority_value_array } = completed_data[stats_timestamp]
+
+                        for (let i = day_in_month; i <= last_day_in_month; i++) {
+                            let index = i - 1
+
+                            priority_value_array[index] = new_priority_value
+                        }
+
+                        completed_data[stats_timestamp].priority_value_array = priority_value_array
+                    }
+                }
+            }
+        }
+    }
 
     returnTaskGoalCurrentValue = (task_id, stats_timestamp) => {
         let completed_tasks_map = Map(this.props.completed_tasks)
@@ -815,6 +878,38 @@ class EditDetails extends React.PureComponent {
         }
 
         return 0
+    }
+
+    updateOnStatsDataAllTime = (task_id, type, date, stats_timestamp, new_priority_value, old_priority_value) => {
+        let completed_tasks_map = Map(this.props.completed_tasks),
+            stats_map = Map(this.props.stats)
+
+        if (completed_tasks_map.has(task_id)) {
+            let completed_task_data = completed_tasks_map.get(task_id)
+
+            for (let key in completed_task_data) {
+                if (completed_task_data.hasOwnProperty(key) && key !== "id") {
+                    let completed_timestamp = parseInt(key),
+                        completed_data = completed_task_data[key],
+                        current_value = completed_data.current
+
+                    if (stats_map.has(completed_timestamp)) {
+                        let data = stats_map.get(completed_timestamp),
+                            { current } = data
+
+                        current[this.priority_order[new_priority_value]] += current_value
+
+                        current[this.priority_order[old_priority_value]] -= current_value
+
+                        if (current[this.priority_order[old_priority_value]] < 0) {
+                            current[this.priority_order[old_priority_value]] = 0
+                        }
+
+                        data.current
+                    }
+                }
+            }
+        }
     }
 
 
@@ -844,6 +939,7 @@ class EditDetails extends React.PureComponent {
                 update_chart_stats_data
             }
 
+        // Only do update if the category is changed
         if (this.category_key !== new_category_key) {
             should_update_category = true
 
@@ -898,7 +994,7 @@ class EditDetails extends React.PureComponent {
 
             current_value = this.returnTaskGoalCurrentValue(this.edit_task.id, stats_timestamp)
 
-            let stats_data = this.updateOnStatsData(stats_timestamp, new_priority_id, current_value)
+            let stats_data = this.updateOnStatsDataFromNowOn(stats_timestamp, new_priority_id, current_value)
 
             // Only update if there is an existing obj.
             if (Object.keys(stats_data).length > 0) {
@@ -913,9 +1009,9 @@ class EditDetails extends React.PureComponent {
                 stats_data
             }
 
-            let week_chart_stats_data = this.updateOnChartStatsData(new_priority_id, Map(this.props.week_chart_stats), week_chart_timestamp, date.getDay(), current_value),
-                month_chart_stats_data = this.updateOnChartStatsData(new_priority_id, Map(this.props.month_chart_stats), month_chart_timestamp, date.getDate(), current_value),
-                year_chart_stats_data = this.updateOnChartStatsData(new_priority_id, Map(this.props.year_chart_stats), year_chart_timestamp, date.getMonth(), current_value)
+            let week_chart_stats_data = this.updateOnChartStatsDataFromNowOn(new_priority_id, Map(this.props.week_chart_stats), week_chart_timestamp, date.getDay(), current_value),
+                month_chart_stats_data = this.updateOnChartStatsDataFromNowOn(new_priority_id, Map(this.props.month_chart_stats), month_chart_timestamp, date.getDate(), current_value),
+                year_chart_stats_data = this.updateOnChartStatsDataFromNowOn(new_priority_id, Map(this.props.year_chart_stats), year_chart_timestamp, date.getMonth(), current_value)
 
 
             if (Object.keys(week_chart_stats_data).length > 0) {

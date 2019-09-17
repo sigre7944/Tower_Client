@@ -33,6 +33,14 @@ export default class Drawer extends React.PureComponent {
         edit_category_data: {},
 
         delete_category_bool: false,
+
+        agree_on_deleting_history: false,
+    }
+
+    toggleAgreeDeletingHistory = () => {
+        this.setState(prevState => ({
+            agree_on_deleting_history: !prevState.agree_on_deleting_history
+        }))
     }
 
     chooseEditCategory = (category_data) => {
@@ -94,14 +102,13 @@ export default class Drawer extends React.PureComponent {
     deleteGoalCurrentValueOnStatsAndCharts = (id, type) => {
         let completed_tasks_map,
             stats_map,
-            week_chart_stats_map = Map(this.props.week_chart_stats),
-            month_chart_stats_map = Map(this.props.month_chart_stats),
-            year_chart_stats_map = Map(this.props.year_chart_stats),
-            return_obj = {}
+            week_chart_stats_map = Map(this.props.week_chart_stats).asMutable(),
+            month_chart_stats_map = Map(this.props.month_chart_stats).asMutable(),
+            year_chart_stats_map = Map(this.props.year_chart_stats).asMutable()
 
         if (type === "day") {
             completed_tasks_map = Map(this.props.completed_day_tasks)
-            stats_map = Map(this.props.day_stats)
+            stats_map = Map(this.props.day_stats).asMutable()
 
             if (completed_tasks_map.has(id)) {
                 let completed_task_data = completed_tasks_map.get(id),
@@ -132,8 +139,7 @@ export default class Drawer extends React.PureComponent {
 
                             stats_data.current = current
 
-                            return_obj.stats_data = stats_data
-                            return_obj.stats_timestamp = completed_timestamp
+                            stats_map.set(completed_timestamp, stats_data)
                         }
 
                         if (week_chart_stats_map.has(week_completed_timestamp)) {
@@ -150,8 +156,7 @@ export default class Drawer extends React.PureComponent {
 
                                 data[day_in_week].current = current
 
-                                return_obj.week_chart_stats_data = data
-                                return_obj.week_chart_stats_timestamp = week_completed_timestamp
+                                week_chart_stats_map.set(week_completed_timestamp, data)
                             }
                         }
 
@@ -169,8 +174,7 @@ export default class Drawer extends React.PureComponent {
 
                                 data[day].current = current
 
-                                return_obj.month_chart_stats_data = data
-                                return_obj.month_chart_stats_timestamp = month_completed_timestamp
+                                month_chart_stats_map.set(month_completed_timestamp, data)
                             }
                         }
 
@@ -188,8 +192,7 @@ export default class Drawer extends React.PureComponent {
 
                                 data[month].current = current
 
-                                return_obj.year_chart_stats_data = data
-                                return_obj.year_chart_stats_timestamp = year
+                                year_chart_stats_map.set(year, data)
                             }
                         }
                     }
@@ -235,8 +238,7 @@ export default class Drawer extends React.PureComponent {
 
                                     stats_data.current = current
 
-                                    return_obj.stats_data = stats_data
-                                    return_obj.stats_timestamp = completed_timestamp
+                                    stats_map.set(completed_timestamp, stats_data)
                                 }
 
 
@@ -254,8 +256,7 @@ export default class Drawer extends React.PureComponent {
 
                                         data[index].current = current
 
-                                        return_obj.week_chart_stats_data = data
-                                        return_obj.week_chart_stats_timestamp = completed_timestamp
+                                        week_chart_stats_map.set(completed_timestamp, data)
                                     }
                                 }
 
@@ -273,8 +274,7 @@ export default class Drawer extends React.PureComponent {
 
                                         data[day].current = current
 
-                                        return_obj.month_chart_stats_data = data
-                                        return_obj.month_chart_stats_timestamp = month_timestamp
+                                        month_chart_stats_map.set(month_timestamp, data)
                                     }
                                 }
 
@@ -292,8 +292,7 @@ export default class Drawer extends React.PureComponent {
 
                                         data[month].current = current
 
-                                        return_obj.year_chart_stats_data = data
-                                        return_obj.year_chart_stats_timestamp = year
+                                        year_chart_stats_map.set(year, data)
                                     }
                                 }
                             })
@@ -341,8 +340,7 @@ export default class Drawer extends React.PureComponent {
 
                                     stats_data.current = current
 
-                                    return_obj.stats_data = stats_data
-                                    return_obj.stats_timestamp = completed_timestamp
+                                    stats_map.set(completed_timestamp, stats_data)
                                 }
 
                                 if (week_chart_stats_map.has(completed_week_timestamp)) {
@@ -359,8 +357,7 @@ export default class Drawer extends React.PureComponent {
 
                                         data[day_in_week].current = current
 
-                                        return_obj.week_chart_stats_data = data
-                                        return_obj.week_chart_stats_timestamp = completed_week_timestamp
+                                        week_chart_stats_map.set(completed_week_timestamp, data)
                                     }
                                 }
 
@@ -379,8 +376,7 @@ export default class Drawer extends React.PureComponent {
 
                                         data[day].current = current
 
-                                        return_obj.month_chart_stats_data = data
-                                        return_obj.month_chart_stats_timestamp = completed_timestamp
+                                        month_chart_stats_map.set(completed_timestamp, data)
                                     }
                                 }
 
@@ -398,8 +394,7 @@ export default class Drawer extends React.PureComponent {
 
                                         data[completed_month].current = current
 
-                                        return_obj.year_chart_stats_data = data
-                                        return_obj.year_chart_stats_timestamp = completed_year
+                                        year_chart_stats_map.set(completed_year, data)
                                     }
                                 }
                             })
@@ -409,8 +404,12 @@ export default class Drawer extends React.PureComponent {
             }
         }
 
-
-        return return_obj
+        return ({
+            stats: stats_map,
+            week_chart_stats: week_chart_stats_map,
+            month_chart_stats: month_chart_stats_map,
+            year_chart_stats: year_chart_stats_map,
+        })
     }
 
     deleteCategory = () => {
@@ -428,58 +427,52 @@ export default class Drawer extends React.PureComponent {
 
             sending_obj = {}
 
-        day_tasks_map.valueSeq().forEach((task, index) => {
+        day_tasks_map.valueSeq().forEach((task) => {
             if (task.category === this.chosen_delete_category_key) {
                 let result_obj = this.deleteGoalCurrentValueOnStatsAndCharts(task.id, task.type)
 
-                if (Object.keys(result_obj).length > 0) {
-                    
-                    day_stats.set(result_obj.stats_timestamp, result_obj.stats_data)
-                    week_chart_stats.set(result_obj.week_chart_stats_timestamp, result_obj.week_chart_stats_data)
-                    month_chart_stats.set(result_obj.month_chart_stats_timestamp, result_obj.month_chart_stats_data)
-                    year_chart_stats.set(result_obj.year_chart_stats_timestamp, result_obj.year_chart_stats_data)
-                }
+                day_stats = result_obj.stats.toMap()
+                week_chart_stats = result_obj.week_chart_stats.toMap()
+                month_chart_stats = result_obj.month_chart_stats.toMap()
+                year_chart_stats = result_obj.year_chart_stats.toMap()
             }
         })
 
-        week_tasks_map.valueSeq().forEach((task, index) => {
+        week_tasks_map.valueSeq().forEach((task) => {
             if (task.category === this.chosen_delete_category_key) {
                 let result_obj = this.deleteGoalCurrentValueOnStatsAndCharts(task.id, task.type)
 
-                if (Object.keys(result_obj).length > 0) {
-                    week_stats.set(result_obj.stats_timestamp, result_obj.stats_data)
-                    week_chart_stats.set(result_obj.week_chart_stats_timestamp, result_obj.week_chart_stats_data)
-                    month_chart_stats.set(result_obj.month_chart_stats_timestamp, result_obj.month_chart_stats_data)
-                    year_chart_stats.set(result_obj.year_chart_stats_timestamp, result_obj.year_chart_stats_data)
-                }
+                day_stats = result_obj.stats.toMap()
+                week_chart_stats = result_obj.week_chart_stats.toMap()
+                month_chart_stats = result_obj.month_chart_stats.toMap()
+                year_chart_stats = result_obj.year_chart_stats.toMap()
             }
         })
 
-        month_tasks_map.valueSeq().forEach((task, index) => {
+        month_tasks_map.valueSeq().forEach((task) => {
             if (task.category === this.chosen_delete_category_key) {
                 let result_obj = this.deleteGoalCurrentValueOnStatsAndCharts(task.id, task.type)
 
-                if (Object.keys(result_obj).length > 0) {
-                    month_stats.set(result_obj.stats_timestamp, result_obj.stats_data)
-                    week_chart_stats.set(result_obj.week_chart_stats_timestamp, result_obj.week_chart_stats_data)
-                    month_chart_stats.set(result_obj.month_chart_stats_timestamp, result_obj.month_chart_stats_data)
-                    year_chart_stats.set(result_obj.year_chart_stats_timestamp, result_obj.year_chart_stats_data)
-                }
+                day_stats = result_obj.stats.toMap()
+                week_chart_stats = result_obj.week_chart_stats.toMap()
+                month_chart_stats = result_obj.month_chart_stats.toMap()
+                year_chart_stats = result_obj.year_chart_stats.toMap()
             }
         })
 
         sending_obj = {
             category_id: this.chosen_delete_category_key,
-            day_stats: day_stats.toMap(),
-            week_stats: week_stats.toMap(),
-            month_stats: month_stats.toMap(),
-            week_chart_stats: week_chart_stats.toMap(),
-            month_chart_stats: month_chart_stats.toMap(),
-            year_chart_stats: year_chart_stats.toMap()
+            day_stats,
+            week_stats,
+            month_stats,
+            week_chart_stats,
+            month_chart_stats,
+            year_chart_stats
         }
 
         this.props.deleteAndAffectThePast(sending_obj)
 
+        this.props.chooseCategory("general")
         this.dissmissDeleteCategoryBool()
     }
 
@@ -617,6 +610,50 @@ export default class Drawer extends React.PureComponent {
                                         <Text>
                                             Are you sure deleting all tasks in this category?
                                         </Text>
+
+                                        <View
+                                            style={{
+                                                marginTop: 20,
+                                                flexDirection: "row",
+                                                justifyContent: "center",
+                                                alignContent: "center"
+                                            }}
+                                        >
+                                            <TouchableOpacity
+                                                onPress={this.toggleAgreeDeletingHistory}
+
+                                                style={{
+                                                    borderWidth: 1,
+                                                    borderColor: "black",
+                                                    borderRadius: 7,
+                                                    width: 20,
+                                                    height: 20,
+                                                    justifyContent: "center",
+                                                    alignItems: "center"
+                                                }}
+                                            >
+                                                {this.state.agree_on_deleting_history ?
+                                                    <View
+                                                        style={{
+                                                            width: 15,
+                                                            height: 15,
+                                                            borderRadius: 15,
+                                                            backgroundColor: "black"
+                                                        }}
+                                                    >
+                                                    </View>
+                                                    :
+                                                    null
+                                                }
+                                            </TouchableOpacity>
+                                            <Text
+                                                style={{
+                                                    marginLeft: 5
+                                                }}
+                                            >
+                                                Do you want to erase the history?
+                                            </Text>
+                                        </View>
 
                                         <View
                                             style={{
