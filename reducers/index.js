@@ -40,21 +40,17 @@ import {
     year_chart_stats
 } from './chartStatsReducer'
 
-
 const rootReducer = combineReducers({
     currentRoute,
     currentWeekInMonth,
-
 
     day_tasks,
     week_tasks,
     month_tasks,
 
-
     completed_day_tasks,
     completed_week_tasks,
     completed_month_tasks,
-
 
     categories,
     priorities,

@@ -9,7 +9,6 @@ import { Provider } from 'react-redux'
 import rootReducer from './reducers'
 import Drawer from './components/drawer/Drawer.Container'
 import Header from './components/main/header/Header.Container'
-
 import * as FileSystem from 'expo-file-system';
 
 let categories = {},

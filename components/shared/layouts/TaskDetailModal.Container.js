@@ -4,9 +4,7 @@ import {
     editThunk,
     deleteTaskThunk,
 } from './actions/taskDetailModalThunk'
-
 import TaskDetailModal from './TaskDetailModal'
-
 
 const mapStateToProps = (state, ownProps) => {
     let stats = {},

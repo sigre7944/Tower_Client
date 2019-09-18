@@ -10,7 +10,7 @@ import Priority from '../priority/Priority.Container'
 import Repeat from '../repeat/Repeat.Container'
 import Goal from '../goal/Goal.Container'
 
-import { Map } from 'immutable'
+import { Map, fromJS } from 'immutable'
 
 export default class TaskDetailModal extends Component {
 
@@ -767,7 +767,7 @@ class EditDetails extends React.PureComponent {
     }
 
     updateOnStatsAndChartsDataAllTime = (task_id, type, new_priority_value) => {
-        let completed_tasks_map = Map(this.props.completed_tasks),
+        let completed_tasks_map = Map(this.props.completed_tasks).asMutable(),
             stats_map = Map(this.props.stats).asMutable(),
             week_chart_stats_map = Map(this.props.week_chart_stats).asMutable(),
             month_chart_stats_map = Map(this.props.month_chart_stats).asMutable(),
@@ -1076,18 +1076,21 @@ class EditDetails extends React.PureComponent {
     }
 
     updateOnStatsAndChartDataFromToday = (task_id, type, new_priority_value, date) => {
-        let completed_tasks_map = Map(this.props.completed_tasks),
+        let completed_tasks_map = Map(this.props.completed_tasks).asMutable(),
             stats_map = Map(this.props.stats).asMutable(),
             week_chart_stats_map = Map(this.props.week_chart_stats).asMutable(),
             month_chart_stats_map = Map(this.props.month_chart_stats).asMutable(),
             year_chart_stats_map = Map(this.props.year_chart_stats).asMutable(),
             completed_timestamp
 
+
         if (completed_tasks_map.has(task_id)) {
             let completed_data = completed_tasks_map.get(task_id)
 
             if (type === "day") {
                 completed_timestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
+
+
 
                 if (completed_data.hasOwnProperty(completed_timestamp)) {
                     let current_value = completed_data[completed_timestamp].current,
@@ -1119,7 +1122,6 @@ class EditDetails extends React.PureComponent {
 
                     if (week_chart_stats_map.has(week_completed_timestamp)) {
                         let data = week_chart_stats_map.get(week_completed_timestamp)
-
                         if (data.hasOwnProperty(day_in_week)) {
                             let { current } = data[day_in_week]
 
@@ -1377,20 +1379,23 @@ class EditDetails extends React.PureComponent {
     }
 
     doChangesOnCompletedTaskFromToday = (task_id, type, new_priority_value, date) => {
-        let completed_tasks_map = Map(this.props.completed_tasks_map).asMutable(),
+        let completed_tasks_map = Map(this.props.completed_tasks).asMutable(),
             completed_timestamp
 
         if (type === "day") {
             completed_timestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
 
             if (completed_tasks_map.has(task_id)) {
+                // let completed_data = fromJS(completed_tasks_map.get(task_id)).toJS()
+                // This causes mutations of this.props.completed_tasks. The reason is somehow, the below completed_data 
+                // has the same pointer in this.props.completed_tasks
+                // To fix, completed_data should be ref as a new JS object as above
                 let completed_data = completed_tasks_map.get(task_id)
 
                 completed_data.priority_value = new_priority_value
 
                 if (completed_data.hasOwnProperty(completed_timestamp)) {
                     completed_data[completed_timestamp].priority_value = new_priority_value
-
                     completed_tasks_map.set(task_id, completed_data)
                 }
             }
@@ -1454,15 +1459,16 @@ class EditDetails extends React.PureComponent {
                 }
             }
         }
-
         return completed_tasks_map
     }
 
     doChangesOnCompletedTaskAllTime = (task_id, type, new_priority_value) => {
-        let completed_tasks_map = Map(this.props.completed_tasks_map).asMutable()
+        let completed_tasks_map = Map(this.props.completed_tasks).asMutable()
 
         if (completed_tasks_map.has(task_id)) {
             let completed_data = completed_tasks_map.get(task_id)
+
+            completed_data.priority_value = new_priority_value
 
             for (let key in completed_data) {
                 if (completed_data.hasOwnProperty(key) && key !== "id" && key !== "category" && key !== "priority_value") {
@@ -1557,13 +1563,15 @@ class EditDetails extends React.PureComponent {
             // Apply all time
             if (this.state.agree_on_changing_priority_history) {
                 // apply on completed tasks
-                completed_tasks = this.doChangesOnCompletedTaskAllTime(this.edit_task.id, this.edit_task.type, new_priority_id).toMap()
                 result_obj = this.updateOnStatsAndChartsDataAllTime(this.edit_task.id, this.edit_task.type, new_priority_id)
+                completed_tasks = this.doChangesOnCompletedTaskAllTime(this.edit_task.id, this.edit_task.type, new_priority_id).toMap()
             }
 
             else {
-                completed_tasks = this.doChangesOnCompletedTaskFromToday(this.edit_task.id, this.edit_task.type, new_priority_id, date).toMap()
                 result_obj = this.updateOnStatsAndChartDataFromToday(this.edit_task.id, this.edit_task.type, new_priority_id, date)
+                console.log(this.props.completed_tasks)
+                completed_tasks = this.doChangesOnCompletedTaskFromToday(this.edit_task.id, this.edit_task.type, new_priority_id, date).toMap()
+                console.log(this.props.completed_tasks)
             }
 
             stats = result_obj.stats.toMap()

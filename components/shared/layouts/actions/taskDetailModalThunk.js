@@ -56,9 +56,7 @@ export const editThunk = (action_type, {
 }) => (dispatch, getState) => {
 
     let action_array = [
-        updateTask(action_type, edit_task),
-        returnNewStats(stats_action_type, stats),
-
+        updateTask(action_type, edit_task)
     ]
 
     if (should_update_category === true) {
@@ -70,6 +68,7 @@ export const editThunk = (action_type, {
 
     if (stats_action_type.length > 0 || stats_action_type !== "") {
         action_array = [...action_array, ...[
+            returnNewStats(stats_action_type, stats),
             returnNewChartStats("RETURN_NEW_WEEK_CHART_STATS", week_chart_stats),
             returnNewChartStats("RETURN_NEW_MONTH_CHART_STATS", month_chart_stats),
             returnNewChartStats("RETURN_NEW_YEAR_CHART_STATS", year_chart_stats),
