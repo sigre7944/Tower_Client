@@ -7,7 +7,7 @@ import {
 } from '../../actions/categoryAction'
 
 const mapStateToProps = (state) => ({
-    categories: state.categories,
+    categories: state.get("categories"),
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => {

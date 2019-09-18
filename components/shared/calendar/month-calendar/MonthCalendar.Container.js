@@ -5,7 +5,7 @@ const mapStateToProps = (state, ownProps) => {
 
     if(!ownProps.edit){
         return({
-            task_data: state.currentMonthTask
+            task_data: state.get("currentMonthTask")
         })
     }
 

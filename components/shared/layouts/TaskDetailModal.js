@@ -10,7 +10,7 @@ import Priority from '../priority/Priority.Container'
 import Repeat from '../repeat/Repeat.Container'
 import Goal from '../goal/Goal.Container'
 
-import { Map, fromJS } from 'immutable'
+import { Map, fromJS, isImmutable } from 'immutable'
 
 export default class TaskDetailModal extends Component {
 
@@ -1387,9 +1387,11 @@ class EditDetails extends React.PureComponent {
 
             if (completed_tasks_map.has(task_id)) {
                 // let completed_data = fromJS(completed_tasks_map.get(task_id)).toJS()
-                // This causes mutations of this.props.completed_tasks. The reason is somehow, the below completed_data 
-                // has the same pointer in this.props.completed_tasks
-                // To fix, completed_data should be ref as a new JS object as above
+                // This causes mutations of this.props.completed_tasks. The reason is Immutable is using structural sharing, thus, 
+                // event if we call the function Map(), child objects will remain mutable because they are JS objects. Map() only changes
+                // the reference of the original one (shallow copy).
+                // To fix, completed_data should be a new JS objects using spread operators or we need to construct new structures that use
+                // Immutable.
                 let completed_data = completed_tasks_map.get(task_id)
 
                 completed_data.priority_value = new_priority_value
@@ -1569,9 +1571,7 @@ class EditDetails extends React.PureComponent {
 
             else {
                 result_obj = this.updateOnStatsAndChartDataFromToday(this.edit_task.id, this.edit_task.type, new_priority_id, date)
-                console.log(this.props.completed_tasks)
                 completed_tasks = this.doChangesOnCompletedTaskFromToday(this.edit_task.id, this.edit_task.type, new_priority_id, date).toMap()
-                console.log(this.props.completed_tasks)
             }
 
             stats = result_obj.stats.toMap()

@@ -5,24 +5,24 @@ import Drawer from './DrawerVer2'
 
 const mapStateToProps = (state, ownProps) => {
     return ({
-        categories: state.categories,
-        priorities: state.priorities,
+        categories: state.get("categories"),
+        priorities: state.get("priorities"),
 
-        day_tasks: state.day_tasks,
-        week_tasks: state.week_tasks,
-        month_tasks: state.month_tasks,
+        day_tasks: state.get("day_tasks"),
+        week_tasks: state.get("week_tasks"),
+        month_tasks: state.get("day_tasks"),
 
-        completed_day_tasks: state.completed_day_tasks,
-        completed_week_tasks: state.completed_week_tasks,
-        completed_month_tasks: state.completed_month_tasks,
+        completed_day_tasks: state.get("completed_day_tasks"),
+        completed_week_tasks: state.get("completed_week_tasks"),
+        completed_month_tasks: state.get("completed_month_tasks"),
 
-        day_stats: state.day_stats,
-        month_stats: state.month_stats,
-        week_stats: state.week_stats,
+        day_stats: state.get("day_stats"),
+        month_stats: state.get("month_stats"),
+        week_stats: state.get("week_stats"),
 
-        month_chart_stats: state.month_chart_stats,
-        week_chart_stats: state.week_chart_stats,
-        year_chart_stats: state.year_chart_stats
+        month_chart_stats: state.get("month_chart_stats"),
+        week_chart_stats: state.get("week_chart_stats"),
+        year_chart_stats: state.get("year_chart_stats")
     })
 }
 

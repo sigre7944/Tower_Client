@@ -4,8 +4,8 @@ import DayFlatlist from './DayFlatlist'
 
 const mapStateToProps = (state, ownProps) => {
     return ({
-        headerPressed: state.headerPressed,
-        currentRoute: state.currentRoute
+        headerPressed: state.get("headerPressed"),
+        currentRoute: state.get("currentRoute")
     })
 }
 

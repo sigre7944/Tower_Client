@@ -98,8 +98,9 @@ export default class TaskCard extends React.PureComponent {
                             completed_data.day_completed_array = day_completed_array
                             completed_data.priority_value_array = priority_value_array
                         }
+                        // data = { ...data, ...completed_data }
 
-                        data = { ...data, ...completed_data }
+                        data[timestamp] = completed_data
                     }
                 }
 
@@ -146,7 +147,6 @@ export default class TaskCard extends React.PureComponent {
                         let completed_data = data[timestamp],
                             { current } = completed_data
 
-
                         current -= 1
 
                         if (current < 0) {
@@ -191,7 +191,8 @@ export default class TaskCard extends React.PureComponent {
                             completed_data.priority_value_array = priority_value_array
                         }
 
-                        data = { ...data, ...completed_data }
+                        data[timestamp] = completed_data
+                        // data = { ...data, ...completed_data }
                     }
                 }
             }
@@ -250,8 +251,8 @@ export default class TaskCard extends React.PureComponent {
                             completed_data.day_completed_array = day_completed_array
                             completed_data.priority_value_array = priority_value_array
                         }
-
-                        data = { ...data, ...completed_data }
+                        data[timestamp] = completed_data
+                        // data = { ...data, ...completed_data }
                     }
                 }
             }
@@ -441,6 +442,7 @@ export default class TaskCard extends React.PureComponent {
                 checked: !prevState.checked
             }))
 
+            // console.log(this.props.)
             this.doUpdateOnCompletedTask(this.props.flag, this.props.type, "inc")
             this.doUpdateOnStats(this.props.flag, this.props.type, "inc")
             this.doUpdateOnChartStats(this.props.flag, "inc")

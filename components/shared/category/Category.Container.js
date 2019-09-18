@@ -11,8 +11,8 @@ const mapStateToProps = (state, ownProps) => {
         if (ownProps.currentAnnotation === "day") {
             action_type = "UPDATE_NEW_DAY_TASK"
             return ({
-                categories: state.categories,
-                task_data: state.currentDayTask
+                categories: state.get("categories"),
+                task_data: state.get("currentDayTask")
             })
         }
 
@@ -20,7 +20,7 @@ const mapStateToProps = (state, ownProps) => {
             action_type = "UPDATE_NEW_WEEK_TASK"
             return ({
                 categories: state.categories,
-                task_data: state.currentWeekTask
+                task_data: state.get("currentWeekTask")
             })
         }
 
@@ -28,13 +28,13 @@ const mapStateToProps = (state, ownProps) => {
             action_type = "UPDATE_NEW_MONTH_TASK"
             return ({
                 categories: state.categories,
-                task_data: state.currentMonthTask
+                task_data: state.get("currentMonthTask")
             })
         }
     }
 
     return ({
-        categories: state.categories,
+        categories: state.get("categories"),
     })
 }
 

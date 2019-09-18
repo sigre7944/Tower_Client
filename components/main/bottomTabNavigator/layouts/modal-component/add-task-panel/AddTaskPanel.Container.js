@@ -10,17 +10,16 @@ import AddTaskPanel from './AddTaskPanel'
 
 
 const mapStateToProps = (state) => ({
-    currentDayTask: state.currentDayTask,
-    currentWeekTask: state.currentWeekTask,
-    currentMonthTask: state.currentMonthTask,
-    categories: state.categories,
-    priorities: state.priorities,
-    day_tasks: state.day_tasks,
-    week_tasks: state.week_tasks,
-    month_tasks: state.month_tasks,
-
-    addTaskDescription: state.addTaskDescription,
-    addTaskTitle: state.addTaskTitle
+    currentDayTask: state.get("currentDayTask"),
+    currentWeekTask: state.get("currentWeekTask"),
+    currentMonthTask: state.get("currentMonthTask"),
+    categories: state.get("categories"),
+    priorities: state.get("priorities"),
+    day_tasks: state.get("day_tasks"),
+    week_tasks: state.get("week_tasks"),
+    month_tasks: state.get("month_tasks"),
+    addTaskDescription: state.get("addTaskDescription"),
+    addTaskTitle: state.get("addTaskTitle")
 })
 
 
