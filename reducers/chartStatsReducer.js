@@ -3,12 +3,10 @@ import { Map, fromJS, isKeyed } from 'immutable'
 export const week_chart_stats = (state = Map(), action) => {
     switch (action.type) {
         case "UPDATE_WEEK_CHART_STATS":
-            return state.set(action.timestamp, { ...action.data })
+            return state.set(action.timestamp, action.data)
 
         case "RETURN_NEW_WEEK_CHART_STATS":
             return action.data
-
-        
 
         default:
             return state
@@ -18,7 +16,7 @@ export const week_chart_stats = (state = Map(), action) => {
 export const month_chart_stats = (state = Map(), action) => {
     switch (action.type) {
         case "UPDATE_MONTH_CHART_STATS":
-            return state.set(action.timestamp, { ...action.data })
+            return state.set(action.timestamp, action.data)
 
         case "RETURN_NEW_MONTH_CHART_STATS":
             return action.data
@@ -31,7 +29,7 @@ export const month_chart_stats = (state = Map(), action) => {
 export const year_chart_stats = (state = Map(), action) => {
     switch (action.type) {
         case "UPDATE_YEAR_CHART_STATS":
-            return state.set(action.timestamp, { ...action.data })
+            return state.set(action.timestamp, action.data)
 
         case "RETURN_NEW_YEAR_CHART_STATS":
             return action.data

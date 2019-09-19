@@ -263,13 +263,16 @@ export default class TaskCard extends React.PureComponent {
             }
         }
 
-        this.props.updateCompletedTask(data)
+        return ({
+            action_type: this.props.action_type,
+            data
+        })
     }
 
     doUpdateOnStats = (flag, type, operation) => {
         let task = this.props.task_data,
             current_date = new Date(),
-            stats = this.props.stats.toMap(),
+            stats = this.props.stats,
             stats_data,
             stats_timestamp = 0,
             stats_action_type = "UPDATE_DAY_STATS"
@@ -340,11 +343,15 @@ export default class TaskCard extends React.PureComponent {
             }
         }
 
-        this.props.updateStats(stats_action_type, stats_timestamp, stats_data)
+        return ({
+            stats_action_type,
+            stats_timestamp,
+            stats_data
+        })
     }
 
     doUpdateOnChartStats = (flag, operation) => {
-        let task = { ... this.props.task_data },
+        let task = this.props.task_data,
             current_date = new Date(),
             week_chart_stats = this.props.week_chart_stats,
             month_chart_stats = this.props.month_chart_stats,
@@ -356,12 +363,13 @@ export default class TaskCard extends React.PureComponent {
             month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime(),
             year_timestamp = current_date.getFullYear()
 
-
         week_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, week_chart_stats, week_timestamp, current_date.getDay(), flag, operation)
+
         month_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, month_chart_stats, month_timestamp, current_date.getDate(), flag, operation)
+
         year_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, year_chart_stats, year_timestamp, current_date.getMonth(), flag, operation)
 
-        let sending_obj = {
+        return ({
             week_action_type: "UPDATE_WEEK_CHART_STATS",
             week_timestamp,
             week_chart_stats_data,
@@ -373,24 +381,24 @@ export default class TaskCard extends React.PureComponent {
             year_action_type: "UPDATE_YEAR_CHART_STATS",
             year_timestamp,
             year_chart_stats_data
-        }
-
-        this.props.updateChartStatsThunk(sending_obj)
+        })
     }
 
-    doCompareAndUpdateOnChartStatsData = (task, chart_stats, timestamp, key, flag, operation) => {
-
-        let chart_stats_data = {},
-            chart_stats_map = Map(chart_stats)
+    doCompareAndUpdateOnChartStatsData = (task, chart_stats_map, timestamp, key, flag, operation) => {
+        let chart_stats_data = {}
 
         if (operation === "inc") {
             if (flag === "uncompleted") {
                 if (chart_stats_map.has(timestamp)) {
-                    chart_stats_data = chart_stats_map.get(timestamp)
+                    chart_stats_data = { ...chart_stats_map.get(timestamp) }
+
                     if (chart_stats_data.hasOwnProperty(key)) {
-                        let { current } = chart_stats_data[key]
+                        let data = { ...chart_stats_data[key] },
+                            current = [...data.current]
                         current[this.priority_order[task.priority.value]] += 1
-                        chart_stats_data[key].current = current
+                        data.current = current
+
+                        chart_stats_data[key] = data
                     }
 
                     else {
@@ -409,17 +417,20 @@ export default class TaskCard extends React.PureComponent {
 
             else {
                 if (chart_stats_map.has(timestamp)) {
-                    chart_stats_data = chart_stats_map.get(timestamp)
+                    chart_stats_data = { ...chart_stats_map.get(timestamp) }
 
                     if (chart_stats_data.hasOwnProperty(key)) {
-                        let { current } = chart_stats_data[key]
+                        let data = { ...chart_stats_data[key] },
+                            current = [...data.current]
                         current[this.priority_order[task.priority.value]] -= 1
 
                         if (current[this.priority_order[task.priority.value]] < 0) {
                             current[this.priority_order[task.priority.value]] = 0
                         }
 
-                        chart_stats_data[key].current = current
+                        data.current = current
+
+                        chart_stats_data[key] = data
                     }
                 }
             }
@@ -428,33 +439,40 @@ export default class TaskCard extends React.PureComponent {
 
         else {
             if (chart_stats_map.has(timestamp)) {
-                chart_stats_data = chart_stats_map.get(timestamp)
+                chart_stats_data = { ...chart_stats_map.get(timestamp) }
 
                 if (chart_stats_data.hasOwnProperty(key)) {
-                    let { current } = chart_stats_data[key]
+                    let data = { ...chart_stats_data[key] },
+                        current = [...data.current]
+
                     current[this.priority_order[task.priority.value]] -= 1
 
                     if (current[this.priority_order[task.priority.value]] < 0) {
                         current[this.priority_order[task.priority.value]] = 0
                     }
-                    chart_stats_data[key].current = current
+                    data.current = current
+
+                    chart_stats_data[key] = data
                 }
             }
         }
-
 
         return chart_stats_data
     }
 
     checkComplete = () => {
         if (this.props.is_chosen_date_today) {
+            let sending_obj = {}
+
             this.setState(prevState => ({
                 checked: !prevState.checked
             }))
-            
-            this.doUpdateOnCompletedTask(this.props.flag, this.props.type, "inc")
-            this.doUpdateOnStats(this.props.flag, this.props.type, "inc")
-            this.doUpdateOnChartStats(this.props.flag, "inc")
+
+            sending_obj.completed_task_data = this.doUpdateOnCompletedTask(this.props.flag, this.props.type, "inc")
+            sending_obj.stats_data = this.doUpdateOnStats(this.props.flag, this.props.type, "inc")
+            sending_obj.chart_data = this.doUpdateOnChartStats(this.props.flag, "inc")
+
+            this.props.updateBulkThunk(sending_obj)
         }
     }
 
@@ -464,9 +482,13 @@ export default class TaskCard extends React.PureComponent {
                 uncomplete_checked: !prevState.uncomplete_checked
             }))
 
-            this.doUpdateOnCompletedTask(this.props.flag, this.props.type, "dec")
-            this.doUpdateOnStats(this.props.flag, this.props.type, "dec")
-            this.doUpdateOnChartStats(this.props.flag, "dec")
+            let sending_obj = {}
+
+            sending_obj.completed_task_data = this.doUpdateOnCompletedTask(this.props.flag, this.props.type, "dec")
+            sending_obj.stats_data = this.doUpdateOnStats(this.props.flag, this.props.type, "dec")
+            sending_obj.chart_data = this.doUpdateOnChartStats(this.props.flag, "dec")
+
+            this.props.updateBulkThunk(sending_obj)
         }
     }
 
