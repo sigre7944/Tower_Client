@@ -2,7 +2,6 @@ import { Map, fromJS } from 'immutable'
 
 export const day_tasks = (state = Map(), action) => {
     switch (action.type) {
-
         case 'ADD_NEW_DAY_TASK':
             return state.set(action.data.id, action.data)
 
@@ -61,9 +60,7 @@ export const month_tasks = (state = Map(), action) => {
 export const completed_day_tasks = (state = Map(), action) => {
     switch (action.type) {
         case 'UPDATE_COMPLETED_DAY_TASK':
-            let n = state.set(action.data.get("id"), action.data)
-
-            return n
+            return state.set(action.data.get("id"), action.data)
 
         case 'DELETE_COMPLETED_DAY_TASK':
             return state.delete(action.id)
@@ -82,7 +79,7 @@ export const completed_day_tasks = (state = Map(), action) => {
 export const completed_week_tasks = (state = Map(), action) => {
     switch (action.type) {
         case 'UPDATE_COMPLETED_WEEK_TASK':
-            return state.set(action.data.id, action.data)
+            return state.set(action.data.get("id"), action.data)
 
         case 'DELETE_COMPLETED_WEEK_TASK':
             return state.delete(action.id)
@@ -101,7 +98,7 @@ export const completed_week_tasks = (state = Map(), action) => {
 export const completed_month_tasks = (state = Map(), action) => {
     switch (action.type) {
         case 'UPDATE_COMPLETED_MONTH_TASK':
-            return state.set(action.data.id, action.data)
+            return state.set(action.data.get("id"), action.data)
 
         case 'DELETE_COMPLETED_MONTH_TASK':
             return state.delete(action.id)
