@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { CheckBox } from 'react-native-elements'
-import { Map } from 'immutable'
+import { Map, fromJS } from 'immutable'
 
 export default class TaskCard extends React.PureComponent {
     priority_order = {
@@ -40,9 +40,9 @@ export default class TaskCard extends React.PureComponent {
     }
 
     doUpdateOnCompletedTask = (flag, type, operation) => {
-        let task = { ... this.props.task_data },
+        let task = this.props.task_data,
             current_date = new Date(),
-            data = {},
+            data,
             currentGoal = 0,
             completed_tasks = Map(this.props.completed_tasks),
             timestamp = 0
@@ -53,21 +53,20 @@ export default class TaskCard extends React.PureComponent {
 
         else if (type === "week") {
             timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
-            day_timestamp_for_day_completed_data = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
         }
 
         else {
             timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
-            day_timestamp_for_day_completed_data = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
         }
 
         if (operation === "inc") {
             if (flag === "uncompleted") {
                 if (completed_tasks.has(task.id)) {
-                    data = completed_tasks.get(task.id)
+                    data = Map(completed_tasks.get(task.id)).toMap().asMutable()
 
-                    if (data.hasOwnProperty(timestamp)) {
-                        let completed_data = data[timestamp],
+                    if (data.has(timestamp)) {
+                        //Maybe can skip
+                        let completed_data = { ...data.get(timestamp) },
                             { current } = completed_data
 
                         current += 1
@@ -98,53 +97,61 @@ export default class TaskCard extends React.PureComponent {
                             completed_data.day_completed_array = day_completed_array
                             completed_data.priority_value_array = priority_value_array
                         }
-                        // data = { ...data, ...completed_data }
 
-                        data[timestamp] = completed_data
+                        data.set(timestamp, completed_data)
                     }
                 }
 
                 else {
-                    data.id = task.id
-                    data.category = task.category
-                    data.priority_value = task.priority.value
-
-                    data[timestamp] = {
-                        current: currentGoal + 1,
-                    }
+                    data = Map().asMutable(),
+                        completed_data = {
+                            current: currentGoal + 1,
+                        }
+                    data.set("id", task.id)
+                    data.set("category", task.category)
+                    data.set("priority_value", task.priority.value)
 
                     if (type === "day") {
-                        data[timestamp].priority_value = task.priority.value
+                        completed_data.priority_value = task.priority.value
                     }
 
                     else if (type === "week") {
-                        let day_in_week = current_date.getDay()
-                        data[timestamp].day_completed_array = [0, 0, 0, 0, 0, 0, 0]
-                        data[timestamp].day_completed_array[day_in_week] += 1
-                        data[timestamp].priority_value_array = [task.priority.value, task.priority.value, task.priority.value, task.priority.value, task.priority.value, task.priority.value, task.priority.value]
+                        let day_completed_array = new Array(7).fill(0),
+                            priority_value_array = new Array(7).fill(task.priority.value),
+                            day_in_week = current_date.getDay()
+
+                        day_completed_array[day_in_week] += 1
+
+                        completed_data = {
+                            day_completed_array,
+                            priority_value_array
+                        }
                     }
 
                     else {
                         let day_in_month = current_date.getDate(),
-                            last_day_in_month = new Date(current_date.getFullYear(), current_date.getMonth() + 1, 0).getDate()
+                            last_day_in_month = new Date(current_date.getFullYear(), current_date.getMonth() + 1, 0).getDate(),
+                            priority_value_array = new Array(last_day_in_month).fill(task.priority.value),
+                            day_completed_array = new Array(last_day_in_month).fill(0)
 
-                        data[timestamp].day_completed_array = new Array(last_day_in_month)
-                        data[timestamp].day_completed_array.fill(0)
-                        data[timestamp].day_completed_array[day_in_month - 1] += 1
+                        day_completed_array[day_in_month - 1] += 1
 
-                        data[timestamp].priority_value_array = new Array(last_day_in_month)
-                        data[timestamp].priority_value_array.fill(task.priority.value)
+                        completed_data = {
+                            day_completed_array,
+                            priority_value_array
+                        }
                     }
 
+                    data.set(timestamp, completed_data)
                 }
             }
 
             else {
                 if (completed_tasks.has(task.id)) {
-                    data = completed_tasks.get(task.id)
+                    data = Map(completed_tasks.get(task.id)).toMap().asMutable()
 
-                    if (data.hasOwnProperty(timestamp)) {
-                        let completed_data = data[timestamp],
+                    if (data.has(timestamp)) {
+                        let completed_data = { ...data.get(timestamp) },
                             { current } = completed_data
 
                         current -= 1
@@ -191,8 +198,7 @@ export default class TaskCard extends React.PureComponent {
                             completed_data.priority_value_array = priority_value_array
                         }
 
-                        data[timestamp] = completed_data
-                        // data = { ...data, ...completed_data }
+                        data.set(timestamp, completed_data)
                     }
                 }
             }
@@ -201,10 +207,10 @@ export default class TaskCard extends React.PureComponent {
         else {
             if (flag === "uncompleted") {
                 if (completed_tasks.has(task.id)) {
-                    data = completed_tasks.get(task.id)
+                    data = Map(completed_tasks.get(task.id)).toMap().asMutable()
 
-                    if (data.hasOwnProperty(timestamp)) {
-                        let completed_data = data[timestamp],
+                    if (data.has(timestamp)) {
+                        let completed_data = { ...data.get(timestamp) },
                             { current } = completed_data
 
 
@@ -251,8 +257,8 @@ export default class TaskCard extends React.PureComponent {
                             completed_data.day_completed_array = day_completed_array
                             completed_data.priority_value_array = priority_value_array
                         }
-                        data[timestamp] = completed_data
-                        // data = { ...data, ...completed_data }
+
+                        data.set(timestamp, completed_data)
                     }
                 }
             }
@@ -442,7 +448,6 @@ export default class TaskCard extends React.PureComponent {
                 checked: !prevState.checked
             }))
 
-            // console.log(this.props.)
             this.doUpdateOnCompletedTask(this.props.flag, this.props.type, "inc")
             this.doUpdateOnStats(this.props.flag, this.props.type, "inc")
             this.doUpdateOnChartStats(this.props.flag, "inc")

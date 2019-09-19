@@ -13,11 +13,10 @@ const mapStateToProps = (state) => ({
     currentDayTask: state.get("currentDayTask"),
     currentWeekTask: state.get("currentWeekTask"),
     currentMonthTask: state.get("currentMonthTask"),
+    
     categories: state.get("categories"),
     priorities: state.get("priorities"),
-    day_tasks: state.get("day_tasks"),
-    week_tasks: state.get("week_tasks"),
-    month_tasks: state.get("month_tasks"),
+
     addTaskDescription: state.get("addTaskDescription"),
     addTaskTitle: state.get("addTaskTitle")
 })
