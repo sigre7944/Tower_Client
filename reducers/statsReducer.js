@@ -1,4 +1,4 @@
-import { Map, fromJS } from 'immutable'
+import { Map } from 'immutable'
 
 export const day_stats = (state = Map(), action) => {
     switch (action.type) {
@@ -6,7 +6,7 @@ export const day_stats = (state = Map(), action) => {
             return state.set(action.timestamp, action.data)
 
         case "RETURN_NEW_DAY_STATS":
-            return action.data
+            return action.data.toMap()
 
         default:
             return state
@@ -19,7 +19,7 @@ export const week_stats = (state = Map(), action) => {
             return state.set(action.timestamp, action.data)
 
         case "RETURN_NEW_WEEK_STATS":
-            return action.data
+            return action.data.toMap()
 
         default:
             return state
@@ -32,7 +32,7 @@ export const month_stats = (state = Map(), action) => {
             return state.set(action.timestamp, action.data)
 
         case "RETURN_NEW_MONTH_STATS":
-            return action.data
+            return action.data.toMap()
 
         default:
             return state

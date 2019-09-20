@@ -10,7 +10,7 @@ import Priority from '../priority/Priority.Container'
 import Repeat from '../repeat/Repeat.Container'
 import Goal from '../goal/Goal.Container'
 
-import { Map, fromJS, isImmutable } from 'immutable'
+import { Map } from 'immutable'
 
 export default class TaskDetailModal extends Component {
 
@@ -1089,8 +1089,6 @@ class EditDetails extends React.PureComponent {
 
             if (type === "day") {
                 completed_timestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
-
-
 
                 if (completed_data.hasOwnProperty(completed_timestamp)) {
                     let current_value = completed_data[completed_timestamp].current,

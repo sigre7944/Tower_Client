@@ -102,13 +102,14 @@ export default class TaskCard extends React.PureComponent {
                 }
 
                 else {
-                    data = Map().asMutable(),
-                        completed_data = {
-                            current: currentGoal + 1,
-                        }
+                    data = Map().asMutable()
                     data.set("id", task.id)
                     data.set("category", task.category)
                     data.set("priority_value", task.priority.value)
+
+                    let completed_data = {
+                        current: currentGoal + 1,
+                    }
 
                     if (type === "day") {
                         completed_data.priority_value = task.priority.value
@@ -121,10 +122,8 @@ export default class TaskCard extends React.PureComponent {
 
                         day_completed_array[day_in_week] += 1
 
-                        completed_data = {
-                            day_completed_array,
-                            priority_value_array
-                        }
+                        completed_data.day_completed_array = day_completed_array
+                        completed_data.priority_value_array = priority_value_array
                     }
 
                     else {
@@ -135,10 +134,8 @@ export default class TaskCard extends React.PureComponent {
 
                         day_completed_array[day_in_month - 1] += 1
 
-                        completed_data = {
-                            day_completed_array,
-                            priority_value_array
-                        }
+                        completed_data.day_completed_array = day_completed_array
+                        completed_data.priority_value_array = priority_value_array
                     }
 
                     data.set(timestamp, completed_data)
@@ -273,7 +270,7 @@ export default class TaskCard extends React.PureComponent {
         let task = this.props.task_data,
             current_date = new Date(),
             stats = this.props.stats,
-            stats_data,
+            stats_data = {},
             stats_timestamp = 0,
             stats_action_type = "UPDATE_DAY_STATS"
 
@@ -306,9 +303,7 @@ export default class TaskCard extends React.PureComponent {
                 else {
                     let current = [0, 0, 0, 0]
                     current[this.priority_order[task.priority.value]] += 1
-                    stats_data = {
-                        current
-                    }
+                    stats_data.current = current
                 }
             }
 

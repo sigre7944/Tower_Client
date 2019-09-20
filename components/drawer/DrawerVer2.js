@@ -99,25 +99,26 @@ export default class Drawer extends React.PureComponent {
         return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
     }
 
-    deleteGoalCurrentValueOnStatsAndCharts = (id, type) => {
+    deleteGoalCurrentValueOnStatsAndCharts = (sending_obj, id, type) => {
         let completed_tasks_map,
             stats_map,
-            week_chart_stats_map = Map(this.props.week_chart_stats).asMutable(),
-            month_chart_stats_map = Map(this.props.month_chart_stats).asMutable(),
-            year_chart_stats_map = Map(this.props.year_chart_stats).asMutable()
+            week_chart_stats_map = sending_obj.week_chart_stats,
+            month_chart_stats_map = sending_obj.month_chart_stats,
+            year_chart_stats_map = sending_obj.year_chart_stats
 
         if (type === "day") {
-            completed_tasks_map = Map(this.props.completed_day_tasks)
-            stats_map = Map(this.props.day_stats).asMutable()
+            completed_tasks_map = this.props.completed_day_tasks
+
+            stats_map = sending_obj.day_stats
 
             if (completed_tasks_map.has(id)) {
                 let completed_task_data = completed_tasks_map.get(id),
-                    { priority_value } = completed_task_data
+                    priority_value = completed_task_data.get("priority_value")
 
-                for (let key in completed_task_data) {
-                    if (completed_task_data.hasOwnProperty(key) && key !== "id" && key !== "category" && key !== "priority_value") {
+                completed_task_data.keySeq().forEach((key) => {
+                    if (key !== "id" && key !== "category" && key !== "priority_value") {
                         let completed_timestamp = parseInt(key),
-                            completed_value = completed_task_data[key].current,
+                            completed_value = completed_task_data.get(key).current,
                             near_monday = this.getMonday(completed_timestamp),
                             day_in_week = new Date(completed_timestamp).getDay(),
                             year = new Date(completed_timestamp).getFullYear(),
@@ -128,11 +129,10 @@ export default class Drawer extends React.PureComponent {
 
 
                         if (stats_map.has(completed_timestamp)) {
-                            let stats_data = stats_map.get(completed_timestamp),
-                                { current } = stats_data
+                            let stats_data = { ...stats_map.get(completed_timestamp) },
+                                current = [...stats_data.current]
 
                             current[this.priority_order[priority_value]] -= completed_value
-
                             if (current[this.priority_order[priority_value]] < 0) {
                                 current[this.priority_order[priority_value]] = 0
                             }
@@ -143,10 +143,11 @@ export default class Drawer extends React.PureComponent {
                         }
 
                         if (week_chart_stats_map.has(week_completed_timestamp)) {
-                            let data = week_chart_stats_map.get(week_completed_timestamp)
+                            let chart_data = { ...week_chart_stats_map.get(week_completed_timestamp) }
 
-                            if (data.hasOwnProperty(day_in_week)) {
-                                let { current } = data[day_in_week]
+                            if (chart_data.hasOwnProperty(day_in_week)) {
+                                let data = { ...chart_data[day_in_week] },
+                                    current = [...data.current]
 
                                 current[this.priority_order[priority_value]] -= completed_value
 
@@ -154,17 +155,20 @@ export default class Drawer extends React.PureComponent {
                                     current[this.priority_order[priority_value]] = 0
                                 }
 
-                                data[day_in_week].current = current
+                                data.current = current
 
-                                week_chart_stats_map.set(week_completed_timestamp, data)
+                                chart_data[day_in_week] = data
+
+                                week_chart_stats_map.set(week_completed_timestamp, chart_data)
                             }
                         }
 
                         if (month_chart_stats_map.has(month_completed_timestamp)) {
-                            let data = month_chart_stats_map.get(month_completed_timestamp)
+                            let chart_data = { ...month_chart_stats_map.get(month_completed_timestamp) }
 
-                            if (data.hasOwnProperty(day)) {
-                                let { current } = data[day]
+                            if (chart_data.hasOwnProperty(day)) {
+                                let data = { ...chart_data[day] },
+                                    current = [...data.current]
 
                                 current[this.priority_order[priority_value]] -= completed_value
 
@@ -172,17 +176,20 @@ export default class Drawer extends React.PureComponent {
                                     current[this.priority_order[priority_value]] = 0
                                 }
 
-                                data[day].current = current
+                                data.current = current
 
-                                month_chart_stats_map.set(month_completed_timestamp, data)
+                                chart_data[day] = data
+
+                                month_chart_stats_map.set(month_completed_timestamp, chart_data)
                             }
                         }
 
                         if (year_chart_stats_map.has(year)) {
-                            let data = year_chart_stats_map.get(year)
+                            let chart_data = { ...year_chart_stats_map.get(year) }
 
-                            if (data.hasOwnProperty(month)) {
-                                let { current } = data[month]
+                            if (chart_data.hasOwnProperty(month)) {
+                                let data = { ...chart_data[month] },
+                                    current = [...data.current]
 
                                 current[this.priority_order[priority_value]] -= completed_value
 
@@ -190,63 +197,47 @@ export default class Drawer extends React.PureComponent {
                                     current[this.priority_order[priority_value]] = 0
                                 }
 
-                                data[month].current = current
+                                data.current = current
 
-                                year_chart_stats_map.set(year, data)
+                                chart_data[month] = data
+
+                                year_chart_stats_map.set(year, chart_data)
                             }
                         }
                     }
-                }
+                })
             }
         }
 
         else if (type === "week") {
-            completed_tasks_map = Map(this.props.completed_week_tasks)
-            stats_map = Map(this.props.week_stats)
+            completed_tasks_map = this.props.completed_week_tasks
+            stats_map = sending_obj.week_stats
 
             if (completed_tasks_map.has(id)) {
                 let completed_task_data = completed_tasks_map.get(id)
 
-                for (let key in completed_task_data) {
-                    if (completed_task_data.hasOwnProperty(key) && key !== "id" && key !== "category" && key !== "priority_value") {
+                completed_task_data.keySeq().forEach((key) => {
+                    if (key !== "id" && key !== "category" && key !== "priority_value") {
                         let completed_timestamp = parseInt(key)
 
-                        if (completed_task_data[key].hasOwnProperty("day_completed_array") && completed_task_data[key].hasOwnProperty("priority_value_array")) {
-                            let { day_completed_array, priority_value_array } = completed_task_data[key]
+                        if (completed_task_data.get(key).hasOwnProperty("day_completed_array") && completed_task_data.get(key).hasOwnProperty("priority_value_array")) {
+                            let { day_completed_array, priority_value_array } = completed_task_data.get(key)
 
                             day_completed_array.forEach((value, index) => {
-                                let i = index
-                                if (i === 0) i = 7
+                                if (value > 0) {
+                                    let i = index
+                                    if (i === 0) i = 7
 
-                                let date = new Date(completed_timestamp + (i - 1) * 86400 * 1000),
-                                    day = date.getDate(),
-                                    month = date.getMonth(),
-                                    year = date.getFullYear(),
-                                    month_timestamp = new Date(year, month).getTime(),
-                                    priority_value = priority_value_array[index]
+                                    let date = new Date(completed_timestamp + (i - 1) * 86400 * 1000),
+                                        day = date.getDate(),
+                                        month = date.getMonth(),
+                                        year = date.getFullYear(),
+                                        month_timestamp = new Date(year, month).getTime(),
+                                        priority_value = priority_value_array[index]
 
-
-                                if (stats_map.has(completed_timestamp)) {
-                                    let stats_data = stats_map.get(completed_timestamp),
-                                        { current } = stats_data
-
-                                    current[this.priority_order[priority_value]] -= value
-
-                                    if (current[this.priority_order[priority_value]] < 0) {
-                                        current[this.priority_order[priority_value]] = 0
-                                    }
-
-                                    stats_data.current = current
-
-                                    stats_map.set(completed_timestamp, stats_data)
-                                }
-
-
-                                if (week_chart_stats_map.has(completed_timestamp)) {
-                                    let data = week_chart_stats_map.get(completed_timestamp)
-
-                                    if (data.hasOwnProperty(index)) {
-                                        let { current } = data[index]
+                                    if (stats_map.has(completed_timestamp)) {
+                                        let stats_data = { ...stats_map.get(completed_timestamp) },
+                                            current = [...stats_data.current]
 
                                         current[this.priority_order[priority_value]] -= value
 
@@ -254,70 +245,96 @@ export default class Drawer extends React.PureComponent {
                                             current[this.priority_order[priority_value]] = 0
                                         }
 
-                                        data[index].current = current
 
-                                        week_chart_stats_map.set(completed_timestamp, data)
+                                        stats_data.current = current
+
+                                        stats_map.set(completed_timestamp, stats_data)
                                     }
-                                }
 
-                                if (month_chart_stats_map.has(month_timestamp)) {
-                                    let data = month_chart_stats_map.get(month_timestamp)
 
-                                    if (data.hasOwnProperty(day)) {
-                                        let { current } = data[day]
+                                    if (week_chart_stats_map.has(completed_timestamp)) {
+                                        let chart_data = { ...week_chart_stats_map.get(completed_timestamp) }
 
-                                        current[this.priority_order[priority_value]] -= value
+                                        if (chart_data.hasOwnProperty(index)) {
+                                            let data = { ...chart_data[index] },
+                                                current = [...data.current]
 
-                                        if (current[this.priority_order[priority_value]] < 0) {
-                                            current[this.priority_order[priority_value]] = 0
+                                            current[this.priority_order[priority_value]] -= value
+
+                                            if (current[this.priority_order[priority_value]] < 0) {
+                                                current[this.priority_order[priority_value]] = 0
+                                            }
+
+                                            data.current = current
+                                            chart_data[index] = data
+
+                                            week_chart_stats_map.set(completed_timestamp, chart_data)
                                         }
-
-                                        data[day].current = current
-
-                                        month_chart_stats_map.set(month_timestamp, data)
                                     }
-                                }
 
-                                if (year_chart_stats_map.has(year)) {
-                                    let data = year_chart_stats_map.get(year)
+                                    if (month_chart_stats_map.has(month_timestamp)) {
+                                        let chart_data = { ...month_chart_stats_map.get(month_timestamp) }
 
-                                    if (data.hasOwnProperty(month)) {
-                                        let { current } = data[month]
+                                        if (chart_data.hasOwnProperty(day)) {
+                                            let data = { ...chart_data[day] },
+                                                current = [...data.current]
 
-                                        current[this.priority_order[priority_value]] -= value
+                                            current[this.priority_order[priority_value]] -= value
 
-                                        if (current[this.priority_order[priority_value]] < 0) {
-                                            current[this.priority_order[priority_value]] = 0
+                                            if (current[this.priority_order[priority_value]] < 0) {
+                                                current[this.priority_order[priority_value]] = 0
+                                            }
+
+                                            data.current = current
+                                            chart_data[day] = data
+
+                                            month_chart_stats_map.set(month_timestamp, chart_data)
                                         }
+                                    }
 
-                                        data[month].current = current
+                                    if (year_chart_stats_map.has(year)) {
+                                        let chart_data = { ...year_chart_stats_map.get(year) }
 
-                                        year_chart_stats_map.set(year, data)
+                                        if (chart_data.hasOwnProperty(month)) {
+                                            let data = { ...chart_data[month] },
+                                                current = [...data.current]
+
+                                            current[this.priority_order[priority_value]] -= value
+
+                                            if (current[this.priority_order[priority_value]] < 0) {
+                                                current[this.priority_order[priority_value]] = 0
+                                            }
+
+                                            data.current = current
+                                            chart_data[month] = data
+
+                                            year_chart_stats_map.set(year, chart_data)
+                                        }
                                     }
                                 }
                             })
                         }
                     }
-                }
+                })
             }
         }
 
         else {
-            completed_tasks_map = Map(this.props.completed_month_tasks)
-            stats_map = Map(this.props.month_stats)
+            completed_tasks_map = this.props.completed_month_tasks
+            stats_map = sending_obj.month_stats
 
             if (completed_tasks_map.has(id)) {
 
                 let completed_task_data = completed_tasks_map.get(id)
 
-                for (let key in completed_task_data) {
-                    if (completed_task_data.hasOwnProperty(key) && key !== "id" && key !== "category" && key !== "priority_value") {
+                completed_task_data.keySeq().forEach((key) => {
+                    if (key !== "id" && key !== "category" && key !== "priority_value") {
                         let completed_timestamp = parseInt(key),
                             completed_month = new Date(completed_timestamp).getMonth(),
                             completed_year = new Date(completed_timestamp).getFullYear()
 
-                        if (completed_task_data[key].hasOwnProperty("day_completed_array") && completed_task_data[key].hasOwnProperty("priority_value_array")) {
-                            let { day_completed_array, priority_value_array } = completed_task_data[key]
+                        if (completed_task_data.get(key).hasOwnProperty("day_completed_array") && completed_task_data.get(key).hasOwnProperty("priority_value_array")) {
+                            let { day_completed_array, priority_value_array } = completed_task_data.get(key)
 
                             day_completed_array.forEach((value, index) => {
                                 let day = index + 1,
@@ -329,8 +346,8 @@ export default class Drawer extends React.PureComponent {
 
 
                                 if (stats_map.has(completed_timestamp)) {
-                                    let stats_data = stats_map.get(completed_timestamp),
-                                        { current } = stats_data
+                                    let stats_data = { ...stats_map.get(completed_timestamp) },
+                                        current = [...stats_data.current]
 
                                     current[this.priority_order[priority_value]] -= value
 
@@ -344,10 +361,11 @@ export default class Drawer extends React.PureComponent {
                                 }
 
                                 if (week_chart_stats_map.has(completed_week_timestamp)) {
-                                    let data = week_chart_stats_map.get(completed_week_timestamp)
+                                    let chart_data = { ...week_chart_stats_map.get(completed_week_timestamp) }
 
-                                    if (data.hasOwnProperty(day_in_week)) {
-                                        let { current } = data[day_in_week]
+                                    if (chart_data.hasOwnProperty(day_in_week)) {
+                                        let data = { ...chart_data[day_in_week] },
+                                            current = [...data.current]
 
                                         current[this.priority_order[priority_value]] -= value
 
@@ -355,18 +373,21 @@ export default class Drawer extends React.PureComponent {
                                             current[this.priority_order[priority_value]] = 0
                                         }
 
-                                        data[day_in_week].current = current
+                                        data.current = current
 
-                                        week_chart_stats_map.set(completed_week_timestamp, data)
+                                        chart_data[day_in_week] = data
+
+                                        week_chart_stats_map.set(completed_week_timestamp, chart_data)
                                     }
                                 }
 
 
                                 if (month_chart_stats_map.has(completed_timestamp)) {
-                                    let data = month_chart_stats_map.get(completed_timestamp)
+                                    let chart_data = { ...month_chart_stats_map.get(completed_timestamp) }
 
-                                    if (data.hasOwnProperty(day)) {
-                                        let { current } = data[day]
+                                    if (chart_data.hasOwnProperty(day)) {
+                                        let data = { ...chart_data[day] },
+                                            current = [...data.current]
 
                                         current[this.priority_order[priority_value]] -= value
 
@@ -374,17 +395,20 @@ export default class Drawer extends React.PureComponent {
                                             current[this.priority_order[priority_value]] = 0
                                         }
 
-                                        data[day].current = current
+                                        data.current = current
 
-                                        month_chart_stats_map.set(completed_timestamp, data)
+                                        chart_data[day] = data
+
+                                        month_chart_stats_map.set(completed_timestamp, chart_data)
                                     }
                                 }
 
                                 if (year_chart_stats_map.has(completed_year)) {
-                                    let data = year_chart_stats_map.get(completed_year)
+                                    let chart_data = { ...year_chart_stats_map.get(completed_year) }
 
-                                    if (data.hasOwnProperty(completed_month)) {
-                                        let { current } = data[completed_month]
+                                    if (chart_data.hasOwnProperty(completed_month)) {
+                                        let data = { ...chart_data[completed_month] },
+                                            current = [...data.current]
 
                                         current[this.priority_order[priority_value]] -= value
 
@@ -392,15 +416,17 @@ export default class Drawer extends React.PureComponent {
                                             current[this.priority_order[priority_value]] = 0
                                         }
 
-                                        data[completed_month].current = current
+                                        data.current = current
 
-                                        year_chart_stats_map.set(completed_year, data)
+                                        chart_data[completed_month] = data
+
+                                        year_chart_stats_map.set(completed_year, chart_data)
                                     }
                                 }
                             })
                         }
                     }
-                }
+                })
             }
         }
 
@@ -413,62 +439,55 @@ export default class Drawer extends React.PureComponent {
     }
 
     deleteCategory = () => {
-        let day_tasks_map = Map(this.props.day_tasks),
-            week_tasks_map = Map(this.props.week_tasks),
-            month_tasks_map = Map(this.props.month_tasks),
+        let day_tasks_map = this.props.day_tasks,
+            week_tasks_map = this.props.week_tasks,
+            month_tasks_map = this.props.month_tasks,
 
-            day_stats = Map(this.props.day_stats),
-            week_stats = Map(this.props.week_stats),
-            month_stats = Map(this.props.month_stats),
+            day_stats = this.props.day_stats.toMap().asMutable(),
+            week_stats = this.props.week_stats.toMap().asMutable(),
+            month_stats = this.props.month_stats.toMap().asMutable(),
 
-            week_chart_stats,
-            month_chart_stats,
-            year_chart_stats,
+            week_chart_stats = this.props.week_chart_stats.toMap().asMutable(),
+            month_chart_stats = this.props.month_chart_stats.toMap().asMutable(),
+            year_chart_stats = this.props.year_chart_stats.toMap().asMutable(),
 
-            sending_obj = {}
+            sending_obj = {
+                category_id: this.chosen_delete_category_key,
+                day_stats,
+                week_stats,
+                month_stats,
+                week_chart_stats,
+                month_chart_stats,
+                year_chart_stats
+            }
 
         day_tasks_map.valueSeq().forEach((task) => {
             if (task.category === this.chosen_delete_category_key) {
-                let result_obj = this.deleteGoalCurrentValueOnStatsAndCharts(task.id, task.type)
-
-                day_stats = result_obj.stats.toMap()
-                week_chart_stats = result_obj.week_chart_stats.toMap()
-                month_chart_stats = result_obj.month_chart_stats.toMap()
-                year_chart_stats = result_obj.year_chart_stats.toMap()
+                this.deleteGoalCurrentValueOnStatsAndCharts(sending_obj, task.id, task.type)
             }
         })
 
         week_tasks_map.valueSeq().forEach((task) => {
             if (task.category === this.chosen_delete_category_key) {
-                let result_obj = this.deleteGoalCurrentValueOnStatsAndCharts(task.id, task.type)
-
-                week_stats = result_obj.stats.toMap()
-                week_chart_stats = result_obj.week_chart_stats.toMap()
-                month_chart_stats = result_obj.month_chart_stats.toMap()
-                year_chart_stats = result_obj.year_chart_stats.toMap()
+                this.deleteGoalCurrentValueOnStatsAndCharts(sending_obj, task.id, task.type)
             }
         })
 
         month_tasks_map.valueSeq().forEach((task) => {
             if (task.category === this.chosen_delete_category_key) {
-                let result_obj = this.deleteGoalCurrentValueOnStatsAndCharts(task.id, task.type)
-
-                month_stats = result_obj.stats.toMap()
-                week_chart_stats = result_obj.week_chart_stats.toMap()
-                month_chart_stats = result_obj.month_chart_stats.toMap()
-                year_chart_stats = result_obj.year_chart_stats.toMap()
+                this.deleteGoalCurrentValueOnStatsAndCharts(sending_obj, task.id, task.type)
             }
         })
 
-        sending_obj = {
-            category_id: this.chosen_delete_category_key,
-            day_stats,
-            week_stats,
-            month_stats,
-            week_chart_stats,
-            month_chart_stats,
-            year_chart_stats
-        }
+        // sending_obj = {
+        //     category_id: this.chosen_delete_category_key,
+        //     day_stats,
+        //     week_stats,
+        //     month_stats,
+        //     week_chart_stats,
+        //     month_chart_stats,
+        //     year_chart_stats
+        // }
 
         this.props.deleteAndAffectThePast(sending_obj)
 

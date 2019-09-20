@@ -427,9 +427,6 @@ class Day extends React.PureComponent {
     if (this.props.day_stats !== prevProps.day_stats || this.props.data !== prevProps.data) {
       this.updateDayPoints()
     }
-
-    if(this.props.day_stats !== prevProps.day_stats){
-    }
   }
 
   render() {

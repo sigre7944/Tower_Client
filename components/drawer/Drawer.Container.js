@@ -10,7 +10,7 @@ const mapStateToProps = (state, ownProps) => {
 
         day_tasks: state.get("day_tasks"),
         week_tasks: state.get("week_tasks"),
-        month_tasks: state.get("day_tasks"),
+        month_tasks: state.get("month_tasks"),
 
         completed_day_tasks: state.get("completed_day_tasks"),
         completed_week_tasks: state.get("completed_week_tasks"),

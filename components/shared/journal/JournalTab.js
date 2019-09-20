@@ -125,10 +125,6 @@ export default class JournalTab extends React.PureComponent {
                 }))
             }
         }
-
-        // if(this.props.completed_tasks !== prevProps.completed_tasks){
-        //     console.log(this.props.completed_tasks)
-        // }
     }
 
     render() {
@@ -354,7 +350,8 @@ class TaskCardHolder extends React.PureComponent {
                     chosen_week_timestamp = new Date(year, month, this.getMonday(chosen_week_date).getDate()).getTime(),
                     current_goal_value = 0
 
-                if (hasIn(completed_tasks, [id, chosen_week_timestamp]) && parseInt(getIn(completed_tasks, [id, chosen_week_timestamp, "current"], 0)) < parseInt(goal.max)) {
+                if (!hasIn(completed_tasks, [id, chosen_week_timestamp]) ||
+                    hasIn(completed_tasks, [id, chosen_week_timestamp]) && parseInt(getIn(completed_tasks, [id, chosen_week_timestamp, "current"], 0)) < parseInt(goal.max)) {
                     current_goal_value = getIn(completed_tasks, [id, chosen_week_timestamp, "current"], 0)
 
 
@@ -404,7 +401,8 @@ class TaskCardHolder extends React.PureComponent {
                     chosen_month_timestamp = new Date(year, month).getTime(),
                     current_goal_value = 0
 
-                if (hasIn(completed_tasks, [id, chosen_month_timestamp]) && parseInt(getIn(completed_tasks, [id, chosen_month_timestamp, "current"], 0)) < parseInt(goal.max)) {
+                if (!hasIn(completed_tasks, [id, chosen_month_timestamp]) ||
+                    hasIn(completed_tasks, [id, chosen_month_timestamp]) && parseInt(getIn(completed_tasks, [id, chosen_month_timestamp, "current"], 0)) < parseInt(goal.max)) {
                     current_goal_value = getIn(completed_tasks, [id, chosen_month_timestamp, "current"], 0)
 
 
@@ -447,7 +445,7 @@ class TaskCardHolder extends React.PureComponent {
 
                     if (hasIn(completed_task, [chosen_day_timestamp, "current"]) && parseInt(getIn(completed_task, [chosen_day_timestamp, "current"], 0)) >= parseInt(goal.max)) {
                         current_goal_value = getIn(completed_task, [chosen_day_timestamp, "current"], 0)
-                        
+
                         return { action_type: "UPDATE_COMPLETED_DAY_TASK", task, current_goal_value, title, goal }
                     }
                 }
@@ -457,7 +455,7 @@ class TaskCardHolder extends React.PureComponent {
                         chosen_week_date = new Date(year, month, day),
                         chosen_week_timestamp = new Date(year, month, this.getMonday(chosen_week_date).getDate()).getTime()
 
-                    if (hasIn(completed_task, [chosen_week_timestamp, "current"]) && parseInt(getIn(completed_tasks, [chosen_week_timestamp, "current"], 0)) >= parseInt(goal.max)) {
+                    if (hasIn(completed_task, [chosen_week_timestamp, "current"]) && parseInt(getIn(completed_task, [chosen_week_timestamp, "current"], 0)) >= parseInt(goal.max)) {
                         current_goal_value = getIn(completed_task, [chosen_week_timestamp, "current"], 0)
 
                         return { action_type: "UPDATE_COMPLETED_WEEK_TASK", task, current_goal_value, title, goal }
