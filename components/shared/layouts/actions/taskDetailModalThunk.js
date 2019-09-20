@@ -46,9 +46,8 @@ export const editThunk = (action_type, {
     edit_task,
     should_update_category,
     update_category_data,
-    stats_action_type,
     should_update_from_now,
-    stats_data,
+    stats_data = {},
     week_chart_stats_data,
     month_chart_stats_data,
     year_chart_stats_data,
@@ -66,7 +65,7 @@ export const editThunk = (action_type, {
         ]]
     }
 
-    if (stats_action_type.length > 0 || stats_action_type !== "") {
+    if (stats_data.hasOwnProperty("action_type") && stats_data["action_type"] !== "" && stats_data["action_type"].length > 0) {
         if (should_update_from_now === true) {
             action_array = [...action_array, ...[
                 updateStats(stats_data.action_type, stats_data.timestamp, stats_data.data),

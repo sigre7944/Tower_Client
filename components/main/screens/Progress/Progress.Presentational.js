@@ -32,7 +32,15 @@ export default class Progress extends React.PureComponent {
 
   componentDidUpdate(prevProps, prevState){
     // if(this.props.day_stats !== prevProps.day_stats){
-    //   console.log(this.props.day_stats)
+    //   console.log("\nday_stats",this.props.day_stats)
+    // }
+
+    // if(this.props.week_stats !== prevProps.week_stats){
+    //   console.log("\week_stats",this.props.week_stats)
+    // }
+
+    // if(this.props.month_stats !== prevProps.month_stats){
+    //   console.log("\month_stats",this.props.month_stats)
     // }
   }
 

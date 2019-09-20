@@ -1106,11 +1106,7 @@ class EditDetails extends React.PureComponent {
             month_chart_stats_map = this.props.month_chart_stats.asMutable(),
             year_chart_stats_map = this.props.year_chart_stats.asMutable(),
             completed_timestamp,
-
-            return_stats_data,
-            return_week_chart_stats_data,
-            return_month_chart_stats_data,
-            return_year_chart_stats_data
+            return_obj = {}
 
 
         if (completed_tasks_map.has(task_id)) {
@@ -1143,7 +1139,7 @@ class EditDetails extends React.PureComponent {
 
                         stats_data.current = current
 
-                        return_stats_data = {
+                        return_obj.return_stats_data = {
                             data: stats_data,
                             timestamp: completed_timestamp
                         }
@@ -1167,7 +1163,7 @@ class EditDetails extends React.PureComponent {
 
                             chart_data[day_in_week] = data
 
-                            return_week_chart_stats_data = {
+                            return_obj.return_week_chart_stats_data = {
                                 timestamp: week_completed_timestamp,
                                 data: chart_data
                             }
@@ -1192,7 +1188,7 @@ class EditDetails extends React.PureComponent {
 
                             chart_data[day_in_month] = data
 
-                            return_month_chart_stats_data = {
+                            return_obj.return_month_chart_stats_data = {
                                 timestamp: month_completed_timestamp,
                                 data: chart_data
                             }
@@ -1217,7 +1213,7 @@ class EditDetails extends React.PureComponent {
 
                             chart_data[completed_month] = data
 
-                            return_year_chart_stats_data = {
+                            return_obj.return_year_chart_stats_data = {
                                 timestamp: completed_year,
                                 data: chart_data
                             }
@@ -1254,7 +1250,7 @@ class EditDetails extends React.PureComponent {
 
                             stats_data.current = current
 
-                            return_stats_data = {
+                            return_obj.return_stats_data = {
                                 data: stats_data,
                                 timestamp: completed_timestamp
                             }
@@ -1278,7 +1274,7 @@ class EditDetails extends React.PureComponent {
 
                                 chart_data[day_in_week] = data
 
-                                return_week_chart_stats_data = {
+                                return_obj.return_week_chart_stats_data = {
                                     data: chart_data,
                                     timestamp: completed_timestamp
                                 }
@@ -1303,7 +1299,7 @@ class EditDetails extends React.PureComponent {
 
                                 chart_data[day_in_month] = data
 
-                                return_month_chart_stats_data = {
+                                return_obj.return_month_chart_stats_data = {
                                     data: chart_data,
                                     timestamp: month_completed_timestamp
                                 }
@@ -1328,7 +1324,7 @@ class EditDetails extends React.PureComponent {
 
                                 chart_data[completed_month] = data
 
-                                return_year_chart_stats_data = {
+                                return_obj.return_year_chart_stats_data = {
                                     data: chart_data,
                                     timestamp: completed_year
                                 }
@@ -1366,7 +1362,7 @@ class EditDetails extends React.PureComponent {
 
                             stats_data.current = current
 
-                            return_stats_data = {
+                            return_obj.return_stats_data = {
                                 data: stats_data,
                                 timestamp: completed_timestamp
                             }
@@ -1390,7 +1386,7 @@ class EditDetails extends React.PureComponent {
 
                                 chart_data[day_in_week] = data
 
-                                return_week_chart_stats_data = {
+                                return_obj.return_week_chart_stats_data = {
                                     data: chart_data,
                                     timestamp: week_completed_timestamp
                                 }
@@ -1415,7 +1411,7 @@ class EditDetails extends React.PureComponent {
 
                                 chart_data[day_in_month] = data
 
-                                return_month_chart_stats_data = {
+                                return_obj.return_month_chart_stats_data = {
                                     data: chart_data,
                                     timestamp: completed_timestamp
                                 }
@@ -1440,7 +1436,7 @@ class EditDetails extends React.PureComponent {
 
                                 chart_data[completed_month] = data
 
-                                return_year_chart_stats_data = {
+                                return_obj.return_year_chart_stats_data = {
                                     data: chart_data,
                                     timestamp: completed_year
                                 }
@@ -1451,18 +1447,13 @@ class EditDetails extends React.PureComponent {
             }
         }
 
-        return ({
-            return_stats_data,
-            return_week_chart_stats_data,
-            return_month_chart_stats_data,
-            return_year_chart_stats_data
-        })
+        return return_obj
     }
 
     doChangesOnCompletedTaskFromToday = (task_id, type, new_priority_value, date) => {
         let completed_tasks_map = this.props.completed_tasks,
             completed_timestamp,
-            completed_data
+            completed_data = {}
 
         if (type === "day") {
             completed_timestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
@@ -1475,7 +1466,8 @@ class EditDetails extends React.PureComponent {
                 if (completed_data.has(completed_timestamp)) {
                     let data = { ...completed_data.get(completed_timestamp) }
                     data.priority_value = new_priority_value
-                    completed_tasks_map.set(task_id, data)
+
+                    completed_data.set(completed_timestamp, data)
                 }
             }
         }
@@ -1507,7 +1499,7 @@ class EditDetails extends React.PureComponent {
 
                     data.priority_value_array = priority_value_array
 
-                    completed_tasks_map.set(task_id, data)
+                    completed_data.set(completed_timestamp, data)
 
                 }
             }
@@ -1536,7 +1528,7 @@ class EditDetails extends React.PureComponent {
 
                     data.priority_value_array = priority_value_array
 
-                    completed_tasks_map.set(task_id, data)
+                    completed_tasks_map.set(completed_timestamp, data)
                 }
             }
         }
@@ -1589,7 +1581,6 @@ class EditDetails extends React.PureComponent {
                 edit_task: this.edit_task,
                 should_update_category,
                 update_category_data,
-                stats_action_type,
             },
             date = new Date()
 
@@ -1641,8 +1632,6 @@ class EditDetails extends React.PureComponent {
                     completed_task_action_type = "RETURN_NEW_COMPLETED_MONTH_TASKS"
                 }
 
-                sending_obj.stats_action_type = stats_action_type
-
                 let result_obj = this.updateOnStatsAndChartsDataAllTime(this.edit_task.id, this.edit_task.type, new_priority_id),
                     completed_tasks = this.doChangesOnCompletedTaskAllTime(this.edit_task.id, this.edit_task.type, new_priority_id)
 
@@ -1687,24 +1676,24 @@ class EditDetails extends React.PureComponent {
                     completed_task_action_type = "UPDATE_COMPLETED_MONTH_TASK"
                 }
 
-                sending_obj.stats_action_type = stats_action_type
-
                 let result_obj = this.updateOnStatsAndChartDataFromToday(this.edit_task.id, this.edit_task.type, new_priority_id, date),
                     completed_tasks = this.doChangesOnCompletedTaskFromToday(this.edit_task.id, this.edit_task.type, new_priority_id, date)
 
-                sending_obj.stats_data = {
-                    action_type: stats_action_type,
-                    timestamp: result_obj.return_stats_data.timestamp,
-                    data: result_obj.return_stats_data.data
-                }
+                if (Object.keys(result_obj).length > 0 && Map.isMap(completed_tasks)) {
+                    sending_obj.stats_data = {
+                        action_type: stats_action_type,
+                        timestamp: result_obj.return_stats_data.timestamp,
+                        data: result_obj.return_stats_data.data
+                    }
 
-                sending_obj.week_chart_stats_data = result_obj.return_week_chart_stats_data
-                sending_obj.month_chart_stats_data = result_obj.return_month_chart_stats_data
-                sending_obj.year_chart_stats_data = result_obj.return_year_chart_stats_data
+                    sending_obj.week_chart_stats_data = result_obj.return_week_chart_stats_data
+                    sending_obj.month_chart_stats_data = result_obj.return_month_chart_stats_data
+                    sending_obj.year_chart_stats_data = result_obj.return_year_chart_stats_data
 
-                sending_obj.completed_tasks_data = {
-                    action_type: completed_task_action_type,
-                    data: completed_tasks
+                    sending_obj.completed_tasks_data = {
+                        action_type: completed_task_action_type,
+                        data: completed_tasks
+                    }
                 }
             }
         }

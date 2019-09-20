@@ -127,6 +127,10 @@ export default class JournalTab extends React.PureComponent {
                 }))
             }
         }
+
+        // if(this.props.completed_tasks !== prevProps.completed_tasks){
+        //     console.log("\ncompleted_tasks", this.props.completed_tasks)
+        // }
     }
 
     render() {
