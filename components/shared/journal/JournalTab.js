@@ -104,6 +104,8 @@ export default class JournalTab extends React.PureComponent {
     }
 
     closeModal = () => {
+        this.task_data = {}
+
         this.setState({ isModalOpened: false })
     }
 

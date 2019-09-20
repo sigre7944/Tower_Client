@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { CheckBox } from 'react-native-elements'
-import { Map, fromJS } from 'immutable'
+import { Map } from 'immutable'
 
 export default class TaskCard extends React.PureComponent {
     priority_order = {

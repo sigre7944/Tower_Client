@@ -443,13 +443,13 @@ export default class Drawer extends React.PureComponent {
             week_tasks_map = this.props.week_tasks,
             month_tasks_map = this.props.month_tasks,
 
-            day_stats = this.props.day_stats.toMap().asMutable(),
-            week_stats = this.props.week_stats.toMap().asMutable(),
-            month_stats = this.props.month_stats.toMap().asMutable(),
+            day_stats = this.props.day_stats.asMutable(),
+            week_stats = this.props.week_stats.asMutable(),
+            month_stats = this.props.month_stats.asMutable(),
 
-            week_chart_stats = this.props.week_chart_stats.toMap().asMutable(),
-            month_chart_stats = this.props.month_chart_stats.toMap().asMutable(),
-            year_chart_stats = this.props.year_chart_stats.toMap().asMutable(),
+            week_chart_stats = this.props.week_chart_stats.asMutable(),
+            month_chart_stats = this.props.month_chart_stats.asMutable(),
+            year_chart_stats = this.props.year_chart_stats.asMutable(),
 
             sending_obj = {
                 category_id: this.chosen_delete_category_key,
@@ -478,16 +478,6 @@ export default class Drawer extends React.PureComponent {
                 this.deleteGoalCurrentValueOnStatsAndCharts(sending_obj, task.id, task.type)
             }
         })
-
-        // sending_obj = {
-        //     category_id: this.chosen_delete_category_key,
-        //     day_stats,
-        //     week_stats,
-        //     month_stats,
-        //     week_chart_stats,
-        //     month_chart_stats,
-        //     year_chart_stats
-        // }
 
         this.props.deleteAndAffectThePast(sending_obj)
 

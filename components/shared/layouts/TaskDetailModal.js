@@ -767,19 +767,19 @@ class EditDetails extends React.PureComponent {
     }
 
     updateOnStatsAndChartsDataAllTime = (task_id, type, new_priority_value) => {
-        let completed_tasks_map = Map(this.props.completed_tasks).asMutable(),
-            stats_map = Map(this.props.stats).asMutable(),
-            week_chart_stats_map = Map(this.props.week_chart_stats).asMutable(),
-            month_chart_stats_map = Map(this.props.month_chart_stats).asMutable(),
-            year_chart_stats_map = Map(this.props.year_chart_stats).asMutable()
+        let completed_tasks_map = this.props.completed_tasks.asMutable(),
+            stats_map = this.props.stats.asMutable(),
+            week_chart_stats_map = this.props.week_chart_stats.asMutable(),
+            month_chart_stats_map = this.props.month_chart_stats.asMutable(),
+            year_chart_stats_map = this.props.year_chart_stats.asMutable()
 
         if (completed_tasks_map.has(task_id)) {
             let completed_task_data = completed_tasks_map.get(task_id)
 
-            for (let key in completed_task_data) {
-                if (completed_task_data.hasOwnProperty(key) && key !== "id" && key !== "category" && key !== "priority_value") {
+            completed_task_data.keySeq().forEach((key) => {
+                if (key !== "id" && key !== "category" && key !== "priority_value") {
                     let completed_timestamp = parseInt(key),
-                        completed_data = completed_task_data[key]
+                        completed_data = completed_task_data.get(key)
 
                     if (type === "day") {
                         let current_value = completed_data.current,
@@ -793,8 +793,8 @@ class EditDetails extends React.PureComponent {
                             month_completed_timestamp = new Date(year, month).getTime()
 
                         if (stats_map.has(completed_timestamp)) {
-                            let data = stats_map.get(completed_timestamp),
-                                { current } = data
+                            let data = { ...stats_map.get(completed_timestamp) },
+                                current = [...data.current]
 
                             current[this.priority_order[new_priority_value]] += current_value
 
@@ -810,10 +810,11 @@ class EditDetails extends React.PureComponent {
                         }
 
                         if (week_chart_stats_map.has(week_completed_timestamp)) {
-                            let data = week_chart_stats_map.get(week_completed_timestamp)
+                            let chart_data = { ...week_chart_stats_map.get(week_completed_timestamp) }
 
-                            if (data.hasOwnProperty(day_in_week)) {
-                                let { current } = data[day_in_week]
+                            if (chart_data.hasOwnProperty(day_in_week)) {
+                                let data = { ...chart_data[day_in_week] },
+                                    current = [...data.current]
 
                                 current[this.priority_order[new_priority_value]] += current_value
 
@@ -823,17 +824,20 @@ class EditDetails extends React.PureComponent {
                                     current[this.priority_order[old_priority_value]] = 0
                                 }
 
-                                data[day_in_week].current = current
+                                data.current = current
 
-                                week_chart_stats_map.set(week_completed_timestamp, data)
+                                chart_data[day_in_week] = data
+
+                                week_chart_stats_map.set(week_completed_timestamp, chart_data)
                             }
                         }
 
                         if (month_chart_stats_map.has(month_completed_timestamp)) {
-                            let data = month_chart_stats_map.get(month_completed_timestamp)
+                            let chart_data = { ...month_chart_stats_map.get(month_completed_timestamp) }
 
-                            if (data.hasOwnProperty(day)) {
-                                let { current } = data[day]
+                            if (chart_data.hasOwnProperty(day)) {
+                                let data = { ...chart_data[day] },
+                                    current = [...data.current]
 
                                 current[this.priority_order[new_priority_value]] += current_value
 
@@ -843,17 +847,20 @@ class EditDetails extends React.PureComponent {
                                     current[this.priority_order[old_priority_value]] = 0
                                 }
 
-                                data[day].current = current
+                                data.current = current
 
-                                month_chart_stats_map.set(month_completed_timestamp, data)
+                                chart_data[day] = data
+
+                                month_chart_stats_map.set(month_completed_timestamp, chart_data)
                             }
                         }
 
                         if (year_chart_stats_map.has(year)) {
-                            let data = year_chart_stats_map.get(year)
+                            let chart_data = { ...year_chart_stats_map.get(year) }
 
-                            if (data.hasOwnProperty(month)) {
-                                let { current } = data[month]
+                            if (chart_data.hasOwnProperty(month)) {
+                                let data = { ...chart_data[month] },
+                                    current = [...data.current]
 
                                 current[this.priority_order[new_priority_value]] += current_value
 
@@ -863,16 +870,18 @@ class EditDetails extends React.PureComponent {
                                     current[this.priority_order[old_priority_value]] = 0
                                 }
 
-                                data[month].current = current
+                                data.current = current
 
-                                year_chart_stats_map.set(year, data)
+                                chart_data[month] = data
+
+                                year_chart_stats_map.set(year, chart_data)
                             }
                         }
                     }
 
                     else if (type === "week") {
-                        if (completed_task_data[key].hasOwnProperty("day_completed_array") && completed_task_data[key].hasOwnProperty("priority_value_array")) {
-                            let { day_completed_array, priority_value_array } = completed_task_data[key]
+                        if (completed_task_data.get(key).hasOwnProperty("day_completed_array") && completed_task_data.get(key).hasOwnProperty("priority_value_array")) {
+                            let { day_completed_array, priority_value_array } = completed_task_data.get(key)
 
                             day_completed_array.forEach((value, index) => {
                                 let i = index
@@ -903,10 +912,11 @@ class EditDetails extends React.PureComponent {
                                 }
 
                                 if (week_chart_stats_map.has(completed_timestamp)) {
-                                    let data = week_chart_stats_map.get(completed_timestamp)
+                                    let chart_data = { ...week_chart_stats_map.get(completed_timestamp) }
 
-                                    if (data.hasOwnProperty(index)) {
-                                        let { current } = data[index]
+                                    if (chart_data.hasOwnProperty(index)) {
+                                        let data = { ...chart_data[index] },
+                                            current = [...data.current]
 
                                         current[this.priority_order[new_priority_value]] += value
 
@@ -916,17 +926,19 @@ class EditDetails extends React.PureComponent {
                                             current[this.priority_order[old_priority_value]] = 0
                                         }
 
-                                        data[index].current = current
+                                        data.current = current
+                                        chart_data[index] = data
 
-                                        week_chart_stats_map.set(completed_timestamp, data)
+                                        week_chart_stats_map.set(completed_timestamp, chart_data)
                                     }
                                 }
 
                                 if (month_chart_stats_map.has(month_timestamp)) {
-                                    let data = month_chart_stats_map.get(month_timestamp)
+                                    let chart_data = { ...month_chart_stats_map.get(month_timestamp) }
 
-                                    if (data.hasOwnProperty(day)) {
-                                        let { current } = data[day]
+                                    if (chart_data.hasOwnProperty(day)) {
+                                        let data = { ...chart_data[day] },
+                                            current = [...data.current]
 
                                         current[this.priority_order[new_priority_value]] += value
 
@@ -936,17 +948,19 @@ class EditDetails extends React.PureComponent {
                                             current[this.priority_order[old_priority_value]] = 0
                                         }
 
-                                        data[day].current = current
+                                        data.current = current
+                                        chart_data[day] = data
 
-                                        month_chart_stats_map.set(month_timestamp, data)
+                                        month_chart_stats_map.set(month_timestamp, chart_data)
                                     }
                                 }
 
                                 if (year_chart_stats_map.has(year)) {
-                                    let data = year_chart_stats_map.get(year)
+                                    let chart_data = { ...year_chart_stats_map.get(year) }
 
-                                    if (data.hasOwnProperty(month)) {
-                                        let { current } = data[month]
+                                    if (chart_data.hasOwnProperty(month)) {
+                                        let data = { ...chart_data[month] },
+                                            current = [...data.current]
 
                                         current[this.priority_order[new_priority_value]] += value
 
@@ -956,9 +970,10 @@ class EditDetails extends React.PureComponent {
                                             current[this.priority_order[old_priority_value]] = 0
                                         }
 
-                                        data[month].current = current
+                                        data.current = current
+                                        chart_data[month] = data
 
-                                        year_chart_stats_map.set(year, data)
+                                        year_chart_stats_map.set(year, chart_data)
                                     }
                                 }
                             })
@@ -983,8 +998,8 @@ class EditDetails extends React.PureComponent {
 
 
                                     if (stats_map.has(completed_timestamp)) {
-                                        let stats_data = stats_map.get(completed_timestamp),
-                                            { current } = stats_data
+                                        let stats_data = { ...stats_map.get(completed_timestamp) },
+                                            current = [...stats_data.current]
 
                                         current[this.priority_order[new_priority_value]] += value
 
@@ -1000,10 +1015,11 @@ class EditDetails extends React.PureComponent {
                                     }
 
                                     if (week_chart_stats_map.has(completed_week_timestamp)) {
-                                        let data = week_chart_stats_map.get(completed_week_timestamp)
+                                        let chart_data = { ...week_chart_stats_map.get(completed_week_timestamp) }
 
-                                        if (data.hasOwnProperty(day_in_week)) {
-                                            let { current } = data[day_in_week]
+                                        if (chart_data.hasOwnProperty(day_in_week)) {
+                                            let data = { ...chart_data[day_in_week] },
+                                                current = [...data.current]
 
                                             current[this.priority_order[new_priority_value]] += value
 
@@ -1013,18 +1029,21 @@ class EditDetails extends React.PureComponent {
                                                 current[this.priority_order[old_priority_value]] = 0
                                             }
 
-                                            data[day_in_week].current = current
+                                            data.current = current
 
-                                            week_chart_stats_map.set(completed_week_timestamp, data)
+                                            chart_data[day_in_week] = data
+
+                                            week_chart_stats_map.set(completed_week_timestamp, chart_data)
                                         }
                                     }
 
 
                                     if (month_chart_stats_map.has(completed_timestamp)) {
-                                        let data = month_chart_stats_map.get(completed_timestamp)
+                                        let chart_data = { ...month_chart_stats_map.get(completed_timestamp) }
 
-                                        if (data.hasOwnProperty(day)) {
-                                            let { current } = data[day]
+                                        if (chart_data.hasOwnProperty(day)) {
+                                            let data = { ...chart_data[day] },
+                                                current = [...data.current]
 
                                             current[this.priority_order[new_priority_value]] += value
 
@@ -1034,17 +1053,20 @@ class EditDetails extends React.PureComponent {
                                                 current[this.priority_order[old_priority_value]] = 0
                                             }
 
-                                            data[day].current = current
+                                            data.current = current
 
-                                            month_chart_stats_map.set(completed_timestamp, data)
+                                            chart_data[day] = data
+
+                                            month_chart_stats_map.set(completed_timestamp, chart_data)
                                         }
                                     }
 
                                     if (year_chart_stats_map.has(completed_year)) {
-                                        let data = year_chart_stats_map.get(completed_year)
+                                        let chart_data = { ...year_chart_stats_map.get(completed_year) }
 
-                                        if (data.hasOwnProperty(completed_month)) {
-                                            let { current } = data[completed_month]
+                                        if (chart_data.hasOwnProperty(completed_month)) {
+                                            let data = { ...chart_data[completed_month] },
+                                                current = [...data.current]
 
                                             current[this.priority_order[new_priority_value]] += value
 
@@ -1054,9 +1076,11 @@ class EditDetails extends React.PureComponent {
                                                 current[this.priority_order[old_priority_value]] = 0
                                             }
 
-                                            data[completed_month].current = current
+                                            data.current = current
 
-                                            year_chart_stats_map.set(completed_year, data)
+                                            chart_data[completed_month] = data
+
+                                            year_chart_stats_map.set(completed_year, chart_data)
                                         }
                                     }
                                 })
@@ -1064,7 +1088,7 @@ class EditDetails extends React.PureComponent {
                         }
                     }
                 }
-            }
+            })
         }
 
         return ({
@@ -1076,23 +1100,28 @@ class EditDetails extends React.PureComponent {
     }
 
     updateOnStatsAndChartDataFromToday = (task_id, type, new_priority_value, date) => {
-        let completed_tasks_map = Map(this.props.completed_tasks).asMutable(),
-            stats_map = Map(this.props.stats).asMutable(),
-            week_chart_stats_map = Map(this.props.week_chart_stats).asMutable(),
-            month_chart_stats_map = Map(this.props.month_chart_stats).asMutable(),
-            year_chart_stats_map = Map(this.props.year_chart_stats).asMutable(),
-            completed_timestamp
+        let completed_tasks_map = this.props.completed_tasks,
+            stats_map = this.props.stats.asMutable(),
+            week_chart_stats_map = this.props.week_chart_stats.asMutable(),
+            month_chart_stats_map = this.props.month_chart_stats.asMutable(),
+            year_chart_stats_map = this.props.year_chart_stats.asMutable(),
+            completed_timestamp,
+
+            return_stats_data,
+            return_week_chart_stats_data,
+            return_month_chart_stats_data,
+            return_year_chart_stats_data
 
 
         if (completed_tasks_map.has(task_id)) {
-            let completed_data = completed_tasks_map.get(task_id)
+            let completed_task = completed_tasks_map.get(task_id)
 
             if (type === "day") {
                 completed_timestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
 
-                if (completed_data.hasOwnProperty(completed_timestamp)) {
-                    let current_value = completed_data[completed_timestamp].current,
-                        old_priority_value = completed_data[completed_timestamp].priority_value,
+                if (completed_task.has(completed_timestamp)) {
+                    let current_value = completed_task.get(completed_timestamp).current,
+                        old_priority_value = completed_task.get(completed_timestamp).priority_value,
                         near_monday = this.getMonday(date),
                         week_completed_timestamp = new Date(near_monday.getFullYear(), near_monday.getMonth(), near_monday.getDate()).getTime(),
                         day_in_week = date.getDay(),
@@ -1102,11 +1131,10 @@ class EditDetails extends React.PureComponent {
                         completed_month = date.getMonth()
 
                     if (stats_map.has(completed_timestamp)) {
-                        let stats_data = stats_map.get(completed_timestamp),
-                            { current } = stats_data
+                        let stats_data = { ...stats_map.get(completed_timestamp) },
+                            current = [...stats_data.current]
 
                         current[this.priority_order[new_priority_value]] += current_value
-
                         current[this.priority_order[old_priority_value]] -= current_value
 
                         if (current[this.priority_order[old_priority_value]] < 0) {
@@ -1115,13 +1143,18 @@ class EditDetails extends React.PureComponent {
 
                         stats_data.current = current
 
-                        stats_map.set(completed_timestamp, stats_data)
+                        return_stats_data = {
+                            data: stats_data,
+                            timestamp: completed_timestamp
+                        }
                     }
 
                     if (week_chart_stats_map.has(week_completed_timestamp)) {
-                        let data = week_chart_stats_map.get(week_completed_timestamp)
-                        if (data.hasOwnProperty(day_in_week)) {
-                            let { current } = data[day_in_week]
+                        let chart_data = { ...week_chart_stats_map.get(week_completed_timestamp) }
+
+                        if (chart_data.hasOwnProperty(day_in_week)) {
+                            let data = { ...chart_data[day_in_week] },
+                                current = [...data.current]
 
                             current[this.priority_order[new_priority_value]] += current_value
                             current[this.priority_order[old_priority_value]] -= current_value
@@ -1130,17 +1163,23 @@ class EditDetails extends React.PureComponent {
                                 current[this.priority_order[old_priority_value]] = 0
                             }
 
-                            data[day_in_week].current = current
+                            data.current = current
 
-                            week_chart_stats_map.set(week_completed_timestamp, data)
+                            chart_data[day_in_week] = data
+
+                            return_week_chart_stats_data = {
+                                timestamp: week_completed_timestamp,
+                                data: chart_data
+                            }
                         }
                     }
 
                     if (month_chart_stats_map.has(month_completed_timestamp)) {
-                        let data = month_chart_stats_map.get(month_completed_timestamp)
+                        let chart_data = { ...month_chart_stats_map.get(month_completed_timestamp) }
 
-                        if (data.hasOwnProperty(day_in_month)) {
-                            let { current } = data[day_in_month]
+                        if (chart_data.hasOwnProperty(day_in_month)) {
+                            let data = { ...chart_data[day_in_month] },
+                                current = [...data.current]
 
                             current[this.priority_order[new_priority_value]] += current_value
                             current[this.priority_order[old_priority_value]] -= current_value
@@ -1149,17 +1188,23 @@ class EditDetails extends React.PureComponent {
                                 current[this.priority_order[old_priority_value]] = 0
                             }
 
-                            data[day_in_month].current = current
+                            data.current = current
 
-                            month_chart_stats_map.set(month_completed_timestamp, data)
+                            chart_data[day_in_month] = data
+
+                            return_month_chart_stats_data = {
+                                timestamp: month_completed_timestamp,
+                                data: chart_data
+                            }
                         }
                     }
 
                     if (year_chart_stats_map.has(completed_year)) {
-                        let data = year_chart_stats_map.get(completed_year)
+                        let chart_data = { ...year_chart_stats_map.get(completed_year) }
 
-                        if (data.hasOwnProperty(completed_month)) {
-                            let { current } = data[completed_month]
+                        if (chart_data.hasOwnProperty(completed_month)) {
+                            let data = { ...chart_data[completed_month] },
+                                current = [...data.current]
 
                             current[this.priority_order[new_priority_value]] += current_value
                             current[this.priority_order[old_priority_value]] -= current_value
@@ -1168,35 +1213,39 @@ class EditDetails extends React.PureComponent {
                                 current[this.priority_order[old_priority_value]] = 0
                             }
 
-                            data[completed_month].current = current
+                            data.current = current
 
-                            year_chart_stats_map.set(completed_year, data)
+                            chart_data[completed_month] = data
+
+                            return_year_chart_stats_data = {
+                                timestamp: completed_year,
+                                data: chart_data
+                            }
                         }
                     }
                 }
             }
 
-            else if (type === "week ") {
+            else if (type === "week") {
                 let near_monday = this.getMonday(date)
                 completed_timestamp = new Date(near_monday.getFullYear(), near_monday.getMonth(), near_monday.getDate()).getTime()
 
-                if (completed_data.hasOwnProperty(completed_timestamp)) {
-                    if (completed_data[completed_timestamp].hasOwnProperty("day_completed_array") && completed_data[completed_timestamp].hasOwnProperty("priority_value_array")) {
-                        let { day_completed_array, priority_value_array } = completed_data[completed_timestamp],
+                if (completed_task.has(completed_timestamp)) {
+                    if (completed_task.get(completed_timestamp).hasOwnProperty("day_completed_array") && completed_task.get(completed_timestamp).hasOwnProperty("priority_value_array")) {
+                        let { day_completed_array, priority_value_array } = completed_task.get(completed_timestamp),
                             day_in_week = date.getDay(),
-                            day = date.getDate(),
-                            month = date.getMonth(),
-                            year = date.getFullYear(),
-                            month_timestamp = new Date(year, month).getTime(),
+                            day_in_month = date.getDate(),
+                            completed_month = date.getMonth(),
+                            completed_year = date.getFullYear(),
+                            month_completed_timestamp = new Date(completed_year, completed_month).getTime(),
                             current_value = day_completed_array[day_in_week],
                             old_priority_value = priority_value_array[day_in_week]
 
                         if (stats_map.has(completed_timestamp)) {
-                            let stats_data = stats_map.get(completed_timestamp),
-                                { current } = stats_data
+                            let stats_data = { ...stats_map.get(completed_timestamp) },
+                                current = [...stats_data.current]
 
                             current[this.priority_order[new_priority_value]] += current_value
-
                             current[this.priority_order[old_priority_value]] -= current_value
 
                             if (current[this.priority_order[old_priority_value]] < 0) {
@@ -1205,66 +1254,84 @@ class EditDetails extends React.PureComponent {
 
                             stats_data.current = current
 
-                            stats_map.set(completed_timestamp, stats_data)
+                            return_stats_data = {
+                                data: stats_data,
+                                timestamp: completed_timestamp
+                            }
                         }
 
                         if (week_chart_stats_map.has(completed_timestamp)) {
-                            let data = week_chart_stats_map.get(completed_timestamp)
+                            let chart_data = { ...week_chart_stats_map.get(completed_timestamp) }
 
-                            if (data.hasOwnProperty(day_in_week)) {
-                                let { current } = data[day_in_week]
+                            if (chart_data.hasOwnProperty(day_in_week)) {
+                                let data = { ...chart_data[day_in_week] },
+                                    current = [...data.current]
 
                                 current[this.priority_order[new_priority_value]] += current_value
-
                                 current[this.priority_order[old_priority_value]] -= current_value
 
                                 if (current[this.priority_order[old_priority_value]] < 0) {
                                     current[this.priority_order[old_priority_value]] = 0
                                 }
 
-                                data[day_in_week].current = current
+                                data.current = current
 
-                                week_chart_stats_map.set(completed_timestamp, data)
+                                chart_data[day_in_week] = data
+
+                                return_week_chart_stats_data = {
+                                    data: chart_data,
+                                    timestamp: completed_timestamp
+                                }
                             }
                         }
 
-                        if (month_chart_stats_map.has(month_timestamp)) {
-                            let data = month_chart_stats_map.get(month_timestamp)
+                        if (month_chart_stats_map.has(month_completed_timestamp)) {
+                            let chart_data = { ...month_chart_stats_map.get(month_completed_timestamp) }
 
-                            if (data.hasOwnProperty(day)) {
-                                let { current } = data[day]
+                            if (chart_data.hasOwnProperty(day_in_month)) {
+                                let data = { ...chart_data[day_in_month] },
+                                    current = [...data.current]
 
                                 current[this.priority_order[new_priority_value]] += current_value
-
                                 current[this.priority_order[old_priority_value]] -= current_value
 
                                 if (current[this.priority_order[old_priority_value]] < 0) {
                                     current[this.priority_order[old_priority_value]] = 0
                                 }
 
-                                data[day].current = current
+                                data.current = current
 
-                                month_chart_stats_map.set(month_timestamp, data)
+                                chart_data[day_in_month] = data
+
+                                return_month_chart_stats_data = {
+                                    data: chart_data,
+                                    timestamp: month_completed_timestamp
+                                }
                             }
                         }
 
-                        if (year_chart_stats_map.has(year)) {
-                            let data = year_chart_stats_map.get(year)
+                        if (year_chart_stats_map.has(completed_year)) {
+                            let chart_data = { ...year_chart_stats_map.get(completed_year) }
 
-                            if (data.hasOwnProperty(month)) {
-                                let { current } = data[month]
+                            if (chart_data.hasOwnProperty(completed_month)) {
+                                let data = { ...chart_data[completed_month] },
+                                    current = [...data.current]
 
                                 current[this.priority_order[new_priority_value]] += current_value
-
                                 current[this.priority_order[old_priority_value]] -= current_value
 
                                 if (current[this.priority_order[old_priority_value]] < 0) {
                                     current[this.priority_order[old_priority_value]] = 0
                                 }
 
-                                data[month].current = current
+                                data.current = current
 
-                                year_chart_stats_map.set(year, data)
+                                chart_data[completed_month] = data
+
+                                return_year_chart_stats_data = {
+                                    data: chart_data,
+                                    timestamp: completed_year
+                                }
                             }
                         }
                     }
@@ -1274,24 +1341,23 @@ class EditDetails extends React.PureComponent {
             else {
                 completed_timestamp = new Date(date.getFullYear(), date.getMonth()).getTime()
 
-                if (completed_data.hasOwnProperty(completed_timestamp)) {
-                    if (completed_data[completed_timestamp].hasOwnProperty("day_completed_array") && completed_data[completed_timestamp].hasOwnProperty("priority_value_array")) {
+                if (completed_task.has(completed_timestamp)) {
+                    if (completed_task.get(completed_timestamp).hasOwnProperty("day_completed_array") && completed_task.get(completed_timestamp).hasOwnProperty("priority_value_array")) {
                         let { day_completed_array, priority_value_array } = completed_data[completed_timestamp],
                             day = date.getDate(),
-                            date = new Date(completed_year, completed_month, day),
+                            completed_year = date.getFullYear(),
+                            completed_month = date.getMonth(),
                             near_monday = this.getMonday(date),
-                            completed_week_timestamp = new Date(near_monday.getFullYear(), near_monday.getMonth(), near_monday.getDate()).getTime(),
+                            week_completed_timestamp = new Date(near_monday.getFullYear(), near_monday.getMonth(), near_monday.getDate()).getTime(),
                             day_in_week = date.getDay(),
                             old_priority_value = priority_value_array[day - 1],
                             current_value = day_completed_array[day - 1]
 
-
                         if (stats_map.has(completed_timestamp)) {
-                            let stats_data = stats_map.get(completed_timestamp),
-                                { current } = stats_data
+                            let stats_data = { ...stats_map.get(completed_timestamp) },
+                                current = [...stats_data.current]
 
                             current[this.priority_order[new_priority_value]] += current_value
-
                             current[this.priority_order[old_priority_value]] -= current_value
 
                             if (current[this.priority_order[old_priority_value]] < 0) {
@@ -1300,67 +1366,84 @@ class EditDetails extends React.PureComponent {
 
                             stats_data.current = current
 
-                            stats_map.set(completed_timestamp, stats_data)
-                        }
-
-                        if (week_chart_stats_map.has(completed_week_timestamp)) {
-                            let data = week_chart_stats_map.get(completed_week_timestamp)
-
-                            if (data.hasOwnProperty(day_in_week)) {
-                                let { current } = data[day_in_week]
-
-                                current[this.priority_order[new_priority_value]] += current_value
-
-                                current[this.priority_order[old_priority_value]] -= current_value
-
-                                if (current[this.priority_order[old_priority_value]] < 0) {
-                                    current[this.priority_order[old_priority_value]] = 0
-                                }
-
-                                data[day_in_week].current = current
-
-                                week_chart_stats_map.set(completed_week_timestamp, data)
+                            return_stats_data = {
+                                data: stats_data,
+                                timestamp: completed_timestamp
                             }
                         }
 
+                        if (week_chart_stats_map.has(week_completed_timestamp)) {
+                            let chart_data = { ...week_chart_stats_map.get(week_completed_timestamp) }
 
-                        if (month_chart_stats_map.has(completed_timestamp)) {
-                            let data = month_chart_stats_map.get(completed_timestamp)
-
-                            if (data.hasOwnProperty(day)) {
-                                let { current } = data[day]
+                            if (chart_data.hasOwnProperty(day_in_week)) {
+                                let data = { ...chart_data[day_in_week] },
+                                    current = [...data.current]
 
                                 current[this.priority_order[new_priority_value]] += current_value
-
                                 current[this.priority_order[old_priority_value]] -= current_value
 
                                 if (current[this.priority_order[old_priority_value]] < 0) {
                                     current[this.priority_order[old_priority_value]] = 0
                                 }
 
-                                data[day].current = current
+                                data.current = current
 
-                                month_chart_stats_map.set(completed_timestamp, data)
+                                chart_data[day_in_week] = data
+
+                                return_week_chart_stats_data = {
+                                    data: chart_data,
+                                    timestamp: week_completed_timestamp
+                                }
+                            }
+                        }
+
+                        if (month_chart_stats_map.has(completed_timestamp)) {
+                            let chart_data = { ...month_chart_stats_map.get(completed_timestamp) }
+
+                            if (chart_data.hasOwnProperty(day_in_month)) {
+                                let data = { ...chart_data[day_in_month] },
+                                    current = [...data.current]
+
+                                current[this.priority_order[new_priority_value]] += current_value
+                                current[this.priority_order[old_priority_value]] -= current_value
+
+                                if (current[this.priority_order[old_priority_value]] < 0) {
+                                    current[this.priority_order[old_priority_value]] = 0
+                                }
+
+                                data.current = current
+
+                                chart_data[day_in_month] = data
+
+                                return_month_chart_stats_data = {
+                                    data: chart_data,
+                                    timestamp: completed_timestamp
+                                }
                             }
                         }
 
                         if (year_chart_stats_map.has(completed_year)) {
-                            let data = year_chart_stats_map.get(completed_year)
+                            let chart_data = { ...year_chart_stats_map.get(completed_year) }
 
-                            if (data.hasOwnProperty(completed_month)) {
-                                let { current } = data[completed_month]
+                            if (chart_data.hasOwnProperty(completed_month)) {
+                                let data = { ...chart_data[completed_month] },
+                                    current = [...data.current]
 
                                 current[this.priority_order[new_priority_value]] += current_value
-
                                 current[this.priority_order[old_priority_value]] -= current_value
 
                                 if (current[this.priority_order[old_priority_value]] < 0) {
                                     current[this.priority_order[old_priority_value]] = 0
                                 }
 
-                                data[completed_month].current = current
+                                data.current = current
 
-                                year_chart_stats_map.set(completed_year, data)
+                                chart_data[completed_month] = data
+
+                                return_year_chart_stats_data = {
+                                    data: chart_data,
+                                    timestamp: completed_year
+                                }
                             }
                         }
                     }
@@ -1369,34 +1452,30 @@ class EditDetails extends React.PureComponent {
         }
 
         return ({
-            stats: stats_map,
-            week_chart_stats: week_chart_stats_map,
-            month_chart_stats: month_chart_stats_map,
-            year_chart_stats: year_chart_stats_map,
+            return_stats_data,
+            return_week_chart_stats_data,
+            return_month_chart_stats_data,
+            return_year_chart_stats_data
         })
     }
 
     doChangesOnCompletedTaskFromToday = (task_id, type, new_priority_value, date) => {
-        let completed_tasks_map = Map(this.props.completed_tasks).asMutable(),
-            completed_timestamp
+        let completed_tasks_map = this.props.completed_tasks,
+            completed_timestamp,
+            completed_data
 
         if (type === "day") {
             completed_timestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
 
             if (completed_tasks_map.has(task_id)) {
-                // let completed_data = fromJS(completed_tasks_map.get(task_id)).toJS()
-                // This causes mutations of this.props.completed_tasks. The reason is Immutable is using structural sharing, thus, 
-                // event if we call the function Map(), child objects will remain mutable because they are JS objects. Map() only changes
-                // the reference of the original one (shallow copy).
-                // To fix, completed_data should be a new JS objects using spread operators or we need to construct new structures that use
-                // Immutable.
-                let completed_data = completed_tasks_map.get(task_id)
+                completed_data = completed_tasks_map.get(task_id).toMap().asMutable()
 
-                completed_data.priority_value = new_priority_value
+                completed_data.set("priority_value", new_priority_value)
 
-                if (completed_data.hasOwnProperty(completed_timestamp)) {
-                    completed_data[completed_timestamp].priority_value = new_priority_value
-                    completed_tasks_map.set(task_id, completed_data)
+                if (completed_data.has(completed_timestamp)) {
+                    let data = { ...completed_data.get(completed_timestamp) }
+                    data.priority_value = new_priority_value
+                    completed_tasks_map.set(task_id, data)
                 }
             }
         }
@@ -1408,12 +1487,13 @@ class EditDetails extends React.PureComponent {
             completed_timestamp = new Date(near_monday.getFullYear(), near_monday.getMonth(), near_monday.getDate()).getTime()
 
             if (completed_tasks_map.has(task_id)) {
-                let completed_data = completed_tasks_map.get(task_id)
+                completed_data = completed_tasks_map.get(task_id).toMap().asMutable()
 
-                completed_data.priority_value = new_priority_value
+                completed_data.set("priority_value", new_priority_value)
 
-                if (completed_data.hasOwnProperty(completed_timestamp)) {
-                    let { priority_value_array } = completed_data[completed_timestamp]
+                if (completed_data.has(completed_timestamp)) {
+                    let data = { ...completed_data.get(completed_timestamp) },
+                        priority_value_array = [...data.priority_value_array]
 
                     if (day_in_week === 0) {
                         priority_value_array[day_in_week] = new_priority_value
@@ -1425,9 +1505,9 @@ class EditDetails extends React.PureComponent {
                         }
                     }
 
-                    completed_data[completed_timestamp].priority_value_array = priority_value_array
+                    data.priority_value_array = priority_value_array
 
-                    completed_tasks_map.set(task_id, completed_data)
+                    completed_tasks_map.set(task_id, data)
 
                 }
             }
@@ -1442,53 +1522,58 @@ class EditDetails extends React.PureComponent {
             completed_timestamp = new Date(year, month).getTime()
 
             if (completed_tasks_map.has(task_id)) {
-                let completed_data = completed_tasks_map.get(task_id)
+                completed_data = completed_tasks_map.get(task_id).toMap().asMutable()
 
-                completed_data.priority_value = new_priority_value
+                completed_data.set("priority_value", new_priority_value)
 
-                if (completed_data.hasOwnProperty(completed_timestamp)) {
-                    let { priority_value_array } = completed_data[completed_timestamp]
+                if (completed_data.has(completed_timestamp)) {
+                    let data = { ...completed_data.get(completed_timestamp) },
+                        priority_value_array = [...data.priority_value_array]
 
                     for (let i = day_in_month; i <= last_day_in_month; i++) {
                         priority_value_array[i] = new_priority_value
                     }
 
-                    completed_data[completed_timestamp].priority_value_array = priority_value_array
+                    data.priority_value_array = priority_value_array
 
-                    completed_tasks_map.set(task_id, completed_data)
+                    completed_tasks_map.set(task_id, data)
                 }
             }
         }
-        return completed_tasks_map
+
+        return completed_data
     }
 
     doChangesOnCompletedTaskAllTime = (task_id, type, new_priority_value) => {
-        let completed_tasks_map = Map(this.props.completed_tasks).asMutable()
+        let completed_tasks_map = this.props.completed_tasks.asMutable()
 
         if (completed_tasks_map.has(task_id)) {
-            let completed_data = completed_tasks_map.get(task_id)
+            let completed_data = completed_tasks_map.get(task_id).asMutable()
 
-            completed_data.priority_value = new_priority_value
+            completed_data.set("priority_value", new_priority_value)
 
-            for (let key in completed_data) {
-                if (completed_data.hasOwnProperty(key) && key !== "id" && key !== "category" && key !== "priority_value") {
+            completed_data.keySeq().forEach((key) => {
+                if (key !== "id" && key !== "category" && key !== "priority_value") {
+                    let data = { ...completed_data.get(key) }
+
                     if (type === "day") {
-                        completed_data[key].priority_value = new_priority_value
+                        data.priority_value = new_priority_value
                     }
 
                     else {
-                        if (completed_data[key].hasOwnProperty("priority_value_array")) {
-                            let { priority_value_array } = completed_data[key]
+                        if (data.hasOwnProperty("priority_value_array")) {
+                            let priority_value_array = [...data.priority_value_array]
 
-                            completed_data[key].priority_value_array = priority_value_array.fill(new_priority_value)
+                            data.priority_value_array = priority_value_array.fill(new_priority_value)
                         }
                     }
+
+                    completed_data.set(key, data)
                 }
-            }
+            })
 
             completed_tasks_map.set(task_id, completed_data)
         }
-
 
         return completed_tasks_map
     }
@@ -1499,21 +1584,14 @@ class EditDetails extends React.PureComponent {
             should_update_category = false,
             update_category_data = {},
             stats_action_type = "",
+            completed_task_action_type = "",
             sending_obj = {
                 edit_task: this.edit_task,
                 should_update_category,
                 update_category_data,
-                stats_action_type
+                stats_action_type,
             },
-            stats,
-            completed_action_type = "",
-            completed_tasks,
-            week_chart_stats,
-            month_chart_stats,
-            year_chart_stats,
-            result_obj = {},
             date = new Date()
-
 
         // Only do update if the category is changed
         if (this.category_key !== new_category_key) {
@@ -1544,49 +1622,95 @@ class EditDetails extends React.PureComponent {
 
         // do update on stats and chart_stats when priority is changed
         if (this.priority_id !== new_priority_id) {
-
-            if (this.edit_task.type === "day") {
-                stats_action_type = "RETURN_NEW_DAY_STATS"
-                completed_action_type = "RETURN_NEW_COMPLETED_DAY_TASKS"
-            }
-
-            else if (this.edit_task.type === "week") {
-                stats_action_type = "RETURN_NEW_WEEK_STATS"
-                completed_action_type = "RETURN_NEW_COMPLETED_WEEK_TASKS"
-            }
-
-            else {
-                stats_action_type = "RETURN_NEW_MONTH_STATS"
-                completed_action_type = "RETURN_NEW_COMPLETED_MONTH_TASKS"
-            }
-
             // Apply all time
             if (this.state.agree_on_changing_priority_history) {
-                // apply on completed tasks
-                result_obj = this.updateOnStatsAndChartsDataAllTime(this.edit_task.id, this.edit_task.type, new_priority_id)
-                completed_tasks = this.doChangesOnCompletedTaskAllTime(this.edit_task.id, this.edit_task.type, new_priority_id).toMap()
+                sending_obj.should_update_from_now = false
+
+                if (this.edit_task.type === "day") {
+                    stats_action_type = "RETURN_NEW_DAY_STATS"
+                    completed_task_action_type = "RETURN_NEW_COMPLETED_DAY_TASKS"
+                }
+
+                else if (this.edit_task.type === "week") {
+                    stats_action_type = "RETURN_NEW_WEEK_STATS"
+                    completed_task_action_type = "RETURN_NEW_COMPLETED_WEEK_TASKS"
+                }
+
+                else {
+                    stats_action_type = "RETURN_NEW_MONTH_STATS"
+                    completed_task_action_type = "RETURN_NEW_COMPLETED_MONTH_TASKS"
+                }
+
+                sending_obj.stats_action_type = stats_action_type
+
+                let result_obj = this.updateOnStatsAndChartsDataAllTime(this.edit_task.id, this.edit_task.type, new_priority_id),
+                    completed_tasks = this.doChangesOnCompletedTaskAllTime(this.edit_task.id, this.edit_task.type, new_priority_id)
+
+                sending_obj.stats_data = {
+                    action_type: stats_action_type,
+                    data: result_obj.stats
+                }
+
+                sending_obj.week_chart_stats_data = {
+                    data: result_obj.week_chart_stats
+                }
+
+                sending_obj.month_chart_stats_data = {
+                    data: result_obj.month_chart_stats
+                }
+
+                sending_obj.year_chart_stats_data = {
+                    data: result_obj.year_chart_stats
+                }
+
+                sending_obj.completed_tasks_data = {
+                    action_type: completed_task_action_type,
+                    data: completed_tasks
+                }
             }
 
             else {
-                result_obj = this.updateOnStatsAndChartDataFromToday(this.edit_task.id, this.edit_task.type, new_priority_id, date)
-                completed_tasks = this.doChangesOnCompletedTaskFromToday(this.edit_task.id, this.edit_task.type, new_priority_id, date).toMap()
+                sending_obj.should_update_from_now = true
+
+                if (this.edit_task.type === "day") {
+                    stats_action_type = "UPDATE_DAY_STATS"
+                    completed_task_action_type = "UPDATE_COMPLETED_DAY_TASK"
+                }
+
+                else if (this.edit_task.type === "week") {
+                    stats_action_type = "UPDATE_WEEK_STATS"
+                    completed_task_action_type = "UPDATE_COMPLETED_WEEK_TASK"
+                }
+
+                else {
+                    stats_action_type = "UPDATE_MONTH_STATS"
+                    completed_task_action_type = "UPDATE_COMPLETED_MONTH_TASK"
+                }
+
+                sending_obj.stats_action_type = stats_action_type
+
+                let result_obj = this.updateOnStatsAndChartDataFromToday(this.edit_task.id, this.edit_task.type, new_priority_id, date),
+                    completed_tasks = this.doChangesOnCompletedTaskFromToday(this.edit_task.id, this.edit_task.type, new_priority_id, date)
+
+                sending_obj.stats_data = {
+                    action_type: stats_action_type,
+                    timestamp: result_obj.return_stats_data.timestamp,
+                    data: result_obj.return_stats_data.data
+                }
+
+                sending_obj.week_chart_stats_data = result_obj.return_week_chart_stats_data
+                sending_obj.month_chart_stats_data = result_obj.return_month_chart_stats_data
+                sending_obj.year_chart_stats_data = result_obj.return_year_chart_stats_data
+
+                sending_obj.completed_tasks_data = {
+                    action_type: completed_task_action_type,
+                    data: completed_tasks
+                }
             }
-
-            stats = result_obj.stats.toMap()
-            week_chart_stats = result_obj.week_chart_stats.toMap()
-            month_chart_stats = result_obj.month_chart_stats.toMap()
-            year_chart_stats = result_obj.year_chart_stats.toMap()
-
-            sending_obj.stats_action_type = stats_action_type
-            sending_obj.stats = stats
-            sending_obj.week_chart_stats = week_chart_stats
-            sending_obj.month_chart_stats = month_chart_stats
-            sending_obj.year_chart_stats = year_chart_stats
-            sending_obj.completed_action_type = completed_action_type
-            sending_obj.completed_tasks = completed_tasks
         }
 
         this.props.editThunk(sending_obj)
+
         this.cancel()
     }
 

@@ -47,12 +47,12 @@ export const editThunk = (action_type, {
     should_update_category,
     update_category_data,
     stats_action_type,
-    stats,
-    week_chart_stats,
-    month_chart_stats,
-    year_chart_stats,
-    completed_action_type,
-    completed_tasks
+    should_update_from_now,
+    stats_data,
+    week_chart_stats_data,
+    month_chart_stats_data,
+    year_chart_stats_data,
+    completed_tasks_data
 }) => (dispatch, getState) => {
 
     let action_array = [
@@ -67,13 +67,25 @@ export const editThunk = (action_type, {
     }
 
     if (stats_action_type.length > 0 || stats_action_type !== "") {
-        action_array = [...action_array, ...[
-            returnNewStats(stats_action_type, stats),
-            returnNewChartStats("RETURN_NEW_WEEK_CHART_STATS", week_chart_stats),
-            returnNewChartStats("RETURN_NEW_MONTH_CHART_STATS", month_chart_stats),
-            returnNewChartStats("RETURN_NEW_YEAR_CHART_STATS", year_chart_stats),
-            returnNewCompletedTask(completed_action_type, completed_tasks)
-        ]]
+        if (should_update_from_now === true) {
+            action_array = [...action_array, ...[
+                updateStats(stats_data.action_type, stats_data.timestamp, stats_data.data),
+                updateChartStats("UPDATE_WEEK_CHART_STATS", week_chart_stats_data.timestamp, week_chart_stats_data.data),
+                updateChartStats("UPDATE_MONTH_CHART_STATS", month_chart_stats_data.timestamp, month_chart_stats_data.data),
+                updateChartStats("UPDATE_YEAR_CHART_STATS", year_chart_stats_data.timestamp, year_chart_stats_data.data),
+                updateTask(completed_tasks_data.action_type, completed_tasks_data.data)
+            ]]
+        }
+
+        else {
+            action_array = [...action_array, ...[
+                returnNewStats(stats_data.action_type, stats_data.data),
+                returnNewChartStats("RETURN_NEW_WEEK_CHART_STATS", week_chart_stats_data.data),
+                returnNewChartStats("RETURN_NEW_MONTH_CHART_STATS", month_chart_stats_data.data),
+                returnNewChartStats("RETURN_NEW_YEAR_CHART_STATS", year_chart_stats_data.data),
+                returnNewCompletedTask(completed_tasks_data.action_type, completed_tasks_data.data)
+            ]]
+        }
     }
 
     dispatch(batchActions(action_array))

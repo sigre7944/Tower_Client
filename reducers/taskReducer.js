@@ -69,7 +69,7 @@ export const completed_day_tasks = (state = Map(), action) => {
             return state.filterNot((task) => task.category === action.id)
 
         case 'RETURN_NEW_COMPLETED_DAY_TASKS':
-            return action.data
+            return action.data.toMap()
 
         default:
             return state
@@ -88,7 +88,7 @@ export const completed_week_tasks = (state = Map(), action) => {
             return state.filterNot((task) => task.category === action.id)
 
         case 'RETURN_NEW_COMPLETED_WEEK_TASKS':
-            return action.data
+            return action.data.toMap()
 
         default:
             return state
@@ -107,7 +107,7 @@ export const completed_month_tasks = (state = Map(), action) => {
             return state.filterNot((task) => task.category === action.id)
 
         case 'RETURN_NEW_COMPLETED_MONTH_TASKS':
-            return action.data
+            return action.data.toMap()
 
         default:
             return state
