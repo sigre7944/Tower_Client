@@ -1,6 +1,6 @@
 - Map structures for stats to work:
     + Day: Map {
-        // 0:00:00 of the day (JS Object)
+        // 0:00:00 of the day
         day_timestamp: Map {
             current: List [0, 0, 0, 0]
         }
@@ -22,7 +22,7 @@
 
 - Map structures for charts to work:
     + Week chart: Map {
-        // Monday of the week (JS Object)
+        // Monday of the week
         week_timestamp:  Map {
             // sunday
             0: Map {

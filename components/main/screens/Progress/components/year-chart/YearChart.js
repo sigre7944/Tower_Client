@@ -4,7 +4,7 @@ import {
     Text,
 } from 'react-native';
 import { StackedBarChart, YAxis } from 'react-native-svg-charts'
-import { Map } from 'immutable'
+import { Map, List } from 'immutable'
 
 export default class MonthChart extends React.PureComponent {
 
@@ -46,16 +46,16 @@ export default class MonthChart extends React.PureComponent {
             total_array = []
 
         if (year_chart_stats_map.has(year_timestamp)) {
-            let data = year_chart_stats_map.get(year_timestamp)
+            let data = Map(year_chart_stats_map.get(year_timestamp))
 
             for (let i = 0; i < 11; i++) {
-                if (data.hasOwnProperty(i)) {
-                    let current = [...data[i].current]
+                if (data.has(i)) {
+                    let current = List(data.getIn([i.toString(), "current"]))
                     chart_data[i] = {
-                        pri_04: current[3],
-                        pri_03: current[2],
-                        pri_02: current[1],
-                        pri_01: current[0],
+                        pri_04: current.get(3),
+                        pri_03: current.get(2),
+                        pri_02: current.get(1),
+                        pri_01: current.get(0),
                     }
 
                     total_array.push(this.getTotal(current))

@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import { Map } from 'immutable'
+import { Map, List } from 'immutable'
 import PointEarnedSection from './components/point-earned-section/PointEarnedSection'
 import WeekChart from './components/week-chart/WeekChart.Container'
 import MonthChart from './components/month-chart/MonthChart.Container'
@@ -112,8 +112,8 @@ class SummaryHolder extends React.PureComponent {
       let day_timestamp = new Date(year, month, i).getTime()
 
       if (day_stats_map.has(day_timestamp)) {
-        let data = day_stats_map.get(day_timestamp),
-          total_sum = data.current.reduce(((total, amount) => total + amount), 0)
+        let data = Map(day_stats_map.get(day_timestamp)),
+          total_sum = List(data.get("current")).reduce(((total, amount) => total + amount), 0)
 
         day_total_completions += total_sum
       }
@@ -137,8 +137,8 @@ class SummaryHolder extends React.PureComponent {
     for (let i = 0; i <= (last_week_of_month - first_week_of_month); i++) {
       let week_timestamp = first_monday.getTime() + 86400 * 1000 * 7 * i
       if (week_stats_map.has(week_timestamp)) {
-        let data = week_stats_map.get(week_timestamp),
-          total_sum = data.current.reduce(((total, amount) => total + amount), 0)
+        let data = Map(week_stats_map.get(week_timestamp)),
+          total_sum = List(data.get("current")).reduce(((total, amount) => total + amount), 0)
 
         week_total_completions += total_sum
       }
@@ -155,8 +155,8 @@ class SummaryHolder extends React.PureComponent {
       total_sum = 0
 
     if (month_stats_map.has(month_timestamp)) {
-      let data = month_stats_map.get(month_timestamp),
-        total_sum = data.current.reduce(((total, amount) => total + amount), 0)
+      let data = Map(month_stats_map.get(month_timestamp)),
+        total_sum = List(data.get("current")).reduce(((total, amount) => total + amount), 0)
 
       month_total_completions += total_sum
     }
@@ -175,14 +175,20 @@ class SummaryHolder extends React.PureComponent {
   componentDidUpdate(prevProps, prevState) {
     if (this.props.day_stats !== prevProps.day_stats) {
       this.updateDayTaskCompletions(this.props.month, this.props.year, Map(this.props.day_stats))
+
+      // console.log("day_stats", this.props.day_stats)
     }
 
     if (this.props.week_stats !== prevProps.week_stats) {
       this.updateWeekTaskCompletions(this.props.month, this.props.year, Map(this.props.week_stats))
+
+      // console.log("week_stats", this.props.week_stats)
     }
 
     if (this.props.month_stats !== prevProps.month_stats) {
       this.updateMonthTaskCompletions(this.props.month, this.props.year, Map(this.props.month_stats))
+
+      // console.log("month_stats", this.props.month_stats)
     }
 
     if (this.props.month !== prevProps.month || this.props.year !== prevProps.year) {

@@ -2,15 +2,13 @@ import React from 'react';
 import {
   View,
   Text,
-  ScrollView,
   TouchableOpacity,
   Modal,
   Dimensions,
   Animated,
-  StyleSheet,
 } from 'react-native';
-import { PanGestureHandler, State, TapGestureHandler, TouchableOpacity as KGMTouchableOpacity } from 'react-native-gesture-handler'
-import { Map } from 'immutable'
+import { PanGestureHandler, State, TouchableOpacity as KGMTouchableOpacity } from 'react-native-gesture-handler'
+import { Map, List } from 'immutable'
 
 export default class PointEarnedSection extends React.PureComponent {
   year_array = [new Date().getFullYear(), new Date().getFullYear() + 1, new Date().getFullYear() - 1]
@@ -251,8 +249,8 @@ class MonthHolder extends React.Component {
     let date = new Date(this.props.year, this.props.month).getTime(),
       month_stats = Map(this.props.month_stats)
     if (month_stats.has(date)) {
-      let stat = month_stats.get(date),
-        total_points = stat.current.reduce(((total, amount) => total + amount), 0)
+      let stat = Map(month_stats.get(date)),
+        total_points = List(stat.get("current")).reduce(((total, amount) => total + amount), 0)
 
       this.setState({
         month_points: total_points
@@ -404,8 +402,8 @@ class Day extends React.PureComponent {
       day_stats = Map(this.props.day_stats)
 
     if (day_stats.has(date)) {
-      let stat = day_stats.get(date),
-        total_points = stat.current.reduce(((total, amount) => total + amount), 0)
+      let stat = Map(day_stats.get(date)),
+        total_points = List(stat.get("current")).reduce(((total, amount) => total + amount), 0)
 
       this.setState({
         day_points: total_points
@@ -494,9 +492,8 @@ class Week extends React.PureComponent {
       date = new Date(data.start_year, data.start_month, data.start_day).getTime(),
       week_stats = Map(this.props.week_stats)
     if (week_stats.has(date)) {
-
-      let stat = week_stats.get(date),
-        total_points = stat.current.reduce(((total, amount) => total + amount), 0)
+      let stat = Map(week_stats.get(date)),
+        total_points = List(stat.get("current")).reduce(((total, amount) => total + amount), 0)
 
       this.setState({
         week_points: total_points

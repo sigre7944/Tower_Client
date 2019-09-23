@@ -430,32 +430,39 @@ export default class TaskCard extends React.PureComponent {
         if (operation === "inc") {
             if (flag === "uncompleted") {
                 if (stats.has(stats_timestamp)) {
-                    stats_data = { ...stats.get(stats_timestamp) }
+                    stats_data = Map(stats.get(stats_timestamp)).update("current", (value) => {
+                        return List(value).update(this.priority_order[task.priority.value], (v) => v += 1)
+                    })
+                    // let current = [...stats_data.current]
+                    // current[this.priority_order[task.priority.value]] += 1
 
-                    let current = [...stats_data.current]
-                    current[this.priority_order[task.priority.value]] += 1
-
-                    stats_data.current = current
+                    // stats_data.current = current
                 }
 
                 else {
                     let current = [0, 0, 0, 0]
                     current[this.priority_order[task.priority.value]] += 1
                     stats_data.current = current
+
+                    stats_data = fromJS(stats_data)
                 }
             }
 
             else {
                 if (stats.has(stats_timestamp)) {
-                    stats_data = { ...stats.get(stats_timestamp) }
+                    stats_data = Map(stats.get(stats_timestamp)).update("current", (value) => {
+                        return List(value).update(this.priority_order[task.priority.value], (v) => v - 1 < 0 ? 0 : v - 1)
+                    })
 
-                    let current = [...stats_data.current]
+                    // stats_data = { ...stats.get(stats_timestamp) }
 
-                    current[this.priority_order[task.priority.value]] -= 1
-                    if (current[this.priority_order[task.priority.value]] < 0) {
-                        current[this.priority_order[task.priority.value]] = 0
-                    }
-                    stats_data.current = current
+                    // let current = [...stats_data.current]
+
+                    // current[this.priority_order[task.priority.value]] -= 1
+                    // if (current[this.priority_order[task.priority.value]] < 0) {
+                    //     current[this.priority_order[task.priority.value]] = 0
+                    // }
+                    // stats_data.current = current
                 }
             }
         }
@@ -463,15 +470,19 @@ export default class TaskCard extends React.PureComponent {
         else {
             if (flag === "uncompleted") {
                 if (stats.has(stats_timestamp)) {
-                    stats_data = { ...stats.get(stats_timestamp) }
+                    stats_data = Map(stats.get(stats_timestamp)).update("current", (value) => {
+                        return List(value).update(this.priority_order[task.priority.value], (v) => v - 1 < 0 ? 0 : v - 1)
+                    })
 
-                    let current = [...stats_data.current]
+                    // stats_data = { ...stats.get(stats_timestamp) }
 
-                    current[this.priority_order[task.priority.value]] -= 1
-                    if (current[this.priority_order[task.priority.value]] < 0) {
-                        current[this.priority_order[task.priority.value]] = 0
-                    }
-                    stats_data.current = current
+                    // let current = [...stats_data.current]
+
+                    // current[this.priority_order[task.priority.value]] -= 1
+                    // if (current[this.priority_order[task.priority.value]] < 0) {
+                    //     current[this.priority_order[task.priority.value]] = 0
+                    // }
+                    // stats_data.current = current
                 }
             }
         }
@@ -496,11 +507,11 @@ export default class TaskCard extends React.PureComponent {
             month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime(),
             year_timestamp = current_date.getFullYear()
 
-        week_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, week_chart_stats, week_timestamp, current_date.getDay(), flag, operation)
+        week_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, Map(week_chart_stats), week_timestamp, current_date.getDay(), flag, operation)
 
-        month_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, month_chart_stats, month_timestamp, current_date.getDate(), flag, operation)
+        month_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, Map(month_chart_stats), month_timestamp, current_date.getDate(), flag, operation)
 
-        year_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, year_chart_stats, year_timestamp, current_date.getMonth(), flag, operation)
+        year_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, Map(year_chart_stats), year_timestamp, current_date.getMonth(), flag, operation)
 
         return ({
             week_action_type: "UPDATE_WEEK_CHART_STATS",
@@ -523,70 +534,97 @@ export default class TaskCard extends React.PureComponent {
         if (operation === "inc") {
             if (flag === "uncompleted") {
                 if (chart_stats_map.has(timestamp)) {
-                    chart_stats_data = { ...chart_stats_map.get(timestamp) }
 
-                    if (chart_stats_data.hasOwnProperty(key)) {
-                        let data = { ...chart_stats_data[key] },
-                            current = [...data.current]
-                        current[this.priority_order[task.priority.value]] += 1
-                        data.current = current
-
-                        chart_stats_data[key] = data
+                    if (Map(chart_stats_map.get(timestamp)).has(key.toString())) {
+                        chart_stats_data = Map(chart_stats_map.get(timestamp)).updateIn([key.toString(), "current"], (value) => {
+                            return List(value).update(this.priority_order[task.priority.value], (v) => v + 1)
+                        })
                     }
 
                     else {
                         let current = [0, 0, 0, 0]
                         current[this.priority_order[task.priority.value]] += 1
                         chart_stats_data[key] = { current }
+
+                        chart_stats_data = fromJS(chart_stats_data)
                     }
+
+                    // chart_stats_data = { ...chart_stats_map.get(timestamp) }
+
+                    // if (chart_stats_data.hasOwnProperty(key)) {
+                    //     let data = { ...chart_stats_data[key] },
+                    //         current = [...data.current]
+                    //     current[this.priority_order[task.priority.value]] += 1
+                    //     data.current = current
+
+                    //     chart_stats_data[key] = data
+                    // }
+
+                    // else {
+                    //     let current = [0, 0, 0, 0]
+                    //     current[this.priority_order[task.priority.value]] += 1
+                    //     chart_stats_data[key] = { current }
+                    // }
                 }
 
                 else {
                     let current = [0, 0, 0, 0]
                     current[this.priority_order[task.priority.value]] += 1
                     chart_stats_data[key] = { current }
+
+                    chart_stats_data = fromJS(chart_stats_data)
                 }
             }
 
             else {
-                if (chart_stats_map.has(timestamp)) {
-                    chart_stats_data = { ...chart_stats_map.get(timestamp) }
+                if (chart_stats_map.hasIn([timestamp, key.toString()])) {
 
-                    if (chart_stats_data.hasOwnProperty(key)) {
-                        let data = { ...chart_stats_data[key] },
-                            current = [...data.current]
-                        current[this.priority_order[task.priority.value]] -= 1
+                    chart_stats_data = Map(chart_stats_map.get(timestamp)).updateIn([key.toString(), "current"], (value) => {
+                        return List(value).update(this.priority_order[task.priority.value], (v) => v - 1 < 0 ? 0 : v - 1)
+                    })
 
-                        if (current[this.priority_order[task.priority.value]] < 0) {
-                            current[this.priority_order[task.priority.value]] = 0
-                        }
+                    // chart_stats_data = { ...chart_stats_map.get(timestamp) }
 
-                        data.current = current
+                    // if (chart_stats_data.hasOwnProperty(key)) {
+                    //     let data = { ...chart_stats_data[key] },
+                    //         current = [...data.current]
+                    //     current[this.priority_order[task.priority.value]] -= 1
 
-                        chart_stats_data[key] = data
-                    }
+                    //     if (current[this.priority_order[task.priority.value]] < 0) {
+                    //         current[this.priority_order[task.priority.value]] = 0
+                    //     }
+
+                    //     data.current = current
+
+                    //     chart_stats_data[key] = data
+                    // }
                 }
             }
 
         }
 
         else {
-            if (chart_stats_map.has(timestamp)) {
-                chart_stats_data = { ...chart_stats_map.get(timestamp) }
+            if (chart_stats_map.hasIn([timestamp, key.toString()])) {
 
-                if (chart_stats_data.hasOwnProperty(key)) {
-                    let data = { ...chart_stats_data[key] },
-                        current = [...data.current]
+                chart_stats_data = Map(chart_stats_map.get(timestamp)).updateIn([key.toString(), "current"], (value) => {
+                    return List(value).update(this.priority_order[task.priority.value], (v) => v - 1 < 0 ? 0 : v - 1)
+                })
 
-                    current[this.priority_order[task.priority.value]] -= 1
+                // chart_stats_data = { ...chart_stats_map.get(timestamp) }
 
-                    if (current[this.priority_order[task.priority.value]] < 0) {
-                        current[this.priority_order[task.priority.value]] = 0
-                    }
-                    data.current = current
+                // if (chart_stats_data.hasOwnProperty(key)) {
+                //     let data = { ...chart_stats_data[key] },
+                //         current = [...data.current]
 
-                    chart_stats_data[key] = data
-                }
+                //     current[this.priority_order[task.priority.value]] -= 1
+
+                //     if (current[this.priority_order[task.priority.value]] < 0) {
+                //         current[this.priority_order[task.priority.value]] = 0
+                //     }
+                //     data.current = current
+
+                //     chart_stats_data[key] = data
+                // }
             }
         }
 

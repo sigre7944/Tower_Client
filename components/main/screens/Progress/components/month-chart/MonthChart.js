@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { StackedBarChart, YAxis } from 'react-native-svg-charts'
 import MonthAnnotationCalendar from './month-anno-calendar/MonthAnnotationCalendar'
-import { Map } from 'immutable'
+import { Map, List } from 'immutable'
 
 export default class MonthChart extends React.PureComponent {
 
@@ -72,17 +72,18 @@ export default class MonthChart extends React.PureComponent {
             total_array = []
 
         if (month_chart_stats_map.has(month_timestamp)) {
-            let data = month_chart_stats_map.get(month_timestamp)
+            let data = Map(month_chart_stats_map.get(month_timestamp))
 
             for (let i = 1; i <= last_day_of_month; i++) {
 
-                if (data.hasOwnProperty(i)) {
-                    let current = [...data[i].current]
-                    chart_data[i-1] = {
-                        pri_04: current[3],
-                        pri_03: current[2],
-                        pri_02: current[1],
-                        pri_01: current[0],
+                if (data.has(i.toString())) {
+                    let current = List(data.getIn([i.toString(), "current"]))
+
+                    chart_data[i - 1] = {
+                        pri_04: current.get(3),
+                        pri_03: current.get(2),
+                        pri_02: current.get(1),
+                        pri_01: current.get(0),
                     }
 
                     total_array.push(this.getTotal(current))
