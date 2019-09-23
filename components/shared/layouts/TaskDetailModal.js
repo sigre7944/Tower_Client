@@ -74,7 +74,7 @@ export default class TaskDetailModal extends Component {
     handleTaskUpdate = () => {
         let edit_task = this.edit_task,
             date = new Date(edit_task.startTime),
-            category = edit_task.category ? this.props.categories[edit_task.category].name : "",
+            category = edit_task.category ? Map(this.props.categories).get(edit_task.category).name : "",
             priority = edit_task.priority ? this.props.priorities[edit_task.priority.value].name : "",
             goal = edit_task.goal ? `${edit_task.goal.max} times` : "",
             calendar_text, repeat
@@ -210,21 +210,17 @@ export default class TaskDetailModal extends Component {
     }
 
     updateDeletionOnCategoryData = (category_id) => {
-        let { categories } = this.props,
+        let categories_map = Map(this.props.categories),
             data = {}
 
-        if (categories.hasOwnProperty(category_id)) {
-            data = categories[category_id]
+        if (categories_map.has(category_id)) {
+            data = { ...categories_map.get(category_id) }
 
-            let { quantity } = data
+            data.quantity -= 1
 
-            quantity -= 1
-
-            if (quantity < 0) {
-                quantity = 0
+            if (data.quantity < 0) {
+                data.quantity = 0
             }
-
-            data.quantity = quantity
         }
 
         return data
@@ -767,7 +763,7 @@ class EditDetails extends React.PureComponent {
     }
 
     updateOnStatsAndChartsDataAllTime = (task_id, type, new_priority_value) => {
-        let completed_tasks_map = this.props.completed_tasks.asMutable(),
+        let completed_tasks_map = this.props.completed_tasks,
             stats_map = this.props.stats.asMutable(),
             week_chart_stats_map = this.props.week_chart_stats.asMutable(),
             month_chart_stats_map = this.props.month_chart_stats.asMutable(),
@@ -1589,11 +1585,11 @@ class EditDetails extends React.PureComponent {
             should_update_category = true
 
             //Decrease old category's quantity
-            let old_category_data = { ...this.props.categories[this.category_key] }
+            let old_category_data = { ...Map(this.props.categories).get(this.category_key) }
             old_category_data.quantity -= 1
 
             //Increase new category's quantity
-            let new_category_data = { ...this.props.categories[new_category_key] }
+            let new_category_data = { ...Map(this.props.categories).get(new_category_key) }
             new_category_data.quantity += 1
 
             if (new_category_data.quantity < 0) {
@@ -1712,7 +1708,7 @@ class EditDetails extends React.PureComponent {
 
         let date = new Date(startTime)
 
-        this.category = this.props.categories[category].name
+        this.category = Map(this.props.categories).get(category).name
         this.priority = this.props.priorities[priority.value].name
         this.goal = `${goal.max} times`
 

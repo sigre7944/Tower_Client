@@ -11,8 +11,9 @@ import {
     ScrollView
 } from 'react-native';
 
-const uuidv1 = require('uuid')
+import { Map } from 'immutable'
 
+const uuidv1 = require('uuid')
 
 let dayAnnotationColor = '#b0b0b0',
     weekAnnotationColor = '#9a9a9a',
@@ -124,7 +125,8 @@ export default class AddTaskPanel extends Component {
     }
 
     addTagDataToRender = (type, { startTime, schedule, repeat, end, category, priority, goal }) => {
-        let tag_data = []
+        let tag_data = [],
+            categories_map = Map(this.props.categories)
 
         if (type === "day") {
             if (schedule && startTime) {
@@ -202,7 +204,7 @@ export default class AddTaskPanel extends Component {
             }
 
             if (category) {
-                let cate = this.props.categories[category].name
+                let cate = categories_map.get(category).name
                 tag_data.push(
                     <TagElement
                         key="tag-category"
@@ -307,7 +309,7 @@ export default class AddTaskPanel extends Component {
             }
 
             if (category) {
-                let cate = this.props.categories[category].name
+                let cate = categories_map.get(category).name
                 tag_data.push(
                     <TagElement
                         key="tag-category"
@@ -398,7 +400,7 @@ export default class AddTaskPanel extends Component {
             }
 
             if (category) {
-                let cate = this.props.categories[category].name
+                let cate = categories_map.get(category).name
                 tag_data.push(
                     <TagElement
                         key="tag-category"
@@ -1007,7 +1009,7 @@ class BottomOptionElement extends React.PureComponent {
 
             if (add_data.category) {
                 let category_key = add_data.category
-                let category_data = { ... this.props.categories[category_key] }
+                let category_data = { ...Map(this.props.categories).get(category_key) }
 
                 category_data.quantity += 1
 

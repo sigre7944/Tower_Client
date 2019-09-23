@@ -744,7 +744,7 @@ class CategoryList extends React.PureComponent {
             return (
                 <CategoryRow
                     data={item}
-                    category_key={Object.keys(this.props.categories)[index - 1]}
+                    category_key={Map(this.props.categories).keySeq().toArray()[index - 1]}
                     category_index={index}
                     chooseEditCategory={this.props.chooseEditCategory}
                     chooseCategory={this.props.chooseCategory}
@@ -762,21 +762,10 @@ class CategoryList extends React.PureComponent {
         )
     }
 
-    loadCategories = (categories) => {
-        let category_arr = []
+    loadCategories = (categories_map) => {
+        let category_arr = [{ name: "General" }]
 
-        category_arr.push({
-            name: "General"
-        })
-
-        for (var key in categories) {
-            if (categories.hasOwnProperty(key)) {
-                category_arr.push({
-                    id: key,
-                    ...categories[key]
-                })
-            }
-        }
+        category_arr = [...category_arr, ...Map(categories_map).valueSeq().map((value) => value).toArray()]
 
         category_arr.push({
             name: "Add category"

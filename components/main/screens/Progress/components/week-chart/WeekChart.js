@@ -138,7 +138,7 @@ export default class WeekChart extends React.PureComponent {
         if (this.props.week_chart_stats !== prevProps.week_chart_stats) {
             this.updateChartData()
 
-            // console.log(this.props.week_chart_stats)
+            // console.log("\n week_chart_stats",this.props.week_chart_stats)
         }
 
         if (this.props.current_chosen_week_data !== prevProps.current_chosen_week_data) {

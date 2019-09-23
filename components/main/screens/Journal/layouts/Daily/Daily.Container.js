@@ -5,10 +5,6 @@ import Daily from './Daily.Presentational'
 
 const mapStateToProps = (state) => ({
     routeName: state.get("currentRoute"),
-    day_tasks: state.get("day_tasks"),
-    categories: state.get("categories"),
-    priorities: state.get("priorities"),
-    headerPressed: state.get("headerPressed")
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

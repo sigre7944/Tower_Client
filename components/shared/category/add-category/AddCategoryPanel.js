@@ -1,18 +1,13 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import {
     View,
     Text,
-    TouchableHighlight,
-    StyleSheet,
     TextInput,
-    Keyboard,
-    Modal,
     TouchableOpacity,
-    FlatList,
-    Dimensions,
-    Animated
 } from 'react-native';
+
+import { Map } from 'immutable'
 
 export default class AddCategoryPanel extends React.PureComponent {
 
@@ -60,26 +55,18 @@ export default class AddCategoryPanel extends React.PureComponent {
     save = () => {
         if (!this.props.edit) {
             if (this.state.new_cate_name.length > 0) {
-                let categories_length = 0
-
-                for (let key in this.props.categories) {
-                    if (this.props.categories.hasOwnProperty(key)) {
-                        categories_length += 1
-                    }
-                }
-
-                let new_key = `cate_${categories_length}`,
+                let new_key = `cate_${Map(this.props.categories).size}`,
                     data = {}
 
-                data[new_key] = {
+                data = {
+                    id: new_key,
                     name: this.state.new_cate_name,
                     color: this.state.chosen_color,
                     quantity: 0,
                 }
 
-                this.props.createCategory(data)
+                this.props.createCategory(new_key, data)
                 this.props.hideAction()
-
             }
 
             else {
@@ -89,7 +76,8 @@ export default class AddCategoryPanel extends React.PureComponent {
 
         else {
             if (this.state.new_cate_name.length > 0) {
-                let data = {
+                data = {
+                    id: this.props.category.key,
                     name: this.state.new_cate_name,
                     color: this.state.chosen_color,
                     quantity: this.props.category.data.quantity
@@ -113,7 +101,6 @@ export default class AddCategoryPanel extends React.PureComponent {
             })
         }
     }
-
 
     render() {
         return (

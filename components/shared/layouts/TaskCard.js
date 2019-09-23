@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { CheckBox } from 'react-native-elements'
-import { Map } from 'immutable'
+import { Map, List, fromJS } from 'immutable'
 
 export default class TaskCard extends React.PureComponent {
     priority_order = {
@@ -44,7 +44,7 @@ export default class TaskCard extends React.PureComponent {
             current_date = new Date(),
             data,
             currentGoal = 0,
-            completed_tasks = this.props.completed_tasks,
+            completed_tasks = Map(this.props.completed_tasks),
             timestamp = 0
 
         if (type === "day") {
@@ -61,58 +61,113 @@ export default class TaskCard extends React.PureComponent {
 
         if (operation === "inc") {
             if (flag === "uncompleted") {
-                if (completed_tasks.has(task.id)) {
-                    data = completed_tasks.get(task.id).toMap().asMutable()
-
-                    if (data.has(timestamp)) {
-                        let completed_data = { ...data.get(timestamp) },
-                            { current } = completed_data
-
-                        current += 1
-                        completed_data.current = current
+                if (completed_tasks.hasIn([task.id, timestamp.toString()])) {
+                    data = Map(completed_tasks.get(task.id)).update(timestamp.toString(), (value) => {
+                        let value_map = Map(value),
+                            current = value_map.get("current") + 1
 
                         if (type === "day") {
-                            completed_data.priority_value = task.priority.value
+                            return ({
+                                current,
+                                priority_value: task.priority.value
+                            })
                         }
 
                         else if (type === "week") {
-                            let { day_completed_array, priority_value_array } = completed_data,
-                                day_in_week = current_date.getDay()
+                            let day_in_week = current_date.getDay()
 
-                            day_completed_array[day_in_week] += 1
-                            priority_value_array[day_in_week] = task.priority.value
-
-                            completed_data.day_completed_array = day_completed_array
-                            completed_data.priority_value_array = priority_value_array
+                            return ({
+                                current,
+                                day_completed_array: List(value_map.get("day_completed_array")).update(day_in_week, (value) => value + 1),
+                                priority_value_array: List(value_map.get("priority_value_array")).update(day_in_week, (value) => task.priority.value)
+                            })
                         }
 
                         else {
-                            let { day_completed_array, priority_value_array } = completed_data,
-                                day_in_month = current_date.getDate()
+                            let day_in_month = current_date.getDate()
 
-                            day_completed_array[day_in_month - 1] += 1
-                            priority_value_array[day_in_month - 1] = task.priority.value
-
-                            completed_data.day_completed_array = day_completed_array
-                            completed_data.priority_value_array = priority_value_array
+                            return ({
+                                current,
+                                day_completed_array: List(value_map.get("day_completed_array")).update(day_in_month - 1, (value) => value + 1),
+                                priority_value_array: List(value_map.get("priority_value_array")).update(day_in_month - 1, (value) => task.priority.value)
+                            })
                         }
-
-                        data.set(timestamp, completed_data)
-                    }
+                    })
                 }
 
-                else {
-                    data = Map().asMutable()
-                    data.set("id", task.id)
-                    data.set("category", task.category)
-                    data.set("priority_value", task.priority.value)
 
-                    let completed_data = {
-                        current: currentGoal + 1,
+                // if (completed_tasks.has(task.id)) {
+
+                //     data = completed_tasks.get(task.id).toMap().asMutable()
+
+                //     if (data.has(timestamp)) {
+                //         let completed_data = { ...data.get(timestamp) },
+                //             { current } = completed_data
+
+                //         let completed_data = Map(data.get(timestamp))
+
+                //         current += 1
+                //         completed_data.current = current
+
+                //         if (type === "day") {
+                //             completed_data.priority_value = task.priority.value
+                //         }
+
+                //         else if (type === "week") {
+                //             let { day_completed_array, priority_value_array } = completed_data,
+                //                 day_in_week = current_date.getDay()
+
+                //             day_completed_array[day_in_week] += 1
+                //             priority_value_array[day_in_week] = task.priority.value
+
+                //             completed_data.day_completed_array = day_completed_array
+                //             completed_data.priority_value_array = priority_value_array
+                //         }
+
+                //         else {
+                //             let { day_completed_array, priority_value_array } = completed_data,
+                //                 day_in_month = current_date.getDate()
+
+                //             day_completed_array[day_in_month - 1] += 1
+                //             priority_value_array[day_in_month - 1] = task.priority.value
+
+                //             completed_data.day_completed_array = day_completed_array
+                //             completed_data.priority_value_array = priority_value_array
+                //         }
+
+                //         data.set(timestamp, completed_data)
+                //     }
+                // }
+
+                else {
+                    let pre_convert_obj = {
+                        id: task.id,
+                        category: task.category,
+                        priority_value: task.priority.value
+                    }
+                    // data = Map().asMutable()
+                    // data.set("id", task.id)
+                    // data.set("category", task.category)
+                    // data.set("priority_value", task.priority.value)
+
+                    // let completed_data = {
+                    //     current: currentGoal + 1,
+                    // }
+
+                    // let completed_data = Map({
+                    //     current: currentGoal + 1
+                    // }).asMutable()
+
+                    let pre_convert_completed_data = {
+                        current: currentGoal + 1
                     }
 
                     if (type === "day") {
-                        completed_data.priority_value = task.priority.value
+                        // completed_data.priority_value = task.priority.value
+
+                        // completed_data.set("priority_value", task.priority.value)
+
+                        pre_convert_completed_data.priority_value = task.priority.value
                     }
 
                     else if (type === "week") {
@@ -122,8 +177,14 @@ export default class TaskCard extends React.PureComponent {
 
                         day_completed_array[day_in_week] += 1
 
-                        completed_data.day_completed_array = day_completed_array
-                        completed_data.priority_value_array = priority_value_array
+                        // completed_data.day_completed_array = day_completed_array
+                        // completed_data.priority_value_array = priority_value_array
+
+                        // completed_data.set("day_completed_array", day_completed_array)
+                        // completed_data.set("priority_value_array", priority_value_array)
+
+                        pre_convert_completed_data.day_completed_array = day_completed_array
+                        pre_convert_completed_data.priority_value_array = priority_value_array
                     }
 
                     else {
@@ -134,129 +195,206 @@ export default class TaskCard extends React.PureComponent {
 
                         day_completed_array[day_in_month - 1] += 1
 
-                        completed_data.day_completed_array = day_completed_array
-                        completed_data.priority_value_array = priority_value_array
+                        // completed_data.day_completed_array = day_completed_array
+                        // completed_data.priority_value_array = priority_value_array
+
+                        // completed_data.set("day_completed_array", day_completed_array)
+                        // completed_data.set("priority_value_array", priority_value_array)
+
+                        pre_convert_completed_data.day_completed_array = day_completed_array
+                        pre_convert_completed_data.priority_value_array = priority_value_array
                     }
 
-                    data.set(timestamp, completed_data)
+                    // data.set(timestamp, completed_data)
+                    pre_convert_obj[timestamp] = pre_convert_completed_data
+
+                    data = fromJS(pre_convert_obj)
                 }
             }
 
             else {
-                if (completed_tasks.has(task.id)) {
-                    data = completed_tasks.get(task.id).toMap().asMutable()
-
-                    if (data.has(timestamp)) {
-                        let completed_data = { ...data.get(timestamp) },
-                            { current } = completed_data
-
-                        current -= 1
-
-                        if (current < 0) {
-                            current = 0
-                        }
-
-                        completed_data.current = current
+                if (completed_tasks.hasIn([task.id, timestamp.toString()])) {
+                    data = Map(completed_tasks.get(task.id)).update(timestamp.toString(), (value) => {
+                        let value_map = Map(value),
+                            current = value_map.get("current") - 1 < 0 ? 0 : value_map.get("current") - 1
 
                         if (type === "day") {
-                            completed_data.priority_value = task.priority.value
+                            return ({
+                                current,
+                                priority_value: task.priority.value
+                            })
                         }
 
                         else if (type === "week") {
-                            let { day_completed_array, priority_value_array } = completed_data,
-                                day_in_week = current_date.getDay()
+                            let day_in_week = current_date.getDay()
 
-                            day_completed_array[day_in_week] -= 1
-
-                            if (day_completed_array[day_in_week] < 0) {
-                                day_completed_array[day_in_week] = 0
-                            }
-
-                            priority_value_array[day_in_week] = task.priority.value
-
-                            completed_data.day_completed_array = day_completed_array
-                            completed_data.priority_value_array = priority_value_array
+                            return ({
+                                current,
+                                day_completed_array: List(value_map.get("day_completed_array")).update(day_in_week, (value) => value - 1 < 0 ? 0 : value - 1),
+                                priority_value_array: List(value_map.get("priority_value_array")).update(day_in_week, (value) => task.priority.value)
+                            })
                         }
 
                         else {
-                            let { day_completed_array, priority_value_array } = completed_data,
-                                day_in_month = current_date.getDate()
+                            let day_in_month = current_date.getDate()
 
-                            day_completed_array[day_in_month - 1] -= 1
-
-                            if (day_completed_array[day_in_month - 1] < 0) {
-                                day_completed_array[day_in_month - 1] = 0
-                            }
-
-                            priority_value_array[day_in_month - 1] = task.priority.value
-
-                            completed_data.day_completed_array = day_completed_array
-                            completed_data.priority_value_array = priority_value_array
+                            return ({
+                                current,
+                                day_completed_array: List(value_map.get("day_completed_array")).update(day_in_month - 1, (value) => value - 1 < 0 ? 0 : value - 1),
+                                priority_value_array: List(value_map.get("priority_value_array")).update(day_in_month - 1, (value) => task.priority.value)
+                            })
                         }
-
-                        data.set(timestamp, completed_data)
-                    }
+                    })
                 }
+
+                // if (completed_tasks.has(task.id)) {
+                //     data = completed_tasks.get(task.id).toMap().asMutable()
+
+                //     if (data.has(timestamp)) {
+                //         let completed_data = { ...data.get(timestamp) },
+                //             { current } = completed_data
+
+                //         current -= 1
+
+                //         if (current < 0) {
+                //             current = 0
+                //         }
+
+                //         completed_data.current = current
+
+                //         if (type === "day") {
+                //             completed_data.priority_value = task.priority.value
+                //         }
+
+                //         else if (type === "week") {
+                //             let { day_completed_array, priority_value_array } = completed_data,
+                //                 day_in_week = current_date.getDay()
+
+                //             day_completed_array[day_in_week] -= 1
+
+                //             if (day_completed_array[day_in_week] < 0) {
+                //                 day_completed_array[day_in_week] = 0
+                //             }
+
+                //             priority_value_array[day_in_week] = task.priority.value
+
+                //             completed_data.day_completed_array = day_completed_array
+                //             completed_data.priority_value_array = priority_value_array
+                //         }
+
+                //         else {
+                //             let { day_completed_array, priority_value_array } = completed_data,
+                //                 day_in_month = current_date.getDate()
+
+                //             day_completed_array[day_in_month - 1] -= 1
+
+                //             if (day_completed_array[day_in_month - 1] < 0) {
+                //                 day_completed_array[day_in_month - 1] = 0
+                //             }
+
+                //             priority_value_array[day_in_month - 1] = task.priority.value
+
+                //             completed_data.day_completed_array = day_completed_array
+                //             completed_data.priority_value_array = priority_value_array
+                //         }
+
+                //         data.set(timestamp, completed_data)
+                //     }
+                // }
             }
         }
 
         else {
             if (flag === "uncompleted") {
-                if (completed_tasks.has(task.id)) {
-                    data = completed_tasks.get(task.id).toMap().asMutable()
-
-                    if (data.has(timestamp)) {
-                        let completed_data = { ...data.get(timestamp) },
-                            { current } = completed_data
-
-
-                        current -= 1
-
-                        if (current < 0) {
-                            current = 0
-                        }
-
-                        completed_data.current = current
+                if (completed_tasks.hasIn([task.id, timestamp.toString()])) {
+                    data = Map(completed_tasks.get(task.id)).update(timestamp.toString(), (value) => {
+                        let value_map = Map(value),
+                            current = value_map.get("current") - 1 < 0 ? 0 : value_map.get("current") - 1
 
                         if (type === "day") {
-                            completed_data.priority_value = task.priority.value
+                            return ({
+                                current,
+                                priority_value: task.priority.value
+                            })
                         }
 
                         else if (type === "week") {
-                            let { day_completed_array, priority_value_array } = completed_data,
-                                day_in_week = current_date.getDay()
+                            let day_in_week = current_date.getDay()
 
-                            day_completed_array[day_in_week] -= 1
-
-                            if (day_completed_array[day_in_week] < 0) {
-                                day_completed_array[day_in_week] = 0
-                            }
-
-                            priority_value_array[day_in_week] = task.priority.value
-
-                            completed_data.day_completed_array = day_completed_array
-                            completed_data.priority_value_array = priority_value_array
+                            return ({
+                                current,
+                                day_completed_array: List(value_map.get("day_completed_array")).update(day_in_week, (value) => value - 1 < 0 ? 0 : value - 1),
+                                priority_value_array: List(value_map.get("priority_value_array")).update(day_in_week, (value) => task.priority.value)
+                            })
                         }
 
                         else {
-                            let { day_completed_array, priority_value_array } = completed_data,
-                                day_in_month = current_date.getDate()
+                            let day_in_month = current_date.getDate()
 
-                            day_completed_array[day_in_month - 1] -= 1
-
-                            if (day_completed_array[day_in_month - 1] < 0) {
-                                day_completed_array[day_in_month - 1] = 0
-                            }
-
-                            priority_value_array[day_in_month - 1] = task.priority.value
-
-                            completed_data.day_completed_array = day_completed_array
-                            completed_data.priority_value_array = priority_value_array
+                            return ({
+                                current,
+                                day_completed_array: List(value_map.get("day_completed_array")).update(day_in_month - 1, (value) => value - 1 < 0 ? 0 : value - 1),
+                                priority_value_array: List(value_map.get("priority_value_array")).update(day_in_month - 1, (value) => task.priority.value)
+                            })
                         }
-
-                        data.set(timestamp, completed_data)
-                    }
+                    })
                 }
+
+                // if (completed_tasks.has(task.id)) {
+                //     data = completed_tasks.get(task.id).toMap().asMutable()
+
+                //     if (data.has(timestamp)) {
+                //         let completed_data = { ...data.get(timestamp) },
+                //             { current } = completed_data
+
+
+                //         current -= 1
+
+                //         if (current < 0) {
+                //             current = 0
+                //         }
+
+                //         completed_data.current = current
+
+                //         if (type === "day") {
+                //             completed_data.priority_value = task.priority.value
+                //         }
+
+                //         else if (type === "week") {
+                //             let { day_completed_array, priority_value_array } = completed_data,
+                //                 day_in_week = current_date.getDay()
+
+                //             day_completed_array[day_in_week] -= 1
+
+                //             if (day_completed_array[day_in_week] < 0) {
+                //                 day_completed_array[day_in_week] = 0
+                //             }
+
+                //             priority_value_array[day_in_week] = task.priority.value
+
+                //             completed_data.day_completed_array = day_completed_array
+                //             completed_data.priority_value_array = priority_value_array
+                //         }
+
+                //         else {
+                //             let { day_completed_array, priority_value_array } = completed_data,
+                //                 day_in_month = current_date.getDate()
+
+                //             day_completed_array[day_in_month - 1] -= 1
+
+                //             if (day_completed_array[day_in_month - 1] < 0) {
+                //                 day_completed_array[day_in_month - 1] = 0
+                //             }
+
+                //             priority_value_array[day_in_month - 1] = task.priority.value
+
+                //             completed_data.day_completed_array = day_completed_array
+                //             completed_data.priority_value_array = priority_value_array
+                //         }
+
+                //         data.set(timestamp, completed_data)
+                //     }
+                // }
             }
         }
 

@@ -13,7 +13,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch, ownProps) => {
     if (!ownProps.edit) {
         return ({
-            createCategory: (data) => dispatch(createCategory(data))
+            createCategory: (id, data) => dispatch(createCategory(id, data))
         })
     }
 
