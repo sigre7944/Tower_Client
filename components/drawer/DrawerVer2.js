@@ -118,7 +118,6 @@ export default class Drawer extends React.PureComponent {
                 completed_task_data.keySeq().forEach((key) => {
                     if (key !== "id" && key !== "category" && key !== "priority_value") {
                         let completed_timestamp = parseInt(key),
-                            // completed_value = completed_task_data.get(key).current,
                             completed_value = completed_task_data.getIn([key, "current"]),
                             near_monday = this.getMonday(completed_timestamp),
                             day_in_week = new Date(completed_timestamp).getDay(),
@@ -130,45 +129,10 @@ export default class Drawer extends React.PureComponent {
 
 
                         if (stats_map.has(completed_timestamp)) {
-                            // let stats_data = { ...stats_map.get(completed_timestamp) },
-                            //     current = [...stats_data.current]
-
-                            // current[this.priority_order[priority_value]] -= completed_value
-                            // if (current[this.priority_order[priority_value]] < 0) {
-                            //     current[this.priority_order[priority_value]] = 0
-                            // }
-
-                            // stats_data.current = current
-
-                            // stats_map.set(completed_timestamp, stats_data)
-
                             stats_map.updateIn([completed_timestamp, "current"], (value) => {
                                 return List(value).update(this.priority_order[priority_value], (v) => v - completed_value < 0 ? 0 : v - completed_value)
                             })
                         }
-
-                        // if (week_chart_stats_map.has(week_completed_timestamp)) {
-                        //     let chart_data = { ...week_chart_stats_map.get(week_completed_timestamp) }
-
-                        //     if (chart_data.hasOwnProperty(day_in_week)) {
-                        //         let data = { ...chart_data[day_in_week] },
-                        //             current = [...data.current]
-
-                        //         current[this.priority_order[priority_value]] -= completed_value
-
-                        //         if (current[this.priority_order[priority_value]] < 0) {
-                        //             current[this.priority_order[priority_value]] = 0
-                        //         }
-
-                        //         data.current = current
-
-                        //         chart_data[day_in_week] = data
-
-                        //         week_chart_stats_map.set(week_completed_timestamp, chart_data)
-                        //     }
-
-
-                        // }
 
                         if (week_chart_stats_map.hasIn([week_completed_timestamp, day_in_week.toString()])) {
                             week_chart_stats_map.updateIn([week_completed_timestamp, day_in_week.toString(), "current"], (value) => {
@@ -177,54 +141,11 @@ export default class Drawer extends React.PureComponent {
 
                         }
 
-                        // if (month_chart_stats_map.has(month_completed_timestamp)) {
-                        //     let chart_data = { ...month_chart_stats_map.get(month_completed_timestamp) }
-
-                        //     if (chart_data.hasOwnProperty(day)) {
-                        //         let data = { ...chart_data[day] },
-                        //             current = [...data.current]
-
-                        //         current[this.priority_order[priority_value]] -= completed_value
-
-                        //         if (current[this.priority_order[priority_value]] < 0) {
-                        //             current[this.priority_order[priority_value]] = 0
-                        //         }
-
-                        //         data.current = current
-
-                        //         chart_data[day] = data
-
-                        //         month_chart_stats_map.set(month_completed_timestamp, chart_data)
-                        //     }
-                        // }
-
                         if (month_chart_stats_map.hasIn([month_completed_timestamp, day.toString()])) {
                             month_chart_stats_map.updateIn([month_completed_timestamp, day.toString(), "current"], (value) => {
                                 return List(value).update(this.priority_order[priority_value], (v) => v - completed_value < 0 ? 0 : v - completed_value)
                             })
                         }
-
-
-                        // if (year_chart_stats_map.has(year)) {
-                        //     let chart_data = { ...year_chart_stats_map.get(year) }
-
-                        //     if (chart_data.hasOwnProperty(month)) {
-                        //         let data = { ...chart_data[month] },
-                        //             current = [...data.current]
-
-                        //         current[this.priority_order[priority_value]] -= completed_value
-
-                        //         if (current[this.priority_order[priority_value]] < 0) {
-                        //             current[this.priority_order[priority_value]] = 0
-                        //         }
-
-                        //         data.current = current
-
-                        //         chart_data[month] = data
-
-                        //         year_chart_stats_map.set(year, chart_data)
-                        //     }
-                        // }
 
                         if (year_chart_stats_map.hasIn([year, month.toString()])) {
                             year_chart_stats_map.updateIn([year, month.toString(), "current"], (value) => {
@@ -238,7 +159,7 @@ export default class Drawer extends React.PureComponent {
 
         else if (type === "week") {
             completed_tasks_map = this.props.completed_week_tasks
-            stats_map = sending_obj.week_stats
+            stats_map = Map(sending_obj.week_stats).asMutable()
 
             if (completed_tasks_map.has(id)) {
                 let completed_task_data = Map(completed_tasks_map.get(id))
@@ -264,45 +185,10 @@ export default class Drawer extends React.PureComponent {
                                         priority_value = priority_value_array.get(index)
 
                                     if (stats_map.has(completed_timestamp)) {
-                                        // let stats_data = { ...stats_map.get(completed_timestamp) },
-                                        //     current = [...stats_data.current]
-
-                                        // current[this.priority_order[priority_value]] -= value
-
-                                        // if (current[this.priority_order[priority_value]] < 0) {
-                                        //     current[this.priority_order[priority_value]] = 0
-                                        // }
-
-
-                                        // stats_data.current = current
-
-                                        // stats_map.set(completed_timestamp, stats_data)
-
                                         stats_map.updateIn([completed_timestamp, "current"], (value) => {
                                             return List(value).update(this.priority_order[priority_value], (v) => v - completed_value < 0 ? 0 : v - completed_value)
                                         })
                                     }
-
-
-                                    // if (week_chart_stats_map.has(completed_timestamp)) {
-                                    //     let chart_data = { ...week_chart_stats_map.get(completed_timestamp) }
-
-                                    //     if (chart_data.hasOwnProperty(index)) {
-                                    //         let data = { ...chart_data[index] },
-                                    //             current = [...data.current]
-
-                                    //         current[this.priority_order[priority_value]] -= value
-
-                                    //         if (current[this.priority_order[priority_value]] < 0) {
-                                    //             current[this.priority_order[priority_value]] = 0
-                                    //         }
-
-                                    //         data.current = current
-                                    //         chart_data[index] = data
-
-                                    //         week_chart_stats_map.set(completed_timestamp, chart_data)
-                                    //     }
-                                    // }
 
                                     if (week_chart_stats_map.hasIn([completed_timestamp, index.toString()])) {
                                         week_chart_stats_map.updateIn([completed_timestamp, index.toString(), "current"], (value) => {
@@ -310,51 +196,11 @@ export default class Drawer extends React.PureComponent {
                                         })
                                     }
 
-                                    // if (month_chart_stats_map.has(month_timestamp)) {
-                                    //     let chart_data = { ...month_chart_stats_map.get(month_timestamp) }
-
-                                    //     if (chart_data.hasOwnProperty(day)) {
-                                    //         let data = { ...chart_data[day] },
-                                    //             current = [...data.current]
-
-                                    //         current[this.priority_order[priority_value]] -= value
-
-                                    //         if (current[this.priority_order[priority_value]] < 0) {
-                                    //             current[this.priority_order[priority_value]] = 0
-                                    //         }
-
-                                    //         data.current = current
-                                    //         chart_data[day] = data
-
-                                    //         month_chart_stats_map.set(month_timestamp, chart_data)
-                                    //     }
-                                    // }
-
                                     if (month_chart_stats_map.hasIn([month_timestamp, day.toString()])) {
                                         month_chart_stats_map.updateIn([month_timestamp, day.toString(), "current"], (value) => {
                                             return List(value).update(this.priority_order[priority_value], (v) => v - completed_value < 0 ? 0 : v - completed_value)
                                         })
                                     }
-
-                                    // if (year_chart_stats_map.has(year)) {
-                                    //     let chart_data = { ...year_chart_stats_map.get(year) }
-
-                                    //     if (chart_data.hasOwnProperty(month)) {
-                                    //         let data = { ...chart_data[month] },
-                                    //             current = [...data.current]
-
-                                    //         current[this.priority_order[priority_value]] -= value
-
-                                    //         if (current[this.priority_order[priority_value]] < 0) {
-                                    //             current[this.priority_order[priority_value]] = 0
-                                    //         }
-
-                                    //         data.current = current
-                                    //         chart_data[month] = data
-
-                                    //         year_chart_stats_map.set(year, chart_data)
-                                    //     }
-                                    // }
 
                                     if (year_chart_stats_map.hasIn([year, month.toString()])) {
                                         year_chart_stats_map.updateIn([year, month.toString(), "current"], (value) => {
@@ -371,7 +217,7 @@ export default class Drawer extends React.PureComponent {
 
         else {
             completed_tasks_map = this.props.completed_month_tasks
-            stats_map = sending_obj.month_stats
+            stats_map = Map(sending_obj.month_stats).asMutable()
 
             if (completed_tasks_map.has(id)) {
 
@@ -397,44 +243,10 @@ export default class Drawer extends React.PureComponent {
                                         priority_value = priority_value_array.get(index)
 
                                     if (stats_map.has(completed_timestamp)) {
-                                        // let stats_data = { ...stats_map.get(completed_timestamp) },
-                                        //     current = [...stats_data.current]
-
-                                        // current[this.priority_order[priority_value]] -= value
-
-                                        // if (current[this.priority_order[priority_value]] < 0) {
-                                        //     current[this.priority_order[priority_value]] = 0
-                                        // }
-
-                                        // stats_data.current = current
-
-                                        // stats_map.set(completed_timestamp, stats_data)
-
                                         stats_map.updateIn([completed_timestamp, "current"], (value) => {
                                             return List(value).update(this.priority_order[priority_value], (v) => v - completed_value < 0 ? 0 : v - completed_value)
                                         })
                                     }
-
-                                    // if (week_chart_stats_map.has(completed_week_timestamp)) {
-                                    //     let chart_data = { ...week_chart_stats_map.get(completed_week_timestamp) }
-
-                                    //     if (chart_data.hasOwnProperty(day_in_week)) {
-                                    //         let data = { ...chart_data[day_in_week] },
-                                    //             current = [...data.current]
-
-                                    //         current[this.priority_order[priority_value]] -= value
-
-                                    //         if (current[this.priority_order[priority_value]] < 0) {
-                                    //             current[this.priority_order[priority_value]] = 0
-                                    //         }
-
-                                    //         data.current = current
-
-                                    //         chart_data[day_in_week] = data
-
-                                    //         week_chart_stats_map.set(completed_week_timestamp, chart_data)
-                                    //     }
-                                    // }
 
                                     if (week_chart_stats_map.hasIn([completed_week_timestamp, day_in_week.toString()])) {
                                         week_chart_stats_map.updateIn([completed_week_timestamp, day_in_week.toString(), "current"], (value) => {
@@ -442,53 +254,11 @@ export default class Drawer extends React.PureComponent {
                                         })
                                     }
 
-                                    // if (month_chart_stats_map.has(completed_timestamp)) {
-                                    //     let chart_data = { ...month_chart_stats_map.get(completed_timestamp) }
-
-                                    //     if (chart_data.hasOwnProperty(day)) {
-                                    //         let data = { ...chart_data[day] },
-                                    //             current = [...data.current]
-
-                                    //         current[this.priority_order[priority_value]] -= value
-
-                                    //         if (current[this.priority_order[priority_value]] < 0) {
-                                    //             current[this.priority_order[priority_value]] = 0
-                                    //         }
-
-                                    //         data.current = current
-
-                                    //         chart_data[day] = data
-
-                                    //         month_chart_stats_map.set(completed_timestamp, chart_data)
-                                    //     }
-                                    // }
-
                                     if (month_chart_stats_map.hasIn([completed_timestamp, day.toString()])) {
                                         month_chart_stats_map.updateIn([completed_timestamp, day.toString(), "current"], (value) => {
                                             return List(value).update(this.priority_order[priority_value], (v) => v - completed_value < 0 ? 0 : v - completed_value)
                                         })
                                     }
-
-                                    // if (year_chart_stats_map.has(completed_year)) {
-                                    //     let chart_data = { ...year_chart_stats_map.get(completed_year) }
-
-                                    //     if (chart_data.hasOwnProperty(completed_month)) {
-                                    //         let data = { ...chart_data[completed_month] },
-                                    //             current = [...data.current]
-
-                                    //         current[this.priority_order[priority_value]] -= value
-
-                                    //         if (current[this.priority_order[priority_value]] < 0) {
-                                    //             current[this.priority_order[priority_value]] = 0
-                                    //         }
-
-                                    //         data.current = current
-
-                                    //         chart_data[completed_month] = data
-
-                                    //         year_chart_stats_map.set(completed_year, chart_data)
-                                    //     }
-                                    // }
 
                                     if (year_chart_stats_map.hasIn([completed_year, completed_month.toString()])) {
                                         year_chart_stats_map.updateIn([completed_year, completed_month.toString(), "current"], (value) => {

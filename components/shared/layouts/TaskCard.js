@@ -62,82 +62,30 @@ export default class TaskCard extends React.PureComponent {
         if (operation === "inc") {
             if (flag === "uncompleted") {
                 if (completed_tasks.hasIn([task.id, timestamp.toString()])) {
-                    data = Map(completed_tasks.get(task.id)).update(timestamp.toString(), (value) => {
-                        let value_map = Map(value),
-                            current = value_map.get("current") + 1
+                    if (type === "day") {
+                        data = Map(completed_tasks.get(task.id)).toMap().asMutable()
+                        data.updateIn([timestamp.toString(), "current"], (value) => value + 1)
+                        data.updateIn([timestamp.toString(), "priority_value"], (value) => task.priority.value)
+                    }
 
-                        if (type === "day") {
-                            return ({
-                                current,
-                                priority_value: task.priority.value
-                            })
-                        }
+                    else if (type === "week") {
+                        let day_in_week = current_date.getDay()
 
-                        else if (type === "week") {
-                            let day_in_week = current_date.getDay()
+                        data = Map(completed_tasks.get(task.id)).toMap().asMutable()
+                        data.updateIn([timestamp.toString(), "current"], (value) => v + 1)
+                        data.updateIn([timestamp.toString(), "day_completed_array"], (value) => List(value).update(day_in_week, (v) => v + 1))
+                        data.updateIn([timestamp.toString(), "priority_value_array"], (value) => List(value).update(day_in_week, (v) => task.priority.value))
+                    }
 
-                            return ({
-                                current,
-                                day_completed_array: List(value_map.get("day_completed_array")).update(day_in_week, (value) => value + 1),
-                                priority_value_array: List(value_map.get("priority_value_array")).update(day_in_week, (value) => task.priority.value)
-                            })
-                        }
+                    else {
+                        let day_in_month = current_date.getDate()
 
-                        else {
-                            let day_in_month = current_date.getDate()
-
-                            return ({
-                                current,
-                                day_completed_array: List(value_map.get("day_completed_array")).update(day_in_month - 1, (value) => value + 1),
-                                priority_value_array: List(value_map.get("priority_value_array")).update(day_in_month - 1, (value) => task.priority.value)
-                            })
-                        }
-                    })
+                        data = Map(completed_tasks.get(task.id)).toMap().asMutable()
+                        data.updateIn([timestamp.toString(), "current"], (value) => v + 1)
+                        data.updateIn([timestamp.toString(), "day_completed_array"], (value) => List(value).update(day_in_month - 1, (v) => v + 1))
+                        data.updateIn([timestamp.toString(), "priority_value_array"], (value) => List(value).update(day_in_month - 1, (v) => task.priority.value))
+                    }
                 }
-
-
-                // if (completed_tasks.has(task.id)) {
-
-                //     data = completed_tasks.get(task.id).toMap().asMutable()
-
-                //     if (data.has(timestamp)) {
-                //         let completed_data = { ...data.get(timestamp) },
-                //             { current } = completed_data
-
-                //         let completed_data = Map(data.get(timestamp))
-
-                //         current += 1
-                //         completed_data.current = current
-
-                //         if (type === "day") {
-                //             completed_data.priority_value = task.priority.value
-                //         }
-
-                //         else if (type === "week") {
-                //             let { day_completed_array, priority_value_array } = completed_data,
-                //                 day_in_week = current_date.getDay()
-
-                //             day_completed_array[day_in_week] += 1
-                //             priority_value_array[day_in_week] = task.priority.value
-
-                //             completed_data.day_completed_array = day_completed_array
-                //             completed_data.priority_value_array = priority_value_array
-                //         }
-
-                //         else {
-                //             let { day_completed_array, priority_value_array } = completed_data,
-                //                 day_in_month = current_date.getDate()
-
-                //             day_completed_array[day_in_month - 1] += 1
-                //             priority_value_array[day_in_month - 1] = task.priority.value
-
-                //             completed_data.day_completed_array = day_completed_array
-                //             completed_data.priority_value_array = priority_value_array
-                //         }
-
-                //         data.set(timestamp, completed_data)
-                //     }
-                // }
 
                 else {
                     let pre_convert_obj = {
@@ -145,28 +93,11 @@ export default class TaskCard extends React.PureComponent {
                         category: task.category,
                         priority_value: task.priority.value
                     }
-                    // data = Map().asMutable()
-                    // data.set("id", task.id)
-                    // data.set("category", task.category)
-                    // data.set("priority_value", task.priority.value)
-
-                    // let completed_data = {
-                    //     current: currentGoal + 1,
-                    // }
-
-                    // let completed_data = Map({
-                    //     current: currentGoal + 1
-                    // }).asMutable()
-
                     let pre_convert_completed_data = {
                         current: currentGoal + 1
                     }
 
                     if (type === "day") {
-                        // completed_data.priority_value = task.priority.value
-
-                        // completed_data.set("priority_value", task.priority.value)
-
                         pre_convert_completed_data.priority_value = task.priority.value
                     }
 
@@ -176,13 +107,6 @@ export default class TaskCard extends React.PureComponent {
                             day_in_week = current_date.getDay()
 
                         day_completed_array[day_in_week] += 1
-
-                        // completed_data.day_completed_array = day_completed_array
-                        // completed_data.priority_value_array = priority_value_array
-
-                        // completed_data.set("day_completed_array", day_completed_array)
-                        // completed_data.set("priority_value_array", priority_value_array)
-
                         pre_convert_completed_data.day_completed_array = day_completed_array
                         pre_convert_completed_data.priority_value_array = priority_value_array
                     }
@@ -194,18 +118,10 @@ export default class TaskCard extends React.PureComponent {
                             day_completed_array = new Array(last_day_in_month).fill(0)
 
                         day_completed_array[day_in_month - 1] += 1
-
-                        // completed_data.day_completed_array = day_completed_array
-                        // completed_data.priority_value_array = priority_value_array
-
-                        // completed_data.set("day_completed_array", day_completed_array)
-                        // completed_data.set("priority_value_array", priority_value_array)
-
                         pre_convert_completed_data.day_completed_array = day_completed_array
                         pre_convert_completed_data.priority_value_array = priority_value_array
                     }
 
-                    // data.set(timestamp, completed_data)
                     pre_convert_obj[timestamp] = pre_convert_completed_data
 
                     data = fromJS(pre_convert_obj)
@@ -214,200 +130,73 @@ export default class TaskCard extends React.PureComponent {
 
             else {
                 if (completed_tasks.hasIn([task.id, timestamp.toString()])) {
-                    data = Map(completed_tasks.get(task.id)).update(timestamp.toString(), (value) => {
-                        let value_map = Map(value),
-                            current = value_map.get("current") - 1 < 0 ? 0 : value_map.get("current") - 1
+                    if (type === "day") {
+                        data = Map(completed_tasks.get(task.id)).toMap().asMutable()
+                        data.updateIn([timestamp.toString(), "current"], (value) => value - 1 < 0 ? 0 : value - 1)
+                        data.updateIn([timestamp.toString(), "priority_value"], (value) => task.priority.value)
+                    }
 
-                        if (type === "day") {
-                            return ({
-                                current,
-                                priority_value: task.priority.value
-                            })
-                        }
+                    else if (type === "week") {
+                        let day_in_week = current_date.getDay()
 
-                        else if (type === "week") {
-                            let day_in_week = current_date.getDay()
+                        data = Map(completed_tasks.get(task.id)).toMap().asMutable()
+                        data.updateIn([timestamp.toString(), "current"], (value) => value - 1 < 0 ? 0 : value - 1)
+                        data.updateIn([timestamp.toString(), "day_completed_array"], (value) => List(value).update(day_in_week, (v) => value - 1 < 0 ? 0 : value - 1))
+                        data.updateIn([timestamp.toString(), "priority_value_array"], (value) => List(value).update(day_in_week, (v) => task.priority.value))
+                    }
 
-                            return ({
-                                current,
-                                day_completed_array: List(value_map.get("day_completed_array")).update(day_in_week, (value) => value - 1 < 0 ? 0 : value - 1),
-                                priority_value_array: List(value_map.get("priority_value_array")).update(day_in_week, (value) => task.priority.value)
-                            })
-                        }
+                    else {
+                        let day_in_month = current_date.getDate()
 
-                        else {
-                            let day_in_month = current_date.getDate()
-
-                            return ({
-                                current,
-                                day_completed_array: List(value_map.get("day_completed_array")).update(day_in_month - 1, (value) => value - 1 < 0 ? 0 : value - 1),
-                                priority_value_array: List(value_map.get("priority_value_array")).update(day_in_month - 1, (value) => task.priority.value)
-                            })
-                        }
-                    })
+                        data = Map(completed_tasks.get(task.id)).toMap().asMutable()
+                        data.updateIn([timestamp.toString(), "current"], (value) => value - 1 < 0 ? 0 : value - 1)
+                        data.updateIn([timestamp.toString(), "day_completed_array"], (value) => List(value).update(day_in_month - 1, (v) => value - 1 < 0 ? 0 : value - 1))
+                        data.updateIn([timestamp.toString(), "priority_value_array"], (value) => List(value).update(day_in_month - 1, (v) => task.priority.value))
+                    }
                 }
-
-                // if (completed_tasks.has(task.id)) {
-                //     data = completed_tasks.get(task.id).toMap().asMutable()
-
-                //     if (data.has(timestamp)) {
-                //         let completed_data = { ...data.get(timestamp) },
-                //             { current } = completed_data
-
-                //         current -= 1
-
-                //         if (current < 0) {
-                //             current = 0
-                //         }
-
-                //         completed_data.current = current
-
-                //         if (type === "day") {
-                //             completed_data.priority_value = task.priority.value
-                //         }
-
-                //         else if (type === "week") {
-                //             let { day_completed_array, priority_value_array } = completed_data,
-                //                 day_in_week = current_date.getDay()
-
-                //             day_completed_array[day_in_week] -= 1
-
-                //             if (day_completed_array[day_in_week] < 0) {
-                //                 day_completed_array[day_in_week] = 0
-                //             }
-
-                //             priority_value_array[day_in_week] = task.priority.value
-
-                //             completed_data.day_completed_array = day_completed_array
-                //             completed_data.priority_value_array = priority_value_array
-                //         }
-
-                //         else {
-                //             let { day_completed_array, priority_value_array } = completed_data,
-                //                 day_in_month = current_date.getDate()
-
-                //             day_completed_array[day_in_month - 1] -= 1
-
-                //             if (day_completed_array[day_in_month - 1] < 0) {
-                //                 day_completed_array[day_in_month - 1] = 0
-                //             }
-
-                //             priority_value_array[day_in_month - 1] = task.priority.value
-
-                //             completed_data.day_completed_array = day_completed_array
-                //             completed_data.priority_value_array = priority_value_array
-                //         }
-
-                //         data.set(timestamp, completed_data)
-                //     }
-                // }
             }
         }
 
         else {
             if (flag === "uncompleted") {
                 if (completed_tasks.hasIn([task.id, timestamp.toString()])) {
-                    data = Map(completed_tasks.get(task.id)).update(timestamp.toString(), (value) => {
-                        let value_map = Map(value),
-                            current = value_map.get("current") - 1 < 0 ? 0 : value_map.get("current") - 1
+                    if (type === "day") {
+                        data = Map(completed_tasks.get(task.id)).toMap().asMutable()
+                        data.updateIn([timestamp.toString(), "current"], (value) => value - 1 < 0 ? 0 : value - 1)
+                        data.updateIn([timestamp.toString(), "priority_value"], (value) => task.priority.value)
+                    }
 
-                        if (type === "day") {
-                            return ({
-                                current,
-                                priority_value: task.priority.value
-                            })
-                        }
+                    else if (type === "week") {
+                        let day_in_week = current_date.getDay()
 
-                        else if (type === "week") {
-                            let day_in_week = current_date.getDay()
+                        data = Map(completed_tasks.get(task.id)).toMap().asMutable()
+                        data.updateIn([timestamp.toString(), "current"], (value) => value - 1 < 0 ? 0 : value - 1)
+                        data.updateIn([timestamp.toString(), "day_completed_array"], (value) => List(value).update(day_in_week, (v) => value - 1 < 0 ? 0 : value - 1))
+                        data.updateIn([timestamp.toString(), "priority_value_array"], (value) => List(value).update(day_in_week, (v) => task.priority.value))
+                    }
 
-                            return ({
-                                current,
-                                day_completed_array: List(value_map.get("day_completed_array")).update(day_in_week, (value) => value - 1 < 0 ? 0 : value - 1),
-                                priority_value_array: List(value_map.get("priority_value_array")).update(day_in_week, (value) => task.priority.value)
-                            })
-                        }
+                    else {
+                        let day_in_month = current_date.getDate()
 
-                        else {
-                            let day_in_month = current_date.getDate()
-
-                            return ({
-                                current,
-                                day_completed_array: List(value_map.get("day_completed_array")).update(day_in_month - 1, (value) => value - 1 < 0 ? 0 : value - 1),
-                                priority_value_array: List(value_map.get("priority_value_array")).update(day_in_month - 1, (value) => task.priority.value)
-                            })
-                        }
-                    })
+                        data = Map(completed_tasks.get(task.id)).toMap().asMutable()
+                        data.updateIn([timestamp.toString(), "current"], (value) => value - 1 < 0 ? 0 : value - 1)
+                        data.updateIn([timestamp.toString(), "day_completed_array"], (value) => List(value).update(day_in_month - 1, (v) => value - 1 < 0 ? 0 : value - 1))
+                        data.updateIn([timestamp.toString(), "priority_value_array"], (value) => List(value).update(day_in_month - 1, (v) => task.priority.value))
+                    }
                 }
-
-                // if (completed_tasks.has(task.id)) {
-                //     data = completed_tasks.get(task.id).toMap().asMutable()
-
-                //     if (data.has(timestamp)) {
-                //         let completed_data = { ...data.get(timestamp) },
-                //             { current } = completed_data
-
-
-                //         current -= 1
-
-                //         if (current < 0) {
-                //             current = 0
-                //         }
-
-                //         completed_data.current = current
-
-                //         if (type === "day") {
-                //             completed_data.priority_value = task.priority.value
-                //         }
-
-                //         else if (type === "week") {
-                //             let { day_completed_array, priority_value_array } = completed_data,
-                //                 day_in_week = current_date.getDay()
-
-                //             day_completed_array[day_in_week] -= 1
-
-                //             if (day_completed_array[day_in_week] < 0) {
-                //                 day_completed_array[day_in_week] = 0
-                //             }
-
-                //             priority_value_array[day_in_week] = task.priority.value
-
-                //             completed_data.day_completed_array = day_completed_array
-                //             completed_data.priority_value_array = priority_value_array
-                //         }
-
-                //         else {
-                //             let { day_completed_array, priority_value_array } = completed_data,
-                //                 day_in_month = current_date.getDate()
-
-                //             day_completed_array[day_in_month - 1] -= 1
-
-                //             if (day_completed_array[day_in_month - 1] < 0) {
-                //                 day_completed_array[day_in_month - 1] = 0
-                //             }
-
-                //             priority_value_array[day_in_month - 1] = task.priority.value
-
-                //             completed_data.day_completed_array = day_completed_array
-                //             completed_data.priority_value_array = priority_value_array
-                //         }
-
-                //         data.set(timestamp, completed_data)
-                //     }
-                // }
             }
         }
 
         return ({
             action_type: this.props.action_type,
-            data
+            data,
         })
     }
 
     doUpdateOnStats = (flag, type, operation) => {
         let task = this.props.task_data,
             current_date = new Date(),
-            stats = this.props.stats,
+            stats = Map(this.props.stats),
             stats_data = {},
             stats_timestamp = 0,
             stats_action_type = "UPDATE_DAY_STATS"
@@ -430,13 +219,9 @@ export default class TaskCard extends React.PureComponent {
         if (operation === "inc") {
             if (flag === "uncompleted") {
                 if (stats.has(stats_timestamp)) {
-                    stats_data = Map(stats.get(stats_timestamp)).update("current", (value) => {
+                    stats_data = Map(stats.get(stats_timestamp)).toMap().update("current", (value) => {
                         return List(value).update(this.priority_order[task.priority.value], (v) => v += 1)
                     })
-                    // let current = [...stats_data.current]
-                    // current[this.priority_order[task.priority.value]] += 1
-
-                    // stats_data.current = current
                 }
 
                 else {
@@ -450,19 +235,9 @@ export default class TaskCard extends React.PureComponent {
 
             else {
                 if (stats.has(stats_timestamp)) {
-                    stats_data = Map(stats.get(stats_timestamp)).update("current", (value) => {
+                    stats_data = Map(stats.get(stats_timestamp)).toMap().update("current", (value) => {
                         return List(value).update(this.priority_order[task.priority.value], (v) => v - 1 < 0 ? 0 : v - 1)
                     })
-
-                    // stats_data = { ...stats.get(stats_timestamp) }
-
-                    // let current = [...stats_data.current]
-
-                    // current[this.priority_order[task.priority.value]] -= 1
-                    // if (current[this.priority_order[task.priority.value]] < 0) {
-                    //     current[this.priority_order[task.priority.value]] = 0
-                    // }
-                    // stats_data.current = current
                 }
             }
         }
@@ -470,19 +245,9 @@ export default class TaskCard extends React.PureComponent {
         else {
             if (flag === "uncompleted") {
                 if (stats.has(stats_timestamp)) {
-                    stats_data = Map(stats.get(stats_timestamp)).update("current", (value) => {
+                    stats_data = Map(stats.get(stats_timestamp)).toMap().update("current", (value) => {
                         return List(value).update(this.priority_order[task.priority.value], (v) => v - 1 < 0 ? 0 : v - 1)
                     })
-
-                    // stats_data = { ...stats.get(stats_timestamp) }
-
-                    // let current = [...stats_data.current]
-
-                    // current[this.priority_order[task.priority.value]] -= 1
-                    // if (current[this.priority_order[task.priority.value]] < 0) {
-                    //     current[this.priority_order[task.priority.value]] = 0
-                    // }
-                    // stats_data.current = current
                 }
             }
         }
@@ -536,7 +301,7 @@ export default class TaskCard extends React.PureComponent {
                 if (chart_stats_map.has(timestamp)) {
 
                     if (Map(chart_stats_map.get(timestamp)).has(key.toString())) {
-                        chart_stats_data = Map(chart_stats_map.get(timestamp)).updateIn([key.toString(), "current"], (value) => {
+                        chart_stats_data = Map(chart_stats_map.get(timestamp)).toMap().updateIn([key.toString(), "current"], (value) => {
                             return List(value).update(this.priority_order[task.priority.value], (v) => v + 1)
                         })
                     }
@@ -548,23 +313,6 @@ export default class TaskCard extends React.PureComponent {
 
                         chart_stats_data = fromJS(chart_stats_data)
                     }
-
-                    // chart_stats_data = { ...chart_stats_map.get(timestamp) }
-
-                    // if (chart_stats_data.hasOwnProperty(key)) {
-                    //     let data = { ...chart_stats_data[key] },
-                    //         current = [...data.current]
-                    //     current[this.priority_order[task.priority.value]] += 1
-                    //     data.current = current
-
-                    //     chart_stats_data[key] = data
-                    // }
-
-                    // else {
-                    //     let current = [0, 0, 0, 0]
-                    //     current[this.priority_order[task.priority.value]] += 1
-                    //     chart_stats_data[key] = { current }
-                    // }
                 }
 
                 else {
@@ -579,25 +327,9 @@ export default class TaskCard extends React.PureComponent {
             else {
                 if (chart_stats_map.hasIn([timestamp, key.toString()])) {
 
-                    chart_stats_data = Map(chart_stats_map.get(timestamp)).updateIn([key.toString(), "current"], (value) => {
+                    chart_stats_data = Map(chart_stats_map.get(timestamp)).toMap().updateIn([key.toString(), "current"], (value) => {
                         return List(value).update(this.priority_order[task.priority.value], (v) => v - 1 < 0 ? 0 : v - 1)
                     })
-
-                    // chart_stats_data = { ...chart_stats_map.get(timestamp) }
-
-                    // if (chart_stats_data.hasOwnProperty(key)) {
-                    //     let data = { ...chart_stats_data[key] },
-                    //         current = [...data.current]
-                    //     current[this.priority_order[task.priority.value]] -= 1
-
-                    //     if (current[this.priority_order[task.priority.value]] < 0) {
-                    //         current[this.priority_order[task.priority.value]] = 0
-                    //     }
-
-                    //     data.current = current
-
-                    //     chart_stats_data[key] = data
-                    // }
                 }
             }
 
@@ -606,25 +338,9 @@ export default class TaskCard extends React.PureComponent {
         else {
             if (chart_stats_map.hasIn([timestamp, key.toString()])) {
 
-                chart_stats_data = Map(chart_stats_map.get(timestamp)).updateIn([key.toString(), "current"], (value) => {
+                chart_stats_data = Map(chart_stats_map.get(timestamp)).toMap().updateIn([key.toString(), "current"], (value) => {
                     return List(value).update(this.priority_order[task.priority.value], (v) => v - 1 < 0 ? 0 : v - 1)
                 })
-
-                // chart_stats_data = { ...chart_stats_map.get(timestamp) }
-
-                // if (chart_stats_data.hasOwnProperty(key)) {
-                //     let data = { ...chart_stats_data[key] },
-                //         current = [...data.current]
-
-                //     current[this.priority_order[task.priority.value]] -= 1
-
-                //     if (current[this.priority_order[task.priority.value]] < 0) {
-                //         current[this.priority_order[task.priority.value]] = 0
-                //     }
-                //     data.current = current
-
-                //     chart_stats_data[key] = data
-                // }
             }
         }
 
@@ -641,6 +357,7 @@ export default class TaskCard extends React.PureComponent {
 
             sending_obj.completed_task_data = this.doUpdateOnCompletedTask(this.props.flag, this.props.type, "inc")
             sending_obj.stats_data = this.doUpdateOnStats(this.props.flag, this.props.type, "inc")
+
             sending_obj.chart_data = this.doUpdateOnChartStats(this.props.flag, "inc")
 
             this.props.updateBulkThunk(sending_obj)

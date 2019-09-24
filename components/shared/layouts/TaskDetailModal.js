@@ -10,7 +10,7 @@ import Priority from '../priority/Priority.Container'
 import Repeat from '../repeat/Repeat.Container'
 import Goal from '../goal/Goal.Container'
 
-import { Map } from 'immutable'
+import { Map, List } from 'immutable'
 
 export default class TaskDetailModal extends Component {
 
@@ -624,7 +624,6 @@ export default class TaskDetailModal extends Component {
 }
 
 class EditDetails extends React.PureComponent {
-
     daysInWeekText = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
     monthNames = ["January", "Febuary", "March", "April", "May", "June",
@@ -763,23 +762,23 @@ class EditDetails extends React.PureComponent {
     }
 
     updateOnStatsAndChartsDataAllTime = (task_id, type, new_priority_value) => {
-        let completed_tasks_map = this.props.completed_tasks,
-            stats_map = this.props.stats.asMutable(),
-            week_chart_stats_map = this.props.week_chart_stats.asMutable(),
-            month_chart_stats_map = this.props.month_chart_stats.asMutable(),
-            year_chart_stats_map = this.props.year_chart_stats.asMutable()
+        let completed_tasks_map = Map(this.props.completed_tasks),
+            stats_map = Map(this.props.stats).asMutable(),
+            week_chart_stats_map = Map(this.props.week_chart_stats).asMutable(),
+            month_chart_stats_map = Map(this.props.month_chart_stats).asMutable(),
+            year_chart_stats_map = Map(this.props.year_chart_stats).asMutable()
 
         if (completed_tasks_map.has(task_id)) {
-            let completed_task_data = completed_tasks_map.get(task_id)
+            let completed_task_data = Map(completed_tasks_map.get(task_id))
 
             completed_task_data.keySeq().forEach((key) => {
                 if (key !== "id" && key !== "category" && key !== "priority_value") {
                     let completed_timestamp = parseInt(key),
-                        completed_data = completed_task_data.get(key)
+                        completed_data = Map(completed_task_data.get(key))
 
                     if (type === "day") {
-                        let current_value = completed_data.current,
-                            old_priority_value = completed_data.priority_value,
+                        let current_value = completed_data.get("current"),
+                            old_priority_value = completed_data.get("priority_value"),
                             near_monday = this.getMonday(completed_timestamp),
                             day_in_week = new Date(completed_timestamp).getDay(),
                             year = new Date(completed_timestamp).getFullYear(),
@@ -789,97 +788,50 @@ class EditDetails extends React.PureComponent {
                             month_completed_timestamp = new Date(year, month).getTime()
 
                         if (stats_map.has(completed_timestamp)) {
-                            let data = { ...stats_map.get(completed_timestamp) },
-                                current = [...data.current]
+                            stats_map.updateIn([completed_timestamp, "current"], (value) => {
+                                return List(value).update(this.priority_order[new_priority_value], (v) => v + current_value)
+                            })
 
-                            current[this.priority_order[new_priority_value]] += current_value
-
-                            current[this.priority_order[old_priority_value]] -= current_value
-
-                            if (current[this.priority_order[old_priority_value]] < 0) {
-                                current[this.priority_order[old_priority_value]] = 0
-                            }
-
-                            data.current = current
-
-                            stats_map.set(completed_timestamp, data)
+                            stats_map.updateIn([completed_timestamp, "current"], (value) => {
+                                return List(value).update(this.priority_order[old_priority_value], (v) => v - current_value < 0 ? 0 : v - current_value)
+                            })
                         }
 
-                        if (week_chart_stats_map.has(week_completed_timestamp)) {
-                            let chart_data = { ...week_chart_stats_map.get(week_completed_timestamp) }
+                        if (week_chart_stats_map.hasIn([week_completed_timestamp, day_in_week.toString()])) {
+                            week_chart_stats_map.updateIn([week_completed_timestamp, day_in_week.toString(), "current"], (value) => {
+                                return List(value).update(this.priority_order[new_priority_value], (v) => v + current_value)
+                            })
 
-                            if (chart_data.hasOwnProperty(day_in_week)) {
-                                let data = { ...chart_data[day_in_week] },
-                                    current = [...data.current]
-
-                                current[this.priority_order[new_priority_value]] += current_value
-
-                                current[this.priority_order[old_priority_value]] -= current_value
-
-                                if (current[this.priority_order[old_priority_value]] < 0) {
-                                    current[this.priority_order[old_priority_value]] = 0
-                                }
-
-                                data.current = current
-
-                                chart_data[day_in_week] = data
-
-                                week_chart_stats_map.set(week_completed_timestamp, chart_data)
-                            }
+                            week_chart_stats_map.updateIn([week_completed_timestamp, day_in_week.toString(), "current"], (value) => {
+                                return List(value).update(this.priority_order[old_priority_value], (v) => v - current_value < 0 ? 0 : v - current_value)
+                            })
                         }
 
-                        if (month_chart_stats_map.has(month_completed_timestamp)) {
-                            let chart_data = { ...month_chart_stats_map.get(month_completed_timestamp) }
-
-                            if (chart_data.hasOwnProperty(day)) {
-                                let data = { ...chart_data[day] },
-                                    current = [...data.current]
-
-                                current[this.priority_order[new_priority_value]] += current_value
-
-                                current[this.priority_order[old_priority_value]] -= current_value
-
-                                if (current[this.priority_order[old_priority_value]] < 0) {
-                                    current[this.priority_order[old_priority_value]] = 0
-                                }
-
-                                data.current = current
-
-                                chart_data[day] = data
-
-                                month_chart_stats_map.set(month_completed_timestamp, chart_data)
-                            }
+                        if (month_chart_stats_map.hasIn([month_completed_timestamp, day.toString()])) {
+                            month_chart_stats_map.updateIn([month_completed_timestamp, day.toString(), "current"], (value) => {
+                                return List(value).update(this.priority_order[new_priority_value], (v) => v + current_value)
+                            })
+                            month_chart_stats_map.updateIn([month_completed_timestamp, day.toString(), "current"], (value) => {
+                                return List(value).update(this.priority_order[old_priority_value], (v) => v - current_value < 0 ? 0 : v - current_value)
+                            })
                         }
 
-                        if (year_chart_stats_map.has(year)) {
-                            let chart_data = { ...year_chart_stats_map.get(year) }
-
-                            if (chart_data.hasOwnProperty(month)) {
-                                let data = { ...chart_data[month] },
-                                    current = [...data.current]
-
-                                current[this.priority_order[new_priority_value]] += current_value
-
-                                current[this.priority_order[old_priority_value]] -= current_value
-
-                                if (current[this.priority_order[old_priority_value]] < 0) {
-                                    current[this.priority_order[old_priority_value]] = 0
-                                }
-
-                                data.current = current
-
-                                chart_data[month] = data
-
-                                year_chart_stats_map.set(year, chart_data)
-                            }
+                        if (year_chart_stats_map.hasIn([year, month.toString()])) {
+                            year_chart_stats_map.updateIn([year, month.toString(), "current"], (value) => {
+                                return List(value).update(this.priority_order[new_priority_value], (v) => v + current_value)
+                            })
+                            year_chart_stats_map.updateIn([year, month.toString(), "current"], (value) => {
+                                return List(value).update(this.priority_order[old_priority_value], (v) => v - current_value < 0 ? 0 : v - current_value)
+                            })
                         }
                     }
 
                     else if (type === "week") {
-                        if (completed_task_data.get(key).hasOwnProperty("day_completed_array") && completed_task_data.get(key).hasOwnProperty("priority_value_array")) {
-                            let { day_completed_array, priority_value_array } = completed_task_data.get(key)
+                        if (completed_task_data.hasIn([key, "day_completed_array"]) && completed_task_data.hasIn([key, "priority_value_array"])) {
+                            let day_completed_array = List(completed_task_data.getIn([key, "day_completed_array"])),
+                                priority_value_array = List(completed_task_data.getIn([key, "priority_value_array"]))
 
-                            day_completed_array.forEach((value, index) => {
+                            day_completed_array.forEach((completed_value, index) => {
                                 let i = index
                                 if (i === 0) i = 7
 
@@ -888,89 +840,47 @@ class EditDetails extends React.PureComponent {
                                     month = date.getMonth(),
                                     year = date.getFullYear(),
                                     month_timestamp = new Date(year, month).getTime(),
-                                    old_priority_value = priority_value_array[index]
+                                    old_priority_value = priority_value_array.get(index)
 
                                 if (stats_map.has(completed_timestamp)) {
-                                    let stats_data = stats_map.get(completed_timestamp),
-                                        { current } = stats_data
 
-                                    current[this.priority_order[new_priority_value]] += value
+                                    stats_map.updateIn([completed_timestamp, "current"], (value) => {
+                                        return List(value).update(this.priority_order[new_priority_value], (v) => v + completed_value)
+                                    })
 
-                                    current[this.priority_order[old_priority_value]] -= value
-
-                                    if (current[this.priority_order[old_priority_value]] < 0) {
-                                        current[this.priority_order[old_priority_value]] = 0
-                                    }
-
-                                    stats_data.current = current
-
-                                    stats_map.set(completed_timestamp, stats_data)
+                                    stats_map.updateIn([completed_timestamp, "current"], (value) => {
+                                        return List(value).update(this.priority_order[old_priority_value], (v) => v - completed_value < 0 ? 0 : v - completed_value)
+                                    })
                                 }
 
-                                if (week_chart_stats_map.has(completed_timestamp)) {
-                                    let chart_data = { ...week_chart_stats_map.get(completed_timestamp) }
+                                if (week_chart_stats_map.hasIn([completed_timestamp, index.toString()])) {
+                                    week_chart_stats_map.updateIn([completed_timestamp, index.toString(), "current"], (value) => {
+                                        return List(value).update(this.priority_order[new_priority_value], (v) => v + completed_value)
+                                    })
 
-                                    if (chart_data.hasOwnProperty(index)) {
-                                        let data = { ...chart_data[index] },
-                                            current = [...data.current]
-
-                                        current[this.priority_order[new_priority_value]] += value
-
-                                        current[this.priority_order[old_priority_value]] -= value
-
-                                        if (current[this.priority_order[old_priority_value]] < 0) {
-                                            current[this.priority_order[old_priority_value]] = 0
-                                        }
-
-                                        data.current = current
-                                        chart_data[index] = data
-
-                                        week_chart_stats_map.set(completed_timestamp, chart_data)
-                                    }
+                                    week_chart_stats_map.updateIn([completed_timestamp, index.toString(), "current"], (value) => {
+                                        return List(value).update(this.priority_order[old_priority_value], (v) => v - completed_value < 0 ? 0 : v - completed_value)
+                                    })
                                 }
 
-                                if (month_chart_stats_map.has(month_timestamp)) {
-                                    let chart_data = { ...month_chart_stats_map.get(month_timestamp) }
+                                if (month_chart_stats_map.hasIn([month_timestamp, day.toString()])) {
+                                    month_chart_stats_map.updateIn([month_timestamp, day.toString(), "current"], (value) => {
+                                        return List(value).update(this.priority_order[new_priority_value], (v) => v + completed_value)
+                                    })
 
-                                    if (chart_data.hasOwnProperty(day)) {
-                                        let data = { ...chart_data[day] },
-                                            current = [...data.current]
-
-                                        current[this.priority_order[new_priority_value]] += value
-
-                                        current[this.priority_order[old_priority_value]] -= value
-
-                                        if (current[this.priority_order[old_priority_value]] < 0) {
-                                            current[this.priority_order[old_priority_value]] = 0
-                                        }
-
-                                        data.current = current
-                                        chart_data[day] = data
-
-                                        month_chart_stats_map.set(month_timestamp, chart_data)
-                                    }
+                                    month_chart_stats_map.updateIn([month_timestamp, day.toString(), "current"], (value) => {
+                                        return List(value).update(this.priority_order[old_priority_value], (v) => v - completed_value < 0 ? 0 : v - completed_value)
+                                    })
                                 }
 
-                                if (year_chart_stats_map.has(year)) {
-                                    let chart_data = { ...year_chart_stats_map.get(year) }
+                                if (year_chart_stats_map.hasIn([year, month.toString()])) {
+                                    year_chart_stats_map.updateIn([year, month.toString(), "current"], (value) => {
+                                        return List(value).update(this.priority_order[new_priority_value], (v) => v + completed_value)
+                                    })
 
-                                    if (chart_data.hasOwnProperty(month)) {
-                                        let data = { ...chart_data[month] },
-                                            current = [...data.current]
-
-                                        current[this.priority_order[new_priority_value]] += value
-
-                                        current[this.priority_order[old_priority_value]] -= value
-
-                                        if (current[this.priority_order[old_priority_value]] < 0) {
-                                            current[this.priority_order[old_priority_value]] = 0
-                                        }
-
-                                        data.current = current
-                                        chart_data[month] = data
-
-                                        year_chart_stats_map.set(year, chart_data)
-                                    }
+                                    year_chart_stats_map.updateIn([year, month.toString(), "current"], (value) => {
+                                        return List(value).update(this.priority_order[old_priority_value], (v) => v - completed_value < 0 ? 0 : v - completed_value)
+                                    })
                                 }
                             })
                         }
@@ -981,106 +891,59 @@ class EditDetails extends React.PureComponent {
                             completed_year = new Date(completed_timestamp).getFullYear()
 
                         if (completed_task_data[key].hasOwnProperty("day_completed_array") && completed_task_data[key].hasOwnProperty("priority_value_array")) {
-                            if (completed_task_data[key].hasOwnProperty("day_completed_array") && completed_task_data[key].hasOwnProperty("priority_value_array")) {
-                                let { day_completed_array, priority_value_array } = completed_task_data[key]
+                            let day_completed_array = List(completed_task_data.getIn([key, "day_completed_array"])),
+                                priority_value_array = List(completed_task_data.getIn([key, "priority_value_array"]))
 
-                                day_completed_array.forEach((value, index) => {
-                                    let day = index + 1,
-                                        date = new Date(completed_year, completed_month, day),
-                                        near_monday = this.getMonday(date),
-                                        completed_week_timestamp = new Date(near_monday.getFullYear(), near_monday.getMonth(), near_monday.getDate()).getTime(),
-                                        day_in_week = date.getDay(),
-                                        old_priority_value = priority_value_array[index]
-
-
-                                    if (stats_map.has(completed_timestamp)) {
-                                        let stats_data = { ...stats_map.get(completed_timestamp) },
-                                            current = [...stats_data.current]
-
-                                        current[this.priority_order[new_priority_value]] += value
-
-                                        current[this.priority_order[old_priority_value]] -= value
-
-                                        if (current[this.priority_order[old_priority_value]] < 0) {
-                                            current[this.priority_order[old_priority_value]] = 0
-                                        }
-
-                                        stats_data.current = current
-
-                                        stats_map.set(completed_timestamp, stats_data)
-                                    }
-
-                                    if (week_chart_stats_map.has(completed_week_timestamp)) {
-                                        let chart_data = { ...week_chart_stats_map.get(completed_week_timestamp) }
-
-                                        if (chart_data.hasOwnProperty(day_in_week)) {
-                                            let data = { ...chart_data[day_in_week] },
-                                                current = [...data.current]
-
-                                            current[this.priority_order[new_priority_value]] += value
-
-                                            current[this.priority_order[old_priority_value]] -= value
-
-                                            if (current[this.priority_order[old_priority_value]] < 0) {
-                                                current[this.priority_order[old_priority_value]] = 0
-                                            }
-
-                                            data.current = current
-
-                                            chart_data[day_in_week] = data
-
-                                            week_chart_stats_map.set(completed_week_timestamp, chart_data)
-                                        }
-                                    }
+                            day_completed_array.forEach((completed_value, index) => {
+                                let day = index + 1,
+                                    date = new Date(completed_year, completed_month, day),
+                                    near_monday = this.getMonday(date),
+                                    completed_week_timestamp = new Date(near_monday.getFullYear(), near_monday.getMonth(), near_monday.getDate()).getTime(),
+                                    day_in_week = date.getDay(),
+                                    old_priority_value = priority_value_array.get(index)
 
 
-                                    if (month_chart_stats_map.has(completed_timestamp)) {
-                                        let chart_data = { ...month_chart_stats_map.get(completed_timestamp) }
+                                if (stats_map.has(completed_timestamp)) {
+                                    stats_map.updateIn([completed_timestamp, "current"], (value) => {
+                                        return List(value).update(this.priority_order[new_priority_value], (v) => v + completed_value)
+                                    })
 
-                                        if (chart_data.hasOwnProperty(day)) {
-                                            let data = { ...chart_data[day] },
-                                                current = [...data.current]
+                                    stats_map.updateIn([completed_timestamp, "current"], (value) => {
+                                        return List(value).update(this.priority_order[old_priority_value], (v) => v - completed_value < 0 ? 0 : v - completed_value)
+                                    })
+                                }
 
-                                            current[this.priority_order[new_priority_value]] += value
+                                if (week_chart_stats_map.hasIn([completed_week_timestamp, day_in_week.toString()])) {
+                                    week_chart_stats_map.updateIn([completed_week_timestamp, day_in_week.toString(), "current"], (value) => {
+                                        return List(value).update(this.priority_order[new_priority_value], (v) => v + completed_value)
+                                    })
 
-                                            current[this.priority_order[old_priority_value]] -= value
+                                    week_chart_stats_map.updateIn([completed_week_timestamp, day_in_week.toString(), "current"], (value) => {
+                                        return List(value).update(this.priority_order[old_priority_value], (v) => v - completed_value < 0 ? 0 : v - completed_value)
+                                    })
+                                }
 
-                                            if (current[this.priority_order[old_priority_value]] < 0) {
-                                                current[this.priority_order[old_priority_value]] = 0
-                                            }
+                                if (month_chart_stats_map.hasIn([completed_timestamp, day.toString()])) {
+                                    month_chart_stats_map.updateIn([completed_timestamp, day.toString(), "current"], (value) => {
+                                        return List(value).update(this.priority_order[new_priority_value], (v) => v + completed_value)
+                                    })
 
-                                            data.current = current
+                                    month_chart_stats_map.updateIn([completed_timestamp, day.toString(), "current"], (value) => {
+                                        return List(value).update(this.priority_order[old_priority_value], (v) => v - completed_value < 0 ? 0 : v - completed_value)
+                                    })
+                                }
 
-                                            chart_data[day] = data
+                                if (year_chart_stats_map.hasIn([completed_year, completed_month.toString()])) {
+                                    year_chart_stats_map.updateIn([completed_year, completed_month.toString(), "current"], (value) => {
+                                        return List(value).update(this.priority_order[new_priority_value], (v) => v + completed_value)
+                                    })
 
-                                            month_chart_stats_map.set(completed_timestamp, chart_data)
-                                        }
-                                    }
+                                    year_chart_stats_map.updateIn([completed_year, completed_month.toString(), "current"], (value) => {
+                                        return List(value).update(this.priority_order[old_priority_value], (v) => v - completed_value < 0 ? 0 : v - completed_value)
+                                    })
+                                }
+                            })
 
-                                    if (year_chart_stats_map.has(completed_year)) {
-                                        let chart_data = { ...year_chart_stats_map.get(completed_year) }
-
-                                        if (chart_data.hasOwnProperty(completed_month)) {
-                                            let data = { ...chart_data[completed_month] },
-                                                current = [...data.current]
-
-                                            current[this.priority_order[new_priority_value]] += value
-
-                                            current[this.priority_order[old_priority_value]] -= value
-
-                                            if (current[this.priority_order[old_priority_value]] < 0) {
-                                                current[this.priority_order[old_priority_value]] = 0
-                                            }
-
-                                            data.current = current
-
-                                            chart_data[completed_month] = data
-
-                                            year_chart_stats_map.set(completed_year, chart_data)
-                                        }
-                                    }
-                                })
-                            }
                         }
                     }
                 }
@@ -1096,24 +959,23 @@ class EditDetails extends React.PureComponent {
     }
 
     updateOnStatsAndChartDataFromToday = (task_id, type, new_priority_value, date) => {
-        let completed_tasks_map = this.props.completed_tasks,
-            stats_map = this.props.stats.asMutable(),
-            week_chart_stats_map = this.props.week_chart_stats.asMutable(),
-            month_chart_stats_map = this.props.month_chart_stats.asMutable(),
-            year_chart_stats_map = this.props.year_chart_stats.asMutable(),
+        let completed_tasks_map = Map(this.props.completed_tasks),
+            stats_map = Map(this.props.stats),
+            week_chart_stats_map = Map(this.props.week_chart_stats),
+            month_chart_stats_map = Map(this.props.month_chart_stats),
+            year_chart_stats_map = Map(this.props.year_chart_stats),
             completed_timestamp,
             return_obj = {}
 
-
         if (completed_tasks_map.has(task_id)) {
-            let completed_task = completed_tasks_map.get(task_id)
+            let completed_task = Map(completed_tasks_map.get(task_id))
 
             if (type === "day") {
                 completed_timestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
 
-                if (completed_task.has(completed_timestamp)) {
-                    let current_value = completed_task.get(completed_timestamp).current,
-                        old_priority_value = completed_task.get(completed_timestamp).priority_value,
+                if (completed_task.has(completed_timestamp.toString())) {
+                    let current_value = completed_task.getIn([completed_timestamp.toString(), "current"]),
+                        old_priority_value = completed_task.getIn([completed_timestamp.toString(), "priority_value"]),
                         near_monday = this.getMonday(date),
                         week_completed_timestamp = new Date(near_monday.getFullYear(), near_monday.getMonth(), near_monday.getDate()).getTime(),
                         day_in_week = date.getDay(),
@@ -1122,18 +984,17 @@ class EditDetails extends React.PureComponent {
                         day_in_month = date.getDate(),
                         completed_month = date.getMonth()
 
+
                     if (stats_map.has(completed_timestamp)) {
-                        let stats_data = { ...stats_map.get(completed_timestamp) },
-                            current = [...stats_data.current]
+                        let stats_data = Map(stats_map.get(completed_timestamp)).toMap().asMutable()
 
-                        current[this.priority_order[new_priority_value]] += current_value
-                        current[this.priority_order[old_priority_value]] -= current_value
+                        stats_data.update("current", (value) => {
+                            return List(value).update(this.priority_order[new_priority_value], (v) => v += current_value)
+                        })
 
-                        if (current[this.priority_order[old_priority_value]] < 0) {
-                            current[this.priority_order[old_priority_value]] = 0
-                        }
-
-                        stats_data.current = current
+                        stats_data.update("current", (value) => {
+                            return List(value).update(this.priority_order[old_priority_value], (v) => v - current_value < 0 ? 0 : v - current_value)
+                        })
 
                         return_obj.return_stats_data = {
                             data: stats_data,
@@ -1141,78 +1002,54 @@ class EditDetails extends React.PureComponent {
                         }
                     }
 
-                    if (week_chart_stats_map.has(week_completed_timestamp)) {
-                        let chart_data = { ...week_chart_stats_map.get(week_completed_timestamp) }
+                    if (week_chart_stats_map.hasIn([week_completed_timestamp, day_in_week.toString()])) {
+                        let chart_data = Map(week_chart_stats_map.get(week_completed_timestamp)).toMap().asMutable()
 
-                        if (chart_data.hasOwnProperty(day_in_week)) {
-                            let data = { ...chart_data[day_in_week] },
-                                current = [...data.current]
+                        chart_data.updateIn([day_in_week.toString(), "current"], (value) => {
+                            return List(value).update(this.priority_order[new_priority_value], (v) => v + current_value)
+                        })
 
-                            current[this.priority_order[new_priority_value]] += current_value
-                            current[this.priority_order[old_priority_value]] -= current_value
+                        chart_data.updateIn([day_in_week.toString(), "current"], (value) => {
+                            return List(value).update(this.priority_order[old_priority_value], (v) => v - current_value < 0 ? 0 : v - current_value)
+                        })
 
-                            if (current[this.priority_order[old_priority_value]] < 0) {
-                                current[this.priority_order[old_priority_value]] = 0
-                            }
-
-                            data.current = current
-
-                            chart_data[day_in_week] = data
-
-                            return_obj.return_week_chart_stats_data = {
-                                timestamp: week_completed_timestamp,
-                                data: chart_data
-                            }
+                        return_obj.return_week_chart_stats_data = {
+                            timestamp: week_completed_timestamp,
+                            data: chart_data
                         }
                     }
 
-                    if (month_chart_stats_map.has(month_completed_timestamp)) {
-                        let chart_data = { ...month_chart_stats_map.get(month_completed_timestamp) }
+                    if (month_chart_stats_map.hasIn([month_completed_timestamp, day_in_month.toString()])) {
+                        let chart_data = Map(month_chart_stats_map.get(month_completed_timestamp)).toMap().asMutable()
 
-                        if (chart_data.hasOwnProperty(day_in_month)) {
-                            let data = { ...chart_data[day_in_month] },
-                                current = [...data.current]
+                        chart_data.updateIn([day_in_month.toString(), "current"], (value) => {
+                            return List(value).update(this.priority_order[new_priority_value], (v) => v + current_value)
+                        })
 
-                            current[this.priority_order[new_priority_value]] += current_value
-                            current[this.priority_order[old_priority_value]] -= current_value
+                        chart_data.updateIn([day_in_month.toString(), "current"], (value) => {
+                            return List(value).update(this.priority_order[old_priority_value], (v) => v - current_value < 0 ? 0 : v - current_value)
+                        })
 
-                            if (current[this.priority_order[old_priority_value]] < 0) {
-                                current[this.priority_order[old_priority_value]] = 0
-                            }
-
-                            data.current = current
-
-                            chart_data[day_in_month] = data
-
-                            return_obj.return_month_chart_stats_data = {
-                                timestamp: month_completed_timestamp,
-                                data: chart_data
-                            }
+                        return_obj.return_month_chart_stats_data = {
+                            timestamp: month_completed_timestamp,
+                            data: chart_data
                         }
                     }
 
-                    if (year_chart_stats_map.has(completed_year)) {
-                        let chart_data = { ...year_chart_stats_map.get(completed_year) }
+                    if (year_chart_stats_map.hasIn([completed_year, completed_month.toString()])) {
+                        let chart_data = Map(year_chart_stats_map.get(completed_year)).toMap().asMutable()
 
-                        if (chart_data.hasOwnProperty(completed_month)) {
-                            let data = { ...chart_data[completed_month] },
-                                current = [...data.current]
+                        chart_data.updateIn([completed_month.toString(), "current"], (value) => {
+                            return List(value).update(this.priority_order[new_priority_value], (v) => v + current_value)
+                        })
 
-                            current[this.priority_order[new_priority_value]] += current_value
-                            current[this.priority_order[old_priority_value]] -= current_value
+                        chart_data.updateIn([completed_month.toString(), "current"], (value) => {
+                            return List(value).update(this.priority_order[old_priority_value], (v) => v - current_value < 0 ? 0 : v - current_value)
+                        })
 
-                            if (current[this.priority_order[old_priority_value]] < 0) {
-                                current[this.priority_order[old_priority_value]] = 0
-                            }
-
-                            data.current = current
-
-                            chart_data[completed_month] = data
-
-                            return_obj.return_year_chart_stats_data = {
-                                timestamp: completed_year,
-                                data: chart_data
-                            }
+                        return_obj.return_year_chart_stats_data = {
+                            timestamp: completed_year,
+                            data: chart_data
                         }
                     }
                 }
@@ -1222,249 +1059,191 @@ class EditDetails extends React.PureComponent {
                 let near_monday = this.getMonday(date)
                 completed_timestamp = new Date(near_monday.getFullYear(), near_monday.getMonth(), near_monday.getDate()).getTime()
 
-                if (completed_task.has(completed_timestamp)) {
-                    if (completed_task.get(completed_timestamp).hasOwnProperty("day_completed_array") && completed_task.get(completed_timestamp).hasOwnProperty("priority_value_array")) {
-                        let { day_completed_array, priority_value_array } = completed_task.get(completed_timestamp),
-                            day_in_week = date.getDay(),
-                            day_in_month = date.getDate(),
-                            completed_month = date.getMonth(),
-                            completed_year = date.getFullYear(),
-                            month_completed_timestamp = new Date(completed_year, completed_month).getTime(),
-                            current_value = day_completed_array[day_in_week],
-                            old_priority_value = priority_value_array[day_in_week]
+                if (completed_task.hasIn([completed_timestamp.toString(), "day_completed_array"]) && completed_task.hasIn([completed_timestamp.toString(), "priority_value_array"])) {
+                    let day_completed_array = List(completed_task.getIn([completed_timestamp.toString(), "day_completed_array"])),
+                        priority_value_array = List(completed_task.getIn([completed_timestamp.toString(), "priority_value_array"])),
 
-                        if (stats_map.has(completed_timestamp)) {
-                            let stats_data = { ...stats_map.get(completed_timestamp) },
-                                current = [...stats_data.current]
+                        day_in_week = date.getDay(),
+                        day_in_month = date.getDate(),
+                        completed_month = date.getMonth(),
+                        completed_year = date.getFullYear(),
+                        month_completed_timestamp = new Date(completed_year, completed_month).getTime(),
+                        current_value = day_completed_array.get(day_in_week),
+                        old_priority_value = priority_value_array.get(day_in_week)
 
-                            current[this.priority_order[new_priority_value]] += current_value
-                            current[this.priority_order[old_priority_value]] -= current_value
+                    if (stats_map.has(completed_timestamp)) {
+                        let stats_data = Map(stats_map.get(completed_timestamp)).toMap().asMutable()
 
-                            if (current[this.priority_order[old_priority_value]] < 0) {
-                                current[this.priority_order[old_priority_value]] = 0
-                            }
+                        stats_data.update("current", (value) => {
+                            return List(value).update(this.priority_order[new_priority_value], (v) => v += current_value)
+                        })
 
-                            stats_data.current = current
+                        stats_data.update("current", (value) => {
+                            return List(value).update(this.priority_order[old_priority_value], (v) => v - current_value < 0 ? 0 : v - current_value)
+                        })
 
-                            return_obj.return_stats_data = {
-                                data: stats_data,
-                                timestamp: completed_timestamp
-                            }
-                        }
-
-                        if (week_chart_stats_map.has(completed_timestamp)) {
-                            let chart_data = { ...week_chart_stats_map.get(completed_timestamp) }
-
-                            if (chart_data.hasOwnProperty(day_in_week)) {
-                                let data = { ...chart_data[day_in_week] },
-                                    current = [...data.current]
-
-                                current[this.priority_order[new_priority_value]] += current_value
-                                current[this.priority_order[old_priority_value]] -= current_value
-
-                                if (current[this.priority_order[old_priority_value]] < 0) {
-                                    current[this.priority_order[old_priority_value]] = 0
-                                }
-
-                                data.current = current
-
-                                chart_data[day_in_week] = data
-
-                                return_obj.return_week_chart_stats_data = {
-                                    data: chart_data,
-                                    timestamp: completed_timestamp
-                                }
-                            }
-                        }
-
-                        if (month_chart_stats_map.has(month_completed_timestamp)) {
-                            let chart_data = { ...month_chart_stats_map.get(month_completed_timestamp) }
-
-                            if (chart_data.hasOwnProperty(day_in_month)) {
-                                let data = { ...chart_data[day_in_month] },
-                                    current = [...data.current]
-
-                                current[this.priority_order[new_priority_value]] += current_value
-                                current[this.priority_order[old_priority_value]] -= current_value
-
-                                if (current[this.priority_order[old_priority_value]] < 0) {
-                                    current[this.priority_order[old_priority_value]] = 0
-                                }
-
-                                data.current = current
-
-                                chart_data[day_in_month] = data
-
-                                return_obj.return_month_chart_stats_data = {
-                                    data: chart_data,
-                                    timestamp: month_completed_timestamp
-                                }
-                            }
-                        }
-
-                        if (year_chart_stats_map.has(completed_year)) {
-                            let chart_data = { ...year_chart_stats_map.get(completed_year) }
-
-                            if (chart_data.hasOwnProperty(completed_month)) {
-                                let data = { ...chart_data[completed_month] },
-                                    current = [...data.current]
-
-                                current[this.priority_order[new_priority_value]] += current_value
-                                current[this.priority_order[old_priority_value]] -= current_value
-
-                                if (current[this.priority_order[old_priority_value]] < 0) {
-                                    current[this.priority_order[old_priority_value]] = 0
-                                }
-
-                                data.current = current
-
-                                chart_data[completed_month] = data
-
-                                return_obj.return_year_chart_stats_data = {
-                                    data: chart_data,
-                                    timestamp: completed_year
-                                }
-                            }
+                        return_obj.return_stats_data = {
+                            data: stats_data,
+                            timestamp: completed_timestamp
                         }
                     }
-                }
-            }
 
-            else {
-                completed_timestamp = new Date(date.getFullYear(), date.getMonth()).getTime()
+                    if (week_chart_stats_map.hasIn([completed_timestamp, day_in_week.toString()])) {
+                        let chart_data = Map(week_chart_stats_map.get(completed_timestamp)).toMap().asMutable()
 
-                if (completed_task.has(completed_timestamp)) {
-                    if (completed_task.get(completed_timestamp).hasOwnProperty("day_completed_array") && completed_task.get(completed_timestamp).hasOwnProperty("priority_value_array")) {
-                        let { day_completed_array, priority_value_array } = completed_data[completed_timestamp],
-                            day = date.getDate(),
-                            completed_year = date.getFullYear(),
-                            completed_month = date.getMonth(),
-                            near_monday = this.getMonday(date),
-                            week_completed_timestamp = new Date(near_monday.getFullYear(), near_monday.getMonth(), near_monday.getDate()).getTime(),
-                            day_in_week = date.getDay(),
-                            old_priority_value = priority_value_array[day - 1],
-                            current_value = day_completed_array[day - 1]
+                        chart_data.updateIn([day_in_week.toString(), "current"], (value) => {
+                            return List(value).update(this.priority_order[new_priority_value], (v) => v + current_value)
+                        })
 
-                        if (stats_map.has(completed_timestamp)) {
-                            let stats_data = { ...stats_map.get(completed_timestamp) },
-                                current = [...stats_data.current]
+                        chart_data.updateIn([day_in_week.toString(), "current"], (value) => {
+                            return List(value).update(this.priority_order[old_priority_value], (v) => v - current_value < 0 ? 0 : v - current_value)
+                        })
 
-                            current[this.priority_order[new_priority_value]] += current_value
-                            current[this.priority_order[old_priority_value]] -= current_value
-
-                            if (current[this.priority_order[old_priority_value]] < 0) {
-                                current[this.priority_order[old_priority_value]] = 0
-                            }
-
-                            stats_data.current = current
-
-                            return_obj.return_stats_data = {
-                                data: stats_data,
-                                timestamp: completed_timestamp
-                            }
+                        return_obj.return_week_chart_stats_data = {
+                            data: chart_data,
+                            timestamp: completed_timestamp
                         }
+                    }
 
-                        if (week_chart_stats_map.has(week_completed_timestamp)) {
-                            let chart_data = { ...week_chart_stats_map.get(week_completed_timestamp) }
+                    if (month_chart_stats_map.hasIn([month_completed_timestamp, day_in_month.toString()])) {
+                        let chart_data = Map(month_chart_stats_map.get(month_completed_timestamp)).toMap().asMutable()
 
-                            if (chart_data.hasOwnProperty(day_in_week)) {
-                                let data = { ...chart_data[day_in_week] },
-                                    current = [...data.current]
+                        chart_data.updateIn([day_in_month.toString(), "current"], (value) => {
+                            return List(value).update(this.priority_order[new_priority_value], (v) => v + current_value)
+                        })
 
-                                current[this.priority_order[new_priority_value]] += current_value
-                                current[this.priority_order[old_priority_value]] -= current_value
+                        chart_data.updateIn([day_in_month.toString(), "current"], (value) => {
+                            return List(value).update(this.priority_order[old_priority_value], (v) => v - current_value < 0 ? 0 : v - current_value)
+                        })
 
-                                if (current[this.priority_order[old_priority_value]] < 0) {
-                                    current[this.priority_order[old_priority_value]] = 0
-                                }
-
-                                data.current = current
-
-                                chart_data[day_in_week] = data
-
-                                return_obj.return_week_chart_stats_data = {
-                                    data: chart_data,
-                                    timestamp: week_completed_timestamp
-                                }
-                            }
+                        return_obj.return_month_chart_stats_data = {
+                            data: chart_data,
+                            timestamp: month_completed_timestamp
                         }
+                    }
 
-                        if (month_chart_stats_map.has(completed_timestamp)) {
-                            let chart_data = { ...month_chart_stats_map.get(completed_timestamp) }
+                    if (year_chart_stats_map.hasIn([completed_year, completed_month.toString()])) {
+                        let chart_data = Map(year_chart_stats_map.get(completed_year)).toMap().asMutable()
 
-                            if (chart_data.hasOwnProperty(day_in_month)) {
-                                let data = { ...chart_data[day_in_month] },
-                                    current = [...data.current]
+                        chart_data.updateIn([completed_month.toString(), "current"], (value) => {
+                            return List(value).update(this.priority_order[new_priority_value], (v) => v + current_value)
+                        })
 
-                                current[this.priority_order[new_priority_value]] += current_value
-                                current[this.priority_order[old_priority_value]] -= current_value
+                        chart_data.updateIn([completed_month.toString(), "current"], (value) => {
+                            return List(value).update(this.priority_order[old_priority_value], (v) => v - current_value < 0 ? 0 : v - current_value)
+                        })
 
-                                if (current[this.priority_order[old_priority_value]] < 0) {
-                                    current[this.priority_order[old_priority_value]] = 0
-                                }
-
-                                data.current = current
-
-                                chart_data[day_in_month] = data
-
-                                return_obj.return_month_chart_stats_data = {
-                                    data: chart_data,
-                                    timestamp: completed_timestamp
-                                }
-                            }
-                        }
-
-                        if (year_chart_stats_map.has(completed_year)) {
-                            let chart_data = { ...year_chart_stats_map.get(completed_year) }
-
-                            if (chart_data.hasOwnProperty(completed_month)) {
-                                let data = { ...chart_data[completed_month] },
-                                    current = [...data.current]
-
-                                current[this.priority_order[new_priority_value]] += current_value
-                                current[this.priority_order[old_priority_value]] -= current_value
-
-                                if (current[this.priority_order[old_priority_value]] < 0) {
-                                    current[this.priority_order[old_priority_value]] = 0
-                                }
-
-                                data.current = current
-
-                                chart_data[completed_month] = data
-
-                                return_obj.return_year_chart_stats_data = {
-                                    data: chart_data,
-                                    timestamp: completed_year
-                                }
-                            }
+                        return_obj.return_year_chart_stats_data = {
+                            data: chart_data,
+                            timestamp: completed_year
                         }
                     }
                 }
             }
         }
 
+        else {
+            completed_timestamp = new Date(date.getFullYear(), date.getMonth()).getTime()
+
+            if (completed_task.hasIn([completed_timestamp.toString(), "day_completed_array"]) && completed_task.hasIn([completed_timestamp.toString(), "priority_value_array"])) {
+                let day_completed_array = List(completed_task.getIn([completed_timestamp.toString(), "day_completed_array"])),
+                    priority_value_array = List(completed_task.getIn([completed_timestamp.toString(), "priority_value_array"])),
+                    day = date.getDate(),
+                    completed_year = date.getFullYear(),
+                    completed_month = date.getMonth(),
+                    near_monday = this.getMonday(date),
+                    week_completed_timestamp = new Date(near_monday.getFullYear(), near_monday.getMonth(), near_monday.getDate()).getTime(),
+                    day_in_week = date.getDay(),
+                    old_priority_value = priority_value_array.get(day - 1),
+                    current_value = day_completed_array.get(day - 1)
+
+                if (stats_map.has(completed_timestamp)) {
+                    let stats_data = Map(stats_map.get(completed_timestamp)).toMap().asMutable()
+
+                    stats_data.update("current", (value) => {
+                        return List(value).update(this.priority_order[new_priority_value], (v) => v += current_value)
+                    })
+
+                    stats_data.update("current", (value) => {
+                        return List(value).update(this.priority_order[old_priority_value], (v) => v - current_value < 0 ? 0 : v - current_value)
+                    })
+
+                    return_obj.return_stats_data = {
+                        data: stats_data,
+                        timestamp: completed_timestamp
+                    }
+                }
+
+                if (week_chart_stats_map.hasIn([week_completed_timestamp, day_in_week.toString()])) {
+                    let chart_data = Map(week_chart_stats_map.get(week_completed_timestamp)).toMap().asMutable()
+
+                    chart_data.updateIn([day_in_week.toString(), "current"], (value) => {
+                        return List(value).update(this.priority_order[new_priority_value], (v) => v + current_value)
+                    })
+
+                    chart_data.updateIn([day_in_week.toString(), "current"], (value) => {
+                        return List(value).update(this.priority_order[old_priority_value], (v) => v - current_value < 0 ? 0 : v - current_value)
+                    })
+
+                    return_obj.return_week_chart_stats_data = {
+                        data: chart_data,
+                        timestamp: week_completed_timestamp
+                    }
+                }
+
+                if (month_chart_stats_map.hasIn([completed_timestamp, day_in_month.toString()])) {
+                    let chart_data = Map(month_chart_stats_map.get(completed_timestamp)).toMap().asMutable()
+
+                    chart_data.updateIn([day_in_month.toString(), "current"], (value) => {
+                        return List(value).update(this.priority_order[new_priority_value], (v) => v + current_value)
+                    })
+
+                    chart_data.updateIn([day_in_month.toString(), "current"], (value) => {
+                        return List(value).update(this.priority_order[old_priority_value], (v) => v - current_value < 0 ? 0 : v - current_value)
+                    })
+
+                    return_obj.return_month_chart_stats_data = {
+                        data: chart_data,
+                        timestamp: completed_timestamp
+                    }
+                }
+
+                if (year_chart_stats_map.hasIn([completed_year, completed_month.toString()])) {
+                    let chart_data = Map(year_chart_stats_map.get(completed_year)).toMap().asMutable()
+
+                    chart_data.updateIn([completed_month.toString(), "current"], (value) => {
+                        return List(value).update(this.priority_order[new_priority_value], (v) => v + current_value)
+                    })
+
+                    chart_data.updateIn([completed_month.toString(), "current"], (value) => {
+                        return List(value).update(this.priority_order[old_priority_value], (v) => v - current_value < 0 ? 0 : v - current_value)
+                    })
+
+                    return_obj.return_year_chart_stats_data = {
+                        data: chart_data,
+                        timestamp: completed_year
+                    }
+                }
+            }
+
+
+        }
+
         return return_obj
     }
 
     doChangesOnCompletedTaskFromToday = (task_id, type, new_priority_value, date) => {
-        let completed_tasks_map = this.props.completed_tasks,
+        let completed_tasks_map = Map(this.props.completed_tasks),
             completed_timestamp,
             completed_data = {}
 
         if (type === "day") {
             completed_timestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
+            if (completed_tasks_map.hasIn([task_id, completed_timestamp.toString()])) {
+                completed_data = Map(completed_tasks_map.get(task_id)).toMap().asMutable()
 
-            if (completed_tasks_map.has(task_id)) {
-                completed_data = completed_tasks_map.get(task_id).toMap().asMutable()
-
-                completed_data.set("priority_value", new_priority_value)
-
-                if (completed_data.has(completed_timestamp)) {
-                    let data = { ...completed_data.get(completed_timestamp) }
-                    data.priority_value = new_priority_value
-
-                    completed_data.set(completed_timestamp, data)
-                }
+                completed_data.update("priority_value", (value) => new_priority_value)
+                completed_data.updateIn([completed_timestamp.toString(), "priority_value"], (value) => new_priority_value)
             }
         }
 
@@ -1474,30 +1253,25 @@ class EditDetails extends React.PureComponent {
 
             completed_timestamp = new Date(near_monday.getFullYear(), near_monday.getMonth(), near_monday.getDate()).getTime()
 
-            if (completed_tasks_map.has(task_id)) {
-                completed_data = completed_tasks_map.get(task_id).toMap().asMutable()
+            if (completed_tasks_map.hasIn([task_id, completed_timestamp.toString()])) {
+                completed_data = Map(completed_tasks_map.get(task_id)).toMap().asMutable()
 
-                completed_data.set("priority_value", new_priority_value)
-
-                if (completed_data.has(completed_timestamp)) {
-                    let data = { ...completed_data.get(completed_timestamp) },
-                        priority_value_array = [...data.priority_value_array]
+                completed_data.update("priority_value", (value) => new_priority_value)
+                completed_data.updateIn([completed_timestamp.toString(), "priority_value_array"], (value) => {
+                    let priority_value_array = List(value).asMutable()
 
                     if (day_in_week === 0) {
-                        priority_value_array[day_in_week] = new_priority_value
+                        priority_value_array.update(day_in_week, (value) => new_priority_value)
                     }
 
                     else {
                         for (let i = day_in_week; i <= 7; i++) {
-                            priority_value_array[day_in_week % 7] = new_priority_value
+                            priority_value_array.update(i % 7, (value) => new_priority_value)
                         }
                     }
 
-                    data.priority_value_array = priority_value_array
-
-                    completed_data.set(completed_timestamp, data)
-
-                }
+                    return priority_value_array
+                })
             }
         }
 
@@ -1509,23 +1283,19 @@ class EditDetails extends React.PureComponent {
 
             completed_timestamp = new Date(year, month).getTime()
 
-            if (completed_tasks_map.has(task_id)) {
-                completed_data = completed_tasks_map.get(task_id).toMap().asMutable()
+            if (completed_tasks_map.hasIn([task_id, completed_timestamp.toString()])) {
+                completed_data = Map(completed_tasks_map.get(task_id)).toMap().asMutable()
 
-                completed_data.set("priority_value", new_priority_value)
-
-                if (completed_data.has(completed_timestamp)) {
-                    let data = { ...completed_data.get(completed_timestamp) },
-                        priority_value_array = [...data.priority_value_array]
+                completed_data.update("priority_value", (value) => new_priority_value)
+                completed_data.updateIn([completed_timestamp.toString(), "priority_value_array"], (value) => {
+                    let priority_value_array = List(value).asMutable()
 
                     for (let i = day_in_month; i <= last_day_in_month; i++) {
-                        priority_value_array[i] = new_priority_value
+                        priority_value_array.update(i, (value) => new_priority_value)
                     }
 
-                    data.priority_value_array = priority_value_array
-
-                    completed_tasks_map.set(completed_timestamp, data)
-                }
+                    return priority_value_array
+                })
             }
         }
 
@@ -1533,34 +1303,30 @@ class EditDetails extends React.PureComponent {
     }
 
     doChangesOnCompletedTaskAllTime = (task_id, type, new_priority_value) => {
-        let completed_tasks_map = this.props.completed_tasks.asMutable()
+        let completed_tasks_map = Map(this.props.completed_tasks).asMutable()
 
         if (completed_tasks_map.has(task_id)) {
-            let completed_data = completed_tasks_map.get(task_id).asMutable()
+            completed_tasks_map.update(task_id, (value) => {
+                let completed_data = Map(value).asMutable()
 
-            completed_data.set("priority_value", new_priority_value)
+                completed_data.keySeq().forEach((key) => {
+                    if (key !== "id" && key !== "category" && key !== "priority_value") {
+                        if (type === "day") {
+                            completed_data.updateIn([key, "priority_value"], (v) => new_priority_value)
+                        }
 
-            completed_data.keySeq().forEach((key) => {
-                if (key !== "id" && key !== "category" && key !== "priority_value") {
-                    let data = { ...completed_data.get(key) }
-
-                    if (type === "day") {
-                        data.priority_value = new_priority_value
-                    }
-
-                    else {
-                        if (data.hasOwnProperty("priority_value_array")) {
-                            let priority_value_array = [...data.priority_value_array]
-
-                            data.priority_value_array = priority_value_array.fill(new_priority_value)
+                        else {
+                            if (completed_data.hasIn([key, "priority_value_array"])) {
+                                completed_data.updateIn([key, "priority_value_array"], (v) => {
+                                    return List(List(v).toArray().fill(new_priority_value))
+                                })
+                            }
                         }
                     }
+                })
 
-                    completed_data.set(key, data)
-                }
+                return completed_data
             })
-
-            completed_tasks_map.set(task_id, completed_data)
         }
 
         return completed_tasks_map
@@ -1627,6 +1393,7 @@ class EditDetails extends React.PureComponent {
                     stats_action_type = "RETURN_NEW_MONTH_STATS"
                     completed_task_action_type = "RETURN_NEW_COMPLETED_MONTH_TASKS"
                 }
+
 
                 let result_obj = this.updateOnStatsAndChartsDataAllTime(this.edit_task.id, this.edit_task.type, new_priority_id),
                     completed_tasks = this.doChangesOnCompletedTaskAllTime(this.edit_task.id, this.edit_task.type, new_priority_id)
