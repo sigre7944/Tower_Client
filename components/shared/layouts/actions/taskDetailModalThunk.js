@@ -11,15 +11,15 @@ import { updateCategory } from '../../actions/categoryAction'
 export const deleteTaskThunk = ({
     completed_task_action_type,
     task_action_type,
-    id,
+    task_id,
     category_obj,
     stats,
     chart_stats
 }) => (dispatch, getState) => {
 
     let action_array = [
-        deleteTask(completed_task_action_type, id),
-        deleteTask(task_action_type, id),
+        deleteTask(completed_task_action_type, task_id),
+        deleteTask(task_action_type, task_id),
         updateCategory(category_obj.id, category_obj.data),
         returnNewStats(stats.action_type, stats.data),
         returnNewChartStats("RETURN_NEW_WEEK_CHART_STATS", chart_stats.week_chart_stats),

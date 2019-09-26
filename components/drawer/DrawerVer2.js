@@ -33,14 +33,6 @@ export default class Drawer extends React.PureComponent {
         edit_category_data: {},
 
         delete_category_bool: false,
-
-        agree_on_deleting_history: false,
-    }
-
-    toggleAgreeDeletingHistory = () => {
-        this.setState(prevState => ({
-            agree_on_deleting_history: !prevState.agree_on_deleting_history
-        }))
     }
 
     chooseEditCategory = (category_data) => {
@@ -462,50 +454,6 @@ export default class Drawer extends React.PureComponent {
                                         <Text>
                                             Are you sure deleting all tasks in this category?
                                         </Text>
-
-                                        <View
-                                            style={{
-                                                marginTop: 20,
-                                                flexDirection: "row",
-                                                justifyContent: "center",
-                                                alignContent: "center"
-                                            }}
-                                        >
-                                            <TouchableOpacity
-                                                onPress={this.toggleAgreeDeletingHistory}
-
-                                                style={{
-                                                    borderWidth: 1,
-                                                    borderColor: "black",
-                                                    borderRadius: 7,
-                                                    width: 20,
-                                                    height: 20,
-                                                    justifyContent: "center",
-                                                    alignItems: "center"
-                                                }}
-                                            >
-                                                {this.state.agree_on_deleting_history ?
-                                                    <View
-                                                        style={{
-                                                            width: 15,
-                                                            height: 15,
-                                                            borderRadius: 15,
-                                                            backgroundColor: "black"
-                                                        }}
-                                                    >
-                                                    </View>
-                                                    :
-                                                    null
-                                                }
-                                            </TouchableOpacity>
-                                            <Text
-                                                style={{
-                                                    marginLeft: 5
-                                                }}
-                                            >
-                                                Do you want to erase the history?
-                                            </Text>
-                                        </View>
 
                                         <View
                                             style={{

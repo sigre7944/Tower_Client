@@ -1011,8 +1011,11 @@ class BottomOptionElement extends React.PureComponent {
                 let category_key = add_data.category
                 let category_data = { ...Map(this.props.categories).get(category_key) }
 
-                category_data.quantity += 1
-
+                if (category_data.hasOwnProperty("quantity"))
+                    category_data.quantity += 1
+                else
+                    category_data.quantity = 1
+                    
                 let sending_obj = {
                     category_key,
                     category_data,

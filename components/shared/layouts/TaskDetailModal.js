@@ -223,7 +223,8 @@ export default class TaskDetailModal extends Component {
     updateTaskDeletionOnChartStatsAllTime = (task_id, type) => {
         let week_chart_stats = Map(this.props.week_chart_stats).asMutable(),
             month_chart_stats = Map(this.props.month_chart_stats).asMutable(),
-            year_chart_stats = Map(this.props.year_chart_stats).asMutable()
+            year_chart_stats = Map(this.props.year_chart_stats).asMutable(),
+            completed_tasks = Map(this.props.completed_tasks)
 
         if (completed_tasks.has(task_id)) {
             let completed_data = Map(completed_tasks.get(task_id))
@@ -240,9 +241,8 @@ export default class TaskDetailModal extends Component {
                             day_in_week = new Date(completed_timestamp).getDay(),
                             day_in_month = new Date(completed_timestamp).getDate(),
                             completed_month = new Date(completed_timestamp).getMonth(),
-                            completed_year = new Date(completed_timestamp).getFull(),
-                            month_completed_timestamp = new Date(completed_year, completed_month).getTime(),
-
+                            completed_year = new Date(completed_timestamp).getFullYear(),
+                            month_completed_timestamp = new Date(completed_year, completed_month).getTime()
 
                         if (week_chart_stats.hasIn([week_completed_timestamp, day_in_week.toString(), "current"])) {
                             week_chart_stats.updateIn([week_completed_timestamp, day_in_week.toString(), "current"], (value) => {
@@ -349,12 +349,31 @@ export default class TaskDetailModal extends Component {
         })
     }
 
+    updateTaskDeletionOnCategory = (category) => {
+        let categories = Map(this.props.categories),
+            data = {}
+
+        if (categories.has(category)) {
+            data = { ...categories.get(category) }
+            if(data.hasOwnProperty("quantity")){
+                data.quantity -= 1
+
+                if(data.quantity < 0){
+                    data.quantity = 0
+                }
+            }
+        }
+
+        return data
+    }
+
     delete = () => {
         let sending_obj = {
             category_obj: {
                 id: this.edit_task.category,
-                data: this.updateDeletionOnCategoryData(this.edit_task.category)
+                data: this.updateTaskDeletionOnCategory(this.edit_task.category)
             },
+            task_id: this.edit_task.id,
             stats: {}
         }
 
