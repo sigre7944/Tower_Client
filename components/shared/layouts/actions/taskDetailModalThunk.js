@@ -8,36 +8,24 @@ import { updateChartStats, returnNewChartStats } from '../../actions/chartStatsA
 import { batchActions } from 'redux-batched-actions'
 import { updateCategory } from '../../actions/categoryAction'
 
-export const deleteTaskThunk = ({ completed_task_action_type,
-    uncompleted_task_action_type, id,
-    should_update_stats,
-    update_stats_data,
-    should_update_chart_stats,
-    update_chart_stats_data,
-    category_obj
+export const deleteTaskThunk = ({
+    completed_task_action_type,
+    task_action_type,
+    id,
+    category_obj,
+    stats,
+    chart_stats
 }) => (dispatch, getState) => {
 
     let action_array = [
         deleteTask(completed_task_action_type, id),
-        deleteTask(uncompleted_task_action_type, id),
-        updateCategory(category_obj.id, category_obj.data)
+        deleteTask(task_action_type, id),
+        updateCategory(category_obj.id, category_obj.data),
+        returnNewStats(stats.action_type, stats.data),
+        returnNewChartStats("RETURN_NEW_WEEK_CHART_STATS", chart_stats.week_chart_stats),
+        returnNewChartStats("RETURN_NEW_MONTH_CHART_STATS", chart_stats.month_chart_stats),
+        returnNewChartStats("RETURN_NEW_YEAR_CHART_STATS", chart_stats.year_chart_stats),
     ]
-
-    if (should_update_stats === true) {
-        action_array.push(updateStats(update_stats_data.stats_action_type, update_stats_data.stats_timestamp, update_stats_data.stats_data))
-    }
-
-    if (should_update_chart_stats.week === true) {
-        action_array.push(updateChartStats(update_chart_stats_data.week_chart_stats_action_type, update_chart_stats_data.week_chart_timestamp, update_chart_stats_data.week_chart_stats_data))
-    }
-
-    if (should_update_chart_stats.month === true) {
-        action_array.push(updateChartStats(update_chart_stats_data.month_chart_stats_action_type, update_chart_stats_data.month_chart_timestamp, update_chart_stats_data.month_chart_stats_data))
-    }
-
-    if (should_update_chart_stats.year === true) {
-        action_array.push(updateChartStats(update_chart_stats_data.year_chart_stats_action_type, update_chart_stats_data.year_chart_timestamp, update_chart_stats_data.year_chart_stats_data))
-    }
 
     dispatch(batchActions(action_array))
 }

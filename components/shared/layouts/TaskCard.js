@@ -91,7 +91,6 @@ export default class TaskCard extends React.PureComponent {
                     let pre_convert_obj = {
                         id: task.id,
                         category: task.category,
-                        priority_value: task.priority.value
                     }
                     let pre_convert_completed_data = {
                         current: currentGoal + 1

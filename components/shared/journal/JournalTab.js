@@ -14,9 +14,7 @@ import DayFlatlist from './day-flatlist/DayFlatlist.Container'
 import WeekFlatlist from './week-flatlist/WeekFlatlist.Container'
 import MonthFlatlist from './month-flatlist/MonthFlatlist.Container'
 
-import Swipeable from 'react-native-gesture-handler/Swipeable'
-
-import { Map, hasIn, getIn } from 'immutable'
+import { Map, hasIn, getIn, fromJS } from 'immutable'
 
 export default class JournalTab extends React.PureComponent {
     static navigationOptions = {
@@ -296,12 +294,12 @@ class TaskCardHolder extends React.PureComponent {
                 let { day, month, year } = this.props.chosen_date_data,
                     chosen_day_timestamp = new Date(year, month, day).getTime(),
                     chosen_day_timestamp_to_string = chosen_day_timestamp.toString()
-                    current_goal_value = 0
+                current_goal_value = 0
 
                 if (!hasIn(completed_tasks, [id, chosen_day_timestamp_to_string.toString()]) ||
                     (hasIn(completed_tasks, [id, chosen_day_timestamp_to_string]) && parseInt(getIn(completed_tasks, [id, chosen_day_timestamp_to_string, "current"], 0)) < parseInt(goal.max))) {
                     current_goal_value = getIn(completed_tasks, [id, chosen_day_timestamp_to_string, "current"], 0)
-                    
+
 
                     if (schedule.day === day && schedule.month === month && schedule.year === year) {
                         return { action_type: "UPDATE_COMPLETED_DAY_TASK", task, current_goal_value, title, goal }
