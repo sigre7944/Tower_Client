@@ -27,7 +27,7 @@ const task = {
         // these properties are used for 'Day' type task
         type: "daily", //weekly, monthly for 'day' type task. Used for editting task components
         interval: {
-            value: 86400 * 1000 * 2 // timestamp for repetition. 86400 * 1000 = miliseconds in a day, 2 = number of repetitive days
+            value:  2 // timestamp for repetition. 86400 * 1000 = miliseconds in a day, 2 = number of repetitive days
         },
 
         // these properties are used for 'Day' type task
@@ -101,9 +101,8 @@ const category = {
     // use id of each category as key
     inbox_123: {
         name: "Inbox",
-        // createdAt: 1500000,
         color: "red",
-        // tasks: ["task_123", "task_..."] //holding the ids of relative task ids
+        quantity: 0, // number of tasks
     }
 }
 
@@ -186,7 +185,7 @@ const day_completed_tasks = {
         // The completion_timestamp_x will be calculated based on a rule, involving the day, month, year of the completion time.
         completion_timestamp_1: {
             current: 1 //the current goal value of the task. For example, a task has a goal of 5 times completion each occurrence. The value shows that
-                        // at the time of completion_timestamp_1, the task has been completed 1 time (1/5)
+            // at the time of completion_timestamp_1, the task has been completed 1 time (1/5)
         },
 
         completion_timestamp_2: {
@@ -254,14 +253,18 @@ const week_tasks = {
 const week_completed_tasks = {
     task_id: {
         id: task_id,
+        category: category_id,
+        priority_value: priority_value,
         // The completion_timestamp_x will be calculated based on a rule, involving the first monday of the week, month, year of the completion time.
         completion_timestamp_1: {
-            current: 1 //the current goal value of the task. For example, a task has a goal of 5 times completion each occurrence. The value shows that
-                        // at the time of completion_timestamp_1, the task has been completed 1 time (1/5)
+            current: 1, //the current goal value of the task. For example, a task has a goal of 5 times completion each occurrence. The value shows that
+            // at the time of completion_timestamp_1, the task has been completed 1 time (1/5)
+            priority_value: priority_value,
         },
 
         completion_timestamp_2: {
-            current: 1
+            current: 1,
+            priority_value: priority_value,
         },
     }
 }
@@ -322,11 +325,68 @@ const month_completed_tasks = {
         // The completion_timestamp_x will be calculated based on a rule, involving the first monday of the month, year of the completion time.
         completion_timestamp_1: {
             current: 1 //the current goal value of the task. For example, a task has a goal of 5 times completion each occurrence. The value shows that
-                        // at the time of completion_timestamp_1, the task has been completed 1 time (1/5)
+            // at the time of completion_timestamp_1, the task has been completed 1 time (1/5)
         },
 
         completion_timestamp_2: {
             current: 1
         },
+    }
+}
+
+const day_stats = {
+    day_timestamp: {
+        // doFirst: 3,
+        // plan: 2,
+        // delay: 4,
+        // delegate: 1,
+        current: [3, 2, 4, 1],
+    }
+}
+
+const week_stats = {
+    week_timestamp: {
+        // doFirst: 1,
+        // plan: 2,
+        // delay: 0,
+        // delegate: 0,
+        current: [1, 2, 0, 0],
+    }
+}
+
+const month_stats = {
+    month_timestamp: {
+        // doFirst: 1,
+        // plan: 3,
+        // delay: 4,
+        // delegate: 0,
+        current: [1, 3, 4, 0],
+    }
+}
+
+const week_chart_stats = {
+    week_timestamp: {
+        //monday
+        0: {
+            current: [1, 0, 1, 0]
+        },
+    }
+}
+
+const month_chart_stats = {
+    month_timestamp: {
+        //first day of month
+        1: {
+            current: [1, 0, 1, 0]
+        }
+    }
+}
+
+const year_chart_stats = {
+    year_timestamp: {
+        //January
+        0: {
+            current: [1, 0, 1, 0]
+        }
     }
 }

@@ -13,7 +13,7 @@ import {createBottomTabNavigator} from 'react-navigation'
 
 const MainNavigator = createBottomTabNavigator({
     Journal: JournalTopNavigator,
-    Progress: { screen: Progress },
+    Progress: Progress,
     Reward: { screen: Reward },
     Settings: { screen: Settings },
 },

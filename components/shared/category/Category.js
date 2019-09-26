@@ -1,18 +1,16 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import {
     View,
     Text,
     TouchableHighlight,
     StyleSheet,
-    TextInput,
-    Keyboard,
-    Modal,
     TouchableOpacity,
     FlatList,
-    Dimensions,
     Animated
 } from 'react-native';
+
+import {Map} from 'immutable'
 
 import AddCategoryPanel from './add-category/AddCategoryPanel.Container'
 
@@ -93,16 +91,7 @@ export default class Category extends React.Component {
     }
 
     initializeCategoryArr = () => {
-        let categories = this.props.categories,
-            category_arr = []
-        for (var key in categories) {
-            if (categories.hasOwnProperty(key)) {
-                category_arr.push({
-                    id: key,
-                    ...categories[key]
-                })
-            }
-        }
+        let category_arr = Map(this.props.categories).valueSeq().map(value => value).toArray()
 
         category_arr.push({
             name: "Add new category"
@@ -114,7 +103,7 @@ export default class Category extends React.Component {
     }
 
     save = () => {
-        let category_key = Object.keys(this.props.categories)[this.state.currentIndex]
+        let category_key = Map(this.props.categories).keySeq().toArray()[this.state.currentIndex]
         this.props.updateTask({ category: category_key })
 
         this.props.hideAction()

@@ -23,7 +23,9 @@ export default class Header extends React.Component {
         modalVisible: false,
         dropdownMenuVisible: false,
 
-        journal_header_visible: false
+        journal_header_visible: false,
+
+        progress_header_visible: false,
     };
 
 
@@ -43,13 +45,22 @@ export default class Header extends React.Component {
         if (this.props.currentRoute !== prevProps.currentRoute) {
             if (this.props.currentRoute === "Day" || this.props.currentRoute === "Week" || this.props.currentRoute === "Month") {
                 this.setState({
-                    journal_header_visible: true
+                    journal_header_visible: true,
+                    progress_header_visible: false
+                })
+            }
+
+            else if (this.props.currentRoute === "Progress") {
+                this.setState({
+                    journal_header_visible: false,
+                    progress_header_visible: true
                 })
             }
 
             else {
                 this.setState({
-                    journal_header_visible: false
+                    journal_header_visible: false,
+                    progress_header_visible: false
                 })
             }
         }
@@ -68,7 +79,15 @@ export default class Header extends React.Component {
 
                     :
 
-                    null
+                    <>
+                        {this.state.progress_header_visible ?
+                            <ProgressHeader />
+
+                            :
+
+                            null
+                        }
+                    </>
                 }
                 <Modal
                     style={{ marginTop: 300, borderRadius: 10 }}
@@ -152,6 +171,39 @@ class JournalHeader extends React.PureComponent {
                     </Text>
                 </TouchableOpacity>
 
+
+                <TouchableOpacity onPress={this._openEditModal}>
+                    <Image
+                        source={require('./dots.png')}
+                        style={{
+                            width: 36,
+                            height: 36,
+                            tintColor: 'white'
+                        }}
+                    />
+                </TouchableOpacity>
+            </View>
+        )
+    }
+}
+
+class ProgressHeader extends React.PureComponent {
+    render() {
+        return (
+            <View style={{
+                paddingTop: 20,
+                paddingHorizontal: 10,
+                height: 80,
+                flexDirection: "row",
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                backgroundColor: 'gray'
+            }}>
+                <View></View>
+
+                <Text>
+                    Progress
+                </Text>
 
                 <TouchableOpacity onPress={this._openEditModal}>
                     <Image

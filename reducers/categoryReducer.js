@@ -1,38 +1,32 @@
-let initialState = {
+import { Map } from "immutable"
+
+let initialState = Map({
     cate_0: {
+        id: "cate_0",
         name: "Inbox",
         color: "red",
         quantity: 0
     }
-}
+})
 
 export const categories = (state = initialState, action) => {
     switch (action.type) {
         case 'CREATE_CATEGORY':
-            return { ...state, ...action.data }
+            return state.set(action.id, { ...action.data })
 
         case 'UPDATE_CATEGORY':
-            let categories = { ...state }
-
-            categories[action.id] = { ...action.data }
-
-            return categories
+            return state.update(action.id, (value) => action.data)
 
         case 'DELETE_CATEGORY':
-            let categories_clone = { ...state }
-
-            delete categories_clone[action.id]
-            
-            return categories_clone
+            return state.delete(action.id)
 
         default:
-
             return state
     }
 }
 
 export const currentChosenCategory = (state = "general", action) => {
-    switch(action.type){
+    switch (action.type) {
         case 'UPDATE_CURRENT_CHOSEN_CATEGORY':
             return action.data
 

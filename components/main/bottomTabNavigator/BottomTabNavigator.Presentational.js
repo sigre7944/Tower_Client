@@ -3,7 +3,7 @@ import React from 'react'
 import {
     View,
     Text,
-    TouchableHighlight,
+    TouchableOpacity
 } from 'react-native';
 
 import AddTaskButton from './layouts/AddTaskButton'
@@ -28,8 +28,6 @@ export default class BottomTabNavigator extends React.Component {
 
     chooseNewScreen = (routeName) => {
         this.props.navigation.navigate({ routeName })
-
-        // this.props.changeRouteAction(routeName)
     }
 
     componentDidUpdate = (prevProps, prevState) => {
@@ -118,7 +116,7 @@ class ScreenComponent extends React.PureComponent {
 
     render() {
         return (
-            <TouchableHighlight
+            <TouchableOpacity
                 onPress={this._onPress}
                 style={{
                     flex: 1,
@@ -132,7 +130,7 @@ class ScreenComponent extends React.PureComponent {
                 }}>
                     {this.props.screen_route_name}
                 </Text>
-            </TouchableHighlight>
+            </TouchableOpacity>
         )
     }
 }

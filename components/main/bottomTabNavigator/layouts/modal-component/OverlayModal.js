@@ -123,12 +123,12 @@ export default class OverlayModal extends Component {
     getMonday = (date) => {
         let dayInWeek = new Date(date).getDay()
         let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
-        return new Date(new Date(date).getTime() - (diff * 86400 * 1000)).getDate()
+        return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
     }
 
     getNoWeekInMonth = (date) => {
-        let nearest_monday = this.getMonday(date)
-        let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
+        let nearest_monday = this.getMonday(date).getDate()
+        let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7)).getDate()
 
         return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
     }
@@ -175,15 +175,15 @@ export default class OverlayModal extends Component {
             || !currentWeekTask.repeat || !currentWeekTask.end || !currentWeekTask.category || !currentWeekTask.priority || !currentWeekTask.goal) {
             let data = {},
                 date = new Date(),
-                noWeek = this.getWeek(date)
+                week = this.getWeek(date)
 
             data.startTime = date.getTime()
             data.trackingTime = data.startTime
             data.schedule = {
-                day: date.getDate(),
-                week: noWeek,
-                month: date.getMonth(),
-                year: date.getFullYear(),
+                day: this.getMonday(date).getDate(),
+                week,
+                month: this.getMonday(date).getMonth(),
+                year: this.getMonday(date).getFullYear(),
                 noWeekInMonth: this.getNoWeekInMonth(date),
             }
             data.category = "cate_0"

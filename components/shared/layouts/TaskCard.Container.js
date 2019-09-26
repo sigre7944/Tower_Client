@@ -1,12 +1,17 @@
 import { connect } from 'react-redux'
-import { updateTask } from '../actions/taskAction'
+import { updateBulkThunk } from './actions/taskCardThunk'
+
 import TaskCard from './TaskCard'
 
 const mapStateToProps = (state, ownProps) => {
     if (ownProps.type === "day") {
         return (
             {
-                completed_tasks: state.completed_day_tasks
+                completed_tasks: state.get("completed_day_tasks"),
+                stats: state.get("day_stats"),
+                week_chart_stats: state.get("week_chart_stats"),
+                month_chart_stats: state.get("month_chart_stats"),
+                year_chart_stats: state.get("year_chart_stats")
             }
         )
     }
@@ -14,7 +19,11 @@ const mapStateToProps = (state, ownProps) => {
     else if (ownProps.type === "week") {
         return (
             {
-                completed_tasks: state.completed_week_tasks
+                completed_tasks: state.get("completed_week_tasks"),
+                stats: state.get("week_stats"),
+                week_chart_stats: state.get("week_chart_stats"),
+                month_chart_stats: state.get("month_chart_stats"),
+                year_chart_stats: state.get("year_chart_stats")
             }
         )
     }
@@ -22,13 +31,17 @@ const mapStateToProps = (state, ownProps) => {
 
     return (
         {
-            completed_tasks: state.completed_month_tasks
+            completed_tasks: state.get("completed_month_tasks"),
+            stats: state.get("month_stats"),
+            week_chart_stats: state.get("week_chart_stats"),
+            month_chart_stats: state.get("month_chart_stats"),
+            year_chart_stats: state.get("year_chart_stats")
         }
     )
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    updateCompletedTask: (data) => dispatch(updateTask(ownProps.action_type, data)),
+    updateBulkThunk: (data) => dispatch(updateBulkThunk(data))
 })
 
 export default connect(

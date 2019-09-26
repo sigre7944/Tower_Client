@@ -5,13 +5,12 @@ const mapStateToProps = (state, ownProps) => {
 
     if(!ownProps.edit){
         return({
-            task_data: state.currentWeekTask
+            task_data: state.get("currentWeekTask")
         })
     }
 
     return {}
 }
-
 
 export default connect(
     mapStateToProps,

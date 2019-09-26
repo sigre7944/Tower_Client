@@ -11,7 +11,8 @@ import {
     Animated,
     LayoutAnimation,
     UIManager,
-    Platform
+    Platform,
+    TouchableOpacity
 } from 'react-native';
 
 export default class Priority extends React.Component {
@@ -150,6 +151,10 @@ export default class Priority extends React.Component {
         }
     }
 
+    _toggleAgreeOnChangingPriorityHistory = () => {
+        this.props.toggleAgreeOnChangingPriorityHistory()
+    }
+
     save = () => {
         this._updateTask()
         this.props.hideAction()
@@ -230,6 +235,61 @@ export default class Priority extends React.Component {
                             decidePriorityValue={this.decidePriorityValue}
                             decision_index={this.urgency_index}
                         />
+
+
+                        {this.props.edit ?
+                            <View
+                                style={{
+                                    marginTop: 10,
+                                    flexDirection: "row",
+                                    justifyContent: "center",
+                                    alignItems: "center"
+                                }}
+                            >
+                                <TouchableOpacity
+                                    style={{
+                                        width: 20,
+                                        height: 20,
+                                        borderWidth: 1,
+                                        borderColor: "black",
+                                        justifyContent: "center",
+                                        alignItems: "center"
+                                    }}
+
+                                    onPress={this._toggleAgreeOnChangingPriorityHistory}
+                                >
+                                    {this.props.agree_on_changing_priority_history ?
+                                        <View
+                                            style={{
+                                                width: 15,
+                                                height: 15,
+                                                borderRadius: 15,
+                                                backgroundColor: "black"
+                                            }}
+                                        >
+
+                                        </View>
+
+                                        :
+
+                                        null
+                                    }
+                                </TouchableOpacity>
+
+                                <Text
+                                    style={{
+                                        marginLeft: 5
+                                    }}
+                                >
+                                    Apply changes on record
+                                </Text>
+                            </View>
+
+                            :
+
+                            null
+                        }
+
 
                         <Reward
                             changeRewardValue={this.changeRewardValue}

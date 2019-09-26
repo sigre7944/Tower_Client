@@ -7,13 +7,13 @@ import {
 } from '../../actions/categoryAction'
 
 const mapStateToProps = (state) => ({
-    categories: state.categories,
+    categories: state.get("categories"),
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => {
     if (!ownProps.edit) {
         return ({
-            createCategory: (data) => dispatch(createCategory(data))
+            createCategory: (id, data) => dispatch(createCategory(id, data))
         })
     }
 

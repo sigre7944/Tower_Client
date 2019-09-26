@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import Category from './Category'
 
-import {updateTask} from '../actions/taskAction'
+import { updateTask } from '../actions/taskAction'
 
 let action_type = ""
 
@@ -11,30 +11,30 @@ const mapStateToProps = (state, ownProps) => {
         if (ownProps.currentAnnotation === "day") {
             action_type = "UPDATE_NEW_DAY_TASK"
             return ({
-                categories: state.categories,
-                task_data: state.currentDayTask
+                categories: state.get("categories"),
+                task_data: state.get("currentDayTask")
             })
         }
 
         else if (ownProps.currentAnnotation === "week") {
             action_type = "UPDATE_NEW_WEEK_TASK"
             return ({
-                categories: state.categories,
-                task_data: state.currentWeekTask
+                categories: state.get("categories"),
+                task_data: state.get("currentWeekTask")
             })
         }
 
         else {
             action_type = "UPDATE_NEW_MONTH_TASK"
             return ({
-                categories: state.categories,
-                task_data: state.currentMonthTask
+                categories: state.get("categories"),
+                task_data: state.get("currentMonthTask")
             })
         }
     }
 
     return ({
-        categories: state.categories,
+        categories: state.get("categories"),
     })
 }
 

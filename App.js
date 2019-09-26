@@ -2,12 +2,13 @@ import React from 'react';
 import MainNavigator from './components/main/Main' //Main screen
 import { Dimensions } from 'react-native'
 import { createStackNavigator, createAppContainer, createDrawerNavigator } from 'react-navigation'
-import { createStore } from 'redux'
+import { createStore, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
+import { batchDispatchMiddleware } from 'redux-batched-actions'
 import { Provider } from 'react-redux'
 import rootReducer from './reducers'
 import Drawer from './components/drawer/Drawer.Container'
 import Header from './components/main/header/Header.Container'
-
 import * as FileSystem from 'expo-file-system';
 
 let categories = {},
@@ -124,7 +125,7 @@ export default class App extends React.Component {
   componentDidMount() {
     // this.InitializeLoading().catch(err => console.log(err))
     this.setState({
-      store: createStore(rootReducer)
+      store: createStore(rootReducer, applyMiddleware(batchDispatchMiddleware, thunk))
     })
   }
 
@@ -162,12 +163,12 @@ const ContentNavigator = createStackNavigator(
 const drawerNavigator = createDrawerNavigator({
   ContentNavigator: ContentNavigator,
 }, {
-    drawerLockMode: 'locked-closed',
-    contentComponent: Drawer,
-    drawerType: 'slide',
-    drawerWidth: Dimensions.get("window").width * 0.80,
-    overlayColor: "gray"
-  })
+  drawerLockMode: 'locked-closed',
+  contentComponent: Drawer,
+  drawerType: 'slide',
+  drawerWidth: Dimensions.get("window").width * 0.80,
+  overlayColor: "gray"
+})
 
 const AppContainer = createAppContainer(drawerNavigator) //return a React component, which is to wrap the stack navigator 
 

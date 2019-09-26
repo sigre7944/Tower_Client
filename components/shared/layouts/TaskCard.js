@@ -1,10 +1,17 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { CheckBox } from 'react-native-elements'
-import { Map } from 'immutable'
+import { Map, List, fromJS } from 'immutable'
 
 export default class TaskCard extends React.PureComponent {
+    priority_order = {
+        pri_01: 0,
+        pri_02: 1,
+        pri_03: 2,
+        pri_04: 3
+    }
+
     state = {
         checked: false,
         uncomplete_checked: false
@@ -32,164 +39,327 @@ export default class TaskCard extends React.PureComponent {
         return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
     }
 
-    getNoWeekInMonth = (date) => {
-        let nearest_monday = this.getMonday(date)
-        let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
+    doUpdateOnCompletedTask = (flag, type, operation) => {
+        let task = this.props.task_data,
+            current_date = new Date(),
+            data,
+            currentGoal = 0,
+            completed_tasks = Map(this.props.completed_tasks),
+            timestamp = 0
 
-        return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
+        if (type === "day") {
+            timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+        }
+
+        else if (type === "week") {
+            timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
+        }
+
+        else {
+            timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
+        }
+
+        if (operation === "inc") {
+            if (flag === "uncompleted") {
+                if (completed_tasks.hasIn([task.id, timestamp.toString()])) {
+                    if (type === "day") {
+                        data = Map(completed_tasks.get(task.id)).toMap().asMutable()
+                        data.updateIn([timestamp.toString(), "current"], (value) => value + 1)
+                        data.updateIn([timestamp.toString(), "priority_value"], (value) => task.priority.value)
+                    }
+
+                    else if (type === "week") {
+                        let day_in_week = current_date.getDay()
+
+                        data = Map(completed_tasks.get(task.id)).toMap().asMutable()
+                        data.updateIn([timestamp.toString(), "current"], (value) => v + 1)
+                        data.updateIn([timestamp.toString(), "day_completed_array"], (value) => List(value).update(day_in_week, (v) => v + 1))
+                        data.updateIn([timestamp.toString(), "priority_value_array"], (value) => List(value).update(day_in_week, (v) => task.priority.value))
+                    }
+
+                    else {
+                        let day_in_month = current_date.getDate()
+
+                        data = Map(completed_tasks.get(task.id)).toMap().asMutable()
+                        data.updateIn([timestamp.toString(), "current"], (value) => v + 1)
+                        data.updateIn([timestamp.toString(), "day_completed_array"], (value) => List(value).update(day_in_month - 1, (v) => v + 1))
+                        data.updateIn([timestamp.toString(), "priority_value_array"], (value) => List(value).update(day_in_month - 1, (v) => task.priority.value))
+                    }
+                }
+
+                else {
+                    let pre_convert_obj = {
+                        id: task.id,
+                        category: task.category,
+                    }
+                    let pre_convert_completed_data = {
+                        current: currentGoal + 1
+                    }
+
+                    if (type === "day") {
+                        pre_convert_completed_data.priority_value = task.priority.value
+                    }
+
+                    else if (type === "week") {
+                        let day_completed_array = new Array(7).fill(0),
+                            priority_value_array = new Array(7).fill(task.priority.value),
+                            day_in_week = current_date.getDay()
+
+                        day_completed_array[day_in_week] += 1
+                        pre_convert_completed_data.day_completed_array = day_completed_array
+                        pre_convert_completed_data.priority_value_array = priority_value_array
+                    }
+
+                    else {
+                        let day_in_month = current_date.getDate(),
+                            last_day_in_month = new Date(current_date.getFullYear(), current_date.getMonth() + 1, 0).getDate(),
+                            priority_value_array = new Array(last_day_in_month).fill(task.priority.value),
+                            day_completed_array = new Array(last_day_in_month).fill(0)
+
+                        day_completed_array[day_in_month - 1] += 1
+                        pre_convert_completed_data.day_completed_array = day_completed_array
+                        pre_convert_completed_data.priority_value_array = priority_value_array
+                    }
+
+                    pre_convert_obj[timestamp] = pre_convert_completed_data
+
+                    data = fromJS(pre_convert_obj)
+                }
+            }
+
+            else {
+                if (completed_tasks.hasIn([task.id, timestamp.toString()])) {
+                    if (type === "day") {
+                        data = Map(completed_tasks.get(task.id)).toMap().asMutable()
+                        data.updateIn([timestamp.toString(), "current"], (value) => value - 1 < 0 ? 0 : value - 1)
+                        data.updateIn([timestamp.toString(), "priority_value"], (value) => task.priority.value)
+                    }
+
+                    else if (type === "week") {
+                        let day_in_week = current_date.getDay()
+
+                        data = Map(completed_tasks.get(task.id)).toMap().asMutable()
+                        data.updateIn([timestamp.toString(), "current"], (value) => value - 1 < 0 ? 0 : value - 1)
+                        data.updateIn([timestamp.toString(), "day_completed_array"], (value) => List(value).update(day_in_week, (v) => value - 1 < 0 ? 0 : value - 1))
+                        data.updateIn([timestamp.toString(), "priority_value_array"], (value) => List(value).update(day_in_week, (v) => task.priority.value))
+                    }
+
+                    else {
+                        let day_in_month = current_date.getDate()
+
+                        data = Map(completed_tasks.get(task.id)).toMap().asMutable()
+                        data.updateIn([timestamp.toString(), "current"], (value) => value - 1 < 0 ? 0 : value - 1)
+                        data.updateIn([timestamp.toString(), "day_completed_array"], (value) => List(value).update(day_in_month - 1, (v) => value - 1 < 0 ? 0 : value - 1))
+                        data.updateIn([timestamp.toString(), "priority_value_array"], (value) => List(value).update(day_in_month - 1, (v) => task.priority.value))
+                    }
+                }
+            }
+        }
+
+        else {
+            if (flag === "uncompleted") {
+                if (completed_tasks.hasIn([task.id, timestamp.toString()])) {
+                    if (type === "day") {
+                        data = Map(completed_tasks.get(task.id)).toMap().asMutable()
+                        data.updateIn([timestamp.toString(), "current"], (value) => value - 1 < 0 ? 0 : value - 1)
+                        data.updateIn([timestamp.toString(), "priority_value"], (value) => task.priority.value)
+                    }
+
+                    else if (type === "week") {
+                        let day_in_week = current_date.getDay()
+
+                        data = Map(completed_tasks.get(task.id)).toMap().asMutable()
+                        data.updateIn([timestamp.toString(), "current"], (value) => value - 1 < 0 ? 0 : value - 1)
+                        data.updateIn([timestamp.toString(), "day_completed_array"], (value) => List(value).update(day_in_week, (v) => value - 1 < 0 ? 0 : value - 1))
+                        data.updateIn([timestamp.toString(), "priority_value_array"], (value) => List(value).update(day_in_week, (v) => task.priority.value))
+                    }
+
+                    else {
+                        let day_in_month = current_date.getDate()
+
+                        data = Map(completed_tasks.get(task.id)).toMap().asMutable()
+                        data.updateIn([timestamp.toString(), "current"], (value) => value - 1 < 0 ? 0 : value - 1)
+                        data.updateIn([timestamp.toString(), "day_completed_array"], (value) => List(value).update(day_in_month - 1, (v) => value - 1 < 0 ? 0 : value - 1))
+                        data.updateIn([timestamp.toString(), "priority_value_array"], (value) => List(value).update(day_in_month - 1, (v) => task.priority.value))
+                    }
+                }
+            }
+        }
+
+        return ({
+            action_type: this.props.action_type,
+            data,
+        })
+    }
+
+    doUpdateOnStats = (flag, type, operation) => {
+        let task = this.props.task_data,
+            current_date = new Date(),
+            stats = Map(this.props.stats),
+            stats_data = {},
+            stats_timestamp = 0,
+            stats_action_type = "UPDATE_DAY_STATS"
+
+        if (type === "day") {
+            stats_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+            stats_action_type = "UPDATE_DAY_STATS"
+        }
+
+        else if (type === "week") {
+            stats_timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
+            stats_action_type = "UPDATE_WEEK_STATS"
+        }
+
+        else {
+            stats_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
+            stats_action_type = "UPDATE_MONTH_STATS"
+        }
+
+        if (operation === "inc") {
+            if (flag === "uncompleted") {
+                if (stats.has(stats_timestamp)) {
+                    stats_data = Map(stats.get(stats_timestamp)).toMap().update("current", (value) => {
+                        return List(value).update(this.priority_order[task.priority.value], (v) => v += 1)
+                    })
+                }
+
+                else {
+                    let current = [0, 0, 0, 0]
+                    current[this.priority_order[task.priority.value]] += 1
+                    stats_data.current = current
+
+                    stats_data = fromJS(stats_data)
+                }
+            }
+
+            else {
+                if (stats.has(stats_timestamp)) {
+                    stats_data = Map(stats.get(stats_timestamp)).toMap().update("current", (value) => {
+                        return List(value).update(this.priority_order[task.priority.value], (v) => v - 1 < 0 ? 0 : v - 1)
+                    })
+                }
+            }
+        }
+
+        else {
+            if (flag === "uncompleted") {
+                if (stats.has(stats_timestamp)) {
+                    stats_data = Map(stats.get(stats_timestamp)).toMap().update("current", (value) => {
+                        return List(value).update(this.priority_order[task.priority.value], (v) => v - 1 < 0 ? 0 : v - 1)
+                    })
+                }
+            }
+        }
+
+        return ({
+            stats_action_type,
+            stats_timestamp,
+            stats_data
+        })
+    }
+
+    doUpdateOnChartStats = (flag, operation) => {
+        let task = this.props.task_data,
+            current_date = new Date(),
+            week_chart_stats = this.props.week_chart_stats,
+            month_chart_stats = this.props.month_chart_stats,
+            year_chart_stats = this.props.year_chart_stats,
+            week_chart_stats_data = {},
+            month_chart_stats_data = {},
+            year_chart_stats_data = {},
+            week_timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime(),
+            month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime(),
+            year_timestamp = current_date.getFullYear()
+
+        week_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, Map(week_chart_stats), week_timestamp, current_date.getDay(), flag, operation)
+
+        month_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, Map(month_chart_stats), month_timestamp, current_date.getDate(), flag, operation)
+
+        year_chart_stats_data = this.doCompareAndUpdateOnChartStatsData(task, Map(year_chart_stats), year_timestamp, current_date.getMonth(), flag, operation)
+
+        return ({
+            week_action_type: "UPDATE_WEEK_CHART_STATS",
+            week_timestamp,
+            week_chart_stats_data,
+
+            month_action_type: "UPDATE_MONTH_CHART_STATS",
+            month_timestamp,
+            month_chart_stats_data,
+
+            year_action_type: "UPDATE_YEAR_CHART_STATS",
+            year_timestamp,
+            year_chart_stats_data
+        })
+    }
+
+    doCompareAndUpdateOnChartStatsData = (task, chart_stats_map, timestamp, key, flag, operation) => {
+        let chart_stats_data = {}
+
+        if (operation === "inc") {
+            if (flag === "uncompleted") {
+                if (chart_stats_map.has(timestamp)) {
+
+                    if (Map(chart_stats_map.get(timestamp)).has(key.toString())) {
+                        chart_stats_data = Map(chart_stats_map.get(timestamp)).toMap().updateIn([key.toString(), "current"], (value) => {
+                            return List(value).update(this.priority_order[task.priority.value], (v) => v + 1)
+                        })
+                    }
+
+                    else {
+                        let current = [0, 0, 0, 0]
+                        current[this.priority_order[task.priority.value]] += 1
+                        chart_stats_data[key] = { current }
+
+                        chart_stats_data = fromJS(chart_stats_data)
+                    }
+                }
+
+                else {
+                    let current = [0, 0, 0, 0]
+                    current[this.priority_order[task.priority.value]] += 1
+                    chart_stats_data[key] = { current }
+
+                    chart_stats_data = fromJS(chart_stats_data)
+                }
+            }
+
+            else {
+                if (chart_stats_map.hasIn([timestamp, key.toString()])) {
+
+                    chart_stats_data = Map(chart_stats_map.get(timestamp)).toMap().updateIn([key.toString(), "current"], (value) => {
+                        return List(value).update(this.priority_order[task.priority.value], (v) => v - 1 < 0 ? 0 : v - 1)
+                    })
+                }
+            }
+
+        }
+
+        else {
+            if (chart_stats_map.hasIn([timestamp, key.toString()])) {
+
+                chart_stats_data = Map(chart_stats_map.get(timestamp)).toMap().updateIn([key.toString(), "current"], (value) => {
+                    return List(value).update(this.priority_order[task.priority.value], (v) => v - 1 < 0 ? 0 : v - 1)
+                })
+            }
+        }
+
+        return chart_stats_data
     }
 
     checkComplete = () => {
         if (this.props.is_chosen_date_today) {
+            let sending_obj = {}
+
             this.setState(prevState => ({
                 checked: !prevState.checked
             }))
 
-            let task = { ... this.props.task_data },
-                current_date = new Date(),
-                data = {},
-                overwrite_obj = {},
-                currentGoal = 0,
-                completed_tasks = Map(this.props.completed_tasks)
+            sending_obj.completed_task_data = this.doUpdateOnCompletedTask(this.props.flag, this.props.type, "inc")
+            sending_obj.stats_data = this.doUpdateOnStats(this.props.flag, this.props.type, "inc")
 
-            if (this.props.flag === "uncompleted") {
-                if (this.props.type === "day") {
-                    let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+            sending_obj.chart_data = this.doUpdateOnChartStats(this.props.flag, "inc")
 
-                    if (completed_tasks.has(task.id)) {
-                        data = completed_tasks.get(task.id)
-
-                        if (data.hasOwnProperty(day_timestamp)) {
-                            currentGoal = data[day_timestamp].current
-                        }
-
-                        overwrite_obj[day_timestamp] = {
-                            current: currentGoal + 1
-                        }
-
-                        data = { ...data, ...overwrite_obj }
-                    }
-
-                    else {
-                        data.id = task.id
-                        data[day_timestamp] = {
-                            current: currentGoal + 1,
-                            category: task.category
-                        }
-                    }
-                }
-
-                else if (this.props.type === "week") {
-                    let week_timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
-
-                    if (completed_tasks.has(task.id)) {
-                        data = completed_tasks.get(task.id)
-
-                        if (data.hasOwnProperty(week_timestamp)) {
-                            currentGoal = data[week_timestamp].current
-                        }
-
-                        overwrite_obj[week_timestamp] = {
-                            current: currentGoal + 1
-                        }
-
-                        data = { ...data, ...overwrite_obj }
-                    }
-
-                    else {
-                        data.id = task.id
-                        data[week_timestamp] = {
-                            category: task.category,
-                            current: currentGoal + 1
-                        }
-                    }
-                }
-
-                else {
-                    let month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
-
-                    if (completed_tasks.has(task.id)) {
-                        data = completed_tasks.get(task.id)
-
-                        if (data.hasOwnProperty(month_timestamp)) {
-                            currentGoal = data[month_timestamp].current
-                        }
-
-                        overwrite_obj[month_timestamp] = {
-                            current: currentGoal + 1
-                        }
-
-                        data = { ...data, ...overwrite_obj }
-                    }
-
-                    else {
-                        data.id = task.id
-                        data[month_timestamp] = {
-                            category: task.category,
-                            current: currentGoal + 1
-                        }
-                    }
-                }
-
-            }
-
-            else {
-                if (this.props.type === "day") {
-                    let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
-
-                    if (completed_tasks.has(task.id)) {
-                        data = completed_tasks.get(task.id)
-
-                        if (data.hasOwnProperty(day_timestamp)) {
-                            currentGoal = data[day_timestamp].current
-                        }
-
-                        overwrite_obj[day_timestamp] = {
-                            current: currentGoal - 1
-                        }
-
-                        data = { ...data, ...overwrite_obj }
-                    }
-                }
-
-                else if (this.props.type === "week") {
-                    let week_timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
-
-                    if (completed_tasks.has(task.id)) {
-                        data = completed_tasks.get(task.id)
-
-                        if (data.hasOwnProperty(week_timestamp)) {
-                            currentGoal = data[week_timestamp].current
-                        }
-
-                        overwrite_obj[week_timestamp] = {
-                            current: currentGoal - 1
-                        }
-
-                        data = { ...data, ...overwrite_obj }
-                    }
-                }
-
-                else {
-                    let month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
-
-                    if (completed_tasks.has(task.id)) {
-                        data = completed_tasks.get(task.id)
-
-                        if (data.hasOwnProperty(month_timestamp)) {
-                            currentGoal = data[month_timestamp].current
-                        }
-
-                        overwrite_obj[month_timestamp] = {
-                            current: currentGoal - 1
-                        }
-
-                        data = { ...data, ...overwrite_obj }
-                    }
-                }
-            }
-
-            this.props.updateCompletedTask(data)
+            this.props.updateBulkThunk(sending_obj)
         }
     }
 
@@ -199,94 +369,13 @@ export default class TaskCard extends React.PureComponent {
                 uncomplete_checked: !prevState.uncomplete_checked
             }))
 
-            let task = { ... this.props.task_data },
-                current_date = new Date(),
-                data = {},
-                overwrite_obj = {},
-                currentGoal = 0,
-                completed_tasks = Map(this.props.completed_tasks)
+            let sending_obj = {}
 
-            if (this.props.flag === "uncompleted") {
-                if (this.props.type === "day") {
-                    let day_timestamp = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime()
+            sending_obj.completed_task_data = this.doUpdateOnCompletedTask(this.props.flag, this.props.type, "dec")
+            sending_obj.stats_data = this.doUpdateOnStats(this.props.flag, this.props.type, "dec")
+            sending_obj.chart_data = this.doUpdateOnChartStats(this.props.flag, "dec")
 
-                    if (completed_tasks.has(task.id)) {
-                        data = completed_tasks.get(task.id)
-
-                        if (data.hasOwnProperty(day_timestamp)) {
-                            currentGoal = data[day_timestamp].current
-                        }
-
-                        if (currentGoal <= 0) {
-                            overwrite_obj[day_timestamp] = {
-                                current: currentGoal
-                            }
-                        }
-
-                        else {
-                            overwrite_obj[day_timestamp] = {
-                                current: currentGoal - 1
-                            }
-                        }
-                        
-                        data = { ...data, ...overwrite_obj }
-                    }
-                }
-
-                else if (this.props.type === "week") {
-                    let week_timestamp = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime()
-
-                    if (completed_tasks.has(task.id)) {
-                        data = completed_tasks.get(task.id)
-
-                        if (data.hasOwnProperty(week_timestamp)) {
-                            currentGoal = data[week_timestamp].current
-                        }
-
-                        if (currentGoal <= 0) {
-                            overwrite_obj[week_timestamp] = {
-                                current: currentGoal
-                            }
-                        }
-
-                        else {
-                            overwrite_obj[week_timestamp] = {
-                                current: currentGoal - 1
-                            }
-                        }
-
-                        data = { ...data, ...overwrite_obj }
-                    }
-                }
-
-                else {
-                    let month_timestamp = new Date(current_date.getFullYear(), current_date.getMonth()).getTime()
-
-                    if (completed_tasks.has(task.id)) {
-                        data = completed_tasks.get(task.id)
-
-                        if (data.hasOwnProperty(month_timestamp)) {
-                            currentGoal = data[month_timestamp].current
-                        }
-
-                        if (currentGoal <= 0) {
-                            overwrite_obj[month_timestamp] = {
-                                current: currentGoal
-                            }
-                        }
-
-                        else {
-                            overwrite_obj[month_timestamp] = {
-                                current: currentGoal - 1
-                            }
-                        }
-
-                        data = { ...data, ...overwrite_obj }
-                    }
-                }
-            }
-
-            this.props.updateCompletedTask(data)
+            this.props.updateBulkThunk(sending_obj)
         }
     }
 

@@ -10,21 +10,21 @@ const mapStateToProps = (state, ownProps) => {
         if (ownProps.currentAnnotation === "day") {
             action_type = "UPDATE_NEW_DAY_TASK"
             return ({
-                task_data: state.currentDayTask
+                task_data: state.get("currentDayTask")
             })
         }
 
         else if (ownProps.currentAnnotation === "week") {
             action_type = "UPDATE_NEW_WEEK_TASK"
             return ({
-                task_data: state.currentWeekTask
+                task_data: state.get("currentWeekTask")
             })
         }
 
         else {
             action_type = "UPDATE_NEW_MONTH_TASK"
             return ({
-                task_data: state.currentMonthTask
+                task_data: state.get("currentMonthTask")
             })
         }
     }

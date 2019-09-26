@@ -3,8 +3,9 @@ export const chooseCategory = (data) => ({
     data
 })
 
-export const createCategory = (data) => ({
+export const createCategory = (id, data) => ({
     type: "CREATE_CATEGORY",
+    id,
     data
 })
 

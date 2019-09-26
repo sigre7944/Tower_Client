@@ -8,9 +8,9 @@ const updateAccordingTask = (type, data) => ({
 })
 
 const mapStateToProps = (state) => ({
-    currentDayTask: state.currentDayTask,
-    currentWeekTask: state.currentWeekTask,
-    currentMonthTask: state.currentMonthTask,
+    currentDayTask: state.get("currentDayTask"),
+    currentWeekTask: state.get("currentWeekTask"),
+    currentMonthTask: state.get("currentMonthTask"),
 })
 
 const mapDispatchToProps = (dispatch) => ({

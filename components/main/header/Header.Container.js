@@ -3,8 +3,8 @@ import { toggleReturn } from '../../shared/actions/otherAction'
 import Header from './Header'
 
 const mapStateToProps = (state, ownProps) => ({
-    headerText: state.headerText,
-    currentRoute: state.currentRoute
+    headerText: state.get("headerText"),
+    currentRoute: state.get("currentRoute")
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
