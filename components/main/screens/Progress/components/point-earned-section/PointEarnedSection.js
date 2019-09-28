@@ -42,63 +42,70 @@ export default class PointEarnedSection extends React.PureComponent {
   render() {
     return (
       <>
-        <Text
+        <View
           style={{
-            width: 102,
-            height: 20,
-            marginTop: 16,
-            marginLeft: 16,
-            fontStyle: "normal",
-            fontWeight: "normal",
-            fontSize: 16,
-            lineHeight: 20,
+            justifyContent: "center",
+            alignItems: "center"
           }}
         >
-          Point earned:
+          <Text
+            style={{
+              width: 102,
+              height: 20,
+              marginTop: 16,
+              marginLeft: 16,
+              fontStyle: "normal",
+              fontWeight: "normal",
+              fontSize: 16,
+              lineHeight: 20,
+            }}
+          >
+            Point earned:
         </Text>
 
-        <Calendar
-          month={this.state.month}
-          year={this.state.year}
-          toggleChooseMonth={this.toggleChooseMonth}
-          {...this.props}
-        />
+          <Calendar
+            month={this.state.month}
+            year={this.state.year}
+            toggleChooseMonth={this.toggleChooseMonth}
+            {...this.props}
+          />
 
-        {this.state.choose_month_bool ?
-          <Modal
-            transparent={true}
-          >
-            <View
-              style={{
-                flex: 1,
-                position: "relative",
-                justifyContent: "center",
-                alignItems: "center"
-              }}
+          {this.state.choose_month_bool ?
+            <Modal
+              transparent={true}
             >
-              <TouchableOpacity
+              <View
                 style={{
                   flex: 1,
-                  width: Dimensions.get("window").width,
-                  backgroundColor: "black",
-                  opacity: 0.5
+                  position: "relative",
+                  justifyContent: "center",
+                  alignItems: "center"
                 }}
-
-                onPress={this.dismissChooseMonth}
               >
+                <TouchableOpacity
+                  style={{
+                    flex: 1,
+                    width: Dimensions.get("window").width,
+                    backgroundColor: "black",
+                    opacity: 0.5
+                  }}
 
-              </TouchableOpacity>
+                  onPress={this.dismissChooseMonth}
+                >
 
-              <MonthCalendar
-                chooseMonth={this.chooseMonth}
-                dismissChooseMonth={this.dismissChooseMonth}
-                year_array={this.year_array}
-              />
-            </View>
-          </Modal>
-          :
-          null
-        }
+                </TouchableOpacity>
+
+                <MonthCalendar
+                  chooseMonth={this.chooseMonth}
+                  dismissChooseMonth={this.dismissChooseMonth}
+                  year_array={this.year_array}
+                />
+              </View>
+            </Modal>
+            :
+            null
+          }
+        </View>
       </>
     )
   }

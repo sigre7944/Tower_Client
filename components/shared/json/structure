@@ -107,3 +107,12 @@
             }
         }
     }
+
+
+- Category structure: Map {
+    category_id: {
+        id: category_id,
+        color: "red",
+        quantity: 3
+    }
+}

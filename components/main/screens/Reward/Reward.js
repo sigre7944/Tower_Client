@@ -1,16 +1,47 @@
 import React from 'react';
+
 import {
-    View,
-    Text,
+  View,
+  ScrollView
 } from 'react-native';
 
-export default class Reward extends React.Component {
-    render() {
-      return (
+import TrackingSection from './components/tracking-section/TrackingSection'
+import StoreSection from './components/store-section/StoreSection'
 
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-           <Text>Reward!</Text>
-        </View>
-      );
-    }
+export default class Reward extends React.Component {
+
+  state = {
+    
+  }
+
+  addNewReward = () => {
+    this._scrollViewRef.scrollToEnd()
+  }
+  _setScrollViewRef = (ref) => {
+    this._scrollViewRef = ref
+  }
+
+  render() {
+    return (
+      <ScrollView
+        // endFillColor={"#F2F2F2"}
+        style={{
+          backgroundColor: "#F2F2F2"
+        }}
+
+        ref={this._setScrollViewRef}
+      >
+        {/* Tracking section */}
+        <TrackingSection
+
+        />
+
+        {/* Store Section */}
+        <StoreSection 
+          addNewReward = {this.addNewReward}
+        />
+      </ScrollView>
+    );
+  }
 }
+
