@@ -5,15 +5,18 @@ import {
     Dimensions,
     ScrollView,
     TouchableOpacity,
-    FlatList
+    FlatList,
+    TextInput,
+    Keyboard,
+    Animated,
+    KeyboardAvoidingView
+
 } from 'react-native';
 
 export default class TrackingSection extends React.PureComponent {
-
-
     state = {
         should_flatlist_update: 0,
-        reward_data: []
+        reward_data: [],
     }
 
     _setFlatListRef = (ref) => {
@@ -27,6 +30,13 @@ export default class TrackingSection extends React.PureComponent {
             return (
                 <AddRewardHolder
                     {...this.props}
+                />
+            )
+        }
+
+        else if (item.forCreate) {
+            return (
+                <NewRewardHolder
                 />
             )
         }
@@ -56,6 +66,34 @@ export default class TrackingSection extends React.PureComponent {
         this.setState({
             reward_data: [...reward_data]
         })
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.is_add_new !== prevProps.is_add_new) {
+            if (this.props.is_add_new) {
+                let reward_data = this.state.reward_data
+
+                reward_data.push({
+                    forCreate: true
+                })
+
+                this.setState({
+                    reward_data: [...reward_data]
+                })
+            }
+
+            else {
+                let reward_data = this.state.reward_data
+
+                if (reward_data[reward_data.length - 1].forCreate) {
+                    reward_data.pop()
+                }
+
+                this.setState({
+                    reward_data: [...reward_data]
+                })
+            }
+        }
     }
 
     render() {
@@ -199,6 +237,137 @@ class AddRewardHolder extends React.PureComponent {
                     Add
                 </Text>
             </TouchableOpacity>
+        )
+    }
+}
+
+class NewRewardHolder extends React.PureComponent {
+
+    _setNameRef = (ref) => {
+        this._textInput_nameRef = ref
+    }
+
+    _setValueRef = (ref) => {
+        this._textInput_valueRef = ref
+    }
+
+    _onNameSubmitEditing = () => {
+        this._textInput_valueRef.focus()
+    }
+
+    render() {
+        return (
+            <View
+                style={{
+                    width: (Dimensions.get("window").width - 67) / 2,
+                    height: 185,
+                    alignItems: "center",
+                    backgroundColor: "rgba(0, 0, 0, 0.05)",
+                    marginBottom: 22,
+                    borderRadius: 10,
+                }}
+            >
+                <View
+                    style={{
+                        flexDirection: "row",
+                        justifyContent: "flex-end",
+                        width: (Dimensions.get("window").width - 67) / 2 - 14,
+                        marginTop: 7,
+                    }}
+                >
+                    <TouchableOpacity>
+                        <Text
+                            style={{
+                                fontSize: 9,
+                            }}
+                        >
+                            Cancel
+                    </Text>
+                    </TouchableOpacity>
+                </View>
+
+                <TextInput
+                    style={{
+                        fontSize: 16,
+                        lineHeight: 19,
+                        fontWeight: "500",
+                        color: "rgba(0, 0, 0, 0.5)",
+                        textAlign: "center",
+                        marginTop: 5,
+                        letterSpacing: -0.02,
+                        height: 23,
+                        width: 110,
+                        borderColor: "black",
+                        borderBottomWidth: 1,
+                    }}
+
+                    autoFocus={true}
+                    ref={this._setNameRef}
+                    onSubmitEditing={this._onNameSubmitEditing}
+                    returnKeyType="next"
+                />
+
+                <View
+                    style={{
+                        marginTop: 21,
+                        flexDirection: "row",
+                    }}
+                >
+                    <TextInput
+                        style={{
+                            fontWeight: "500",
+                            fontSize: 24,
+                            lineHeight: 28,
+                            textAlign: "center",
+                            letterSpacing: -0.02,
+                            color: "rgba(0, 0, 0, 0.87)",
+                            height: 23,
+                            width: 110,
+                            borderColor: "black",
+                            borderBottomWidth: 1,
+                        }}
+                        ref={this._setValueRef}
+                        returnKeyType="done"
+                    />
+
+                    <Text
+                        style={{
+                            fontWeight: "500",
+                            fontSize: 24,
+                            lineHeight: 28,
+                            textAlign: "center",
+                            letterSpacing: -0.02,
+                            color: "rgba(0, 0, 0, 0.87)",
+                            marginLeft: 5,
+                        }}
+                    >
+                        €
+                    </Text>
+                </View>
+
+                {/* <TouchableOpacity
+                    style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: 110,
+                        height: 36,
+                        backgroundColor: "rgba(0, 0, 0, 0.87)",
+                        borderRadius: 28,
+                        marginTop: 28,
+                    }}
+                >
+                    <Text
+                        style={{
+                            color: "white",
+                            lineHeight: 19,
+                            fontSize: 16,
+                            fontWeight: "500"
+                        }}
+                    >
+                        Create
+                    </Text>
+                </TouchableOpacity> */}
+            </View>
         )
     }
 }
