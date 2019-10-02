@@ -9,14 +9,27 @@ import {
     TextInput,
     Keyboard,
     Animated,
-    KeyboardAvoidingView
-
+    Modal,
+    Switch
 } from 'react-native';
 
 export default class TrackingSection extends React.PureComponent {
     state = {
         should_flatlist_update: 0,
         reward_data: [],
+        is_add_new_reward: false
+    }
+
+    addNewReward = () => {
+        this.setState({
+            is_add_new_reward: true
+        })
+    }
+
+    dismissAddNewReward = () => {
+        this.setState({
+            is_add_new_reward: false
+        })
     }
 
     _setFlatListRef = (ref) => {
@@ -29,14 +42,7 @@ export default class TrackingSection extends React.PureComponent {
         if (item.name === "add a reward") {
             return (
                 <AddRewardHolder
-                    {...this.props}
-                />
-            )
-        }
-
-        else if (item.forCreate) {
-            return (
-                <NewRewardHolder
+                    addNewReward={this.addNewReward}
                 />
             )
         }
@@ -68,33 +74,6 @@ export default class TrackingSection extends React.PureComponent {
         })
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.props.is_add_new !== prevProps.is_add_new) {
-            if (this.props.is_add_new) {
-                let reward_data = this.state.reward_data
-
-                reward_data.push({
-                    forCreate: true
-                })
-
-                this.setState({
-                    reward_data: [...reward_data]
-                })
-            }
-
-            else {
-                let reward_data = this.state.reward_data
-
-                if (reward_data[reward_data.length - 1].forCreate) {
-                    reward_data.pop()
-                }
-
-                this.setState({
-                    reward_data: [...reward_data]
-                })
-            }
-        }
-    }
 
     render() {
         return (
@@ -114,6 +93,15 @@ export default class TrackingSection extends React.PureComponent {
                         justifyContent: "space-between"
                     }}
                 />
+
+                {this.state.is_add_new_reward ?
+                    <NewRewardHolder
+                        dismissAddNewReward={this.dismissAddNewReward}
+                    />
+                    :
+                    null
+                }
+
             </View>
         )
     }
@@ -243,131 +231,191 @@ class AddRewardHolder extends React.PureComponent {
 
 class NewRewardHolder extends React.PureComponent {
 
-    _setNameRef = (ref) => {
-        this._textInput_nameRef = ref
+    state = {
+        reward_title: "",
+        reward_value: "",
+        is_tracked: false
     }
 
-    _setValueRef = (ref) => {
-        this._textInput_valueRef = ref
+    _dismissAddNewReward = () => {
+        this.props.dismissAddNewReward()
     }
 
-    _onNameSubmitEditing = () => {
-        this._textInput_valueRef.focus()
+    onChangeRewardTitle = (e) => {
+        this.setState({
+            reward_title: e.nativeEvent.text
+        })
+    }
+
+    onChangeRewardValue = (e) => {
+        this.setState({
+            reward_value: e.nativeEvent.text.replace(/[^0-9]/g, "")
+        })
+    }
+
+    onChangeTrackReward = () => {
+        this.setState(prevState => ({
+            is_tracked: !prevState.is_tracked
+        }))
     }
 
     render() {
         return (
-            <View
-                style={{
-                    width: (Dimensions.get("window").width - 67) / 2,
-                    height: 185,
-                    alignItems: "center",
-                    backgroundColor: "rgba(0, 0, 0, 0.05)",
-                    marginBottom: 22,
-                    borderRadius: 10,
-                }}
+            <Modal
+                transparent={true}
             >
                 <View
                     style={{
-                        flexDirection: "row",
-                        justifyContent: "flex-end",
-                        width: (Dimensions.get("window").width - 67) / 2 - 14,
-                        marginTop: 7,
-                    }}
-                >
-                    <TouchableOpacity>
-                        <Text
-                            style={{
-                                fontSize: 9,
-                            }}
-                        >
-                            Cancel
-                    </Text>
-                    </TouchableOpacity>
-                </View>
-
-                <TextInput
-                    style={{
-                        fontSize: 16,
-                        lineHeight: 19,
-                        fontWeight: "500",
-                        color: "rgba(0, 0, 0, 0.5)",
-                        textAlign: "center",
-                        marginTop: 5,
-                        letterSpacing: -0.02,
-                        height: 23,
-                        width: 110,
-                        borderColor: "black",
-                        borderBottomWidth: 1,
-                    }}
-
-                    autoFocus={true}
-                    ref={this._setNameRef}
-                    onSubmitEditing={this._onNameSubmitEditing}
-                    returnKeyType="next"
-                />
-
-                <View
-                    style={{
-                        marginTop: 21,
-                        flexDirection: "row",
-                    }}
-                >
-                    <TextInput
-                        style={{
-                            fontWeight: "500",
-                            fontSize: 24,
-                            lineHeight: 28,
-                            textAlign: "center",
-                            letterSpacing: -0.02,
-                            color: "rgba(0, 0, 0, 0.87)",
-                            height: 23,
-                            width: 110,
-                            borderColor: "black",
-                            borderBottomWidth: 1,
-                        }}
-                        ref={this._setValueRef}
-                        returnKeyType="done"
-                    />
-
-                    <Text
-                        style={{
-                            fontWeight: "500",
-                            fontSize: 24,
-                            lineHeight: 28,
-                            textAlign: "center",
-                            letterSpacing: -0.02,
-                            color: "rgba(0, 0, 0, 0.87)",
-                            marginLeft: 5,
-                        }}
-                    >
-                        €
-                    </Text>
-                </View>
-
-                {/* <TouchableOpacity
-                    style={{
+                        position: "relative",
                         justifyContent: "center",
                         alignItems: "center",
-                        width: 110,
-                        height: 36,
-                        backgroundColor: "rgba(0, 0, 0, 0.87)",
-                        borderRadius: 28,
-                        marginTop: 28,
+                        flex: 1,
                     }}
                 >
-                    <Text
+                    <TouchableOpacity
                         style={{
-                            color: "white",
-                            lineHeight: 19,
-                            fontSize: 16,
-                            fontWeight: "500"
+                            flex: 1,
+                            width: Dimensions.get("window").width,
+                            backgroundColor: "black",
+                            opacity: 0.5
+                        }}
+
+                        onPress={this._dismissAddNewReward}
+                    >
+
+                    </TouchableOpacity>
+
+                    <View
+                        style={{
+                            position: "absolute",
+                            width: 300,
+                            height: 330,
+                            borderRadius: 10,
+                            backgroundColor: "white",
+                            paddingHorizontal: 22,
+                            paddingVertical: 32,
                         }}
                     >
-                        Create
-                    </Text>
-                </TouchableOpacity> */}
-            </View>
+                        <View>
+                            <Text>
+                                Reward title:
+                            </Text>
+                            <TextInput
+                                style={{
+                                    width: 256,
+                                    height: 40,
+                                    borderRadius: 7,
+                                    backgroundColor: "gainsboro",
+                                    marginTop: 10,
+                                    paddingHorizontal: 10,
+                                    paddingVertical: 5,
+                                }}
+
+                                onChange={this.onChangeRewardTitle}
+                                value={this.state.reward_title}
+                            />
+                        </View>
+
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                marginTop: 20,
+                                alignItems: "center"
+                            }}
+                        >
+                            <Text>
+                                Reward value:
+                            </Text>
+                            <TextInput
+                                style={{
+                                    width: 100,
+                                    height: 40,
+                                    borderRadius: 7,
+                                    backgroundColor: "gainsboro",
+                                    paddingHorizontal: 10,
+                                    paddingVertical: 5,
+                                    marginLeft: 20,
+                                }}
+
+                                onChange={this.onChangeRewardValue}
+                                value={this.state.reward_value}
+                                keyboardType={"numbers-and-punctuation"}
+                            />
+                        </View>
+
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                marginTop: 20,
+                            }}
+                        >
+                            <Text>
+                                Track reward
+                            </Text>
+
+                            <Switch
+                                style={{
+                                    marginLeft: 20,
+                                }}
+
+                                value={this.state.is_tracked}
+                                onValueChange={this.onChangeTrackReward}
+                            />
+                        </View>
+
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "flex-end",
+                                marginTop: 40,
+                            }}
+                        >
+                            <TouchableOpacity
+                                style={{
+                                    width: 50,
+                                    height: 30,
+                                    justifyContent: "center",
+                                    alignItems: "center"
+                                }}
+                            >
+                                <Text>
+                                    Clear
+                                </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={{
+                                    width: 50,
+                                    height: 30,
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    marginLeft: 10,
+                                }}
+                            >
+                                <Text>
+                                    X
+                                </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={{
+                                    width: 50,
+                                    height: 30,
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    marginLeft: 10,
+                                }}
+                            >
+                                <Text>
+                                    Add
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         )
     }
 }
