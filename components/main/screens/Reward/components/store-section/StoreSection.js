@@ -7,7 +7,7 @@ import {
     TouchableOpacity
 } from 'react-native';
 
-import CRUDRewardSection from './crud-reward-section/CRUDRewardSection'
+import CRUDRewardSection from './crud-reward-section/CRUDRewardSection.Container'
 
 export default class TrackingSection extends React.PureComponent {
 

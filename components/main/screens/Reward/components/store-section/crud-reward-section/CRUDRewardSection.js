@@ -3,15 +3,13 @@ import {
     View,
     Text,
     Dimensions,
-    ScrollView,
     TouchableOpacity,
     FlatList,
-    TextInput,
-    Keyboard,
-    Animated,
-    Modal,
-    Switch
 } from 'react-native';
+
+import { Map } from 'immutable'
+
+import AddEditReward from './add-edit-reward.js/AddEditReward'
 
 export default class TrackingSection extends React.PureComponent {
     state = {
@@ -39,7 +37,7 @@ export default class TrackingSection extends React.PureComponent {
     _keyExtractor = (item, index) => `reward_${index}`
 
     _renderItem = ({ item, index }) => {
-        if (item.name === "add a reward") {
+        if (item["is_add_button"]) {
             return (
                 <AddRewardHolder
                     addNewReward={this.addNewReward}
@@ -56,25 +54,6 @@ export default class TrackingSection extends React.PureComponent {
         }
     }
 
-    componentDidMount() {
-        let reward_data = [{
-            name: "add a reward"
-        }]
-
-        for (let i = 0; i < 4; i++) {
-            reward_data.push({
-                name: `Reward No.${i + 1}`,
-                value: (i + 1) * 10,
-                isTracked: false,
-            })
-        }
-
-        this.setState({
-            reward_data: [...reward_data]
-        })
-    }
-
-
     render() {
         return (
             <View
@@ -83,7 +62,7 @@ export default class TrackingSection extends React.PureComponent {
                 }}
             >
                 <FlatList
-                    data={this.state.reward_data}
+                    data={Map(this.props.rewards).valueSeq().toArray()}
                     extraData={this.state.should_flatlist_update}
                     keyExtractor={this._keyExtractor}
                     renderItem={this._renderItem}
@@ -95,7 +74,7 @@ export default class TrackingSection extends React.PureComponent {
                 />
 
                 {this.state.is_add_new_reward ?
-                    <NewRewardHolder
+                    <AddEditReward
                         dismissAddNewReward={this.dismissAddNewReward}
                     />
                     :
@@ -225,197 +204,6 @@ class AddRewardHolder extends React.PureComponent {
                     Add
                 </Text>
             </TouchableOpacity>
-        )
-    }
-}
-
-class NewRewardHolder extends React.PureComponent {
-
-    state = {
-        reward_title: "",
-        reward_value: "",
-        is_tracked: false
-    }
-
-    _dismissAddNewReward = () => {
-        this.props.dismissAddNewReward()
-    }
-
-    onChangeRewardTitle = (e) => {
-        this.setState({
-            reward_title: e.nativeEvent.text
-        })
-    }
-
-    onChangeRewardValue = (e) => {
-        this.setState({
-            reward_value: e.nativeEvent.text.replace(/[^0-9]/g, "")
-        })
-    }
-
-    onChangeTrackReward = () => {
-        this.setState(prevState => ({
-            is_tracked: !prevState.is_tracked
-        }))
-    }
-
-    render() {
-        return (
-            <Modal
-                transparent={true}
-            >
-                <View
-                    style={{
-                        position: "relative",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        flex: 1,
-                    }}
-                >
-                    <TouchableOpacity
-                        style={{
-                            flex: 1,
-                            width: Dimensions.get("window").width,
-                            backgroundColor: "black",
-                            opacity: 0.5
-                        }}
-
-                        onPress={this._dismissAddNewReward}
-                    >
-
-                    </TouchableOpacity>
-
-                    <View
-                        style={{
-                            position: "absolute",
-                            width: 300,
-                            height: 330,
-                            borderRadius: 10,
-                            backgroundColor: "white",
-                            paddingHorizontal: 22,
-                            paddingVertical: 32,
-                        }}
-                    >
-                        <View>
-                            <Text>
-                                Reward title:
-                            </Text>
-                            <TextInput
-                                style={{
-                                    width: 256,
-                                    height: 40,
-                                    borderRadius: 7,
-                                    backgroundColor: "gainsboro",
-                                    marginTop: 10,
-                                    paddingHorizontal: 10,
-                                    paddingVertical: 5,
-                                }}
-
-                                onChange={this.onChangeRewardTitle}
-                                value={this.state.reward_title}
-                            />
-                        </View>
-
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                marginTop: 20,
-                                alignItems: "center"
-                            }}
-                        >
-                            <Text>
-                                Reward value:
-                            </Text>
-                            <TextInput
-                                style={{
-                                    width: 100,
-                                    height: 40,
-                                    borderRadius: 7,
-                                    backgroundColor: "gainsboro",
-                                    paddingHorizontal: 10,
-                                    paddingVertical: 5,
-                                    marginLeft: 20,
-                                }}
-
-                                onChange={this.onChangeRewardValue}
-                                value={this.state.reward_value}
-                                keyboardType={"numbers-and-punctuation"}
-                            />
-                        </View>
-
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                marginTop: 20,
-                            }}
-                        >
-                            <Text>
-                                Track reward
-                            </Text>
-
-                            <Switch
-                                style={{
-                                    marginLeft: 20,
-                                }}
-
-                                value={this.state.is_tracked}
-                                onValueChange={this.onChangeTrackReward}
-                            />
-                        </View>
-
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "flex-end",
-                                marginTop: 40,
-                            }}
-                        >
-                            <TouchableOpacity
-                                style={{
-                                    width: 50,
-                                    height: 30,
-                                    justifyContent: "center",
-                                    alignItems: "center"
-                                }}
-                            >
-                                <Text>
-                                    Clear
-                                </Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                                style={{
-                                    width: 50,
-                                    height: 30,
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    marginLeft: 10,
-                                }}
-                            >
-                                <Text>
-                                    X
-                                </Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                                style={{
-                                    width: 50,
-                                    height: 30,
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    marginLeft: 10,
-                                }}
-                            >
-                                <Text>
-                                    Add
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
         )
     }
 }
