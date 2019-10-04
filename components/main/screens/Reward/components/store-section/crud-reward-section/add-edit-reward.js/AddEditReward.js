@@ -19,12 +19,12 @@ export default class AddEditReward extends React.PureComponent {
         is_tracked: false
     }
 
-    _dismissAddNewReward = () => {
-        this.props.dismissAddNewReward()
+    _dismissAction = () => {
+        this.props.dismissAction()
     }
 
     cancel = () => {
-        this.props.dismissAddNewReward()
+        this.props.dismissAction()
     }
 
     onChangeRewardTitle = (e) => {
@@ -56,7 +56,7 @@ export default class AddEditReward extends React.PureComponent {
             updateReward_data: {
                 should_update: false
             },
-        },
+        }
 
 
         if (!this.props.edit) {
@@ -91,6 +91,7 @@ export default class AddEditReward extends React.PureComponent {
         }
 
         this.props.updateRewardAndMainReward(sending_obj)
+        this.props.dismissAction()
     }
 
     componentDidMount(){
@@ -126,7 +127,7 @@ export default class AddEditReward extends React.PureComponent {
                             opacity: 0.5
                         }}
 
-                        onPress={this._dismissAddNewReward}
+                        onPress={this._dismissAction}
                     >
 
                     </TouchableOpacity>
