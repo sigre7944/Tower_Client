@@ -6,7 +6,8 @@ import {
     TouchableOpacity,
     TextInput,
     Modal,
-    Switch
+    Switch,
+    KeyboardAvoidingView
 } from 'react-native';
 
 const shortid = require("shortid")
@@ -46,58 +47,61 @@ export default class AddEditReward extends React.PureComponent {
     }
 
     add = () => {
-        let sending_obj = {
-            createReward_data: {
-                should_update: false
-            },
-            updateMainReward_data: {
-                should_update: false
-            },
-            updateReward_data: {
-                should_update: false
-            },
+        if (this.state.reward_title.length > 0 && this.state.reward_value.length > 0) {
+            let sending_obj = {
+                createReward_data: {
+                    should_update: false
+                },
+                updateMainReward_data: {
+                    should_update: false
+                },
+                updateReward_data: {
+                    should_update: false
+                },
+            }
+
+
+            if (!this.props.edit) {
+                let reward_id = shortid.generate()
+
+                sending_obj.createReward_data.should_update = true
+                sending_obj.createReward_data.data = {
+                    id: reward_id,
+                    name: this.state.reward_title,
+                    value: this.state.reward_value
+                }
+
+
+                if (this.state.is_tracked) {
+                    sending_obj.updateMainReward_data.should_update = true
+                    sending_obj.updateMainReward_data.id = reward_id
+                }
+            }
+
+            else {
+                sending_obj.updateReward_data.should_update = true
+                sending_obj.updateReward_data.data = {
+                    id: this.props.edit_reward_data.id,
+                    name: this.state.reward_title,
+                    value: this.state.reward_value
+                }
+
+                if (this.state.is_tracked) {
+                    sending_obj.updateMainReward_data.should_update = true
+                    sending_obj.updateMainReward_data.id = this.props.edit_reward_data.id
+                }
+            }
+
+            this.props.updateRewardAndMainReward(sending_obj)
         }
 
-
-        if (!this.props.edit) {
-            let reward_id = shortid.generate()
-
-            sending_obj.createReward_data.should_update = true
-            sending_obj.createReward_data.data = {
-                id: reward_id,
-                name: this.state.reward_title,
-                value: this.state.reward_value
-            }
-
-
-            if (this.state.is_tracked) {
-                sending_obj.updateMainReward_data.should_update = true
-                sending_obj.updateMainReward_data.id = reward_id
-            }
-        }
-
-        else {
-            sending_obj.updateReward_data.should_update = true
-            sending_obj.updateReward_data.data = {
-                id: this.props.edit_reward_data.id,
-                name: this.state.reward_title,
-                value: this.state.reward_value
-            }
-
-            if (this.state.is_tracked) {
-                sending_obj.updateMainReward_data.should_update = true
-                sending_obj.updateMainReward_data.id = this.props.edit_reward_data.id
-            }
-        }
-
-        this.props.updateRewardAndMainReward(sending_obj)
         this.props.dismissAction()
     }
 
-    componentDidMount(){
-        let {edit_reward_data} = this.props
+    componentDidMount() {
+        let { edit_reward_data } = this.props
 
-        if(edit_reward_data){
+        if (edit_reward_data) {
             this.setState({
                 reward_title: edit_reward_data.name,
                 reward_value: edit_reward_data.value,
@@ -175,7 +179,7 @@ export default class AddEditReward extends React.PureComponent {
 
                                 onChange={this.onChangeRewardTitle}
                                 value={this.state.reward_title}
-                                placeholder={this.props.edit_reward_data? `${this.props.edit_reward_data.name}` : ""}
+                                placeholder={this.props.edit_reward_data ? `${this.props.edit_reward_data.name}` : ""}
                             />
                         </View>
 
@@ -203,7 +207,7 @@ export default class AddEditReward extends React.PureComponent {
                                 onChange={this.onChangeRewardValue}
                                 value={this.state.reward_value}
                                 keyboardType={"numbers-and-punctuation"}
-                                placeholder={this.props.edit_reward_data? `${this.props.edit_reward_data.value}` : ""}
+                                placeholder={this.props.edit_reward_data ? `${this.props.edit_reward_data.value}` : ""}
                             />
                         </View>
 
@@ -269,6 +273,7 @@ export default class AddEditReward extends React.PureComponent {
                         </View>
                     </View>
                 </View>
+
             </Modal>
         )
     }

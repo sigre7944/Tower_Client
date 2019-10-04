@@ -10,37 +10,53 @@ import {
 import { Map } from 'immutable'
 
 import AddEditReward from './add-edit-reward.js/AddEditReward.Container'
+import DeleteReward from './delete-reward/DeleteReward.Container'
 
 export default class TrackingSection extends React.PureComponent {
     edit_reward_data = {}
+    delete_reward_id = ""
 
     state = {
         should_flatlist_update: 0,
         reward_data: [],
         is_add_new_reward: false,
-        is_edit_reward: false
+        is_edit_reward: false,
+        is_delete_reward: false
     }
 
     addNewReward = () => {
         this.setState({
             is_add_new_reward: true,
-            is_edit_reward: false
+            is_edit_reward: false,
+            is_delete_reward: false
         })
     }
 
     editReward = (edit_reward_data) => {
         this.setState({
             is_add_new_reward: false,
-            is_edit_reward: true
+            is_edit_reward: true,
+            is_delete_reward: false
         })
 
         this.edit_reward_data = edit_reward_data
     }
 
-    dismissAddNewOrEditReward = () => {
+    deleteReward = (reward_id) => {
         this.setState({
             is_add_new_reward: false,
-            is_edit_reward: false
+            is_edit_reward: false,
+            is_delete_reward: true
+        })
+
+        this.delete_reward_id = reward_id
+    }
+
+    dismissAction = () => {
+        this.setState({
+            is_add_new_reward: false,
+            is_edit_reward: false,
+            is_delete_reward: false,
         })
     }
 
@@ -64,6 +80,7 @@ export default class TrackingSection extends React.PureComponent {
                 <RewardHolder
                     data={item}
                     editReward={this.editReward}
+                    deleteReward={this.deleteReward}
                 />
             )
         }
@@ -90,21 +107,32 @@ export default class TrackingSection extends React.PureComponent {
 
                 {this.state.is_add_new_reward ?
                     <AddEditReward
-                        dismissAction={this.dismissAddNewOrEditReward}
+                        dismissAction={this.dismissAction}
                     />
                     :
 
                     <>
                         {this.state.is_edit_reward ?
                             <AddEditReward
-                                dismissAction={this.dismissAddNewOrEditReward}
+                                dismissAction={this.dismissAction}
                                 edit={true}
                                 edit_reward_data={this.edit_reward_data}
                             />
 
                             :
 
-                            null
+                            <>
+                                {this.state.is_delete_reward ?
+                                    <DeleteReward
+                                        dismissAction={this.dismissAction}
+                                        reward_id={this.delete_reward_id}
+                                    />
+
+                                    :
+
+                                    null
+                                }
+                            </>
                         }
                     </>
                 }
@@ -118,6 +146,10 @@ export default class TrackingSection extends React.PureComponent {
 class RewardHolder extends React.PureComponent {
     _editReward = () => {
         this.props.editReward(this.props.data)
+    }
+
+    _deleteReward = () => {
+        this.props.deleteReward(this.props.data.id)
     }
 
     render() {
@@ -152,7 +184,9 @@ class RewardHolder extends React.PureComponent {
                         </Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={this._deleteReward}
+                    >
                         <Text
                             style={{
                                 fontSize: 9,

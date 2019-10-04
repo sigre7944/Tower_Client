@@ -14,3 +14,8 @@ export const updateMainReward = (id) => ({
     type: "UPDATE_MAIN_REWARD",
     id
 })
+
+export const deleteReward = (id) => ({
+    type: "DELETE_REWARD",
+    id
+})
