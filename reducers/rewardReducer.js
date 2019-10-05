@@ -1,6 +1,6 @@
 import { Map } from 'immutable'
 
-export const balance = (state = 0, action) => {
+export const balance = (state = 4000, action) => {
     switch (action.type) {
         case 'DEPOSIT_AMOUNT':
             return state + action.amount

@@ -24,8 +24,8 @@ export default class WeekFlatlist extends React.Component {
     state = {
         should_update: 0,
 
-        current_week_index: -1,
-        last_week_index: -1,
+        current_week_index: 0,
+        last_week_index: 0,
     }
 
     chooseWeek = (week_index) => {
@@ -191,7 +191,7 @@ export default class WeekFlatlist extends React.Component {
 
         if (this.props.currentRoute !== prevProps.currentRoute) {
             if (this.props.currentRoute === "Week") {
-
+                
                 let string = `${this.month_text_arr[this.week_data[this.state.current_week_index].month]} - ${this.week_data[this.state.current_week_index].year}`
 
                 this.props.updateHeaderText(string)

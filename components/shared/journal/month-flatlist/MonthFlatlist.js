@@ -188,7 +188,6 @@ export default class MonthFlatlist extends React.Component {
         if (this.props.currentRoute !== prevProps.currentRoute) {
             if (this.props.currentRoute === "Month") {
                 let string
-
                 if (this.month_data[this.state.current_month_index].month >= 0)
                     string = `${this.month_text_arr[this.month_data[this.state.current_month_index].month]} - ${this.month_data[this.state.current_month_index].year}`
 

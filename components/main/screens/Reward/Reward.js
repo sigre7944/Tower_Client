@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView
 } from 'react-native';
 
-import TrackingSection from './components/tracking-section/TrackingSection'
+import TrackingSection from './components/tracking-section/TrackingSection.Container'
 import StoreSection from './components/store-section/StoreSection'
 
 export default class Reward extends React.Component {

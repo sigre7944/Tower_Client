@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 import CRUDRewardSection from './crud-reward-section/CRUDRewardSection.Container'
-
+import BalanceHolder from './balance-holder/BalanceHolder.Container'
 export default class TrackingSection extends React.PureComponent {
 
     render() {
@@ -28,30 +28,7 @@ export default class TrackingSection extends React.PureComponent {
                     paddingBottom: 64,
                 }}
             >
-                <Text
-                    style={{
-                        fontSize: 16,
-                        lineHeight: 19,
-                        letterSpacing: -0.02,
-                        color: "rgba(0, 0, 0, 0.15)"
-                    }}
-                >
-                    Balance
-                </Text>
-
-                <Text
-                    style={{
-                        marginTop: 3,
-                        fontWeight: "500",
-                        fontSize: 24,
-                        lineHeight: 28,
-                        letterSpacing: -0.02,
-                        color: "rgba(0, 0, 0, 0.87)"
-                    }}
-                >
-                    3,750 €
-                </Text>
-
+                <BalanceHolder />
 
                 <View
                     style={{
@@ -77,7 +54,7 @@ export default class TrackingSection extends React.PureComponent {
                     Other rewards
                 </Text>
 
-                <CRUDRewardSection 
+                <CRUDRewardSection
                     {...this.props}
                 />
             </View>

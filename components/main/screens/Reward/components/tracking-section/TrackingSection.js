@@ -6,10 +6,23 @@ import {
     TouchableOpacity
 } from 'react-native';
 
+import { Map } from 'immutable'
+
 export default class TrackingSection extends React.PureComponent {
 
-
     render() {
+        let rewards = Map(this.props.rewards),
+            { main_reward } = this.props,
+            is_there_a_main_reward = false,
+            main_reward_name,
+            main_reward_value
+
+        if (rewards.has(main_reward)){
+            is_there_a_main_reward = true
+            main_reward_name = rewards.get(main_reward).name
+            main_reward_value = rewards.get(main_reward).value
+        }
+
         return (
             <View
                 style={{
@@ -38,6 +51,9 @@ export default class TrackingSection extends React.PureComponent {
                         paddingVertical: 49
                     }}
                 >
+
+                    {is_there_a_main_reward?
+                    
                     <View
                         style={{
                             flexDirection: "row",
@@ -51,6 +67,7 @@ export default class TrackingSection extends React.PureComponent {
                                 justifyContent: "center"
                             }}
                         >
+                            {/* main reward title */}
                             <Text
                                 style={{
                                     width: 100,
@@ -62,8 +79,8 @@ export default class TrackingSection extends React.PureComponent {
                                     color: "rgba(0, 0, 0, 0.87)"
                                 }}
                             >
-                                USA Trip
-                  </Text>
+                                {main_reward_name}
+                            </Text>
 
                             <Text
                                 style={{
@@ -76,7 +93,7 @@ export default class TrackingSection extends React.PureComponent {
                                 }}
                             >
                                 You are almost there!
-                  </Text>
+                            </Text>
 
                             <TouchableOpacity
                                 style={{
@@ -98,7 +115,7 @@ export default class TrackingSection extends React.PureComponent {
                                     }}
                                 >
                                     Get
-                    </Text>
+                                </Text>
                             </TouchableOpacity>
                         </View>
 
@@ -128,6 +145,7 @@ export default class TrackingSection extends React.PureComponent {
                                     alignItems: "center"
                                 }}
                             >
+                                {/* Current balance */}
                                 <Text
                                     style={{
                                         fontWeight: "500",
@@ -137,9 +155,10 @@ export default class TrackingSection extends React.PureComponent {
                                         fontStyle: "normal",
                                     }}
                                 >
-                                    3750
-                      </Text>
+                                    {this.props.balance}
+                                </Text>
 
+                                {/* main reward value */}
                                 <Text
                                     style={{
                                         fontSize: 14,
@@ -148,11 +167,19 @@ export default class TrackingSection extends React.PureComponent {
                                         color: "rgba(0, 0, 0, 0.25)"
                                     }}
                                 >
-                                    of 5000€
-                      </Text>
+                                    {main_reward_value}
+                                </Text>
                             </View>
                         </View>
                     </View>
+
+                    :
+
+                    <Text>
+                        No main reward is available.
+                    </Text>
+                    }
+
                 </View>
             </View>
         )
