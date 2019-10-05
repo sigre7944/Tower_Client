@@ -9,7 +9,7 @@ import {
 import Modal from 'react-native-modalbox';
 import { DrawerActions } from 'react-navigation-drawer';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-
+import { NavigationActions } from 'react-navigation'
 const styles = StyleSheet.create({
     icon: {
         width: 36,
@@ -26,6 +26,10 @@ export default class Header extends React.Component {
         journal_header_visible: false,
 
         progress_header_visible: false,
+
+        reward_header_visible: false,
+
+        purchase_history_visible: false,
     };
 
 
@@ -46,21 +50,45 @@ export default class Header extends React.Component {
             if (this.props.currentRoute === "Day" || this.props.currentRoute === "Week" || this.props.currentRoute === "Month") {
                 this.setState({
                     journal_header_visible: true,
-                    progress_header_visible: false
+                    progress_header_visible: false,
+                    reward_header_visible: false,
+                    purchase_history_visible: false,
                 })
             }
 
             else if (this.props.currentRoute === "Progress") {
                 this.setState({
                     journal_header_visible: false,
-                    progress_header_visible: true
+                    progress_header_visible: true,
+                    reward_header_visible: false,
+                    purchase_history_visible: false,
+                })
+            }
+
+            else if (this.props.currentRoute === "Reward") {
+                this.setState({
+                    journal_header_visible: false,
+                    progress_header_visible: false,
+                    reward_header_visible: true,
+                    purchase_history_visible: false,
+                })
+            }
+
+            else if (this.props.currentRoute === "PurchaseHistory") {
+                this.setState({
+                    journal_header_visible: false,
+                    progress_header_visible: false,
+                    reward_header_visible: false,
+                    purchase_history_visible: true,
                 })
             }
 
             else {
                 this.setState({
                     journal_header_visible: false,
-                    progress_header_visible: false
+                    progress_header_visible: false,
+                    reward_header_visible: false,
+                    purchase_history_visible: false,
                 })
             }
         }
@@ -85,7 +113,27 @@ export default class Header extends React.Component {
 
                             :
 
-                            null
+                            <>
+                                {this.state.reward_header_visible ?
+                                    <RewardHeader
+                                        navigation={this.props.navigation}
+                                    />
+
+                                    :
+
+                                    <>
+                                        {this.state.purchase_history_visible ?
+                                            <PurchaseHistoryHeader
+                                                navigation={this.props.navigation}
+                                            />
+
+                                            :
+
+                                            null
+                                        }
+                                    </>
+                                }
+                            </>
                         }
                     </>
                 }
@@ -206,6 +254,95 @@ class ProgressHeader extends React.PureComponent {
                 </Text>
 
                 <TouchableOpacity onPress={this._openEditModal}>
+                    <Image
+                        source={require('./dots.png')}
+                        style={{
+                            width: 36,
+                            height: 36,
+                            tintColor: 'white'
+                        }}
+                    />
+                </TouchableOpacity>
+            </View>
+        )
+    }
+}
+
+class RewardHeader extends React.PureComponent {
+    openPurchaseHistoryTab = () => {
+        this.props.navigation.navigate('PurchaseHistory')
+    }
+
+    render() {
+        return (
+            <View
+                style={{
+                    paddingTop: 20,
+                    paddingHorizontal: 10,
+                    height: 80,
+                    flexDirection: "row",
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    backgroundColor: 'gray'
+                }}
+            >
+                <View></View>
+
+                <Text>
+                    Reward
+                </Text>
+
+                <TouchableOpacity onPress={this.openPurchaseHistoryTab}>
+                    <Image
+                        source={require('./dots.png')}
+                        style={{
+                            width: 36,
+                            height: 36,
+                            tintColor: 'white'
+                        }}
+                    />
+                </TouchableOpacity>
+            </View>
+        )
+    }
+}
+
+class PurchaseHistoryHeader extends React.PureComponent {
+    gobackToRewardTab = () => {
+        this.props.navigation.navigate('Reward')
+    }
+
+    render() {
+        return (
+            <View
+                style={{
+                    paddingTop: 20,
+                    paddingHorizontal: 10,
+                    height: 80,
+                    flexDirection: "row",
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    backgroundColor: 'gray'
+                }}
+            >
+                <TouchableOpacity
+                    onPress={this.gobackToRewardTab}
+                >
+                    <Image
+                        source={require('./dots.png')}
+                        style={{
+                            width: 36,
+                            height: 36,
+                            tintColor: 'white'
+                        }}
+                    />
+                </TouchableOpacity>
+
+                <Text>
+                    Purchase History
+                </Text>
+
+                <TouchableOpacity>
                     <Image
                         source={require('./dots.png')}
                         style={{

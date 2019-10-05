@@ -3,7 +3,7 @@ import React from 'react'
 
 import JournalTopNavigator from './screens/Journal/Journal'
 import Progress from './screens/Progress/Progress.Container'
-import Reward from './screens/Reward/Reward'
+import Reward from './screens/Reward/Reward.Container'
 import Settings from './screens/Settings/Settings'
 
 import BottomTabNavigator from './bottomTabNavigator/BottomTabNavigator.Container'
@@ -21,7 +21,7 @@ const MainNavigator = createBottomTabNavigator({
     initialRouteName: "Journal",
     tabBarComponent: props => (
         <BottomTabNavigator {...props} />
-    )
+    ),
 })
 
 

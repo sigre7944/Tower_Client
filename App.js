@@ -1,6 +1,6 @@
 import React from 'react';
 import MainNavigator from './components/main/Main' //Main screen
-import { Dimensions } from 'react-native'
+import { Dimensions, Animated, Easing } from 'react-native'
 import { createStackNavigator, createAppContainer, createDrawerNavigator } from 'react-navigation'
 import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
@@ -10,6 +10,8 @@ import rootReducer from './reducers'
 import Drawer from './components/drawer/Drawer.Container'
 import Header from './components/main/header/Header.Container'
 import * as FileSystem from 'expo-file-system';
+
+import PurchaseHistory from './components/main/header/reward-purchase-history-tab/PurchaseHistory.Container'
 
 let categories = {},
   currentTask = {},
@@ -150,13 +152,21 @@ export default class App extends React.Component {
 
 const ContentNavigator = createStackNavigator(
   { //Stack navigator works as a history object in a web browser, which helps popping out in pushing in screen to proceed navigations
-    Main: MainNavigator
+    Main: MainNavigator,
+    PurchaseHistory: { screen: PurchaseHistory }
   },
   {
     initialRouteName: "Main",
+    transitionConfig: () => ({
+      transitionSpec: {
+        duration: 0,
+        timing: Animated.timing,
+        easing: Easing.step0
+      }
+    }),
     defaultNavigationOptions: ({ navigation }) => ({
       header: <Header navigation={navigation} />
-    })
+    }),
   }
 )
 
