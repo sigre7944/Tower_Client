@@ -54,9 +54,7 @@ export default class TrackingSection extends React.PureComponent {
                     Other rewards
                 </Text>
 
-                <CRUDRewardSection
-                    {...this.props}
-                />
+                <CRUDRewardSection />
             </View>
         )
     }

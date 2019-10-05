@@ -60,6 +60,42 @@ export default class TrackingSection extends React.PureComponent {
         })
     }
 
+    getReward = (reward_id, reward_value) => {
+        let purchase_history = Map(this.props.purchase_history),
+            rewards = Map(this.props.rewards),
+            balance = parseInt(this.props.balance)
+
+        if (balance >= reward_value) {
+            if (rewards.has(reward_id)) {
+                if (purchase_history.has(reward_id)) {
+                    let sending_obj = {
+                        purchase_item_data: { ...purchase_history.get(reward_id) },
+                        amount: reward_value
+                    }
+
+                    sending_obj.purchase_item_data.lastest_timestamp = new Date().getTime()
+                    sending_obj.purchase_item_data.quantity += 1
+
+                    this.props.updatePurchaseItemThunk(sending_obj)
+                }
+
+                else {
+                    let sending_obj = {
+                        purchase_item_data: {
+                            id: reward_id,
+                            lastest_timestamp: new Date().getTime(),
+                            quantity: 1,
+                        },
+                        amount: reward_value
+                    }
+
+
+                    this.props.addPurchaseItemThunk(sending_obj)
+                }
+            }
+        }
+    }
+
     _setFlatListRef = (ref) => {
         this._flatlistReft = ref
     }
@@ -81,6 +117,7 @@ export default class TrackingSection extends React.PureComponent {
                     data={item}
                     editReward={this.editReward}
                     deleteReward={this.deleteReward}
+                    getReward={this.getReward}
                 />
             )
         }
@@ -150,6 +187,10 @@ class RewardHolder extends React.PureComponent {
 
     _deleteReward = () => {
         this.props.deleteReward(this.props.data.id)
+    }
+
+    _getReward = () => {
+        this.props.getReward(this.props.data.id, this.props.data.value)
     }
 
     render() {
@@ -235,6 +276,8 @@ class RewardHolder extends React.PureComponent {
                         borderRadius: 28,
                         marginTop: 28,
                     }}
+
+                    onPress={this._getReward}
                 >
                     <Text
                         style={{

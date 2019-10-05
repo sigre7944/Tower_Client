@@ -1,4 +1,4 @@
-import { Map } from 'immutable'
+import { Map, List } from 'immutable'
 
 export const balance = (state = 4000, action) => {
     switch (action.type) {
@@ -35,10 +35,25 @@ export const rewards = (state = rewards_map, action) => {
 }
 
 export const main_reward = (state = "", action) => {
-    switch(action.type){
+    switch (action.type) {
         case "UPDATE_MAIN_REWARD":
             return action.id
 
+        default:
+            return state
+    }
+}
+
+export const purchase_history = (state = Map(), action) => {
+    switch (action.type) {
+        case "ADD_PURCHASE_ITEM":
+            return state.set(action.id, action.data)
+
+        case "UPDATE_PURCHASE_ITEM":
+            return state.update(action.id, (value) => action.data)
+
+        case "REMOVE_PURCHASE_ITEM":
+            return state.delete(action.id)
         default:
             return state
     }

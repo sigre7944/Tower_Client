@@ -44,7 +44,8 @@ import {
 import {
     rewards,
     balance,
-    main_reward
+    main_reward,
+    purchase_history
 } from './rewardReducer'
 
 const rootReducer = combineReducers({
@@ -82,7 +83,8 @@ const rootReducer = combineReducers({
 
     rewards,
     balance,
-    main_reward
+    main_reward,
+    purchase_history
 })
 
 export default rootReducer

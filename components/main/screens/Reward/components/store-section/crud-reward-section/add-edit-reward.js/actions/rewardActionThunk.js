@@ -15,10 +15,20 @@ export const updateRewardAndMainReward = ({
     }
 
     else {
-        if(getState().get("main_reward") === updateReward_data.data.id){
-            action_array.push(
-                updateMainReward("")
-            )
+        if (updateReward_data.should_update) {
+            if (getState().get("main_reward") === updateReward_data.data.id) {
+                action_array.push(
+                    updateMainReward("")
+                )
+            }
+        }
+
+        else if(createReward_data.should_update) {
+            if (getState().get("main_reward") === createReward_data.data.id) {
+                action_array.push(
+                    updateMainReward("")
+                )
+            }
         }
     }
 
