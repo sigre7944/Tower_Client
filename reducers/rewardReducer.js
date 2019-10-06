@@ -47,7 +47,7 @@ export const main_reward = (state = "", action) => {
 export const purchase_history = (state = Map(), action) => {
     switch (action.type) {
         case "ADD_PURCHASE_ITEM":
-            return state.set(action.timestamp, action.data)
+            return state.setIn([action.timestamp, action.id], action.data)
 
         case "UPDATE_PURCHASE_ITEM":
             return state.updateIn([action.timestamp, action.id], action.data, (value) => action.data)

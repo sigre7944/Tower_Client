@@ -27,15 +27,15 @@ export default class TrackingSection extends React.PureComponent {
                     let purchase_timestamp_data = Map(purchase_history.get(day_timestamp))
 
                     if (purchase_timestamp_data.has(reward_id)) {
-                        let purchase_item_data = Map(purchase_timestamp_data.get(reward_id)).toMap().asMutable()
-                        purchase_item_data.update("quantity", (value) => value + 1)
-                        purchase_item_data.update("latest_timestamp", (value) => new Date().getTime())
+                        let item_data = Map(purchase_timestamp_data.get(reward_id)).toMap().asMutable()
+                        item_data.update("quantity", (value) => value + 1)
+                        item_data.update("latest_timestamp", (value) => new Date().getTime())
 
                         let sending_obj = {
                             purchase_item_data: {
                                 timestamp: day_timestamp,
                                 id: reward_id,
-                                data: purchase_item_data
+                                data: item_data
                             },
 
                             amount: reward_value
@@ -45,28 +45,27 @@ export default class TrackingSection extends React.PureComponent {
                     }
 
                     else {
-                        let purchase_timestamp_data = Map()
-                        purchase_timestamp_data.set("id", reward_id)
-                        purchase_timestamp_data.set("quantity", 1)
-                        purchase_timestamp_data.set("latest_timestamp", new Date().getTime())
+                        let item_data = Map().asMutable()
+                        item_data.set("id", reward_id)
+                        item_data.set("quantity", 1)
+                        item_data.set("latest_timestamp", new Date().getTime())
 
                         let sending_obj = {
                             purchase_item_data: {
                                 timestamp: day_timestamp,
                                 id: reward_id,
-                                data: purchase_timestamp_data
+                                data: item_data
                             },
 
                             amount: reward_value
                         }
 
-                        this.props.updatePurchaseItemThunk(sending_obj)
+                        this.props.addPurchaseItemThunk(sending_obj)
                     }
                 }
 
                 else {
-                    let timestamp_obj = {}
-                    timestamp_obj[reward_id] = {
+                    let timestamp_obj = {
                         id: reward_id,
                         latest_timestamp: new Date().getTime(),
                         quantity: 1

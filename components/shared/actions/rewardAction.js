@@ -26,13 +26,15 @@ export const updateMainReward = (id) => ({
 
 
 
-export const addPurchaseItem = (timestamp, data) => ({
+export const addPurchaseItem = (timestamp, id, data) => ({
     type: "ADD_PURCHASE_ITEM",
+    id,
     timestamp,
     data
 })
 export const updatePurchaseItem = (timestamp, id, data) => ({
     type: "UPDATE_PURCHASE_ITEM",
+    id,
     timestamp,
     data
 })
