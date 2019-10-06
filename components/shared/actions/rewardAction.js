@@ -26,18 +26,19 @@ export const updateMainReward = (id) => ({
 
 
 
-export const addPurchaseItem = (id, data) => ({
+export const addPurchaseItem = (timestamp, data) => ({
     type: "ADD_PURCHASE_ITEM",
-    id,
+    timestamp,
     data
 })
-export const updatePurchaseItem = (id, data) => ({
+export const updatePurchaseItem = (timestamp, id, data) => ({
     type: "UPDATE_PURCHASE_ITEM",
-    id,
+    timestamp,
     data
 })
-export const deletePurchaseItem = (id) => ({
+export const deletePurchaseItem = (timestamp, id) => ({
     type: "UPDATE_PURCHASE_ITEM",
+    timestamp,
     id
 })
 

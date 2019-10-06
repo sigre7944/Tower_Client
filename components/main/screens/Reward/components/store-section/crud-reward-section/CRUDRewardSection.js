@@ -7,7 +7,7 @@ import {
     FlatList,
 } from 'react-native';
 
-import { Map } from 'immutable'
+import { Map, fromJS } from 'immutable'
 
 import AddEditReward from './add-edit-reward.js/AddEditReward.Container'
 import DeleteReward from './delete-reward/DeleteReward.Container'
@@ -65,30 +65,70 @@ export default class TrackingSection extends React.PureComponent {
             rewards = Map(this.props.rewards),
             balance = parseInt(this.props.balance)
 
+        // Can buy when have enough balance
         if (balance >= reward_value) {
             if (rewards.has(reward_id)) {
-                if (purchase_history.has(reward_id)) {
-                    let sending_obj = {
-                        purchase_item_data: { ...purchase_history.get(reward_id) },
-                        amount: reward_value
+                let date = new Date(),
+                    day_timestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
+
+                if (purchase_history.has(day_timestamp)) {
+                    let purchase_timestamp_data = Map(purchase_history.get(day_timestamp))
+
+                    if (purchase_timestamp_data.has(reward_id)) {
+                        let purchase_item_data = Map(purchase_timestamp_data.get(reward_id)).toMap().asMutable()
+                        purchase_item_data.update("quantity", (value) => value + 1)
+                        purchase_item_data.update("latest_timestamp", (value) => new Date().getTime())
+
+                        let sending_obj = {
+                            purchase_item_data: {
+                                timestamp: day_timestamp,
+                                id: reward_id,
+                                data: purchase_item_data
+                            },
+
+                            amount: reward_value
+                        }
+
+                        this.props.updatePurchaseItemThunk(sending_obj)
                     }
 
-                    sending_obj.purchase_item_data.lastest_timestamp = new Date().getTime()
-                    sending_obj.purchase_item_data.quantity += 1
+                    else {
+                        let purchase_timestamp_data = Map()
+                        purchase_timestamp_data.set("id", reward_id)
+                        purchase_timestamp_data.set("quantity", 1)
+                        purchase_timestamp_data.set("latest_timestamp", new Date().getTime())
 
-                    this.props.updatePurchaseItemThunk(sending_obj)
+                        let sending_obj = {
+                            purchase_item_data: {
+                                timestamp: day_timestamp,
+                                id: reward_id,
+                                data: purchase_timestamp_data
+                            },
+
+                            amount: reward_value
+                        }
+
+                        this.props.updatePurchaseItemThunk(sending_obj)
+                    }
                 }
 
                 else {
-                    let sending_obj = {
-                        purchase_item_data: {
-                            id: reward_id,
-                            lastest_timestamp: new Date().getTime(),
-                            quantity: 1,
-                        },
-                        amount: reward_value
+                    let timestamp_obj = {}
+                    timestamp_obj[reward_id] = {
+                        id: reward_id,
+                        latest_timestamp: new Date().getTime(),
+                        quantity: 1
                     }
 
+                    let sending_obj = {
+                        purchase_item_data: {
+                            timestamp: day_timestamp,
+                            id: reward_id,
+                            data: fromJS(timestamp_obj)
+                        },
+
+                        amount: reward_value
+                    }
 
                     this.props.addPurchaseItemThunk(sending_obj)
                 }

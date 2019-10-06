@@ -116,3 +116,14 @@
         quantity: 3
     }
 }
+
+
+- Purchase History structure: Map {
+    timestamp: Map {
+        id: Map {
+            id: reward_id,
+            lastest_timestamp: 100000,
+            quantity: 2
+        }
+    }
+}

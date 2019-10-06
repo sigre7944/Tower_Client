@@ -47,13 +47,17 @@ export const main_reward = (state = "", action) => {
 export const purchase_history = (state = Map(), action) => {
     switch (action.type) {
         case "ADD_PURCHASE_ITEM":
-            return state.set(action.id, action.data)
+            return state.set(action.timestamp, action.data)
 
         case "UPDATE_PURCHASE_ITEM":
-            return state.update(action.id, (value) => action.data)
+            return state.updateIn([action.timestamp, action.id], action.data, (value) => action.data)
 
         case "REMOVE_PURCHASE_ITEM":
-            return state.delete(action.id)
+            return state.deleteIn([action.timestamp, action.id])
+
+        case "REMOVE_PURCHASE_TIMESTAMP":
+            return state.delete(action.timestamp)
+
         default:
             return state
     }

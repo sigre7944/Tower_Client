@@ -3,7 +3,7 @@ import {withdrawBalance, addPurchaseItem, updatePurchaseItem} from '../../../../
 
 export const addPurchaseItemThunk = ({purchase_item_data, amount}) => (dispatch, getState) => {
     let action_arrays = [
-        addPurchaseItem(purchase_item_data.id, purchase_item_data),
+        addPurchaseItem(purchase_item_data.timestamp, purchase_item_data.data),
         withdrawBalance(amount)
     ]
 
@@ -12,7 +12,7 @@ export const addPurchaseItemThunk = ({purchase_item_data, amount}) => (dispatch,
 
 export const updatePurchaseItemThunk = ({purchase_item_data, amount}) => (dispatch, getState) => {
     let action_arrays = [
-        updatePurchaseItem(purchase_item_data.id, purchase_item_data),
+        updatePurchaseItem(purchase_item_data.timestamp, purchase_item_data.id, purchase_item_data.data),
         withdrawBalance(amount)
     ]
 
