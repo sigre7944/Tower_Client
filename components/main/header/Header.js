@@ -2,20 +2,16 @@ import React from 'react';
 import {
     View,
     Image,
-    StyleSheet,
     Text,
     TouchableOpacity
 } from 'react-native';
 import Modal from 'react-native-modalbox';
 import { DrawerActions } from 'react-navigation-drawer';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { NavigationActions } from 'react-navigation'
-const styles = StyleSheet.create({
-    icon: {
-        width: 36,
-        height: 36,
-    },
-});
+
+import {
+    header_styles
+} from '../../shared/styles/style'
 
 export default class Header extends React.Component {
 
@@ -182,54 +178,44 @@ class JournalHeader extends React.PureComponent {
 
     render() {
         return (
-            <View style={{
-                paddingTop: 20,
-                paddingHorizontal: 10,
-                height: 80,
-                flexDirection: "row",
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                backgroundColor: 'gray'
-            }}>
-                <TouchableOpacity onPress={this._openDrawer}>
-                    <Image
-                        source={require('./Hamburger_icon.png')}
-                        style={{
-                            width: 30,
-                            height: 30,
-                            tintColor: 'white'
-                        }}
-                    />
-                </TouchableOpacity>
-
-                <TouchableOpacity
+            <View style={header_styles.container}>
+                <View
                     style={{
-
+                        flexDirection: "row",
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
                     }}
-
-                    onPress={this._toggleReturn}
                 >
-                    <Text
-                        style={{
-                            color: 'white',
-                            fontSize: 20,
-                            fontWeight: '500',
-                        }}>
-                        {this.props.headerText}
-                    </Text>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={header_styles.left_end_icon_container}
+                        onPress={this._openDrawer}
+                    >
+                        <FontAwesome
+                            name="bars"
+                            size={20}
+                            color={"#BDBDBD"}
+                        />
+                    </TouchableOpacity>
 
+                    <TouchableOpacity
+                        onPress={this._toggleReturn}
+                    >
+                        <Text
+                            style={header_styles.middle_text_style}>
+                            {this.props.headerText}
+                        </Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity onPress={this._openEditModal}>
-                    <Image
-                        source={require('./dots.png')}
-                        style={{
-                            width: 36,
-                            height: 36,
-                            tintColor: 'white'
-                        }}
-                    />
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={header_styles.right_end_icon_container}
+                    >
+                        <FontAwesome
+                            name={"ellipsis-v"}
+                            size={20}
+                            color={"#BDBDBD"}
+                        />
+                    </TouchableOpacity>
+                </View>
             </View>
         )
     }

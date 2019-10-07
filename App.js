@@ -13,6 +13,8 @@ import * as FileSystem from 'expo-file-system';
 
 import PurchaseHistory from './components/main/header/reward-purchase-history-tab/PurchaseHistory.Container'
 
+import * as Font from 'expo-font'
+
 let categories = {},
   currentTask = {},
   cate_filePath = FileSystem.documentDirectory + "categories.json",
@@ -26,6 +28,7 @@ export default class App extends React.Component {
 
   state = {
     store: undefined,
+    finished_loading_fonts: false
   }
 
   loadCategoriesFromFile = async (filePath) => {
@@ -124,8 +127,22 @@ export default class App extends React.Component {
     })
   }
 
+  loadFonts = async () => {
+    let finished_loading = await Font.loadAsync({
+      'sf-ui-display-light': require('./assets/fonts/sf-ui-display/sf-ui-display-light.otf'),
+      'sf-ui-display-medium': require('./assets/fonts/sf-ui-display/sf-ui-display-medium.otf')
+    })
+
+    this.setState({
+      finished_loading_fonts: true
+    })
+  }
+
   componentDidMount() {
     // this.InitializeLoading().catch(err => console.log(err))
+
+    this.loadFonts()
+
     this.setState({
       store: createStore(rootReducer, applyMiddleware(batchDispatchMiddleware, thunk))
     })
@@ -135,13 +152,19 @@ export default class App extends React.Component {
     return (
       <>
         {
-          this.state.store ?
-            <Provider store={this.state.store}>
-              <AppContainer />
-            </Provider>
+          this.state.finished_loading_fonts ?
+            <>
+              {this.state.store ?
+                <Provider store={this.state.store}>
+                  <AppContainer />
+                </Provider>
 
+                :
+
+                null
+              }
+            </>
             :
-
             null
         }
       </>
