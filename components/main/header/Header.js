@@ -10,8 +10,8 @@ import { DrawerActions } from 'react-navigation-drawer';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import {
-    header_styles
-} from '../../shared/styles/style'
+    styles
+} from './styles/styles'
 
 export default class Header extends React.Component {
 
@@ -178,7 +178,7 @@ class JournalHeader extends React.PureComponent {
 
     render() {
         return (
-            <View style={header_styles.container}>
+            <View style={styles.container}>
                 <View
                     style={{
                         flexDirection: "row",
@@ -187,7 +187,7 @@ class JournalHeader extends React.PureComponent {
                     }}
                 >
                     <TouchableOpacity
-                        style={header_styles.left_end_icon_container}
+                        style={styles.end_icon_container}
                         onPress={this._openDrawer}
                     >
                         <FontAwesome
@@ -201,13 +201,13 @@ class JournalHeader extends React.PureComponent {
                         onPress={this._toggleReturn}
                     >
                         <Text
-                            style={header_styles.middle_text_style}>
+                            style={styles.middle_text_style}>
                             {this.props.headerText}
                         </Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={header_styles.right_end_icon_container}
+                        style={styles.end_icon_container}
                     >
                         <FontAwesome
                             name={"ellipsis-v"}
