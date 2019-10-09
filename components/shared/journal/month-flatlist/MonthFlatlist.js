@@ -7,21 +7,17 @@ import {
     StyleSheet
 } from 'react-native';
 
+import { styles } from './styles/styles'
+
 export default class MonthFlatlist extends React.Component {
 
     month_text_arr = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
     month_data = []
 
-    comparing_year = -1
-
     _flatlistRef = React.createRef()
 
     start_index = 0
-
-    month = new Date().getMonth()
-
-    year = new Date().getFullYear()
 
     state = {
         should_update: 0,
@@ -55,13 +51,6 @@ export default class MonthFlatlist extends React.Component {
     _keyExtractor = (item, index) => `month-${index}`
 
     _renderItem = ({ item, index }) => {
-        if (item.year_holder) {
-            return (
-                <YearHolder
-                    data={item}
-                />
-            )
-        }
         return (
             <MonthHolder
                 data={item}
@@ -73,31 +62,25 @@ export default class MonthFlatlist extends React.Component {
         )
     }
 
-    getMonthData = (month, year) => {
-        if (this.comparing_year !== year) {
-            this.comparing_year = year
 
-            this.month_data.push({
-                year_holder: true,
-                year: this.comparing_year
-            })
-        }
+    initializeMonthData = () => {
+        let current_year = new Date().getFullYear(),
+            number_of_years_in_between = 4,
+            left_end_year = current_year - number_of_years_in_between,
+            right_end_year = current_year + number_of_years_in_between
 
-        let end_day_of_month = new Date(year, month + 1, 0),
-            first_day_of_month = new Date(year, month, 1)
+        for (let year = left_end_year; year <= right_end_year; year++) {
+            for (let month = 0; month < 12; month++) {
+                let first_day_of_month = new Date(year, month, 1),
+                    end_day_of_month = new Date(year, month + 1, 0)
 
-        this.month_data.push({
-            start_week: this.getWeek(first_day_of_month),
-            end_week: this.getWeek(end_day_of_month),
-            month,
-            year
-        })
-
-        this.month += 1
-
-        if (this.month > 11) {
-            this.month = 0
-            this.year += 1
+                this.month_data.push({
+                    start_week: this.getWeek(first_day_of_month),
+                    end_week: this.getWeek(end_day_of_month),
+                    month,
+                    year
+                })
+            }
         }
     }
 
@@ -119,14 +102,6 @@ export default class MonthFlatlist extends React.Component {
         return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
     }
 
-    _onEndReached = () => {
-        this.getMonthData(this.month, this.year)
-
-        this.setState(prevState => ({
-            should_update: prevState.should_update + 1,
-        }))
-    }
-
     _getItemLayout = (data, index) => ({
         length: 97,
         offset: index * 97,
@@ -145,18 +120,13 @@ export default class MonthFlatlist extends React.Component {
         let string
 
         if (this.month_data[index].month >= 0)
-            string = `${this.month_text_arr[this.month_data[index].month]} - ${this.month_data[index].year}`
-
-        else
             string = `${this.month_data[index].year}`
 
         this.props.updateHeaderText(string)
     }
 
     componentDidMount() {
-        for (let i = 0; i < 10; i++) {
-            this.getMonthData(this.month, this.year)
-        }
+        this.initializeMonthData()
 
         let current = new Date()
 
@@ -188,10 +158,8 @@ export default class MonthFlatlist extends React.Component {
         if (this.props.currentRoute !== prevProps.currentRoute) {
             if (this.props.currentRoute === "Month") {
                 let string
-                if (this.month_data[this.state.current_month_index].month >= 0)
-                    string = `${this.month_text_arr[this.month_data[this.state.current_month_index].month]} - ${this.month_data[this.state.current_month_index].year}`
 
-                else
+                if (this.month_data[this.state.current_month_index].month >= 0)
                     string = `${this.month_data[this.state.current_month_index].year}`
 
                 this.props.updateHeaderText(string)
@@ -213,9 +181,6 @@ export default class MonthFlatlist extends React.Component {
                     keyExtractor={this._keyExtractor}
                     renderItem={this._renderItem}
 
-                    onEndReachedThreshold={0.5}
-                    onEndReached={this._onEndReached}
-
                     horizontal={true}
 
                     initialScrollIndex={this.start_index}
@@ -225,6 +190,8 @@ export default class MonthFlatlist extends React.Component {
 
                     onScroll={this._onScroll}
                     scrollEventThrottle={6}
+                    removeClippedSubviews={true}
+                    showsHorizontalScrollIndicator={false}
                 />
             </View>
         )
@@ -233,11 +200,14 @@ export default class MonthFlatlist extends React.Component {
 
 
 class MonthHolder extends React.Component {
-    month_text_arr = ["January", "Febuary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "Deccember"]
+    month_text_arr = ["January", "Febuary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
     state = {
         month_style: styles.not_chosen_month,
-        text_style: styles.not_chosen_month_text
+        text_style: styles.not_chosen_month_text,
+
+        inform_text_container_style: styles.not_chosen_inform_text_container,
+        inform_text_style: styles.not_chosen_inform_text,
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -249,14 +219,18 @@ class MonthHolder extends React.Component {
         if (nextProps.month_index === nextProps.current_month_index) {
             return ({
                 month_style: styles.chosen_month,
-                text_style: styles.chosen_month_text
+                text_style: styles.chosen_month_text,
+                inform_text_container_style: styles.chosen_inform_text_container,
+                inform_text_style: styles.chosen_inform_text,
             })
         }
 
         else if (nextProps.month_index === nextProps.last_month_index) {
             return ({
                 month_style: styles.not_chosen_month,
-                text_style: styles.not_chosen_month_text
+                text_style: styles.not_chosen_month_text,
+                inform_text_container_style: styles.not_chosen_inform_text_container,
+                inform_text_style: styles.not_chosen_inform_text,
             })
         }
 
@@ -275,6 +249,7 @@ class MonthHolder extends React.Component {
                     justifyContent: "center",
                     alignItems: "center",
                     width: 83,
+                    backgroundColor: "white"
                 }}
 
                 onPress={this._onPress}
@@ -289,68 +264,16 @@ class MonthHolder extends React.Component {
                     </Text>
                 </View>
 
-                <Text
-                    style={{
-                        marginTop: 7,
-                        fontSize: 10,
-                        color: "black",
-                        opacity: 0.3
-                    }}
+                <View
+                    style={this.state.inform_text_container_style}
                 >
-                    {`week ${this.props.data.start_week} - ${this.props.data.end_week}`}
-                </Text>
-
+                    <Text
+                        style={this.state.inform_text_style}
+                    >
+                        {`week ${this.props.data.start_week} - ${this.props.data.end_week}`}
+                    </Text>
+                </View>
             </TouchableOpacity>
         )
     }
 }
-
-class YearHolder extends React.PureComponent {
-
-    render() {
-        return (
-            <View
-                style={{
-                    marginHorizontal: 7,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    width: 83,
-                }}
-            >
-                <Text
-                    style={{
-                    }}
-                >
-                    {this.props.data.year}
-                </Text>
-            </View>
-        )
-    }
-}
-
-const styles = StyleSheet.create({
-    not_chosen_month: {
-        width: 83,
-        height: 21,
-        justifyContent: "center",
-        alignItems: "center",
-        borderRadius: 20
-    },
-
-    chosen_month: {
-        width: 83,
-        height: 21,
-        justifyContent: "center",
-        alignItems: "center",
-        borderRadius: 20,
-        backgroundColor: "black"
-    },
-
-    not_chosen_month_text: {
-        color: "black"
-    },
-
-    chosen_month_text: {
-        color: "white"
-    }
-})

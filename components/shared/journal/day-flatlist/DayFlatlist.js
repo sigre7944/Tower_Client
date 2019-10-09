@@ -71,7 +71,7 @@ export default class DayFlatlist extends React.Component {
     }
 
     _getItemLayout = (data, index) => ({
-        length: 64,
+        length: 64, // each dayholder has a width of 64 (width = 50, marginHorizontal = 7)
         offset: index * 64,
         index
     })
@@ -99,11 +99,11 @@ export default class DayFlatlist extends React.Component {
             right_end_year = current_year + number_of_years_in_between
 
         for (let year = left_end_year; year <= right_end_year; year++) {
-            for (let month = 0; month < 12; month ++){
+            for (let month = 0; month < 12; month++) {
                 let first_day_of_month = 1,
-                    last_day_of_month = new Date(year, month +1, 0).getDate()
+                    last_day_of_month = new Date(year, month + 1, 0).getDate()
 
-                for(let day = first_day_of_month; day <= last_day_of_month; day++){
+                for (let day = first_day_of_month; day <= last_day_of_month; day++) {
                     this.day_data.push({
                         day,
                         month,
@@ -234,6 +234,7 @@ class DayHolder extends React.Component {
                     justifyContent: "center",
                     alignItems: "center",
                     width: 50,
+                    backgroundColor: "white",
                 }}
 
                 onPress={this._onPress}

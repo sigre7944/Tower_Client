@@ -7,6 +7,8 @@ import {
     StyleSheet
 } from 'react-native';
 
+import { styles } from './styles/styles'
+
 export default class WeekFlatlist extends React.Component {
 
     month_text_arr = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -14,10 +16,6 @@ export default class WeekFlatlist extends React.Component {
     _flatlistRef = React.createRef()
 
     week_data = []
-
-    comparing_month = -1
-
-    monday
 
     start_index = 0
 
@@ -55,13 +53,6 @@ export default class WeekFlatlist extends React.Component {
     _keyExtractor = (item, index) => `week-${index}`
 
     _renderItem = ({ item, index }) => {
-        if (item.month_text) {
-            return (
-                <MonthYearHolder
-                    data={item}
-                />
-            )
-        }
         return (
             <WeekHolder
                 data={item}
@@ -91,41 +82,35 @@ export default class WeekFlatlist extends React.Component {
         return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
     }
 
-    getWeekData = (monday) => {
-        if (this.comparing_month !== monday.getMonth()) {
-            this.comparing_month = monday.getMonth()
+    initializeWeekData = () => {
+        let current_year = new Date().getFullYear(),
+            number_of_years_in_between = 4,
+            left_end_year = current_year - number_of_years_in_between,
+            right_end_year = current_year + number_of_years_in_between,
+            first_day_of_left_end_year = new Date(left_end_year, 0, 1),
+            last_day_of_right_end_year = new Date(right_end_year, 12, 0),
+            tracked_timestamp = first_day_of_left_end_year.getTime()
+
+
+        while (tracked_timestamp <= last_day_of_right_end_year.getTime()) {
+            let monday = this.getMonday(tracked_timestamp),
+                sunday = new Date(monday)
+            sunday.setDate(monday.getDate() + 6)
 
             this.week_data.push({
-                month: this.comparing_month,
-                month_text: this.month_text_arr[this.comparing_month],
-                year: monday.getFullYear()
+                week: this.getWeek(monday),
+                start_day: monday.getDate(),
+                end_day: sunday.getDate(),
+                start_month: monday.getMonth(),
+                end_month: sunday.getMonth(),
+                year: monday.getFullYear(),
+                month: monday.getMonth()
             })
+
+
+            tracked_timestamp = sunday.getTime() + 86400 * 1000
         }
 
-        let sunday = new Date(monday)
-        sunday.setDate(monday.getDate() + 6)
-        this.week_data.push({
-            week: this.getWeek(monday),
-            start_day: monday.getDate(),
-            end_day: sunday.getDate(),
-            start_month: monday.getMonth(),
-            end_month: sunday.getMonth(),
-            year: monday.getFullYear(),
-            month: monday.getMonth()
-        })
-
-        let next_monday = new Date(sunday)
-        next_monday.setDate(sunday.getDate() + 1)
-
-        this.monday = next_monday
-    }
-
-    _onEndReached = () => {
-        this.getWeekData(this.monday)
-
-        this.setState(prevState => ({
-            should_update: prevState.should_update + 1,
-        }))
     }
 
     _getItemLayout = (data, index) => ({
@@ -151,16 +136,10 @@ export default class WeekFlatlist extends React.Component {
 
 
     componentDidMount() {
-        let first_monday_of_month = this.getMonday(new Date(new Date().getFullYear(), new Date().getMonth(), 7))
+        this.initializeWeekData()
 
         let current_week = this.getWeek(new Date()),
             current_year = new Date().getFullYear()
-
-        this.monday = this.getMonday(first_monday_of_month)
-
-        for (let i = 0; i < 10; i++) {
-            this.getWeekData(this.monday)
-        }
 
         this.week_data.every((data, index) => {
 
@@ -191,7 +170,7 @@ export default class WeekFlatlist extends React.Component {
 
         if (this.props.currentRoute !== prevProps.currentRoute) {
             if (this.props.currentRoute === "Week") {
-                
+
                 let string = `${this.month_text_arr[this.week_data[this.state.current_week_index].month]} - ${this.week_data[this.state.current_week_index].year}`
 
                 this.props.updateHeaderText(string)
@@ -213,9 +192,6 @@ export default class WeekFlatlist extends React.Component {
                     keyExtractor={this._keyExtractor}
                     renderItem={this._renderItem}
 
-                    onEndReachedThreshold={0.5}
-                    onEndReached={this._onEndReached}
-
                     horizontal={true}
 
                     initialScrollIndex={this.start_index}
@@ -225,6 +201,8 @@ export default class WeekFlatlist extends React.Component {
 
                     onScroll={this._onScroll}
                     scrollEventThrottle={5}
+                    removeClippedSubviews={true}
+                    showsHorizontalScrollIndicator={false}
                 />
             </View>
         )
@@ -238,7 +216,9 @@ class WeekHolder extends React.Component {
 
     state = {
         week_style: styles.not_chosen_week,
-        text_style: styles.not_chosen_week_text
+        text_style: styles.not_chosen_week_text,
+        inform_text_style: styles.not_chosen_inform_text,
+        inform_text_container_style: styles.not_chosen_inform_text_container,
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -250,14 +230,18 @@ class WeekHolder extends React.Component {
         if (nextProps.week_index === nextProps.current_week_index) {
             return ({
                 week_style: styles.chosen_week,
-                text_style: styles.chosen_week_text
+                text_style: styles.chosen_week_text,
+                inform_text_style: styles.chosen_inform_text,
+                inform_text_container_style: styles.chosen_inform_text_container,
             })
         }
 
         else if (nextProps.week_index === nextProps.last_week_index) {
             return ({
                 week_style: styles.not_chosen_week,
-                text_style: styles.not_chosen_week_text
+                text_style: styles.not_chosen_week_text,
+                inform_text_style: styles.not_chosen_inform_text,
+                inform_text_container_style: styles.not_chosen_inform_text_container,
             })
         }
 
@@ -277,6 +261,7 @@ class WeekHolder extends React.Component {
                     justifyContent: "center",
                     alignItems: "center",
                     width: 88,
+                    backgroundColor: "white",
                 }}
 
                 onPress={this._onPress}
@@ -291,76 +276,17 @@ class WeekHolder extends React.Component {
                     </Text>
                 </View>
 
-                <Text
-                    style={{
-                        marginTop: 7,
-                        fontSize: 10,
-                        color: "black",
-                        opacity: 0.3
-                    }}
+                <View
+                    style={this.state.inform_text_container_style}
                 >
-                    {`${this.props.data.start_day} ${this.month_text_arr[this.props.data.start_month]} - ${this.props.data.end_day} ${this.month_text_arr[this.props.data.end_month]}`}
-                </Text>
+                    <Text
+                        style={this.state.inform_text_style}
+                    >
+                        {`${this.props.data.start_day} ${this.month_text_arr[this.props.data.start_month]} - ${this.props.data.end_day} ${this.month_text_arr[this.props.data.end_month]}`}
+                    </Text>
+                </View>
 
             </TouchableOpacity>
         )
     }
 }
-
-class MonthYearHolder extends React.PureComponent {
-
-    render() {
-        return (
-            <View
-                style={{
-                    marginHorizontal: 7,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    width: 88,
-                }}
-            >
-                <Text
-                    style={{
-                    }}
-                >
-                    {this.props.data.month_text}
-                </Text>
-
-                <Text
-                    style={{
-                        marginTop: 5
-                    }}
-                >
-                    {this.props.data.year}
-                </Text>
-            </View>
-        )
-    }
-}
-
-const styles = StyleSheet.create({
-    not_chosen_week: {
-        width: 88,
-        height: 21,
-        justifyContent: "center",
-        alignItems: "center",
-        borderRadius: 11
-    },
-
-    chosen_week: {
-        width: 88,
-        height: 21,
-        justifyContent: "center",
-        alignItems: "center",
-        borderRadius: 11,
-        backgroundColor: "black"
-    },
-
-    not_chosen_week_text: {
-        color: "black"
-    },
-
-    chosen_week_text: {
-        color: "white"
-    }
-})
