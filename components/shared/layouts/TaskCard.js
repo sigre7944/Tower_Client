@@ -18,7 +18,7 @@ export default class TaskCard extends React.PureComponent {
     }
 
     _onPress = () => {
-        this.props.onPress(this.props.task_data)
+        this.props.openModal(this.props.task_data)
     }
 
     getWeek = (date) => {
