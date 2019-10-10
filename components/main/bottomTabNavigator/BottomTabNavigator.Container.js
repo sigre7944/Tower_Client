@@ -4,9 +4,6 @@ import BottomTabNavigator from './BottomTabNavigator.Presentational'
 
 const mapStateToProps = (state) => ({
     routeName: state.get("currentRoute"),
-    tasks: state.get("tasks"),
-    // The redux connected component will get updated to re-render when mapping to the updated fields in redux store state.
-    // currentWeekInMonth: state.currentWeekInMonth 
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

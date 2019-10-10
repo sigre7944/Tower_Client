@@ -8,6 +8,9 @@ export const day_tasks = (state = Map(), action) => {
         case 'ADD_EDIT_DAY_TASK':
             return state.update(action.data.id, (value) => action.data)
 
+        case 'EDIT_DAY_TASK':
+            return state.updateIn(action.keyPath, (value) => action.data)
+
         case 'DELETE_DAY_TASK':
             return state.delete(action.id)
 
@@ -27,6 +30,9 @@ export const week_tasks = (state = Map(), action) => {
         case 'ADD_EDIT_WEEK_TASK':
             return state.update(action.data.id, (value) => action.data)
 
+        case 'EDIT_WEEK_TASK':
+            return state.updateIn(action.keyPath, (value) => action.data)
+
         case 'DELETE_WEEK_TASK':
             return state.delete(action.id)
 
@@ -45,6 +51,9 @@ export const month_tasks = (state = Map(), action) => {
 
         case 'ADD_EDIT_MONTH_TASK':
             return state.update(action.data.id, (value) => action.data)
+
+        case 'EDIT_MONTH_TASK':
+            return state.updateIn(action.keyPath, (value) => action.data)
 
         case 'DELETE_MONTH_TASK':
             return state.delete(action.id)

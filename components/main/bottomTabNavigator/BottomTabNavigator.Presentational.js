@@ -8,6 +8,15 @@ import {
 
 import AddTaskButton from './layouts/AddTaskButton'
 import OverlayModal from './layouts/modal-component/OverlayModal.Container'
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import {
+    faClipboardList,
+    faChartBar,
+    faMoneyBill,
+    faSlidersH
+} from '@fortawesome/free-solid-svg-icons'
+
+import { styles } from './styles/styles'
 
 export default class BottomTabNavigator extends React.Component {
 
@@ -15,16 +24,26 @@ export default class BottomTabNavigator extends React.Component {
         addTaskClicked: false,
         renderAddTaskUI: null,
         keyboardHeight: 0,
-        should_AddTaskButton_be_displayed: "flex"
+        should_AddTaskButton_be_displayed: false,
     }
 
-    //START of ./AddTaskButton.js
+    activateAddTask = () => {
+        this.setState({
+            addTaskClicked: true
+        })
+    }
+
+    dismissAddTask = () => {
+        this.setState({
+            addTaskClicked: false
+        })
+    }
+
     addTaskButtonActionProp = () => {
         this.setState(prevState => ({
             addTaskClicked: !prevState.addTaskClicked,
         }))
     }
-    //END of ./AddTaskButton.js
 
     chooseNewScreen = (routeName) => {
         this.props.navigation.navigate({ routeName })
@@ -34,14 +53,13 @@ export default class BottomTabNavigator extends React.Component {
         if (this.props.routeName !== prevProps.routeName) {
             if ((this.props.routeName === "Day" || this.props.routeName === "Week" || this.props.routeName === "Month")) {
                 this.setState({
-                    should_AddTaskButton_be_displayed: "flex"
+                    should_AddTaskButton_be_displayed: true
                 })
             }
 
-
             else {
                 this.setState({
-                    should_AddTaskButton_be_displayed: "none"
+                    should_AddTaskButton_be_displayed: false
                 })
             }
         }
@@ -59,6 +77,7 @@ export default class BottomTabNavigator extends React.Component {
                         this.state.addTaskClicked ?
                             <OverlayModal
                                 addTaskButtonActionProp={this.addTaskButtonActionProp}
+                                dismissAddTask={this.dismissAddTask}
                             />
 
                             :
@@ -66,19 +85,21 @@ export default class BottomTabNavigator extends React.Component {
                             <></>
                     }
 
+                    {this.state.should_AddTaskButton_be_displayed ?
+                        <AddTaskButton
+                            activateAddTask={this.activateAddTask}
+                        />
+                        :
 
-                    <AddTaskButton
-                        addTaskButtonActionProp={this.addTaskButtonActionProp}
-                        should_AddTaskButton_be_displayed={this.state.should_AddTaskButton_be_displayed}
-                    />
+                        null
+                    }
 
 
                     <View
                         style={{
                             display: "flex",
-                            backgroundColor: 'gainsboro',
+                            backgroundColor: '#FFFFFF',
                             flexDirection: "row",
-                            justifyContent: "space-around",
                             height: 60,
                         }}
                     >
@@ -125,11 +146,82 @@ class ScreenComponent extends React.PureComponent {
                     justifyContent: 'center'
                 }}
             >
-                <Text style={{
-                    fontSize: 12
-                }}>
-                    {this.props.screen_route_name}
-                </Text>
+                <View
+                    style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
+                >
+                    {this.props.screen_route_name === "Journal" ?
+                        <>
+                            < FontAwesomeIcon
+                                icon={faClipboardList}
+                                size={20}
+                                style={styles.screen_component_icon}
+                            />
+
+                            <Text
+                                style={styles.screen_component_text}
+                            >
+                                {this.props.screen_route_name}
+                            </Text>
+                        </>
+                        :
+                        <>
+                            {this.props.screen_route_name === "Progress" ?
+                                <>
+                                    < FontAwesomeIcon
+                                        icon={faChartBar}
+                                        size={20}
+                                        style={styles.screen_component_icon}
+                                    />
+
+                                    <Text
+                                        style={styles.screen_component_text}
+                                    >
+                                        {this.props.screen_route_name}
+                                    </Text>
+                                </>
+
+                                :
+
+                                <>
+                                    {this.props.screen_route_name === "Reward" ?
+                                        <>
+                                            < FontAwesomeIcon
+                                                icon={faMoneyBill}
+                                                size={20}
+                                                style={styles.screen_component_icon}
+                                            />
+
+                                            <Text
+                                                style={styles.screen_component_text}
+                                            >
+                                                {this.props.screen_route_name}
+                                            </Text>
+                                        </>
+
+                                        :
+
+                                        <>
+                                            < FontAwesomeIcon
+                                                icon={faSlidersH}
+                                                size={20}
+                                                style={styles.screen_component_icon}
+                                            />
+
+                                            <Text
+                                                style={styles.screen_component_text}
+                                            >
+                                                {this.props.screen_route_name}
+                                            </Text>
+                                        </>
+                                    }
+                                </>
+                            }
+                        </>
+                    }
+                </View>
             </TouchableOpacity>
         )
     }

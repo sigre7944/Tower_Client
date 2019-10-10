@@ -3,7 +3,6 @@ import {
     View,
     Text,
     ScrollView,
-    Animated,
     FlatList
 } from 'react-native';
 
@@ -16,7 +15,7 @@ import MonthFlatlist from './month-flatlist/MonthFlatlist.Container'
 
 import { styles } from './styles/styles'
 
-import { Map, hasIn, getIn, fromJS } from 'immutable'
+import { Map, hasIn, getIn } from 'immutable'
 
 export default class JournalTab extends React.PureComponent {
     static navigationOptions = {
@@ -237,7 +236,7 @@ class UncompletedTaskCardHolder extends React.PureComponent {
             task_id={item[0]}
             task_data={item[1]}
             current_chosen_category={this.props.current_chosen_category}
-            completed_tasks={this.props.completed_tasks}
+            completed_task={Map(this.props.completed_tasks).get(item[1].id)}
             type={this.props.type}
             chosen_date_data={this.props.chosen_date_data}
             openModal={this.props.openModal}
@@ -267,23 +266,10 @@ class UncompletedTaskCardHolder extends React.PureComponent {
     }
 }
 
-class UncompletedTaskCard extends React.Component {
+class UncompletedTaskCard extends React.PureComponent {
 
     update_obj = {
         should_render: false
-    }
-
-    did_mount = false
-
-    shouldComponentUpdate(nextProps, nextState) {
-        return this.handleShouldUpdate(
-            this.props.completed_tasks,
-            nextProps.completed_tasks,
-            nextProps.task_data,
-            nextProps.type,
-            nextProps.current_chosen_category,
-            nextProps.chosen_date_data
-        )
     }
 
     compareDayTypeDaily = (repeat, schedule, day, month, year) => {
@@ -380,10 +366,9 @@ class UncompletedTaskCard extends React.Component {
         return false
     }
 
-    handleShouldUpdate = (old_completed_tasks, new_completed_tasks, task, type, current_chosen_category, chosen_date_data) => {
-        let { repeat, title, schedule, goal, id, category } = task,
-            old_current_goal_value = 0,
-            new_current_goal_value = 0
+    handleUpdate = (completed_task, task, type, current_chosen_category, chosen_date_data) => {
+        let { schedule, repeat, title, goal, category } = task,
+            current_goal_value = 0
 
         if (current_chosen_category === "general" || current_chosen_category === category) {
             if (type === "day") {
@@ -396,84 +381,9 @@ class UncompletedTaskCard extends React.Component {
                     || this.compareDayTypeWeekly(repeat, schedule, day, month, year)
                     || this.compareDayTypeMonthly(repeat, schedule, day, month, year)
                 ) {
-                    // We do updates when the chosen date is today (users can check/uncheck tasks)
-                    if (this.checkIfChosenDateIsToday(chosen_date_data, type)) {
-                        //1-inf (only occurs when choosing today)
-                        if (hasIn(old_completed_tasks, [id, chosen_day_timestamp_to_string]) && hasIn(new_completed_tasks, [id, chosen_day_timestamp_to_string])) {
-                            old_current_goal_value = getIn(old_completed_tasks, [id, chosen_day_timestamp_to_string, "current"], 0)
-                            new_current_goal_value = getIn(new_completed_tasks, [id, chosen_day_timestamp_to_string, "current"], 0)
+                    current_goal_value = getIn(completed_task, [chosen_day_timestamp_to_string, "current"], 0)
 
-                            if (new_current_goal_value < parseInt(goal.max)) {
-                                this.update_obj = {
-                                    should_render: true,
-                                    current_goal_value: new_current_goal_value,
-                                    action_type: "UPDATE_COMPLETED_DAY_TASK",
-                                    title,
-                                    goal,
-                                    task_data: task
-                                }
-
-                                return old_current_goal_value !== new_current_goal_value
-                            }
-
-                            else {
-                                this.update_obj.should_render = false
-                                return true
-                            }
-                        }
-                        // from nothing to 1 (only occurs when choosing today)
-                        else if (!hasIn(old_completed_tasks, [id, chosen_day_timestamp_to_string]) && hasIn(new_completed_tasks, [id, chosen_day_timestamp_to_string])) {
-                            new_current_goal_value = getIn(new_completed_tasks, [id, chosen_day_timestamp_to_string, "current"], 0)
-                            if (new_current_goal_value < parseInt(goal.max)) {
-                                this.update_obj = {
-                                    should_render: true,
-                                    current_goal_value: new_current_goal_value,
-                                    action_type: "UPDATE_COMPLETED_DAY_TASK",
-                                    title,
-                                    goal,
-                                    task_data: task
-                                }
-                            }
-
-                            else {
-                                this.update_obj.should_render = false
-                            }
-
-                            return true
-                        }
-
-                        // from everything to nothing (only occurs when choosing today)
-                        else if (hasIn(old_completed_tasks, [id, chosen_day_timestamp_to_string]) && !hasIn(new_completed_tasks, [id, chosen_day_timestamp_to_string])) {
-                            this.update_obj = {
-                                should_render: true,
-                                current_goal_value: 0,
-                                action_type: "UPDATE_COMPLETED_DAY_TASK",
-                                title,
-                                goal,
-                                task_data: task
-                            }
-
-                            return true
-                        }
-
-                        // the freshly created task
-                        else {
-                            this.update_obj = {
-                                should_render: true,
-                                current_goal_value: 0,
-                                action_type: "UPDATE_COMPLETED_DAY_TASK",
-                                title,
-                                goal,
-                                task_data: task
-                            }
-
-                            return true
-                        }
-                    }
-
-                    // When the chosen date is not today, then we do update on task for displaying
-                    else {
-                        let current_goal_value = getIn(new_completed_tasks, [id, chosen_day_timestamp_to_string, "current"], 0)
+                    if (current_goal_value < parseInt(goal.max)) {
                         this.update_obj = {
                             should_render: true,
                             current_goal_value,
@@ -482,155 +392,15 @@ class UncompletedTaskCard extends React.Component {
                             goal,
                             task_data: task
                         }
+                    }
 
-                        return true
+                    else {
+                        this.update_obj.should_render = false
                     }
                 }
 
-                // When the task has unmatching date data, we don't render it but still update it for un-rendering.
                 else {
                     this.update_obj.should_render = false
-                    return true
-                }
-            }
-
-            else if (type === "week") {
-                let { day, month, year } = chosen_date_data,
-                    chosen_week_date = new Date(year, month, day),
-                    chosen_week_timestamp = new Date(year, month, this.getMonday(chosen_week_date).getDate()).getTime(),
-                    chosen_week_timestamp_to_string = chosen_week_timestamp.toString()
-
-                //1-inf
-                if (hasIn(old_completed_tasks, [id, chosen_week_timestamp_to_string]) && hasIn(new_completed_tasks, [id, chosen_week_timestamp_to_string])) {
-                    old_current_goal_value = getIn(old_completed_tasks, [id, chosen_week_timestamp_to_string, "current"], 0)
-                    new_current_goal_value = getIn(new_completed_tasks, [id, chosen_week_timestamp_to_string, "current"], 0)
-                    this.update_obj.current_goal_value = new_current_goal_value
-
-
-                    if (new_current_goal_value < parseInt(goal.max)) {
-                        this.update_obj.should_render = true
-
-                        return old_current_goal_value !== new_current_goal_value
-                    }
-
-                    else {
-                        this.update_obj.should_render = false
-                        return true
-                    }
-                }
-
-                //from nothing to 1
-                else if (!hasIn(old_completed_tasks, [id, chosen_week_timestamp_to_string]) && hasIn(new_completed_tasks, [id, chosen_week_timestamp_to_string])) {
-                    new_current_goal_value = getIn(new_completed_tasks, [id, chosen_week_timestamp_to_string, "current"], 0)
-                    this.update_obj.current_goal_value = new_current_goal_value
-
-                    if (new_current_goal_value < parseInt(goal.max)) {
-                        this.update_obj.should_render = true
-                    }
-
-                    else {
-                        this.update_obj.should_render = false
-                    }
-
-                    return true
-                }
-
-                //from everything to nothing
-                else if (hasIn(old_completed_tasks, [id, chosen_week_timestamp_to_string]) && !hasIn(new_completed_tasks, [id, chosen_week_timestamp_to_string])) {
-                    this.update_obj.current_goal_value = 0
-                    this.update_obj.should_render = true
-
-                    return true
-                }
-            }
-
-            else {
-                let { month, year } = chosen_date_data,
-                    chosen_month_timestamp = new Date(year, month).getTime(),
-                    chosen_month_timestamp_to_string = chosen_month_timestamp.toString()
-
-                //1-inf
-                if (hasIn(old_completed_tasks, [id, chosen_month_timestamp_to_string]) && hasIn(new_completed_tasks, [id, chosen_month_timestamp_to_string])) {
-                    old_current_goal_value = getIn(old_completed_tasks, [id, chosen_month_timestamp_to_string, "current"], 0)
-                    new_current_goal_value = getIn(new_completed_tasks, [id, chosen_month_timestamp_to_string, "current"], 0)
-                    this.update_obj.current_goal_value = new_current_goal_value
-
-
-                    if (new_current_goal_value < parseInt(goal.max)) {
-                        this.update_obj.should_render = true
-
-                        return old_current_goal_value !== new_current_goal_value
-                    }
-
-                    else {
-                        this.update_obj.should_render = false
-                        return true
-                    }
-                }
-
-                //from nothing to 1
-                else if (!hasIn(old_completed_tasks, [id, chosen_month_timestamp_to_string]) && hasIn(new_completed_tasks, [id, chosen_month_timestamp_to_string])) {
-                    new_current_goal_value = getIn(new_completed_tasks, [id, chosen_month_timestamp_to_string, "current"], 0)
-                    this.update_obj.current_goal_value = new_current_goal_value
-
-                    if (new_current_goal_value < parseInt(goal.max)) {
-                        this.update_obj.should_render = true
-                    }
-
-                    else {
-                        this.update_obj.should_render = false
-                    }
-
-                    return true
-                }
-
-                //from everything to nothing
-                else if (hasIn(old_completed_tasks, [id, chosen_month_timestamp_to_string]) && !hasIn(new_completed_tasks, [id, chosen_month_timestamp_to_string])) {
-                    this.update_obj.current_goal_value = 0
-                    this.update_obj.should_render = true
-
-                    return true
-                }
-            }
-        }
-
-        //If we change the category then we need do updates
-        else{
-            this.update_obj.should_render = false
-            return true
-        }
-        
-        return false
-    }
-
-    handleFirstTimeMounting = (completed_tasks, task, type, current_chosen_category, chosen_date_data) => {
-        let { schedule, repeat, title, goal, id, category } = task,
-            current_goal_value = 0
-
-        if (current_chosen_category === "general" || current_chosen_category === category) {
-            if (type === "day") {
-                let { day, month, year } = chosen_date_data,
-                    chosen_day_timestamp = new Date(year, month, day).getTime(),
-                    chosen_day_timestamp_to_string = chosen_day_timestamp.toString()
-
-                if (!hasIn(completed_tasks, [id, chosen_day_timestamp_to_string]) ||
-                    (hasIn(completed_tasks, [id, chosen_day_timestamp_to_string]) && parseInt(getIn(completed_tasks, [id, chosen_day_timestamp_to_string, "current"], 0)) < parseInt(goal.max))) {
-                    current_goal_value = getIn(completed_tasks, [id, chosen_day_timestamp_to_string, "current"], 0)
-
-                    if ((schedule.day === day && schedule.month === month && schedule.year === year)
-                        || this.compareDayTypeDaily(repeat, schedule, day, month, year)
-                        || this.compareDayTypeWeekly(repeat, schedule, day, month, year)
-                        || this.compareDayTypeMonthly(repeat, schedule, day, month, year)
-                    ) {
-                        this.update_obj = {
-                            should_render: true,
-                            current_goal_value,
-                            action_type: "UPDATE_COMPLETED_DAY_TASK",
-                            title,
-                            goal,
-                            task_data: task
-                        }
-                    }
                 }
             }
 
@@ -640,14 +410,13 @@ class UncompletedTaskCard extends React.Component {
                     chosen_week_timestamp = new Date(year, month, this.getMonday(chosen_week_date).getDate()).getTime(),
                     chosen_week_timestamp_to_string = chosen_week_timestamp.toString()
 
-                if (!hasIn(completed_tasks, [id, chosen_week_timestamp_to_string]) ||
-                    hasIn(completed_tasks, [id, chosen_week_timestamp_to_string]) && parseInt(getIn(completed_tasks, [id, chosen_week_timestamp_to_string, "current"], 0)) < parseInt(goal.max)) {
-                    current_goal_value = getIn(completed_tasks, [id, chosen_week_timestamp_to_string, "current"], 0)
+                if ((schedule.week === week && schedule.year === year)
+                    || this.compareWeekTypeWeekly(repeat, schedule, day, month, year)
+                    || this.compareWeekTypeMonthly(repeat, schedule, day, month, year)
+                ) {
+                    current_goal_value = getIn(completed_task, [chosen_week_timestamp_to_string, "current"], 0)
 
-                    if ((schedule.week === week && schedule.year === year)
-                        || this.compareWeekTypeWeekly(repeat, schedule, day, month, year)
-                        || this.compareWeekTypeMonthly(repeat, schedule, day, month, year)
-                    ) {
+                    if (current_goal_value < parseInt(goal.max)) {
                         this.update_obj = {
                             should_render: true,
                             current_goal_value,
@@ -657,6 +426,14 @@ class UncompletedTaskCard extends React.Component {
                             task_data: task
                         }
                     }
+
+                    else {
+                        this.update_obj.should_render = false
+                    }
+                }
+
+                else {
+                    this.update_obj.should_render = false
                 }
             }
 
@@ -665,13 +442,11 @@ class UncompletedTaskCard extends React.Component {
                     chosen_month_timestamp = new Date(year, month).getTime(),
                     chosen_month_timestamp_to_string = chosen_month_timestamp.toString()
 
-                if (!hasIn(completed_tasks, [id, chosen_month_timestamp_to_string]) ||
-                    hasIn(completed_tasks, [id, chosen_month_timestamp_to_string]) && parseInt(getIn(completed_tasks, [id, chosen_month_timestamp_to_string, "current"], 0)) < parseInt(goal.max)) {
-                    current_goal_value = getIn(completed_tasks, [id, chosen_month_timestamp_to_string, "current"], 0)
-
-                    if ((schedule.month === month && schedule.year === year)
-                        || this.compareMonthTypeMonthly(repeat, schedule, month, year)
-                    ) {
+                if ((schedule.month === month && schedule.year === year)
+                    || this.compareMonthTypeMonthly(repeat, schedule, month, year)
+                ) {
+                    current_goal_value = getIn(completed_task, [chosen_month_timestamp_to_string, "current"], 0)
+                    if (current_goal_value < parseInt(goal.max)) {
                         this.update_obj = {
                             should_render: true,
                             current_goal_value,
@@ -681,11 +456,19 @@ class UncompletedTaskCard extends React.Component {
                             task_data: task
                         }
                     }
+
+                    else {
+                        this.update_obj.should_render = false
+                    }
+                }
+
+                else {
+                    this.update_obj.should_render = false
                 }
             }
         }
 
-        else{
+        else {
             this.update_obj.should_render = false
         }
     }
@@ -734,22 +517,16 @@ class UncompletedTaskCard extends React.Component {
         return is_chosen_date_today
     }
 
-    componentDidMount() {
-        this.did_mount = true
-    }
-
     render() {
         let is_chosen_date_today = this.checkIfChosenDateIsToday(this.props.chosen_date_data, this.props.type)
 
-        if (!this.did_mount) {
-            this.handleFirstTimeMounting(
-                this.props.completed_tasks,
-                this.props.task_data,
-                this.props.type,
-                this.props.current_chosen_category,
-                this.props.chosen_date_data
-            )
-        }
+        this.handleUpdate(
+            this.props.completed_task,
+            this.props.task_data,
+            this.props.type,
+            this.props.current_chosen_category,
+            this.props.chosen_date_data
+        )
 
         return (
             <>
@@ -790,9 +567,9 @@ class CompletedTaskCardHolder extends React.PureComponent {
         <CompletedTaskCard
             index={index}
             task_id={item[0]}
-            task_data={item[1]}
+            completed_task={item[1]}
             current_chosen_category={this.props.current_chosen_category}
-            tasks={this.props.tasks}
+            task={Map(this.props.tasks).get(item[0])}
             type={this.props.type}
             chosen_date_data={this.props.chosen_date_data}
             openModal={this.props.openModal}
@@ -824,10 +601,13 @@ class CompletedTaskCardHolder extends React.PureComponent {
 
 class CompletedTaskCard extends React.PureComponent {
 
-    handleTypeDiff = (tasks, completed_task, type, current_chosen_category, chosen_date_data) => {
-        if (tasks.has(completed_task.get("id"))) {
-            let task = tasks.get(completed_task.get("id")),
-                { title, goal, category } = task,
+    update_obj = {
+        should_render: false
+    }
+
+    handleUpdate = (task, completed_task, type, current_chosen_category, chosen_date_data) => {
+        if (task.id && task.id === completed_task.get("id")) {
+            let { title, goal, category } = task,
                 current_goal_value = 0
 
             if (current_chosen_category === "general" || current_chosen_category === category) {
@@ -836,18 +616,22 @@ class CompletedTaskCard extends React.PureComponent {
                         chosen_day_timestamp = new Date(year, month, day).getTime(),
                         chosen_day_timestamp_to_string = chosen_day_timestamp.toString()
 
-                    if (hasIn(completed_task, [chosen_day_timestamp_to_string, "current"]) && parseInt(getIn(completed_task, [chosen_day_timestamp_to_string, "current"], 0)) >= parseInt(goal.max)) {
+                    if (hasIn(completed_task, [chosen_day_timestamp_to_string, "current"]) &&
+                        parseInt(getIn(completed_task, [chosen_day_timestamp_to_string, "current"], 0)) >= parseInt(goal.max)) {
                         current_goal_value = getIn(completed_task, [chosen_day_timestamp_to_string, "current"], 0)
 
-
-                        return ({
+                        this.update_obj = {
                             action_type: "UPDATE_COMPLETED_DAY_TASK",
                             current_goal_value,
                             should_render: true,
                             title,
                             goal,
                             task_data: task
-                        })
+                        }
+                    }
+
+                    else{
+                        this.update_obj.should_render = false
                     }
                 }
 
@@ -857,17 +641,22 @@ class CompletedTaskCard extends React.PureComponent {
                         chosen_week_timestamp = new Date(year, month, this.getMonday(chosen_week_date).getDate()).getTime(),
                         chosen_week_timestamp_to_string = chosen_week_timestamp.toString()
 
-                    if (hasIn(completed_task, [chosen_week_timestamp_to_string, "current"]) && parseInt(getIn(completed_task, [chosen_week_timestamp_to_string, "current"], 0)) >= parseInt(goal.max)) {
+                    if (hasIn(completed_task, [chosen_week_timestamp_to_string, "current"]) &&
+                        parseInt(getIn(completed_task, [chosen_week_timestamp_to_string, "current"], 0)) >= parseInt(goal.max)) {
                         current_goal_value = getIn(completed_task, [chosen_week_timestamp_to_string, "current"], 0)
 
-                        return ({
+                        this.update_obj = {
                             action_type: "UPDATE_COMPLETED_WEEK_TASK",
                             current_goal_value,
                             should_render: true,
                             title,
                             goal,
                             task_data: task
-                        })
+                        }
+                    }
+
+                    else{
+                        this.update_obj.should_render = false
                     }
                 }
 
@@ -876,30 +665,34 @@ class CompletedTaskCard extends React.PureComponent {
                         chosen_month_timestamp = new Date(year, month).getTime(),
                         chosen_month_timestamp_to_string = chosen_month_timestamp.toString()
 
-                    if (hasIn(completed_task, [chosen_month_timestamp_to_string, "current"]) && parseInt(getIn(completed_task, [chosen_month_timestamp_to_string, "current"], 0)) >= parseInt(goal.max)) {
+                    if (hasIn(completed_task, [chosen_month_timestamp_to_string, "current"]) &&
+                        parseInt(getIn(completed_task, [chosen_month_timestamp_to_string, "current"], 0)) >= parseInt(goal.max)) {
                         current_goal_value = getIn(completed_task, [chosen_month_timestamp_to_string, "current"], 0)
 
-                        return ({
+                        this.update_obj = {
                             action_type: "UPDATE_COMPLETED_MONTH_TASK",
                             current_goal_value,
                             should_render: true,
                             title,
                             goal,
                             task_data: task
-                        })
+                        }
+                    }
+
+                    else{
+                        this.update_obj.should_render = false
                     }
                 }
             }
+
+            else {
+                this.update_obj.should_render = false
+            }
         }
 
-        return ({
-            action_type: "UPDATE_COMPLETED_DAY_TASK",
-            current_goal_value: 0,
-            should_render: false,
-            title: "",
-            goal: "",
-            task_data: {}
-        })
+        else {
+            this.update_obj.should_render = false
+        }
     }
 
     checkIfChosenDateIsToday = (chosen_date_data, type) => {
@@ -947,26 +740,26 @@ class CompletedTaskCard extends React.PureComponent {
     }
 
     render() {
+        this.handleUpdate(this.props.task, this.props.completed_task, this.props.type, this.props.current_chosen_category, this.props.chosen_date_data)
 
-        let { action_type, current_goal_value, should_render, title, goal, task_data } = this.handleTypeDiff(this.props.tasks, this.props.task_data, this.props.type, this.props.current_chosen_category, this.props.chosen_date_data),
-            is_chosen_date_today = this.checkIfChosenDateIsToday(this.props.chosen_date_data, this.props.type)
+        let is_chosen_date_today = this.checkIfChosenDateIsToday(this.props.chosen_date_data, this.props.type)
 
         return (
             <>
-                {should_render ?
+                {this.update_obj.should_render ?
                     <TaskCard
-                        action_type={action_type}
+                        action_type={this.update_obj.action_type}
                         type={this.props.type}
-                        task_data={task_data}
+                        task_data={this.update_obj.task_data}
                         index={this.props.index}
                         openModal={this.props.openModal}
 
                         is_chosen_date_today={is_chosen_date_today}
                         flag={"completed"}
 
-                        current_goal_value={current_goal_value}
-                        title={title}
-                        goal={goal}
+                        current_goal_value={this.update_obj.current_goal_value}
+                        title={this.update_obj.title}
+                        goal={this.update_obj.goal}
                     />
 
                     :
