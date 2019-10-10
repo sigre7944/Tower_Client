@@ -270,11 +270,13 @@ class UncompletedTaskCardHolder extends React.PureComponent {
 class UncompletedTaskCard extends React.Component {
 
     update_obj = {
-        should_render: true
+        should_render: false
     }
 
+    did_mount = false
+
     shouldComponentUpdate(nextProps, nextState) {
-        return this.handleCompletedTaskUpdate(
+        return this.handleShouldUpdate(
             this.props.completed_tasks,
             nextProps.completed_tasks,
             nextProps.task_data,
@@ -284,8 +286,102 @@ class UncompletedTaskCard extends React.Component {
         )
     }
 
-    handleCompletedTaskUpdate = (old_completed_tasks, new_completed_tasks, task, type, current_chosen_category, chosen_date_data) => {
-        let { goal, id, category } = task,
+    compareDayTypeDaily = (repeat, schedule, day, month, year) => {
+        let start_date_time = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)).getTime(),
+            current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime(),
+            diff_day = Math.floor((current_date_time - start_date_time) / (86400 * 1000))
+
+        if (diff_day > 0 && diff_day % repeat.interval.value === 0) {
+            return true
+        }
+
+        return false
+    }
+
+    compareDayTypeWeekly = (repeat, schedule, day, month, year) => {
+        let start_date_time = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)).getTime(),
+            current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime(),
+            interval_value = repeat.interval.value,
+            diff = (current_date_time - start_date_time) / (86400 * 1000 * 7)
+
+        if (diff > 0 && diff % interval_value === 0) {
+            return true
+        }
+
+        return false
+    }
+
+    compareDayTypeMonthly = (repeat, schedule, day, month, year) => {
+        let start_date = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)),
+            current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)),
+            interval_value = repeat.interval.value,
+            diff_year = current_date.getFullYear() - start_date.getFullYear(),
+            diff_month = (current_date.getMonth() + diff_year * 12) - start_date.getMonth()
+
+
+        if (diff_month > 0 && diff_month % interval_value === 0) {
+            if (current_date.getDate() === start_date.getDate()) {
+                return true
+            }
+            else {
+                if (current_date.getDate() === new Date(current_date.getFullYear(), current_date.getMonth() + 1, 0).getDate()) {
+                    return true
+                }
+            }
+        }
+
+        return false
+    }
+
+    compareWeekTypeWeekly = (repeat, schedule, day, month, year) => {
+        let interval_value = repeat.interval.value,
+            start_date = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)),
+            current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year))
+
+        if (month >= schedule.month && year >= schedule.year && current_date.getTime() > start_date.getTime()) {
+            if (Math.abs(this.getWeek(current_date) - schedule.week) % interval_value === 0) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    compareWeekTypeMonthly = (repeat, schedule, day, month, year) => {
+        let interval_value = repeat.interval.value,
+            current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)),
+            diff_year = year - schedule.year,
+            diff_month = (month + diff_year * 12) - schedule.month,
+            current_no_week_in_month = this.getNoWeekInMonth(current_date),
+            last_no_week_in_month = this.getNoWeekInMonth(new Date(year, month + 1, 0))
+
+        if (diff_month > 0 && diff_month % interval_value === 0) {
+            if (current_no_week_in_month === schedule.noWeekInMonth) {
+                return true
+            }
+
+            else if (current_no_week_in_month === last_no_week_in_month && schedule.noWeekInMonth === 5) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    compareMonthTypeMonthly = (repeat, schedule, month, year) => {
+        let interval_value = repeat.interval.value,
+            diff_year = year - schedule.year,
+            diff_month = (month + diff_year * 12) - schedule.month
+
+        if (diff_month > 0 && diff_month % interval_value === 0) {
+            return true
+        }
+
+        return false
+    }
+
+    handleShouldUpdate = (old_completed_tasks, new_completed_tasks, task, type, current_chosen_category, chosen_date_data) => {
+        let { repeat, title, schedule, goal, id, category } = task,
             old_current_goal_value = 0,
             new_current_goal_value = 0
 
@@ -295,46 +391,105 @@ class UncompletedTaskCard extends React.Component {
                     chosen_day_timestamp = new Date(year, month, day).getTime(),
                     chosen_day_timestamp_to_string = chosen_day_timestamp.toString()
 
-                //1-inf
-                if (hasIn(old_completed_tasks, [id, chosen_day_timestamp_to_string]) && hasIn(new_completed_tasks, [id, chosen_day_timestamp_to_string])) {
-                    old_current_goal_value = getIn(old_completed_tasks, [id, chosen_day_timestamp_to_string, "current"], 0)
-                    new_current_goal_value = getIn(new_completed_tasks, [id, chosen_day_timestamp_to_string, "current"], 0)
-                    this.update_obj.current_goal_value = new_current_goal_value
+                if ((schedule.day === day && schedule.month === month && schedule.year === year)
+                    || this.compareDayTypeDaily(repeat, schedule, day, month, year)
+                    || this.compareDayTypeWeekly(repeat, schedule, day, month, year)
+                    || this.compareDayTypeMonthly(repeat, schedule, day, month, year)
+                ) {
+                    // We do updates when the chosen date is today (users can check/uncheck tasks)
+                    if (this.checkIfChosenDateIsToday(chosen_date_data, type)) {
+                        //1-inf (only occurs when choosing today)
+                        if (hasIn(old_completed_tasks, [id, chosen_day_timestamp_to_string]) && hasIn(new_completed_tasks, [id, chosen_day_timestamp_to_string])) {
+                            old_current_goal_value = getIn(old_completed_tasks, [id, chosen_day_timestamp_to_string, "current"], 0)
+                            new_current_goal_value = getIn(new_completed_tasks, [id, chosen_day_timestamp_to_string, "current"], 0)
 
+                            if (new_current_goal_value < parseInt(goal.max)) {
+                                this.update_obj = {
+                                    should_render: true,
+                                    current_goal_value: new_current_goal_value,
+                                    action_type: "UPDATE_COMPLETED_DAY_TASK",
+                                    title,
+                                    goal,
+                                    task_data: task
+                                }
 
-                    if (new_current_goal_value < parseInt(goal.max)) {
-                        this.update_obj.should_render = true
+                                return old_current_goal_value !== new_current_goal_value
+                            }
 
-                        return old_current_goal_value !== new_current_goal_value
+                            else {
+                                this.update_obj.should_render = false
+                                return true
+                            }
+                        }
+                        // from nothing to 1 (only occurs when choosing today)
+                        else if (!hasIn(old_completed_tasks, [id, chosen_day_timestamp_to_string]) && hasIn(new_completed_tasks, [id, chosen_day_timestamp_to_string])) {
+                            new_current_goal_value = getIn(new_completed_tasks, [id, chosen_day_timestamp_to_string, "current"], 0)
+                            if (new_current_goal_value < parseInt(goal.max)) {
+                                this.update_obj = {
+                                    should_render: true,
+                                    current_goal_value: new_current_goal_value,
+                                    action_type: "UPDATE_COMPLETED_DAY_TASK",
+                                    title,
+                                    goal,
+                                    task_data: task
+                                }
+                            }
+
+                            else {
+                                this.update_obj.should_render = false
+                            }
+
+                            return true
+                        }
+
+                        // from everything to nothing (only occurs when choosing today)
+                        else if (hasIn(old_completed_tasks, [id, chosen_day_timestamp_to_string]) && !hasIn(new_completed_tasks, [id, chosen_day_timestamp_to_string])) {
+                            this.update_obj = {
+                                should_render: true,
+                                current_goal_value: 0,
+                                action_type: "UPDATE_COMPLETED_DAY_TASK",
+                                title,
+                                goal,
+                                task_data: task
+                            }
+
+                            return true
+                        }
+
+                        // the freshly created task
+                        else {
+                            this.update_obj = {
+                                should_render: true,
+                                current_goal_value: 0,
+                                action_type: "UPDATE_COMPLETED_DAY_TASK",
+                                title,
+                                goal,
+                                task_data: task
+                            }
+
+                            return true
+                        }
                     }
 
+                    // When the chosen date is not today, then we do update on task for displaying
                     else {
-                        this.update_obj.should_render = false
+                        let current_goal_value = getIn(new_completed_tasks, [id, chosen_day_timestamp_to_string, "current"], 0)
+                        this.update_obj = {
+                            should_render: true,
+                            current_goal_value,
+                            action_type: "UPDATE_COMPLETED_DAY_TASK",
+                            title,
+                            goal,
+                            task_data: task
+                        }
+
                         return true
                     }
                 }
 
-                //from nothing to 1
-                else if (!hasIn(old_completed_tasks, [id, chosen_day_timestamp_to_string]) && hasIn(new_completed_tasks, [id, chosen_day_timestamp_to_string])) {
-                    new_current_goal_value = getIn(new_completed_tasks, [id, chosen_day_timestamp_to_string, "current"], 0)
-                    this.update_obj.current_goal_value = new_current_goal_value
-
-                    if (new_current_goal_value < parseInt(goal.max)) {
-                        this.update_obj.should_render = true
-                    }
-
-                    else {
-                        this.update_obj.should_render = false
-                    }
-
-                    return true
-                }
-
-                //from everything to nothing
-                else if (hasIn(old_completed_tasks, [id, chosen_day_timestamp_to_string]) && !hasIn(new_completed_tasks, [id, chosen_day_timestamp_to_string])) {
-                    this.update_obj.current_goal_value = 0
-                    this.update_obj.should_render = true
-
+                // When the task has unmatching date data, we don't render it but still update it for un-rendering.
+                else {
+                    this.update_obj.should_render = false
                     return true
                 }
             }
@@ -439,10 +594,16 @@ class UncompletedTaskCard extends React.Component {
             }
         }
 
+        //If we change the category then we need do updates
+        else{
+            this.update_obj.should_render = false
+            return true
+        }
+        
         return false
     }
 
-    handleShouldUpdate = (completed_tasks, task, type, current_chosen_category, chosen_date_data) => {
+    handleFirstTimeMounting = (completed_tasks, task, type, current_chosen_category, chosen_date_data) => {
         let { schedule, repeat, title, goal, id, category } = task,
             current_goal_value = 0
 
@@ -456,98 +617,22 @@ class UncompletedTaskCard extends React.Component {
                     (hasIn(completed_tasks, [id, chosen_day_timestamp_to_string]) && parseInt(getIn(completed_tasks, [id, chosen_day_timestamp_to_string, "current"], 0)) < parseInt(goal.max))) {
                     current_goal_value = getIn(completed_tasks, [id, chosen_day_timestamp_to_string, "current"], 0)
 
-                    if (schedule.day === day && schedule.month === month && schedule.year === year) {
+                    if ((schedule.day === day && schedule.month === month && schedule.year === year)
+                        || this.compareDayTypeDaily(repeat, schedule, day, month, year)
+                        || this.compareDayTypeWeekly(repeat, schedule, day, month, year)
+                        || this.compareDayTypeMonthly(repeat, schedule, day, month, year)
+                    ) {
                         this.update_obj = {
-                            ...this.update_obj,
-                            ...{
-                                current_goal_value,
-                                action_type: "UPDATE_COMPLETED_DAY_TASK",
-                                title,
-                                goal,
-                                task_data: task
-                            }
-                        }
-                    }
-
-                    else if (repeat.type === "daily") {
-                        let start_date_time = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)).getTime(),
-                            current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime(),
-                            diff_day = Math.floor((current_date_time - start_date_time) / (86400 * 1000))
-
-                        if (diff_day > 0 && diff_day % repeat.interval.value === 0) {
-                            this.update_obj = {
-                                ...this.update_obj,
-                                ...{
-                                    current_goal_value,
-                                    action_type: "UPDATE_COMPLETED_DAY_TASK",
-                                    title,
-                                    goal,
-                                    task_data: task
-                                }
-                            }
-                        }
-                    }
-
-                    else if (repeat.type === "weekly") {
-                        let start_date_time = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)).getTime(),
-                            current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime(),
-                            interval_value = repeat.interval.value,
-                            diff = (current_date_time - start_date_time) / (86400 * 1000 * 7)
-
-                        if (diff > 0 && diff % interval_value === 0) {
-                            this.update_obj = {
-                                ...this.update_obj,
-                                ...{
-                                    current_goal_value,
-                                    action_type: "UPDATE_COMPLETED_DAY_TASK",
-                                    title,
-                                    goal,
-                                    task_data: task
-                                }
-                            }
-                        }
-                    }
-
-                    else if (repeat.type === "monthly") {
-                        let start_date = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)),
-                            current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)),
-                            interval_value = repeat.interval.value,
-                            diff_year = current_date.getFullYear() - start_date.getFullYear(),
-                            diff_month = (current_date.getMonth() + diff_year * 12) - start_date.getMonth()
-
-
-                        if (diff_month > 0 && diff_month % interval_value === 0) {
-                            if (current_date.getDate() === start_date.getDate()) {
-                                this.update_obj = {
-                                    ...this.update_obj,
-                                    ...{
-                                        current_goal_value,
-                                        action_type: "UPDATE_COMPLETED_DAY_TASK",
-                                        title,
-                                        goal,
-                                        task_data: task
-                                    }
-                                }
-                            }
-                            else {
-                                if (current_date.getDate() === new Date(current_date.getFullYear(), current_date.getMonth() + 1, 0).getDate()) {
-                                    this.update_obj = {
-                                        ...this.update_obj,
-                                        ...{
-                                            current_goal_value,
-                                            action_type: "UPDATE_COMPLETED_DAY_TASK",
-                                            title,
-                                            goal,
-                                            task_data: task
-                                        }
-                                    }
-                                }
-                            }
+                            should_render: true,
+                            current_goal_value,
+                            action_type: "UPDATE_COMPLETED_DAY_TASK",
+                            title,
+                            goal,
+                            task_data: task
                         }
                     }
                 }
             }
-
 
             else if (type === "week") {
                 let { day, month, week, year } = chosen_date_data,
@@ -559,74 +644,17 @@ class UncompletedTaskCard extends React.Component {
                     hasIn(completed_tasks, [id, chosen_week_timestamp_to_string]) && parseInt(getIn(completed_tasks, [id, chosen_week_timestamp_to_string, "current"], 0)) < parseInt(goal.max)) {
                     current_goal_value = getIn(completed_tasks, [id, chosen_week_timestamp_to_string, "current"], 0)
 
-                    if (schedule.week === week && schedule.year === year) {
+                    if ((schedule.week === week && schedule.year === year)
+                        || this.compareWeekTypeWeekly(repeat, schedule, day, month, year)
+                        || this.compareWeekTypeMonthly(repeat, schedule, day, month, year)
+                    ) {
                         this.update_obj = {
-                            ...this.update_obj,
-                            ...{
-                                current_goal_value,
-                                action_type: "UPDATE_COMPLETED_WEEK_TASK",
-                                title,
-                                goal,
-                                task_data: task
-                            }
-                        }
-                    }
-
-                    else if (repeat.type === "weekly-w") {
-                        let interval_value = repeat.interval.value,
-                            start_date = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)),
-                            current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year))
-
-                        if (month >= schedule.month && year >= schedule.year && current_date.getTime() > start_date.getTime()) {
-                            if (Math.abs(this.getWeek(current_date) - schedule.week) % interval_value === 0) {
-                                this.update_obj = {
-                                    ...this.update_obj,
-                                    ...{
-                                        current_goal_value,
-                                        action_type: "UPDATE_COMPLETED_WEEK_TASK",
-                                        title,
-                                        goal,
-                                        task_data: task
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    else if (repeat.type === "monthly-w") {
-                        let interval_value = repeat.interval.value,
-                            current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)),
-                            diff_year = year - schedule.year,
-                            diff_month = (month + diff_year * 12) - schedule.month,
-                            current_no_week_in_month = this.getNoWeekInMonth(current_date),
-                            last_no_week_in_month = this.getNoWeekInMonth(new Date(year, month + 1, 0))
-
-                        if (diff_month > 0 && diff_month % interval_value === 0) {
-                            if (current_no_week_in_month === schedule.noWeekInMonth) {
-                                this.update_obj = {
-                                    ...this.update_obj,
-                                    ...{
-                                        current_goal_value,
-                                        action_type: "UPDATE_COMPLETED_WEEK_TASK",
-                                        title,
-                                        goal,
-                                        task_data: task
-                                    }
-                                }
-                            }
-
-                            else if (current_no_week_in_month === last_no_week_in_month && schedule.noWeekInMonth === 5) {
-                                this.update_obj = {
-                                    ...this.update_obj,
-                                    ...{
-                                        current_goal_value,
-                                        action_type: "UPDATE_COMPLETED_WEEK_TASK",
-                                        title,
-                                        goal,
-                                        task_data: task
-                                    }
-                                }
-                            }
+                            should_render: true,
+                            current_goal_value,
+                            action_type: "UPDATE_COMPLETED_WEEK_TASK",
+                            title,
+                            goal,
+                            task_data: task
                         }
                     }
                 }
@@ -641,39 +669,24 @@ class UncompletedTaskCard extends React.Component {
                     hasIn(completed_tasks, [id, chosen_month_timestamp_to_string]) && parseInt(getIn(completed_tasks, [id, chosen_month_timestamp_to_string, "current"], 0)) < parseInt(goal.max)) {
                     current_goal_value = getIn(completed_tasks, [id, chosen_month_timestamp_to_string, "current"], 0)
 
-                    if (schedule.month === month && schedule.year === year) {
+                    if ((schedule.month === month && schedule.year === year)
+                        || this.compareMonthTypeMonthly(repeat, schedule, month, year)
+                    ) {
                         this.update_obj = {
-                            ...this.update_obj,
-                            ...{
-                                current_goal_value,
-                                action_type: "UPDATE_COMPLETED_MONTH_TASK",
-                                title,
-                                goal,
-                                task_data: task
-                            }
-                        }
-                    }
-
-                    else if (repeat.type === "monthly-m") {
-                        let interval_value = repeat.interval.value,
-                            diff_year = year - schedule.year,
-                            diff_month = (month + diff_year * 12) - schedule.month
-
-                        if (diff_month > 0 && diff_month % interval_value === 0) {
-                            this.update_obj = {
-                                ...this.update_obj,
-                                ...{
-                                    current_goal_value,
-                                    action_type: "UPDATE_COMPLETED_MONTH_TASK",
-                                    title,
-                                    goal,
-                                    task_data: task
-                                }
-                            }
+                            should_render: true,
+                            current_goal_value,
+                            action_type: "UPDATE_COMPLETED_MONTH_TASK",
+                            title,
+                            goal,
+                            task_data: task
                         }
                     }
                 }
             }
+        }
+
+        else{
+            this.update_obj.should_render = false
         }
     }
 
@@ -721,11 +734,15 @@ class UncompletedTaskCard extends React.Component {
         return is_chosen_date_today
     }
 
+    componentDidMount() {
+        this.did_mount = true
+    }
+
     render() {
         let is_chosen_date_today = this.checkIfChosenDateIsToday(this.props.chosen_date_data, this.props.type)
 
-        if (this.update_obj.should_render) {
-            this.handleShouldUpdate(
+        if (!this.did_mount) {
+            this.handleFirstTimeMounting(
                 this.props.completed_tasks,
                 this.props.task_data,
                 this.props.type,
