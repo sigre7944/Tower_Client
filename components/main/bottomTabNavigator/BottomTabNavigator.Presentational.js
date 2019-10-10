@@ -106,21 +106,25 @@ export default class BottomTabNavigator extends React.Component {
                         <ScreenComponent
                             chooseNewScreen={this.chooseNewScreen}
                             screen_route_name={"Journal"}
+                            routeName={this.props.routeName}
                         />
 
                         <ScreenComponent
                             chooseNewScreen={this.chooseNewScreen}
                             screen_route_name={"Progress"}
+                            routeName={this.props.routeName}
                         />
 
                         <ScreenComponent
                             chooseNewScreen={this.chooseNewScreen}
                             screen_route_name={"Reward"}
+                            routeName={this.props.routeName}
                         />
 
                         <ScreenComponent
                             chooseNewScreen={this.chooseNewScreen}
                             screen_route_name={"Settings"}
+                            routeName={this.props.routeName}
                         />
                     </View>
                 </View>
@@ -129,7 +133,34 @@ export default class BottomTabNavigator extends React.Component {
     }
 }
 
-class ScreenComponent extends React.PureComponent {
+class ScreenComponent extends React.Component {
+
+    state = {
+        icon_style: styles.not_chosen_screen_component_icon,
+        icon_text_style: styles.not_chosen_screen_component_text
+    }
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if ((nextProps.routeName === "Day" || nextProps.routeName === "Week" || nextProps.routeName === "Month") && nextProps.screen_route_name === "Journal") {
+            return ({
+                icon_style: styles.chosen_screen_component_icon,
+                icon_text_style: styles.chosen_screen_component_text
+            })
+        }
+
+        if (nextProps.routeName === nextProps.screen_route_name) {
+            return ({
+                icon_style: styles.chosen_screen_component_icon,
+                icon_text_style: styles.chosen_screen_component_text
+            })
+        }
+        else {
+            return ({
+                icon_style: styles.not_chosen_screen_component_icon,
+                icon_text_style: styles.not_chosen_screen_component_text
+            })
+        }
+    }
 
     _onPress = () => {
         this.props.chooseNewScreen(this.props.screen_route_name)
@@ -157,11 +188,11 @@ class ScreenComponent extends React.PureComponent {
                             < FontAwesomeIcon
                                 icon={faClipboardList}
                                 size={20}
-                                style={styles.screen_component_icon}
+                                style={this.state.icon_style}
                             />
 
                             <Text
-                                style={styles.screen_component_text}
+                                style={this.state.icon_text_style}
                             >
                                 {this.props.screen_route_name}
                             </Text>
@@ -173,11 +204,11 @@ class ScreenComponent extends React.PureComponent {
                                     < FontAwesomeIcon
                                         icon={faChartBar}
                                         size={20}
-                                        style={styles.screen_component_icon}
+                                        style={this.state.icon_style}
                                     />
 
                                     <Text
-                                        style={styles.screen_component_text}
+                                        style={this.state.icon_text_style}
                                     >
                                         {this.props.screen_route_name}
                                     </Text>
@@ -191,11 +222,11 @@ class ScreenComponent extends React.PureComponent {
                                             < FontAwesomeIcon
                                                 icon={faMoneyBill}
                                                 size={20}
-                                                style={styles.screen_component_icon}
+                                                style={this.state.icon_style}
                                             />
 
                                             <Text
-                                                style={styles.screen_component_text}
+                                                style={this.state.icon_text_style}
                                             >
                                                 {this.props.screen_route_name}
                                             </Text>
@@ -207,11 +238,11 @@ class ScreenComponent extends React.PureComponent {
                                             < FontAwesomeIcon
                                                 icon={faSlidersH}
                                                 size={20}
-                                                style={styles.screen_component_icon}
+                                                style={this.state.icon_style}
                                             />
 
                                             <Text
-                                                style={styles.screen_component_text}
+                                                style={this.state.icon_text_style}
                                             >
                                                 {this.props.screen_route_name}
                                             </Text>
