@@ -133,10 +133,13 @@ export const currentMonthTask = (state = {}, action) => {
     }
 }
 
-export const currentDayTask = (state = {}, action) => {
+export const currentDayTask = (state = Map(), action) => {
     switch (action.type) {
+        // case 'UPDATE_NEW_DAY_TASK':
+        //     return { ...state, ...action.data }
+
         case 'UPDATE_NEW_DAY_TASK':
-            return { ...state, ...action.data }
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
         default:
             return state

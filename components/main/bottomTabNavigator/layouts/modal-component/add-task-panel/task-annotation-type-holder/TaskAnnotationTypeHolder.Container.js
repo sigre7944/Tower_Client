@@ -1,18 +1,16 @@
 import { connect } from 'react-redux'
 import {
-    updateTitle,
-    updateDescription,
-} from '../../../../../shared/actions/otherAction'
-import { addTaskThunk } from './actions/addTaskThunk'
+    updateType
+} from '../../../../../../shared/actions/otherAction'
 
-import AddTaskPanel from './AddTaskPanel'
+import TaskAnnotationTypeHolder from './TaskAnnotationTypeHolder'
 
 
 const mapStateToProps = (state) => ({
     currentDayTask: state.get("currentDayTask"),
     currentWeekTask: state.get("currentWeekTask"),
     currentMonthTask: state.get("currentMonthTask"),
-    
+
     categories: state.get("categories"),
     priorities: state.get("priorities"),
 
@@ -22,18 +20,12 @@ const mapStateToProps = (state) => ({
 
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    updateTitle: (data) => {
-        dispatch(updateTitle(data))
+    updateType: (type, keyPath, notSetValue, updater) => {
+        dispatch(updateType(type, keyPath, notSetValue, updater))
     },
-
-    updateDescription: (data) => {
-        dispatch(updateDescription(data))
-    },
-
-    addTaskThunk: (data) => { dispatch(addTaskThunk(data)) }
 })
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(AddTaskPanel)
+)(TaskAnnotationTypeHolder)

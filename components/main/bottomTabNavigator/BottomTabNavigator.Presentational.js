@@ -27,19 +27,7 @@ export default class BottomTabNavigator extends React.Component {
         should_AddTaskButton_be_displayed: false,
     }
 
-    activateAddTask = () => {
-        this.setState({
-            addTaskClicked: true
-        })
-    }
-
-    dismissAddTask = () => {
-        this.setState({
-            addTaskClicked: false
-        })
-    }
-
-    addTaskButtonActionProp = () => {
+    toggleAddTask = () => {
         this.setState(prevState => ({
             addTaskClicked: !prevState.addTaskClicked,
         }))
@@ -76,8 +64,7 @@ export default class BottomTabNavigator extends React.Component {
                     {
                         this.state.addTaskClicked ?
                             <OverlayModal
-                                addTaskButtonActionProp={this.addTaskButtonActionProp}
-                                dismissAddTask={this.dismissAddTask}
+                                toggleAddTask={this.toggleAddTask}
                             />
 
                             :
@@ -87,7 +74,7 @@ export default class BottomTabNavigator extends React.Component {
 
                     {this.state.should_AddTaskButton_be_displayed ?
                         <AddTaskButton
-                            activateAddTask={this.activateAddTask}
+                            toggleAddTask={this.toggleAddTask}
                         />
                         :
 
