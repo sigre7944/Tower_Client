@@ -7,17 +7,18 @@ import {
     TextInput,
     Dimensions,
     KeyboardAvoidingView,
+    Animated,
     Keyboard,
     ScrollView
 } from 'react-native';
 
+import TaskAnnotationTypeHolder from './task-annotation-type-holder/TaskAnnotationTypeHolder.Container'
+import TitleAndDescriptionHolder from './title-and-description-holder/TitleAndDescriptionHolder.Container'
 import { Map } from 'immutable'
 
-const uuidv1 = require('uuid')
+import { styles } from './styles/styles'
 
-let dayAnnotationColor = '#b0b0b0',
-    weekAnnotationColor = '#9a9a9a',
-    monthAnnotationColor = '#848484'
+const uuidv1 = require('uuid')
 
 export default class AddTaskPanel extends Component {
     taskTextInputRef = React.createRef()
@@ -30,13 +31,11 @@ export default class AddTaskPanel extends Component {
 
     month_names_in_short = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-    state = {
-        dayAnnotationColor: dayAnnotationColor,
-        weekAnnotationColor: weekAnnotationColor,
-        monthAnnotationColor: monthAnnotationColor,
-        AddTaskPanelDisplayProperty: 'flex',
-        keyboardHeight: 0,
+    translateY_value = new Animated.Value(0)
+    opacity_value = new Animated.Value(0)
 
+    state = {
+        AddTaskPanelDisplayProperty: 'flex',
         tag_data: [],
     }
 
@@ -44,13 +43,6 @@ export default class AddTaskPanel extends Component {
         this.taskTextInputRef = ref
     }
 
-    onChangeTitle = (value) => {
-        this.props.updateTitle(value)
-    }
-
-    onChangeDescription = (value) => {
-        this.props.updateDescription(value)
-    }
 
     disableAddTaskPanel = () => {
         this.setState({
@@ -58,56 +50,26 @@ export default class AddTaskPanel extends Component {
         })
     }
 
-    chooseDayAnno = () => {
-        this.chooseAnnotation("day")
-    }
-
-    chooseWeekAnno = () => {
-        this.chooseAnnotation("week")
-    }
-
-    chooseMonthAnno = () => {
-        this.chooseAnnotation("month")
-    }
-
-    chooseAnnotation = (annotation) => {
-        if (annotation === "day") {
-            this.setState({
-                dayAnnotationColor: "black",
-                weekAnnotationColor: weekAnnotationColor,
-                monthAnnotationColor: monthAnnotationColor,
-            })
-
-            this.props.updateType("UPDATE_NEW_DAY_TASK", annotation)
-        }
-
-        else if (annotation === "week") {
-            this.setState({
-                dayAnnotationColor: dayAnnotationColor,
-                weekAnnotationColor: "black",
-                monthAnnotationColor: monthAnnotationColor,
-            })
-
-            this.props.updateType("UPDATE_NEW_WEEK_TASK", annotation)
-        }
-
-        else {
-            this.setState({
-                dayAnnotationColor: dayAnnotationColor,
-                weekAnnotationColor: weekAnnotationColor,
-                monthAnnotationColor: "black",
-            })
-
-            this.props.updateType("UPDATE_NEW_MONTH_TASK", annotation)
-        }
-
-        this.props.setCurrentAnnotation(annotation)
-    }
-
     toDoWhenWillShowKeyboard = (e) => {
-        this.setState({
-            keyboardHeight: e.endCoordinates.height
-        })
+        Animated.parallel([
+            Animated.timing(
+                this.translateY_value,
+                {
+                    toValue: - e.endCoordinates.height,
+                    duration: e.duration,
+                    useNativeDriver: true
+                }
+            ),
+            Animated.timing(
+                this.opacity_value,
+                {
+                    toValue: 1,
+                    duration: e.duration,
+                    useNativeDriver: true
+                }
+            )
+        ],
+        ).start()
     }
 
 
@@ -448,25 +410,20 @@ export default class AddTaskPanel extends Component {
     componentDidMount() {
         // Load the current annotation from redux store
         if (this.props.currentAnnotation === "day") {
-            this.chooseAnnotation('day')
             this.addTagDataToRender("day", this.props.currentDayTask)
         }
 
         else if (this.props.currentAnnotation === "week") {
-            this.chooseAnnotation('week')
             this.addTagDataToRender("week", this.props.currentDayTask)
         }
 
         else if (this.props.currentAnnotation === "month") {
-            this.chooseAnnotation('month')
             this.addTagDataToRender("month", this.props.currentDayTask)
         }
 
-
-
         this.keyboardWillShowListener = Keyboard.addListener(
             'keyboardWillShow',
-            this.toDoWhenWillShowKeyboard
+            this.toDoWhenWillShowKeyboard,
         )
     }
 
@@ -504,9 +461,6 @@ export default class AddTaskPanel extends Component {
                 }
             }
         }
-
-
-
     }
 
     componentWillUnmount() {
@@ -515,294 +469,123 @@ export default class AddTaskPanel extends Component {
 
     render() {
         return (
-            <KeyboardAvoidingView style={{
-                position: "absolute",
-                width: Dimensions.get('window').width,
-                bottom: this.state.keyboardHeight,
-                display: this.state.AddTaskPanelDisplayProperty,
-                height: 400,
-            }}>
-                <View style={{
-                    height: 100,
-                    position: 'relative',
-                    flexDirection: "row",
-                }}>
-                    <TouchableHighlight
-                        style={{
-                            position: 'absolute',
-                            height: 100,
-                            width: Dimensions.get('window').width,
-                            backgroundColor: this.state.dayAnnotationColor,
-                            borderTopLeftRadius: 20,
-                        }}
-
-                        onPress={this.chooseDayAnno}
-                        underlayColor="transparent"
-                    >
-                        <Text style={{
-                            color: "white",
-                            marginTop: 10,
-                            marginLeft: 50,
-                            fontSize: 20,
-                            fontWeight: "500",
-                        }}>Day</Text>
-                    </TouchableHighlight>
-
-                    <TouchableHighlight
-                        style={{
-                            position: 'absolute',
-                            width: Dimensions.get('window').width * 2 / 3,
-                            left: Dimensions.get('window').width * 1 / 3,
-                            height: 100,
-                            backgroundColor: this.state.weekAnnotationColor,
-                            borderTopLeftRadius: 20,
-                        }}
-
-                        onPress={this.chooseWeekAnno}
-                        underlayColor="transparent"
-                    >
-                        <Text style={{
-                            color: "white",
-                            marginTop: 10,
-                            marginLeft: 50,
-                            fontSize: 20,
-                            fontWeight: "500",
-                        }}>Week</Text>
-                    </TouchableHighlight>
-
-                    <TouchableHighlight
-                        style={{
-                            width: Dimensions.get('window').width * 1 / 3,
-                            left: Dimensions.get('window').width * 2 / 3,
-                            height: 100,
-                            backgroundColor: this.state.monthAnnotationColor,
-                            borderTopLeftRadius: 20,
-                        }}
-
-                        onPress={this.chooseMonthAnno}
-                        underlayColor="transparent"
-                    >
-                        <Text style={{
-                            color: "white",
-                            marginTop: 10,
-                            marginLeft: 50,
-                            fontSize: 20,
-                            fontWeight: "500",
-                        }}>Month</Text>
-                    </TouchableHighlight>
-                </View>
-
-                <View style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    height: 350,
+            <Animated.View
+                style={{
+                    position: "absolute",
                     width: Dimensions.get('window').width,
-                    backgroundColor: 'white',
+                    bottom: 0,
+                    transform: [{ translateY: this.translateY_value }],
+                    display: this.state.AddTaskPanelDisplayProperty,
+                    height: 409,
+                    backgroundColor: "white",
                     borderTopRightRadius: 20,
                     borderTopLeftRadius: 20,
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    paddingTop: 10,
-                    paddingBottom: 50,
-                    overflow: "scroll"
-                }}>
-                    <TaskTitleElement
+                    opacity: this.opacity_value,
+                    backgroundColor: "#FFFFFF",
+                    shadowOffset: {
+                        width: 0,
+                        height: -2,
+                    },
+                    shadowRadius: 15,
+                    shadowColor: "rgba(0, 0, 0, 0.06)"
+                }}
+            >
+                <TaskAnnotationTypeHolder
+                    setCurrentAnnotation={this.props.setCurrentAnnotation}
+                    currentAnnotation={this.props.currentAnnotation}
+                />
+
+                <ScrollView
+                    keyboardShouldPersistTaps="always"
+                    style={{
+                        flex: 1,
+                    }}
+                    showsVerticalScrollIndicator={false}
+                >
+                    <TitleAndDescriptionHolder
+                        currentAnnotation={this.props.currentAnnotation}
                         setTaskTextInputRef={this.setTaskTextInputRef}
-                        taskTextInputRef={this.taskTextInputRef}
-                        currentAnnotation={this.props.currentAnnotation}
-
-                        title_value={this.props.addTaskTitle}
-                        onChangeTitle={this.onChangeTitle}
-                    />
-
-                    <TaskDescriptionElement
-                        currentAnnotation={this.props.currentAnnotation}
-
-                        description_value={this.props.addTaskDescription}
-                        onChangeDescription={this.onChangeDescription}
                     />
 
                     <View
                         style={{
-                            flex: 2
+                            flex: 2,
                         }}
                     >
-                        <ScrollView
-                            keyboardShouldPersistTaps="always"
+                        <View
+                            style={{
+                                flexWrap: "wrap",
+                                flexDirection: "row",
+                                paddingHorizontal: 33,
+                                paddingBottom: 20,
+                            }}
                         >
-                            <View
-                                style={{
-                                    flexWrap: "wrap",
-                                    flexDirection: "row",
-                                    paddingHorizontal: 33,
-                                    paddingBottom: 20,
-                                }}
-                            >
-                                {this.state.tag_data}
-                            </View>
+                            {this.state.tag_data}
+                        </View>
 
-                        </ScrollView>
                     </View>
 
+                </ScrollView>
 
-                    <View style={{
-                        position: "absolute",
-                        bottom: 0,
-                        height: 50,
-                        width: Dimensions.get("window").width,
-                        borderTopWidth: 1,
-                        borderTopColor: "black",
-                        backgroundColor: "gainsboro",
-                        flexDirection: 'row'
-                    }}>
-
-                        <BottomOptionElement
-                            chooseOption={this.props.chooseCalenderOption}
-                            taskTextInputRef={this.taskTextInputRef}
-                            disableAddTaskPanel={this.disableAddTaskPanel}
-                            title="Cal"
-                        />
-
-                        <BottomOptionElement
-                            chooseOption={this.props.chosenCategoryOption}
-                            taskTextInputRef={this.taskTextInputRef}
-                            disableAddTaskPanel={this.disableAddTaskPanel}
-                            title="Cat"
-                        />
-
-                        <BottomOptionElement
-                            chooseOption={this.props.choosePriorityOption}
-                            taskTextInputRef={this.taskTextInputRef}
-                            disableAddTaskPanel={this.disableAddTaskPanel}
-                            title="Pri"
-                        />
-
-                        <BottomOptionElement
-                            chooseOption={this.props.chooseGoalOption}
-                            taskTextInputRef={this.taskTextInputRef}
-                            disableAddTaskPanel={this.disableAddTaskPanel}
-                            title="Goal"
-                        />
-
-                        <BottomOptionElement
-                            chooseOption={this.props.addTaskButtonActionProp}
-                            taskTextInputRef={this.taskTextInputRef}
-                            disableAddTaskPanel={this.disableAddTaskPanel}
-                            {... this.props}
-
-                            title_value={this.props.addTaskTitle}
-                            description_value={this.props.addTaskDescription}
-
-                            updateTitle={this.props.updateTitle}
-                            updateDescription={this.props.updateDescription}
-
-                            title="Ok"
-                        />
-                    </View>
-                </View>
-            </KeyboardAvoidingView>
-        )
-    }
-}
-
-
-class TaskTitleElement extends React.PureComponent {
-    constructor(props) {
-        super(props)
-
-        this.textInputRef = React.createRef()
-    }
-
-    state = {
-        // value: ""
-    }
-
-    _onChange = (e) => {
-        this.props.onChangeTitle(e.nativeEvent.text)
-    }
-
-    setTaskTextInputRef = (ref) => {
-        this.props.setTaskTextInputRef(ref)
-        this.textInputRef = ref
-    }
-
-    _onLayout = () => {
-        setTimeout(() => { this.textInputRef.focus() }, 50)
-    }
-
-    render() {
-        return (
-            <View style={{
-                height: 52,
-                marginHorizontal: 20,
-                marginTop: 10,
-            }}>
-                <Text
-                    style={{
-                        fontSize: 12,
-                        color: 'gainsboro',
-                    }}
-                >
-                    Task Title
-                </Text>
-                <TextInput
-                    ref={this.setTaskTextInputRef}
-                    style={{
-                        flex: 1,
-                        fontSize: 16,
-                        borderBottomColor: 'gainsboro',
-                        borderBottomWidth: 1,
-
-                    }}
-                    placeholder="Add a task here"
-                    autoCorrect={false}
-                    value={this.props.title_value}
-                    onChange={this._onChange}
-                    onLayout={this._onLayout}
-                />
-            </View>
-        )
-    }
-}
-
-class TaskDescriptionElement extends React.PureComponent {
-    state = {
-        value: ""
-    }
-
-    _onChange = (e) => {
-        this.props.onChangeDescription(e.nativeEvent.text)
-    }
-
-    render() {
-        return (
-            <View style={{
-                height: 52,
-                margin: 20,
-            }}>
-                <Text style={{
-                    fontSize: 12,
-                    color: 'gainsboro',
+                <View style={{
+                    height: 57,
+                    width: Dimensions.get("window").width,
+                    borderTopWidth: 1,
+                    borderTopColor: "black",
+                    backgroundColor: "gainsboro",
+                    flexDirection: 'row'
                 }}>
-                    Task Description
-                </Text>
-                <TextInput
-                    style={{
-                        flex: 1,
-                        fontSize: 16,
-                        borderBottomColor: 'gainsboro',
-                        borderBottomWidth: 1,
-                    }}
 
-                    placeholder="Add task description"
-                    autoCorrect={false}
-                    value={this.props.description_value}
-                    onChange={this._onChange}
-                />
-            </View>
+                    <BottomOptionElement
+                        chooseOption={this.props.chooseCalenderOption}
+                        taskTextInputRef={this.taskTextInputRef}
+                        disableAddTaskPanel={this.disableAddTaskPanel}
+                        title="Cal"
+                    />
+
+                    <BottomOptionElement
+                        chooseOption={this.props.chosenCategoryOption}
+                        taskTextInputRef={this.taskTextInputRef}
+                        disableAddTaskPanel={this.disableAddTaskPanel}
+                        title="Cat"
+                    />
+
+                    <BottomOptionElement
+                        chooseOption={this.props.choosePriorityOption}
+                        taskTextInputRef={this.taskTextInputRef}
+                        disableAddTaskPanel={this.disableAddTaskPanel}
+                        title="Pri"
+                    />
+
+                    <BottomOptionElement
+                        chooseOption={this.props.chooseGoalOption}
+                        taskTextInputRef={this.taskTextInputRef}
+                        disableAddTaskPanel={this.disableAddTaskPanel}
+                        title="Goal"
+                    />
+
+                    <BottomOptionElement
+                        chooseOption={this.props.toggleAddTask}
+                        taskTextInputRef={this.taskTextInputRef}
+                        disableAddTaskPanel={this.disableAddTaskPanel}
+                        {... this.props}
+
+                        title_value={this.props.addTaskTitle}
+                        description_value={this.props.addTaskDescription}
+
+                        updateTitle={this.props.updateTitle}
+                        updateDescription={this.props.updateDescription}
+
+                        title="Ok"
+                    />
+                </View>
+
+            </Animated.View>
         )
     }
 }
+
+
 
 class TagElement extends React.PureComponent {
 
@@ -1015,7 +798,7 @@ class BottomOptionElement extends React.PureComponent {
                     category_data.quantity += 1
                 else
                     category_data.quantity = 1
-                    
+
                 let sending_obj = {
                     category_key,
                     category_data,

@@ -7,9 +7,11 @@ import {
     StyleSheet
 } from 'react-native';
 
+import { styles } from './styles/styles'
+
 export default class DayFlatlist extends React.Component {
 
-    month_data = []
+    day_data = []
 
     month = new Date().getMonth()
     year = new Date().getFullYear()
@@ -36,9 +38,9 @@ export default class DayFlatlist extends React.Component {
             should_update: prevState.should_update + 1,
         }))
 
-        let day = this.month_data[day_index].day,
-            month = this.month_data[day_index].month,
-            year = this.month_data[day_index].year
+        let day = this.day_data[day_index].day,
+            month = this.day_data[day_index].month,
+            year = this.day_data[day_index].year
 
         this.props.setChosenDateData({ day, month, year })
 
@@ -54,14 +56,6 @@ export default class DayFlatlist extends React.Component {
     _keyExtractor = (item, index) => `day-${index}`
 
     _renderItem = ({ item, index }) => {
-        if (item.month_text) {
-            return (
-                <MonthYearDisplay
-                    data={item}
-                />
-            )
-        }
-
         return (
             <DayHolder
                 data={item}
@@ -77,7 +71,7 @@ export default class DayFlatlist extends React.Component {
     }
 
     _getItemLayout = (data, index) => ({
-        length: 64,
+        length: 64, // each dayholder has a width of 64 (width = 50, marginHorizontal = 7)
         offset: index * 64,
         index
     })
@@ -86,62 +80,50 @@ export default class DayFlatlist extends React.Component {
         this._flatlistRef = r
     }
 
-    _onEndReached = () => {
-        this.month += 1
-
-        if (this.month > 11) {
-            this.month = 0
-            this.year += 1
-        }
-
-        this.initMonthData(this.month, this.year)
-
-        this.setState(prevState => ({
-            should_update: prevState.should_update + 1
-        }))
-    }
-
     _onScroll = (e) => {
         let index = Math.floor((e.nativeEvent.contentOffset.x) / 64 + 1)
         if (index < 0) {
             index = 0
         }
 
-        let string = `${this.month_text_arr[this.month_data[index].month]} - ${this.month_data[index].year}`
+        let string = `${this.month_text_arr[this.day_data[index].month]} - ${this.day_data[index].year}`
 
         this.props.updateHeaderText(string)
     }
 
 
-    initMonthData = (month, year) => {
-        let first_day_of_month = new Date(year, month, 1).getDate(),
-            last_day_of_month = new Date(year, month + 1, 0).getDate()
+    initializeDayData = () => {
+        let current_year = new Date().getFullYear(),
+            number_of_years_in_between = 4,
+            left_end_year = current_year - number_of_years_in_between,
+            right_end_year = current_year + number_of_years_in_between
 
-        this.month_data.push({
-            month_text: this.month_text_arr[month],
-            month,
-            year: year
-        })
+        for (let year = left_end_year; year <= right_end_year; year++) {
+            for (let month = 0; month < 12; month++) {
+                let first_day_of_month = 1,
+                    last_day_of_month = new Date(year, month + 1, 0).getDate()
 
-        for (let i = first_day_of_month; i <= last_day_of_month; i++) {
-            this.month_data.push({
-                day: i,
-                month: month,
-                year: year,
-                day_text: this.day_text_arr[new Date(year, month, i).getDay()]
-            })
+                for (let day = first_day_of_month; day <= last_day_of_month; day++) {
+                    this.day_data.push({
+                        day,
+                        month,
+                        year,
+                        day_text: this.day_text_arr[new Date(year, month, day).getDay()]
+                    })
+                }
+            }
         }
 
     }
 
     componentDidMount() {
-        this.initMonthData(this.month, this.year)
+        this.initializeDayData()
 
         let day = new Date().getDate(),
             month = new Date().getMonth(),
             year = new Date().getFullYear()
 
-        this.month_data.every((data, index) => {
+        this.day_data.every((data, index) => {
             if (data.day === day && data.month === month && data.year === year) {
                 this.start_index = index
 
@@ -169,7 +151,7 @@ export default class DayFlatlist extends React.Component {
         if (this.props.currentRoute !== prevProps.currentRoute) {
             if (this.props.currentRoute === "Day") {
 
-                let string = `${this.month_text_arr[this.month_data[this.state.current_day_index].month]} - ${this.month_data[this.state.current_day_index].year}`
+                let string = `${this.month_text_arr[this.day_data[this.state.current_day_index].month]} - ${this.day_data[this.state.current_day_index].year}`
 
                 this.props.updateHeaderText(string)
             }
@@ -184,14 +166,11 @@ export default class DayFlatlist extends React.Component {
                 }}
             >
                 <FlatList
-                    data={this.month_data}
+                    data={this.day_data}
                     extraData={this.state.should_update}
 
                     keyExtractor={this._keyExtractor}
                     renderItem={this._renderItem}
-
-                    onEndReachedThreshold={0.5}
-                    onEndReached={this._onEndReached}
 
                     horizontal={true}
 
@@ -202,6 +181,8 @@ export default class DayFlatlist extends React.Component {
 
                     onScroll={this._onScroll}
                     scrollEventThrottle={5}
+                    removeClippedSubviews={true}
+                    showsHorizontalScrollIndicator={false}
                 />
             </View>
         )
@@ -212,7 +193,8 @@ class DayHolder extends React.Component {
 
     state = {
         day_style: styles.not_chosen_day,
-        text_style: styles.not_chosen_text
+        text_style: styles.not_chosen_text,
+        day_text_style: styles.not_chosen_day_text
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -224,14 +206,16 @@ class DayHolder extends React.Component {
         if (nextProps.day_index === nextProps.current_day_index) {
             return ({
                 day_style: styles.chosen_day,
-                text_style: styles.chosen_text
+                text_style: styles.chosen_text,
+                day_text_style: styles.chosen_day_text
             })
         }
 
         else if (nextProps.day_index === nextProps.last_day_index) {
             return ({
                 day_style: styles.not_chosen_day,
-                text_style: styles.not_chosen_text
+                text_style: styles.not_chosen_text,
+                day_text_style: styles.not_chosen_day_text
             })
         }
 
@@ -250,14 +234,13 @@ class DayHolder extends React.Component {
                     justifyContent: "center",
                     alignItems: "center",
                     width: 50,
+                    backgroundColor: "white",
                 }}
 
                 onPress={this._onPress}
             >
                 <Text
-                    style={{
-                        color: "gainsboro"
-                    }}
+                    style={this.state.day_text_style}
                 >
                     {this.props.data.day_text}
                 </Text>
@@ -275,63 +258,3 @@ class DayHolder extends React.Component {
         )
     }
 }
-
-class MonthYearDisplay extends React.PureComponent {
-
-    render() {
-        return (
-            <View
-                style={{
-                    marginHorizontal: 7,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    width: 50,
-                }}
-            >
-                <Text
-                    style={{
-                    }}
-                >
-                    {this.props.data.month_text}
-                </Text>
-
-                <Text
-                    style={{
-                        marginTop: 5
-                    }}
-                >
-                    {this.props.data.year}
-                </Text>
-            </View>
-        )
-    }
-}
-
-const styles = StyleSheet.create({
-    not_chosen_day: {
-        marginTop: 5,
-        width: 30,
-        height: 30,
-        borderRadius: 15,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-
-    chosen_day: {
-        marginTop: 5,
-        width: 30,
-        height: 30,
-        borderRadius: 15,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "black"
-    },
-
-    not_chosen_text: {
-        color: "black"
-    },
-
-    chosen_text: {
-        color: "white"
-    }
-})

@@ -1,6 +1,6 @@
 import React from 'react';
 import MainNavigator from './components/main/Main' //Main screen
-import { Dimensions } from 'react-native'
+import { Dimensions, Animated, Easing } from 'react-native'
 import { createStackNavigator, createAppContainer, createDrawerNavigator } from 'react-navigation'
 import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
@@ -10,6 +10,10 @@ import rootReducer from './reducers'
 import Drawer from './components/drawer/Drawer.Container'
 import Header from './components/main/header/Header.Container'
 import * as FileSystem from 'expo-file-system';
+
+import PurchaseHistory from './components/main/header/reward-purchase-history-tab/PurchaseHistory.Container'
+
+import * as Font from 'expo-font'
 
 let categories = {},
   currentTask = {},
@@ -24,6 +28,7 @@ export default class App extends React.Component {
 
   state = {
     store: undefined,
+    finished_loading_fonts: false
   }
 
   loadCategoriesFromFile = async (filePath) => {
@@ -122,8 +127,22 @@ export default class App extends React.Component {
     })
   }
 
+  loadFonts = async () => {
+    let finished_loading = await Font.loadAsync({
+      'sf-ui-display-light': require('./assets/fonts/sf-ui-display/sf-ui-display-light.otf'),
+      'sf-ui-display-medium': require('./assets/fonts/sf-ui-display/sf-ui-display-medium.otf')
+    })
+
+    this.setState({
+      finished_loading_fonts: true
+    })
+  }
+
   componentDidMount() {
     // this.InitializeLoading().catch(err => console.log(err))
+
+    this.loadFonts()
+
     this.setState({
       store: createStore(rootReducer, applyMiddleware(batchDispatchMiddleware, thunk))
     })
@@ -133,13 +152,19 @@ export default class App extends React.Component {
     return (
       <>
         {
-          this.state.store ?
-            <Provider store={this.state.store}>
-              <AppContainer />
-            </Provider>
+          this.state.finished_loading_fonts ?
+            <>
+              {this.state.store ?
+                <Provider store={this.state.store}>
+                  <AppContainer />
+                </Provider>
 
+                :
+
+                null
+              }
+            </>
             :
-
             null
         }
       </>
@@ -150,13 +175,21 @@ export default class App extends React.Component {
 
 const ContentNavigator = createStackNavigator(
   { //Stack navigator works as a history object in a web browser, which helps popping out in pushing in screen to proceed navigations
-    Main: MainNavigator
+    Main: MainNavigator,
+    PurchaseHistory: { screen: PurchaseHistory }
   },
   {
     initialRouteName: "Main",
+    transitionConfig: () => ({
+      transitionSpec: {
+        duration: 0,
+        timing: Animated.timing,
+        easing: Easing.step0
+      }
+    }),
     defaultNavigationOptions: ({ navigation }) => ({
       header: <Header navigation={navigation} />
-    })
+    }),
   }
 )
 

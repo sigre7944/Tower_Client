@@ -4,6 +4,7 @@ import Daily from './layouts/Daily/Daily.Container'
 import Weekly from './layouts/Weekly/Weekly'
 import Monthly from './layouts/Monthly/Monthly'
 
+import CustomTabBarComponent from './custom-tab-bar-component/CustomTabBarComponent'
 
 const JournalTopNavigator = createMaterialTopTabNavigator({
     Day: {screen: Daily},
@@ -12,23 +13,28 @@ const JournalTopNavigator = createMaterialTopTabNavigator({
 },
 {
     initialRouteName: "Day",
-    tabBarOptions: {
-        upperCaseLabel: false,
-        labelStyle: {
-            color: 'black',
-            fontSize: 18
-        },
-        style: {
-            backgroundColor: 'white',
-            shadowColor: 'transparent'
-        },
-        tabStyle: {
-        },
-        indicatorStyle: {
-            top: 0,
-            backgroundColor: 'black',
-        }
-    },
+    // tabBarOptions: {
+    //     upperCaseLabel: false,
+    //     labelStyle: {
+    //         color: 'black',
+    //         fontSize: 18
+    //     },
+    //     style: {
+    //         backgroundColor: 'white',
+    //         shadowColor: 'transparent',
+    //     },
+    //     tabStyle: {
+    //     },
+    //     indicatorStyle: {
+    //         top: 0,
+    //         backgroundColor: '#54BAAC',
+    //         height: 3,
+    //         borderRadius: 30,
+    //         alignContent: "center",
+    //     },
+        
+    // },
+    tabBarComponent: CustomTabBarComponent
 })
 
 export default JournalTopNavigator;

@@ -1,16 +1,54 @@
 import React from 'react';
+
 import {
-    View,
-    Text,
+  View,
+  ScrollView,
+  StyleSheet,
+  Keyboard,
+  Animated,
+  KeyboardAvoidingView
 } from 'react-native';
 
-export default class Reward extends React.Component {
-    render() {
-      return (
+import TrackingSection from './components/tracking-section/TrackingSection.Container'
+import StoreSection from './components/store-section/StoreSection'
 
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-           <Text>Reward!</Text>
-        </View>
-      );
-    }
+export default class Reward extends React.Component {
+
+  componentDidMount() {
+    const didFocusScreen = this.props.navigation.addListener(
+      'didFocus',
+      payload => {
+        this.props.changeRouteAction(payload.state.routeName)
+      }
+    )
+
+    // const willFocusScreen = this.props.navigation.addListener(
+    //   'willFocus',
+    //   payload => {
+    //     this.props.changeRouteAction(payload.state.routeName)
+    //   }
+    // )
+  }
+
+  render() {
+    return (
+      <ScrollView
+        style={{
+          backgroundColor: "#F2F2F2",
+        }}
+      >
+        {/* Tracking section */}
+        <TrackingSection
+        />
+
+        {/* Store Section */}
+        <StoreSection
+        />
+      </ScrollView>
+    );
+  }
 }
+
+const styles = StyleSheet.create({
+
+})

@@ -1,6 +1,13 @@
-export const updateTask = (type, data) => ({
+// export const updateTask = (type, data) => ({
+//     type,
+//     data
+// })
+
+export const updateTask = (type, keyPath, notSetValue, updater) => ({
     type,
-    data
+    keyPath,
+    notSetValue,
+    updater
 })
 
 export const deleteTask = (type, id) => ({

@@ -2,7 +2,6 @@ import React from 'react';
 import {
     View,
     Image,
-    StyleSheet,
     Text,
     TouchableOpacity
 } from 'react-native';
@@ -10,12 +9,9 @@ import Modal from 'react-native-modalbox';
 import { DrawerActions } from 'react-navigation-drawer';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-const styles = StyleSheet.create({
-    icon: {
-        width: 36,
-        height: 36,
-    },
-});
+import {
+    styles
+} from './styles/styles'
 
 export default class Header extends React.Component {
 
@@ -26,6 +22,10 @@ export default class Header extends React.Component {
         journal_header_visible: false,
 
         progress_header_visible: false,
+
+        reward_header_visible: false,
+
+        purchase_history_visible: false,
     };
 
 
@@ -46,21 +46,45 @@ export default class Header extends React.Component {
             if (this.props.currentRoute === "Day" || this.props.currentRoute === "Week" || this.props.currentRoute === "Month") {
                 this.setState({
                     journal_header_visible: true,
-                    progress_header_visible: false
+                    progress_header_visible: false,
+                    reward_header_visible: false,
+                    purchase_history_visible: false,
                 })
             }
 
             else if (this.props.currentRoute === "Progress") {
                 this.setState({
                     journal_header_visible: false,
-                    progress_header_visible: true
+                    progress_header_visible: true,
+                    reward_header_visible: false,
+                    purchase_history_visible: false,
+                })
+            }
+
+            else if (this.props.currentRoute === "Reward") {
+                this.setState({
+                    journal_header_visible: false,
+                    progress_header_visible: false,
+                    reward_header_visible: true,
+                    purchase_history_visible: false,
+                })
+            }
+
+            else if (this.props.currentRoute === "PurchaseHistory") {
+                this.setState({
+                    journal_header_visible: false,
+                    progress_header_visible: false,
+                    reward_header_visible: false,
+                    purchase_history_visible: true,
                 })
             }
 
             else {
                 this.setState({
                     journal_header_visible: false,
-                    progress_header_visible: false
+                    progress_header_visible: false,
+                    reward_header_visible: false,
+                    purchase_history_visible: false,
                 })
             }
         }
@@ -85,7 +109,27 @@ export default class Header extends React.Component {
 
                             :
 
-                            null
+                            <>
+                                {this.state.reward_header_visible ?
+                                    <RewardHeader
+                                        navigation={this.props.navigation}
+                                    />
+
+                                    :
+
+                                    <>
+                                        {this.state.purchase_history_visible ?
+                                            <PurchaseHistoryHeader
+                                                navigation={this.props.navigation}
+                                            />
+
+                                            :
+
+                                            null
+                                        }
+                                    </>
+                                }
+                            </>
                         }
                     </>
                 }
@@ -134,54 +178,44 @@ class JournalHeader extends React.PureComponent {
 
     render() {
         return (
-            <View style={{
-                paddingTop: 20,
-                paddingHorizontal: 10,
-                height: 80,
-                flexDirection: "row",
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                backgroundColor: 'gray'
-            }}>
-                <TouchableOpacity onPress={this._openDrawer}>
-                    <Image
-                        source={require('./Hamburger_icon.png')}
-                        style={{
-                            width: 30,
-                            height: 30,
-                            tintColor: 'white'
-                        }}
-                    />
-                </TouchableOpacity>
-
-                <TouchableOpacity
+            <View style={styles.container}>
+                <View
                     style={{
-
+                        flexDirection: "row",
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
                     }}
-
-                    onPress={this._toggleReturn}
                 >
-                    <Text
-                        style={{
-                            color: 'white',
-                            fontSize: 20,
-                            fontWeight: '500',
-                        }}>
-                        {this.props.headerText}
-                    </Text>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.end_icon_container}
+                        onPress={this._openDrawer}
+                    >
+                        <FontAwesome
+                            name="bars"
+                            size={20}
+                            color={"#BDBDBD"}
+                        />
+                    </TouchableOpacity>
 
+                    <TouchableOpacity
+                        onPress={this._toggleReturn}
+                    >
+                        <Text
+                            style={styles.middle_text_style}>
+                            {this.props.headerText}
+                        </Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity onPress={this._openEditModal}>
-                    <Image
-                        source={require('./dots.png')}
-                        style={{
-                            width: 36,
-                            height: 36,
-                            tintColor: 'white'
-                        }}
-                    />
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.end_icon_container}
+                    >
+                        <FontAwesome
+                            name={"ellipsis-v"}
+                            size={20}
+                            color={"#BDBDBD"}
+                        />
+                    </TouchableOpacity>
+                </View>
             </View>
         )
     }
@@ -206,6 +240,95 @@ class ProgressHeader extends React.PureComponent {
                 </Text>
 
                 <TouchableOpacity onPress={this._openEditModal}>
+                    <Image
+                        source={require('./dots.png')}
+                        style={{
+                            width: 36,
+                            height: 36,
+                            tintColor: 'white'
+                        }}
+                    />
+                </TouchableOpacity>
+            </View>
+        )
+    }
+}
+
+class RewardHeader extends React.PureComponent {
+    openPurchaseHistoryTab = () => {
+        this.props.navigation.navigate('PurchaseHistory')
+    }
+
+    render() {
+        return (
+            <View
+                style={{
+                    paddingTop: 20,
+                    paddingHorizontal: 10,
+                    height: 80,
+                    flexDirection: "row",
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    backgroundColor: 'gray'
+                }}
+            >
+                <View></View>
+
+                <Text>
+                    Reward
+                </Text>
+
+                <TouchableOpacity onPress={this.openPurchaseHistoryTab}>
+                    <Image
+                        source={require('./dots.png')}
+                        style={{
+                            width: 36,
+                            height: 36,
+                            tintColor: 'white'
+                        }}
+                    />
+                </TouchableOpacity>
+            </View>
+        )
+    }
+}
+
+class PurchaseHistoryHeader extends React.PureComponent {
+    gobackToRewardTab = () => {
+        this.props.navigation.navigate('Reward')
+    }
+
+    render() {
+        return (
+            <View
+                style={{
+                    paddingTop: 20,
+                    paddingHorizontal: 10,
+                    height: 80,
+                    flexDirection: "row",
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    backgroundColor: 'gray'
+                }}
+            >
+                <TouchableOpacity
+                    onPress={this.gobackToRewardTab}
+                >
+                    <Image
+                        source={require('./dots.png')}
+                        style={{
+                            width: 36,
+                            height: 36,
+                            tintColor: 'white'
+                        }}
+                    />
+                </TouchableOpacity>
+
+                <Text>
+                    Purchase History
+                </Text>
+
+                <TouchableOpacity>
                     <Image
                         source={require('./dots.png')}
                         style={{

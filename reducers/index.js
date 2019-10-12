@@ -41,6 +41,13 @@ import {
     year_chart_stats
 } from './chartStatsReducer'
 
+import {
+    rewards,
+    balance,
+    main_reward,
+    purchase_history
+} from './rewardReducer'
+
 const rootReducer = combineReducers({
     currentRoute,
     currentWeekInMonth,
@@ -72,7 +79,12 @@ const rootReducer = combineReducers({
 
     month_chart_stats,
     week_chart_stats,
-    year_chart_stats
+    year_chart_stats,
+
+    rewards,
+    balance,
+    main_reward,
+    purchase_history
 })
 
 export default rootReducer

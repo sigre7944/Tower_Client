@@ -2,7 +2,6 @@ import { connect } from 'react-redux'
 import {
     updateTitle,
     updateDescription,
-    updateType
 } from '../../../../../shared/actions/otherAction'
 import { addTaskThunk } from './actions/addTaskThunk'
 
@@ -29,10 +28,6 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 
     updateDescription: (data) => {
         dispatch(updateDescription(data))
-    },
-
-    updateType: (type, data) => {
-        dispatch(updateType(type, data))
     },
 
     addTaskThunk: (data) => { dispatch(addTaskThunk(data)) }

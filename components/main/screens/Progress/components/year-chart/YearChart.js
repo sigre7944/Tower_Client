@@ -49,7 +49,7 @@ export default class MonthChart extends React.PureComponent {
             let data = Map(year_chart_stats_map.get(year_timestamp))
 
             for (let i = 0; i < 11; i++) {
-                if (data.has(i)) {
+                if (data.has(i.toString())) {
                     let current = List(data.getIn([i.toString(), "current"]))
                     chart_data[i] = {
                         pri_04: current.get(3),
