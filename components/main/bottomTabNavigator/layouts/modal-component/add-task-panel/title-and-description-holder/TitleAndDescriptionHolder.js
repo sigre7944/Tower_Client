@@ -12,6 +12,7 @@ import {
     ScrollView
 } from 'react-native';
 
+import { styles } from './styles/styles'
 
 export default class TitleAndDescriptionHolder extends React.PureComponent {
 
@@ -25,6 +26,19 @@ export default class TitleAndDescriptionHolder extends React.PureComponent {
                     title_value={this.props.addTaskTitle}
                     updateTitle={this.props.updateTitle}
                 />
+
+                {/* <View
+                    style={{
+                        flex: 1,
+                        height: 1,
+                        borderWidth: 0.5,
+                        backgroundColor: "rgba(0, 0, 0, 0.15)",
+                        marginVertical: 15,
+                        marginHorizontal: 20,
+                    }}
+                >
+
+                </View> */}
 
                 <TaskDescriptionElement
                     currentAnnotation={this.props.currentAnnotation}
@@ -59,25 +73,16 @@ class TaskTitleElement extends React.PureComponent {
             <View style={{
                 height: 52,
                 marginHorizontal: 20,
-                marginTop: 10,
+                marginTop: 13,
             }}>
                 <Text
-                    style={{
-                        fontSize: 12,
-                        color: 'gainsboro',
-                    }}
+                    style={styles.title_description_text}
                 >
                     Task Title
                 </Text>
                 <TextInput
                     ref={this.setTaskTextInputRef}
-                    style={{
-                        flex: 1,
-                        fontSize: 16,
-                        borderBottomColor: 'gainsboro',
-                        borderBottomWidth: 1,
-
-                    }}
+                    style={styles.title_description_text_input}
                     placeholder="Add a task here"
                     autoCorrect={false}
                     value={this.props.title_value}
@@ -90,7 +95,7 @@ class TaskTitleElement extends React.PureComponent {
 }
 
 class TaskDescriptionElement extends React.PureComponent {
-    
+
     _onChange = (e) => {
         this.props.updateDescription(e.nativeEvent.text)
     }
@@ -99,22 +104,16 @@ class TaskDescriptionElement extends React.PureComponent {
         return (
             <View style={{
                 height: 52,
-                margin: 20,
+                marginHorizontal: 20,
+                marginTop: 15,
             }}>
-                <Text style={{
-                    fontSize: 12,
-                    color: 'gainsboro',
-                }}>
+                <Text
+                    style={styles.title_description_text}
+                >
                     Task Description
                 </Text>
                 <TextInput
-                    style={{
-                        flex: 1,
-                        fontSize: 16,
-                        borderBottomColor: 'gainsboro',
-                        borderBottomWidth: 1,
-                    }}
-
+                    style={styles.title_description_text_input}
                     placeholder="Add task description"
                     autoCorrect={false}
                     value={this.props.description_value}

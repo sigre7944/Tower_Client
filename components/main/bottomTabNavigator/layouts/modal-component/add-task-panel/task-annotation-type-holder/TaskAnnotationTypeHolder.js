@@ -25,6 +25,7 @@ export default class TaskAnnotationTypeHolder extends React.PureComponent {
                     alignItems: "center",
                     marginTop: 30,
                     marginHorizontal: 24,
+                    marginBottom: 11,
                 }}
             >
                 <AnnotationButton

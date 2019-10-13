@@ -14,6 +14,11 @@ import {
 
 import TaskAnnotationTypeHolder from './task-annotation-type-holder/TaskAnnotationTypeHolder.Container'
 import TitleAndDescriptionHolder from './title-and-description-holder/TitleAndDescriptionHolder.Container'
+
+import TagDataHolder from './tag-data-holder/TagDataHolder'
+
+import BottomOptionsHolder from "./bottom-options-holder/BottomOptionsHolder.Container"
+
 import { Map } from 'immutable'
 
 import { styles } from './styles/styles'
@@ -86,9 +91,10 @@ export default class AddTaskPanel extends Component {
         return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
     }
 
-    addTagDataToRender = (type, { startTime, schedule, repeat, end, category, priority, goal }) => {
+    addTagDataToRender = (type, currentTask) => {
         let tag_data = [],
-            categories_map = Map(this.props.categories)
+            categories_map = Map(this.props.categories),
+            currentTask_map = Map(currentTask)
 
         if (type === "day") {
             if (schedule && startTime) {
@@ -408,18 +414,7 @@ export default class AddTaskPanel extends Component {
     }
 
     componentDidMount() {
-        // Load the current annotation from redux store
-        if (this.props.currentAnnotation === "day") {
-            this.addTagDataToRender("day", this.props.currentDayTask)
-        }
-
-        else if (this.props.currentAnnotation === "week") {
-            this.addTagDataToRender("week", this.props.currentDayTask)
-        }
-
-        else if (this.props.currentAnnotation === "month") {
-            this.addTagDataToRender("month", this.props.currentDayTask)
-        }
+        // this.addTagDataToRender(this.props.currentAnnotation, this.props.currentTask)
 
         this.keyboardWillShowListener = Keyboard.addListener(
             'keyboardWillShow',
@@ -429,38 +424,28 @@ export default class AddTaskPanel extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.props.currentAnnotation !== prevProps.currentAnnotation) {
-            if (this.props.currentAnnotation === "day") {
-                this.addTagDataToRender("day", this.props.currentDayTask)
-            }
-
-            else if (this.props.currentAnnotation === "week") {
-                this.addTagDataToRender("week", this.props.currentWeekTask)
-            }
-
-            if (this.props.currentAnnotation === "month") {
-                this.addTagDataToRender("month", this.props.currentMonthTask)
-            }
+            // this.addTagDataToRender(this.props.currentAnnotation, this.props.currentTask)
         }
 
-        else {
-            if (this.props.currentAnnotation === "day") {
-                if (this.props.currentDayTask !== prevProps.currentDayTask) {
-                    this.addTagDataToRender("day", this.props.currentDayTask)
-                }
-            }
+        // else {
+        //     if (this.props.currentAnnotation === "day") {
+        //         if (this.props.currentDayTask !== prevProps.currentDayTask) {
+        //             this.addTagDataToRender("day", this.props.currentDayTask)
+        //         }
+        //     }
 
-            else if (this.props.currentAnnotation === "week") {
-                if (this.props.currentWeekTask !== prevProps.currentWeekTask) {
-                    this.addTagDataToRender("week", this.props.currentWeekTask)
-                }
-            }
+        //     else if (this.props.currentAnnotation === "week") {
+        //         if (this.props.currentWeekTask !== prevProps.currentWeekTask) {
+        //             this.addTagDataToRender("week", this.props.currentWeekTask)
+        //         }
+        //     }
 
-            if (this.props.currentAnnotation === "month") {
-                if (this.props.currentMonthTask !== prevProps.currentMonthTask) {
-                    this.addTagDataToRender("month", this.props.currentMonthTask)
-                }
-            }
-        }
+        //     if (this.props.currentAnnotation === "month") {
+        //         if (this.props.currentMonthTask !== prevProps.currentMonthTask) {
+        //             this.addTagDataToRender("month", this.props.currentMonthTask)
+        //         }
+        //     }
+        // }
     }
 
     componentWillUnmount() {
@@ -507,7 +492,7 @@ export default class AddTaskPanel extends Component {
                         setTaskTextInputRef={this.setTaskTextInputRef}
                     />
 
-                    <View
+                    {/* <View
                         style={{
                             flex: 2,
                         }}
@@ -523,17 +508,37 @@ export default class AddTaskPanel extends Component {
                             {this.state.tag_data}
                         </View>
 
-                    </View>
+                    </View> */}
+
+                    <TagDataHolder
+                        type={this.props.currentAnnotation}
+                        currentTask={this.props.currentTask}
+                        categories={this.props.categories}
+                        priorities={this.props.priorities}
+                    />
 
                 </ScrollView>
 
-                <View style={{
+                <BottomOptionsHolder
+                    chooseCalenderOption={this.props.chooseCalenderOption}
+                    chosenCategoryOption={this.props.chosenCategoryOption}
+                    choosePriorityOption={this.props.choosePriorityOption}
+                    chooseGoalOption={this.props.chooseGoalOption}
+                    toggleAddTask={this.props.toggleAddTask}
+                    disableAddTaskPanel={this.disableAddTaskPanel}
+                />
+
+                {/* <View style={{
                     height: 57,
                     width: Dimensions.get("window").width,
-                    borderTopWidth: 1,
-                    borderTopColor: "black",
-                    backgroundColor: "gainsboro",
-                    flexDirection: 'row'
+                    backgroundColor: "white",
+                    flexDirection: 'row',
+                    shadowOffset: {
+                        width: 10,
+                        height: 40,
+                    },
+                    shadowRadius: 7,
+                    shadowColor: "black",
                 }}>
 
                     <BottomOptionElement
@@ -578,7 +583,7 @@ export default class AddTaskPanel extends Component {
 
                         title="Ok"
                     />
-                </View>
+                </View> */}
 
             </Animated.View>
         )

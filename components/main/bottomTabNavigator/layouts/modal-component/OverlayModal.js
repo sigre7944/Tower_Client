@@ -411,12 +411,10 @@ export default class OverlayModal extends Component {
                 goal_data: {
                     keyPath: ["goal"],
                     notSetValue: fromJS({
-                        max: 1,
-                        current: 0
+                        max: 1
                     }),
                     updater: (value) => fromJS({
-                        max: 1,
-                        current: 0
+                        max: 1
                     })
                 },
             }

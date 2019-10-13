@@ -2,10 +2,10 @@ import { connect } from 'react-redux'
 import {
     updateTitle,
     updateDescription,
-} from '../../../../../shared/actions/otherAction'
+} from '../../../../../../shared/actions/otherAction'
 import { addTaskThunk } from './actions/addTaskThunk'
 
-import AddTaskPanel from './AddTaskPanel'
+import BottomOptionsHolder from './BottomOptionsHolder'
 
 
 const mapStateToProps = (state, ownProps) => {
@@ -61,4 +61,4 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(AddTaskPanel)
+)(BottomOptionsHolder)
