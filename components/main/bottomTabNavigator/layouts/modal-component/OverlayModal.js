@@ -7,7 +7,7 @@ import {
     Dimensions
 } from 'react-native';
 
-import AddTaskPanel from './add-task-panel/AddTaskPanel.Container'
+import AddTaskPanel from './add-task-panel/AddTaskPanel'
 import Calendar from './calendar/Calendar'
 
 import Category from '../../../../shared/category/Category.Container'
