@@ -68,8 +68,7 @@ export default class BottomTabNavigator extends React.Component {
                             />
 
                             :
-
-                            <></>
+                            null
                     }
 
                     {this.state.should_AddTaskButton_be_displayed ?

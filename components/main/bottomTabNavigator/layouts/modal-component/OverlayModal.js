@@ -442,7 +442,6 @@ export default class OverlayModal extends Component {
                         toggleAddTask={this.props.toggleAddTask}
                         disableAllTabs={this.disableAllTabs}
                         addTaskMenuChosen={this.state.addTaskMenuChosen}
-
                     />
 
                     {
@@ -465,8 +464,6 @@ export default class OverlayModal extends Component {
                                 {this.state.calendarChosen ?
                                     <Calendar
                                         currentAnnotation={this.state.currentAnnotation}
-                                        calendarChosen={this.state.calendarChosen}
-
                                         disableAllTabs={this.disableAllTabs}
                                     />
 

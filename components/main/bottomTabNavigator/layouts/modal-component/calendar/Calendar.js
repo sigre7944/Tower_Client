@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 
 import {
     View,
@@ -24,7 +24,7 @@ export default class Calendar extends Component {
 
     render() {
         return (
-            <Fragment>
+            <>
                 {this.state.repeatChosen ?
                     <Repeat
                         currentAnnotation={this.props.currentAnnotation}
@@ -40,7 +40,7 @@ export default class Calendar extends Component {
                                 style={{
                                     position: 'absolute',
                                     width: 338,
-                                    height: 446,
+                                    height: 679,
                                     backgroundColor: 'white',
                                     borderRadius: 10,
                                 }}
@@ -93,8 +93,7 @@ export default class Calendar extends Component {
                         }
                     </>
                 }
-
-            </Fragment>
+            </>
         )
     }
 }
