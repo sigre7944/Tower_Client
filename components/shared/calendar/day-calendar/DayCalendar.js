@@ -12,6 +12,9 @@ import { Map } from 'immutable'
 import { styles } from './styles/styles'
 
 const panel_width = 338
+const margin_top_for_calendar_row = 20
+const margin_top_for_month_year_text = 30
+const calendar_total_height = margin_top_for_calendar_row * 6 + 32 * 6
 
 export default class DayCalendar extends React.Component {
     year_in_between = 4
@@ -161,11 +164,10 @@ export default class DayCalendar extends React.Component {
         return (
             <View
                 style={{
-                    flex: 1,
                     backgroundColor: "white",
                     borderTopRightRadius: 10,
                     borderTopLeftRadius: 10,
-                    position: "relative"
+                    position: "relative",
                 }}
             >
                 <View>
@@ -182,12 +184,14 @@ export default class DayCalendar extends React.Component {
                         getItemLayout={this._getItemLayout}
                         initialScrollIndex={this.start_index}
                         ref={this._setRef}
+                        initialNumToRender={5}
+                        windowSize={5}
                     />
                 </View>
                 <View
                     style={{
                         position: "absolute",
-                        top: 35 + 21 + 25,
+                        top: margin_top_for_month_year_text + 21 + margin_top_for_calendar_row,
                         flexDirection: "row",
                         alignItems: "center",
                         left: 5,
@@ -213,7 +217,7 @@ class MonthHolder extends React.Component {
     days_in_month_data = []
 
     state = {
-        should_flatlist_update: 0
+        should_flatlist_update: 0,
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -293,7 +297,7 @@ class MonthHolder extends React.Component {
         }
 
         this.setState(prevState => ({
-            should_flatlist_update: !prevState.should_flatlist_update + 1
+            should_flatlist_update: !prevState.should_flatlist_update + 1,
         }))
     }
 
@@ -301,14 +305,13 @@ class MonthHolder extends React.Component {
         return (
             <View
                 style={{
-                    flex: 1,
                     width: panel_width,
                     alignItems: "center",
                 }}
             >
                 <TouchableOpacity
                     style={{
-                        marginTop: 35,
+                        marginTop: margin_top_for_month_year_text,
                         flexDirection: "row",
                         alignItems: "center",
                     }}
@@ -330,7 +333,8 @@ class MonthHolder extends React.Component {
 
                 <View
                     style={{
-                        marginTop: 25 + 32,
+                        marginTop: margin_top_for_calendar_row + 32,
+                        height: calendar_total_height,
                     }}
                 >
                     <FlatList
@@ -340,13 +344,12 @@ class MonthHolder extends React.Component {
 
                         columnWrapperStyle={{
                             width: panel_width - 10,
-                            marginTop: 25,
+                            marginTop: margin_top_for_calendar_row,
                         }}
+
                         keyExtractor={this._keyExtractor}
                         renderItem={this._renderItem}
                         scrollEnabled={false}
-
-                        removeClippedSubviews={true}
                     />
                 </View>
             </View>

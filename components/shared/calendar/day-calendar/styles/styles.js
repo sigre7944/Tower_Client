@@ -46,8 +46,6 @@ export const styles = StyleSheet.create({
         alignItems: "center",
     },
 
-
-
     cannot_choose_day_text: {
         fontFamily: CommonStyle.sf_ui_display_light_font,
         fontSize: 15,
@@ -90,19 +88,4 @@ export const styles = StyleSheet.create({
         letterSpacing: -0.02,
         color: CommonStyle.primary_color
     },
-
-    notChosen: {
-        height: 40,
-        width: 338 / 7,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-
-    chosen: {
-        height: 40,
-        width: 338 / 7,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "pink"
-    }
 })

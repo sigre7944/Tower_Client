@@ -8,7 +8,13 @@ import {
 } from 'react-native';
 
 import DayCalendar from '../../../../../../shared/calendar/day-calendar/DayCalendar.Container'
-// Need to optimize DayAnnotationPanel component and its child components
+
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { faRedoAlt } from '@fortawesome/free-solid-svg-icons'
+
+import { styles } from './styles/styles'
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
 export default class DayAnnotationPanel extends Component {
     chosen_day = -1
     chosen_month = -1
@@ -70,31 +76,50 @@ export default class DayAnnotationPanel extends Component {
 
     render() {
         return (
-            <>
-
+            <View
+                style={{
+                    position: "relative"
+                }}
+            >
                 {/* Main content of day calendar */}
                 <DayCalendar
                     edit={false}
                     setData={this.setData}
                     toggle_clear={this.state.toggle_clear}
                 />
-                <TouchableHighlight
+
+                {/* <View
+                    style={styles.separating_line}
+                >
+                </View> */}
+
+                <TouchableOpacity
                     style={{
-                        height: 40,
-                        backgroundColor: "white",
-                        justifyContent: "center",
-                        borderTopWidth: 1,
-                        borderTopColor: 'gainsboro',
+                        height: 50,
+                        marginLeft: 15,
+                        flexDirection: "row",
+                        alignItems: "center"
                     }}
 
                     onPress={this._chooseRepeatOption}
                     underlayColor="gainsboro"
                 >
-                    <Text>
-                        Add repeat
-                </Text>
-                </TouchableHighlight>
-                <View
+                    <>
+                        <FontAwesomeIcon
+                            icon={faRedoAlt}
+                            color="rgba(0, 0, 0, 0.3)"
+                        />
+
+                        <Text
+                            style={{
+                                marginLeft: 20
+                            }}
+                        >
+                            Add repeat
+                        </Text>
+                    </>
+                </TouchableOpacity>
+                {/* <View
                     style={{
                         height: 60,
                         marginBottom: 10,
@@ -169,8 +194,8 @@ export default class DayAnnotationPanel extends Component {
                             OK
                     </Text>
                     </TouchableHighlight>
-                </View>
-            </>
+                </View> */}
+            </View>
         )
     }
 }
