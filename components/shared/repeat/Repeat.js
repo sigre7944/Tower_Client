@@ -4,6 +4,7 @@ import {
     View,
     Text,
     TouchableHighlight,
+    TouchableOpacity,
     StyleSheet,
     TextInput,
     DatePickerIOS,
@@ -26,6 +27,7 @@ export default class Repeat extends Component {
 
     repetion_data = {}
     end_data = {}
+    goal_data = {}
 
     state = {
         translateYValue: new Animated.Value(0),
@@ -113,7 +115,8 @@ export default class Repeat extends Component {
             this.state.translateYValue,
             {
                 toValue: -100,
-                duration: 200
+                duration: 200,
+                useNativeDriver: true,
             }
         ).start()
     }
@@ -123,7 +126,8 @@ export default class Repeat extends Component {
             this.state.translateYValue,
             {
                 toValue: 0,
-                duration: 200
+                duration: 200,
+                useNativeDriver: true,
             }
         ).start()
     }

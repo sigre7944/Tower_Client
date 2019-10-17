@@ -1,5 +1,4 @@
 import { connect } from 'react-redux'
-import { updateTask } from '../../../../../../shared/actions/taskAction'
 import { updateTaskSchedule } from './actions/updateThunk'
 import DayAnnotationPanel from './DayAnnotationPanel'
 
