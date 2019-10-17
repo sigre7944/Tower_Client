@@ -11,12 +11,18 @@ import {
     Modal,
     Picker,
     TouchableWithoutFeedback,
-    Animated
+    Animated,
+    Easing
 } from 'react-native';
 
 const shortMonthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
+const animation_duration = 250
+const easing = Easing.inOut(Easing.linear)
 
 export default class Repeat extends Component {
+
+    repeat_opacity_value = new Animated.Value(0.3)
+    repeat_scale_value = new Animated.Value(0.3)
 
     repetion_data = {}
     end_data = {}
@@ -34,6 +40,29 @@ export default class Repeat extends Component {
         weekly_repeat_picker_value: "weeks",
 
         toggle_clear: false
+    }
+
+    animateRepeat = () => {
+        Animated.parallel([
+            Animated.timing(
+                this.repeat_opacity_value,
+                {
+                    toValue: 1,
+                    duration: animation_duration,
+                    easing,
+                    useNativeDriver: true
+                }
+            ),
+            Animated.timing(
+                this.repeat_scale_value,
+                {
+                    toValue: 1,
+                    duration: animation_duration,
+                    easing,
+                    useNativeDriver: true
+                }
+            )
+        ]).start()
     }
 
     setWeeklyRepeatPickerValue = (value) => {
@@ -132,6 +161,10 @@ export default class Repeat extends Component {
         this.props.hideAction()
     }
 
+    componentDidMount() {
+        this.animateRepeat()
+    }
+
     componentWillUnmount() {
         Keyboard.removeListener('keyboardWillShow', this.toDoWhenWillShowKeyboard)
         Keyboard.removeListener('keyboardWillHide', this.toDoWhenWillHideKB)
@@ -147,11 +180,11 @@ export default class Repeat extends Component {
                         position: 'absolute',
                         width: 338,
                         height: 484,
-                        transform: [{ translateY: this.state.translateYValue }],
+                        transform: [{ translateY: this.state.translateYValue }, { scale: this.repeat_scale_value }],
                         backgroundColor: 'white',
                         borderRadius: 10,
+                        opacity: this.repeat_opacity_value
                     }}
-                    enabled
                 >
                     <RepeatTitle />
 

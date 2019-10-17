@@ -153,8 +153,6 @@ let date = new Date(),
     timestamp = date.getTime()
 
 let initial_currentMonthTask = fromJS({
-    startTime: timestamp,
-    trackingTime: timestamp,
     schedule: {
         month: date.getMonth(),
         year: date.getFullYear()
@@ -178,8 +176,6 @@ let initial_currentMonthTask = fromJS({
     }
 }),
     initial_currentWeekTask = fromJS({
-        startTime: timestamp,
-        trackingTime: timestamp,
         schedule: {
             day: getMonday(date).getDate(),
             week: getWeek(date),
@@ -207,8 +203,6 @@ let initial_currentMonthTask = fromJS({
     }),
 
     initial_currentDayTask = fromJS({
-        startTime: timestamp,
-        trackingTime: timestamp,
         schedule: {
             day: date.getDate(),
             month: date.getMonth(),

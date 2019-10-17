@@ -4,34 +4,45 @@ import {
     View,
     Text,
     FlatList,
-    TouchableHighlight
+    Animated,
+    Easing,
 } from 'react-native';
 
 import DayCalendar from '../../../../../../shared/calendar/day-calendar/DayCalendar.Container'
 
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faRedoAlt } from '@fortawesome/free-solid-svg-icons'
+import {
+    faRedoAlt,
+    faTimes,
+    faCheck
+} from '@fortawesome/free-solid-svg-icons'
 
 import { styles } from './styles/styles'
 import { TouchableOpacity } from 'react-native-gesture-handler';
+
+const panel_width = 338
+const day_calendar_height = 572
+const animation_duration = 250
+const easing = Easing.inOut(Easing.linear)
 
 export default class DayAnnotationPanel extends Component {
     chosen_day = -1
     chosen_month = -1
     chosen_year = -1
 
-    state = {
-        toggle_clear: false
-    }
+    calendar_scale_value = new Animated.Value(0.3)
+    calendar_opacity_value = new Animated.Value(0.3)
 
     _chooseRepeatOption = () => {
         this.props.chooseRepeatOption()
     }
 
     save = () => {
+        let date = new Date()
+
         if (this.chosen_day > 0 && this.chosen_month > 0 && this.chosen_year > 0) {
-            if (this.chosen_day < new Date().getDate() && this.chosen_month === new Date().getMonth() && this.chosen_year === new Date().getFullYear())
-                this._updateTask(new Date().getDate(), this.chosen_month, this.chosen_year)
+            if (this.chosen_day < date.getDate() && this.chosen_month === date.getMonth() && this.chosen_year === date.getFullYear())
+                this._updateTask(date.getDate(), this.chosen_month, this.chosen_year)
 
             else
                 this._updateTask(this.chosen_day, this.chosen_month, this.chosen_year)
@@ -44,15 +55,6 @@ export default class DayAnnotationPanel extends Component {
         this.props.disableAllTabs()
     }
 
-    clear = () => {
-        this.setState(prevState => ({
-            toggle_clear: !prevState.toggle_clear
-        }))
-
-        let date = new Date()
-        this.setData(date.getDate(), date.getMonth(), date.getFullYear())
-    }
-
     setData = (day, month, year) => {
         this.chosen_day = day
         this.chosen_month = month
@@ -60,142 +62,128 @@ export default class DayAnnotationPanel extends Component {
     }
 
     _updateTask = (day, month, year) => {
-        let startTime = trackingTime = new Date(new Date(new Date((new Date().setMonth(month))).setDate(day)).setFullYear(year)).getTime()
-
-        this.props.updateTask({
-            startTime,
-            trackingTime,
-            schedule: {
-                day,
-                month,
-                year,
-            }
+        this.props.updateTaskSchedule({
+            type: "UPDATE_NEW_DAY_TASK",
+            day,
+            month,
+            year,
         })
+    }
+
+    animateCalendar = () => {
+        Animated.parallel([
+            Animated.timing(
+                this.calendar_opacity_value,
+                {
+                    toValue: 1,
+                    duration: animation_duration,
+                    easing,
+                    useNativeDriver: true
+                }
+            ),
+            Animated.timing(
+                this.calendar_scale_value,
+                {
+                    toValue: 1,
+                    duration: animation_duration,
+                    easing,
+                    useNativeDriver: true
+                }
+            )
+        ]).start()
+    }
+
+    componentDidMount() {
+        this.animateCalendar()
     }
 
 
     render() {
         return (
-            <View
+            <Animated.View
                 style={{
-                    position: "relative"
+                    position: 'absolute',
+                    width: panel_width,
+                    height: day_calendar_height,
+                    backgroundColor: 'white',
+                    borderRadius: 10,
+                    flexDirection: "row",
+                    overflow: "hidden",
+                    transform: [{ scale: this.calendar_scale_value }],
+                    opacity: this.calendar_opacity_value
                 }}
             >
-                {/* Main content of day calendar */}
-                <DayCalendar
-                    edit={false}
-                    setData={this.setData}
-                    toggle_clear={this.state.toggle_clear}
-                />
+                <View>
+                    {/* Main content of day calendar */}
+                    <DayCalendar
+                        edit={false}
+                        setData={this.setData}
+                    />
 
-                {/* <View
-                    style={styles.separating_line}
-                >
-                </View> */}
-
-                <TouchableOpacity
-                    style={{
-                        height: 50,
-                        marginLeft: 15,
-                        flexDirection: "row",
-                        alignItems: "center"
-                    }}
-
-                    onPress={this._chooseRepeatOption}
-                    underlayColor="gainsboro"
-                >
-                    <>
-                        <FontAwesomeIcon
-                            icon={faRedoAlt}
-                            color="rgba(0, 0, 0, 0.3)"
-                        />
-
-                        <Text
-                            style={{
-                                marginLeft: 20
-                            }}
-                        >
-                            Add repeat
-                        </Text>
-                    </>
-                </TouchableOpacity>
-                {/* <View
-                    style={{
-                        height: 60,
-                        marginBottom: 10,
-                        backgroundColor: 'white',
-                        flexDirection: "row",
-                        justifyContent: "flex-end",
-                        alignItems: 'center'
-                    }}
-                >
-                    <TouchableHighlight
-                        style={{
-                            alignItems: "center",
-                            justifyContent: "center",
-                            height: 50,
-                            width: 50,
-                            borderRadius: 25,
-                            backgroundColor: 'gray',
-                            marginRight: 20
-                        }}
-
-                        onPress={this.clear}
+                    <View
+                        style={styles.separating_line}
                     >
-                        <Text
-                            style={{
-                                color: "white"
-                            }}
-                        >
-                            Clear
-                        </Text>
-                    </TouchableHighlight>
+                    </View>
 
-                    <TouchableHighlight
+                    <View
                         style={{
-                            alignItems: "center",
-                            justifyContent: "center",
-                            height: 50,
-                            width: 50,
-                            borderRadius: 25,
-                            backgroundColor: 'gray',
-                            marginRight: 20
+                            marginHorizontal: 15,
+                            marginTop: 15,
                         }}
-
-                        onPress={this.cancel}
                     >
-                        <Text
+                        <TouchableOpacity
                             style={{
-                                color: "white"
+                                flexDirection: "row",
+                                alignItems: "center",
                             }}
-                        >
-                            X
-                    </Text>
-                    </TouchableHighlight>
 
-                    <TouchableHighlight
+                            onPress={this._chooseRepeatOption}
+                        >
+                            <>
+                                <FontAwesomeIcon
+                                    icon={faRedoAlt}
+                                    color="rgba(0, 0, 0, 0.3)"
+                                />
+
+                                <Text
+                                    style={styles.option_text}
+                                >
+                                    Add repeat
+                            </Text>
+                            </>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View
                         style={{
-                            alignItems: "center",
-                            justifyContent: "center",
-                            height: 50,
-                            width: 50,
-                            borderRadius: 25,
-                            backgroundColor: 'gray',
-                            marginRight: 10
+                            marginTop: 28,
+                            marginHorizontal: 30,
+                            flexDirection: "row",
+                            justifyContent: "flex-end",
                         }}
-
-                        onPress={this.save}
                     >
-                        <Text
-                            style={{
-                                color: "white"
-                            }}
+                        <TouchableOpacity
+                            style={styles.close_icon_holder}
+                            onPress={this.cancel}
                         >
-                            OK
-                    </Text>
-                    </TouchableHighlight>
-                </View> */}
-            </View>
+                            <FontAwesomeIcon
+                                icon={faTimes}
+                                color="white"
+                            />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.save_icon_holder}
+                            onPress={this.save}
+                        >
+                            <FontAwesomeIcon
+                                icon={faCheck}
+                                color="white"
+                            />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Animated.View>
         )
     }
 }

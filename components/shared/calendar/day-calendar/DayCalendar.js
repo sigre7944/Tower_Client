@@ -18,6 +18,7 @@ const calendar_total_height = margin_top_for_calendar_row * 6 + 32 * 6
 
 export default class DayCalendar extends React.Component {
     year_in_between = 4
+    current_day = new Date().getDate()
     current_year = new Date().getFullYear()
     current_month = new Date().getMonth()
     left_end_year = this.current_year - this.year_in_between
@@ -81,6 +82,10 @@ export default class DayCalendar extends React.Component {
 
             findMonthIndex={this.findMonthIndex}
             findDayIndex={this.findDayIndex}
+
+            current_day={this.current_day}
+            current_month={this.current_month}
+            current_year={this.current_year}
         />
     )
 
@@ -151,13 +156,6 @@ export default class DayCalendar extends React.Component {
 
     componentDidMount() {
         this.initMonthData()
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (this.props.toggle_clear !== prevProps.toggle_clear) {
-            this.scrollToMonth()
-            this.chooseDay(0, new Date().getDate() - 1)
-        }
     }
 
     render() {
@@ -372,6 +370,15 @@ class DayHolder extends React.Component {
 
     static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.current_day_index === nextProps.day_index && nextProps.current_month_index === nextProps.month_index) {
+            if (nextProps.day_data.day === nextProps.current_day &&
+                nextProps.day_data.month === nextProps.current_month &&
+                nextProps.day_data.year === nextProps.current_year
+            ) {
+                return ({
+                    round_day_container_style: styles.chosen_round_day_container,
+                    day_text_style: styles.chosen_day_text
+                })
+            }
             return ({
                 round_day_container_style: styles.chosen_round_day_container,
                 day_text_style: styles.chosen_day_text
@@ -379,6 +386,15 @@ class DayHolder extends React.Component {
         }
 
         else if (nextProps.last_day_index === nextProps.day_index && nextProps.last_month_index === nextProps.month_index) {
+            if (nextProps.day_data.day === nextProps.current_day &&
+                nextProps.day_data.month === nextProps.current_month &&
+                nextProps.day_data.year === nextProps.current_year
+            ) {
+                return ({
+                    round_day_container_style: styles.not_chosen_round_day_container,
+                    day_text_style: styles.chosen_day_text
+                })
+            }
             return ({
                 round_day_container_style: styles.not_chosen_round_day_container,
                 day_text_style: styles.not_chosen_day_text
@@ -386,6 +402,15 @@ class DayHolder extends React.Component {
         }
 
         else if (nextProps.last_day_index === nextProps.day_index && nextProps.current_month_index === nextProps.month_index) {
+            if (nextProps.day_data.day === nextProps.current_day &&
+                nextProps.day_data.month === nextProps.current_month &&
+                nextProps.day_data.year === nextProps.current_year
+            ) {
+                return ({
+                    round_day_container_style: styles.not_chosen_round_day_container,
+                    day_text_style: styles.chosen_day_text
+                })
+            }
             return ({
                 round_day_container_style: styles.not_chosen_round_day_container,
                 day_text_style: styles.not_chosen_day_text
@@ -396,6 +421,8 @@ class DayHolder extends React.Component {
     }
 
     _chooseDayFromCurrentMonth = () => {
+        let {day, month, year} = this.props.day_data
+        this.props.setData(day, month, year)
         this.props.chooseDay(this.props.month_index, this.props.day_index)
     }
 
@@ -431,6 +458,7 @@ class UnchosenDayHolder extends React.Component {
             month_index = this.props.findMonthIndex(month, year),
             day_index = this.props.findDayIndex(day, month, year)
 
+        this.props.setData(day, month, year)
         this.props.chooseDay(month_index, day_index)
         this.props.scrollToMonth(month_index)
     }
