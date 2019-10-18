@@ -35,7 +35,9 @@ export default class DayTypeRepeat extends React.PureComponent {
     state = {
         selected_repeat_type: "days",
 
-        is_picker_opened: false
+        is_picker_opened: false,
+
+        repeat_input_value: "1"
     }
 
     _changePickerValue = (itemValue, itemIndex) => {
@@ -54,6 +56,20 @@ export default class DayTypeRepeat extends React.PureComponent {
         this.setState({
             is_picker_opened: false
         })
+    }
+
+    _onRepeatInputChange = (e) => {
+        if (e.nativeEvent.text.length === 0) {
+            this.setState({
+                repeat_input_value: "1"
+            })
+        }
+
+        else {
+            this.setState({
+                repeat_input_value: e.nativeEvent.text.replace(/[^0-9]/g, '')
+            })
+        }
     }
 
     animateRepeat = () => {
@@ -135,18 +151,12 @@ export default class DayTypeRepeat extends React.PureComponent {
                         style={styles.every_option_input}
                         maxLength={2}
                         keyboardType="numbers-and-punctuation"
+                        value={this.state.repeat_input_value}
+                        onChange={this._onRepeatInputChange}
                     />
 
                     <TouchableOpacity
-                        style={{
-                            marginLeft: 20,
-                            width: 84,
-                            height: 28,
-                            justifyContent: "center",
-                            alignItems: "center",
-                            borderRadius: 15,
-                            backgroundColor: "#E6F3F3"
-                        }}
+                        style={styles.picker_button_container}
 
                         onPress={this._openPicker}
                     >
@@ -215,7 +225,193 @@ export default class DayTypeRepeat extends React.PureComponent {
                         </View>
                     </Modal>
                 </View>
+
+                <View
+                    style={{
+                        marginTop: 26,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginLeft: 30,
+                        marginRight: 30,
+                    }}
+                >
+                    <ChooseDayInWeekOption />
+                </View>
             </Animated.View>
+        )
+    }
+}
+
+class ChooseDayInWeekOption extends React.PureComponent {
+
+    render() {
+        return (
+            <>
+                <DayInWeekOptionHolder
+                    index={0}
+                    day_in_week={"Mon"}
+                />
+                <DayInWeekOptionHolder
+                    index={1}
+                    day_in_week={"Tue"}
+                />
+                <DayInWeekOptionHolder
+                    index={2}
+                    day_in_week={"Wed"}
+                />
+                <DayInWeekOptionHolder
+                    index={3}
+                    day_in_week={"Thu"}
+                />
+                <DayInWeekOptionHolder
+                    index={4}
+                    day_in_week={"Fri"}
+                />
+                <DayInWeekOptionHolder
+                    index={5}
+                    day_in_week={"Sat"}
+                />
+                <DayInWeekOptionHolder
+                    index={6}
+                    day_in_week={"Sun"}
+                />
+            </>
+        )
+    }
+}
+
+
+class DayInWeekOptionHolder extends React.PureComponent {
+
+    handleIndex = (index) => {
+        if (index === 0) {
+            // this.setState({
+            //     container_style: styles.unchosen_left_end_day_in_week_container,
+            // })
+            return styles.unchosen_left_end_day_in_week_container
+        }
+
+        else if (index === 6) {
+            // this.setState({
+            //     container_style: styles.unchosen_right_end_day_in_week_container,
+            // })
+            return styles.unchosen_right_end_day_in_week_container
+        }
+        else {
+            // this.setState({
+            //     container_style: styles.unchosen_normal_day_in_week_container,
+            // })
+            return styles.unchosen_normal_day_in_week_container
+        }
+    }
+
+    state = {
+        container_style: this.handleIndex(this.props.index),
+        text_style: styles.unchosen_day_in_week_text,
+
+        is_chosen: false,
+    }
+
+    _onChooseDayInWeek = () => {
+        let { index } = this.props
+
+        this.setState(prevState => ({
+            is_chosen: !prevState.is_chosen
+        }), () => {
+            if (this.state.is_chosen) {
+                if (index === 0) {
+                    this.setState({
+                        container_style: styles.chosen_left_end_day_in_week_container,
+                        text_style: styles.chosen_day_in_week_text
+                    })
+                }
+
+                else if (index === 6) {
+                    this.setState({
+                        container_style: styles.chosen_right_end_day_in_week_container,
+                        text_style: styles.chosen_day_in_week_text
+                    })
+                }
+
+                else {
+                    this.setState({
+                        container_style: styles.chosen_normal_day_in_week_container,
+                        text_style: styles.chosen_day_in_week_text
+                    })
+                }
+            }
+
+            else {
+                if (index === 0) {
+                    this.setState({
+                        container_style: styles.unchosen_left_end_day_in_week_container,
+                        text_style: styles.unchosen_day_in_week_text
+                    })
+                }
+
+                else if (index === 6) {
+                    this.setState({
+                        container_style: styles.unchosen_right_end_day_in_week_container,
+                        text_style: styles.unchosen_day_in_week_text
+                    })
+                }
+
+                else {
+                    this.setState({
+                        container_style: styles.unchosen_normal_day_in_week_container,
+                        text_style: styles.unchosen_day_in_week_text
+                    })
+                }
+            }
+        })
+
+    }
+
+    render() {
+        return (
+            <>
+                {this.props.index === 0 ?
+                    <TouchableOpacity
+                        style={this.state.container_style}
+                        onPress={this._onChooseDayInWeek}
+                    >
+                        <Text
+                            style={this.state.text_style}
+                        >
+                            {this.props.day_in_week}
+                        </Text>
+                    </TouchableOpacity>
+
+                    :
+
+                    <>
+                        {this.props.index === 6 ?
+                            <TouchableOpacity
+                                style={this.state.container_style}
+                                onPress={this._onChooseDayInWeek}
+                            >
+                                <Text
+                                    style={this.state.text_style}
+                                >
+                                    {this.props.day_in_week}
+                                </Text>
+                            </TouchableOpacity>
+                            :
+
+                            <TouchableOpacity
+                                style={this.state.container_style}
+                                onPress={this._onChooseDayInWeek}
+                            >
+                                <Text
+                                    style={this.state.text_style}
+                                >
+                                    {this.props.day_in_week}
+                                </Text>
+                            </TouchableOpacity>
+                        }
+                    </>
+                }
+            </>
         )
     }
 }
