@@ -14,7 +14,9 @@ import {
     TouchableWithoutFeedback,
     Dimensions,
     Animated,
-    Easing
+    Easing,
+    KeyboardAvoidingView,
+    ScrollView
 } from 'react-native';
 
 import { styles } from './styles/styles'
@@ -22,13 +24,18 @@ import { styles } from './styles/styles'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
     faRedoAlt,
-    faHourglassEnd
+    faHourglassEnd,
+    faFlag,
+    faTimes,
+    faCheck
 } from '@fortawesome/free-solid-svg-icons'
 
-const shortMonthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
 const animation_duration = 250
 const easing = Easing.inOut(Easing.linear)
 const window_width = Dimensions.get("window").width
+const window_height = Dimensions.get("window").height
+const repeat_panel_height = 584
+const margin_bottom_of_last_row = 35
 
 export default class DayTypeRepeat extends React.PureComponent {
 
@@ -38,15 +45,52 @@ export default class DayTypeRepeat extends React.PureComponent {
     state = {
         selected_repeat_type: "days",
 
+        prev_repeat_type: "days",
+
         is_picker_opened: false,
 
-        repeat_input_value: "1"
+        repeat_input_value: "1",
+
+        after_occurrence_value: "1",
+
+        goal_value: "1",
+
+        should_animate_translate_y: true
+    }
+
+    _onChangeAfterOccurrenceValue = (e) => {
+        if (e.nativeEvent.text.length === 0) {
+            this.setState({
+                after_occurrence_value: "1"
+            })
+        }
+
+        else {
+            this.setState({
+                after_occurrence_value: e.nativeEvent.text.replace(/[^0-9]/g, '')
+            })
+        }
+    }
+
+    _onChangeGoalValue = (e) => {
+        if (e.nativeEvent.text.length === 0) {
+            this.setState({
+                goal_value: "1"
+            })
+        }
+
+        else {
+            this.setState({
+                goal_value: e.nativeEvent.text.replace(/[^0-9]/g, '')
+            })
+        }
     }
 
     _changePickerValue = (itemValue, itemIndex) => {
-        this.setState({
-            selected_repeat_type: itemValue
-        })
+        this.setState(prevState => ({
+            selected_repeat_type: itemValue,
+            prev_repeat_type: prev_repeat_type.selected_repeat_type
+        }))
     }
 
     _openPicker = () => {
@@ -59,6 +103,10 @@ export default class DayTypeRepeat extends React.PureComponent {
         this.setState({
             is_picker_opened: false
         })
+    }
+
+    _chooseCancelPicker = () => {
+
     }
 
     _onRepeatInputChange = (e) => {
@@ -98,8 +146,49 @@ export default class DayTypeRepeat extends React.PureComponent {
         ]).start()
     }
 
+    _keyboardWillShowHandler = (e) => {
+    }
+
+    _keyboardWillHideHandler = (e) => {
+        this.setState({
+            should_animate_translate_y: true
+        })
+    }
+
+    close = () => {
+        this.props.hideAction()
+    }
+
+    save = () => {
+        this.props.hideAction()
+    }
+
+    _chooseInput = () => {
+        if (this._text_input_ref) {
+            this._text_input_ref.focus()
+        }
+    }
+
+    _setRef = (r) => {
+        this._text_input_ref = r
+    }
+
+    _onFocus = () => {
+        this.setState({
+            should_animate_translate_y: false
+        })
+    }
+
     componentDidMount() {
         this.animateRepeat()
+
+        this._keyboardWillShowListener = Keyboard.addListener("keyboardWillShow", this._keyboardWillShowHandler)
+        this._keyboardWillHideListener = Keyboard.addListener("keyboardWillHide", this._keyboardWillHideHandler)
+    }
+
+    componentWillUnmount() {
+        Keyboard.removeListener("keyboardWillShow", this._keyboardWillShowHandler)
+        Keyboard.removeListener("keyboardWillHide", this._keyboardWillHideHandler)
     }
 
     render() {
@@ -108,146 +197,265 @@ export default class DayTypeRepeat extends React.PureComponent {
                 style={{
                     position: 'absolute',
                     width: 338,
-                    height: 484,
                     transform: [{ scale: this.repeat_scale_value }],
                     backgroundColor: 'white',
                     borderRadius: 10,
-                    opacity: this.repeat_opacity_value
+                    opacity: this.repeat_opacity_value,
+                    overflow: "hidden"
                 }}
             >
-                <View
-                    style={{
-                        flexDirection: "row",
-                        marginLeft: 30,
-                        marginTop: 35,
-                        alignItems: "center"
-                    }}
+                <ScrollView
+                    keyboardDismissMode="on-drag"
+                    scrollEnabled={false}
                 >
-                    <FontAwesomeIcon
-                        icon={faRedoAlt}
-                        color="#2C2C2C"
-                        size={14}
-                    />
 
-                    <Text
-                        style={styles.title_text}
-                    >
-                        Repeat
-                    </Text>
-                </View>
-
-                <View
-                    style={{
-                        marginTop: 25,
-                        flexDirection: "row",
-                        alignItems: "center",
-                        marginLeft: 59,
-                    }}
-                >
-                    <Text
-                        style={styles.every_option_text}
-                    >
-                        Every
-                    </Text>
-
-                    <TextInput
-                        style={styles.every_option_input}
-                        maxLength={2}
-                        keyboardType="numbers-and-punctuation"
-                        value={this.state.repeat_input_value}
-                        onChange={this._onRepeatInputChange}
-                    />
-
-                    <TouchableOpacity
-                        style={styles.picker_button_container}
-
-                        onPress={this._openPicker}
-                    >
-                        <Text
-                            style={styles.every_option_text}
-                        >
-                            {this.state.selected_repeat_type}
-                        </Text>
-                    </TouchableOpacity>
-
-                    <Modal
-                        transparent={true}
-                        visible={this.state.is_picker_opened}
+                    <KeyboardAvoidingView
+                        behavior={"position"}
+                        enabled={this.state.should_animate_translate_y}
                     >
                         <View
                             style={{
-                                flex: 1,
-                                position: "relative"
+                                flexDirection: "row",
+                                marginLeft: 30,
+                                marginTop: 35,
+                                alignItems: "center"
+                            }}
+                        >
+                            <FontAwesomeIcon
+                                icon={faRedoAlt}
+                                color="#2C2C2C"
+                                size={14}
+                            />
+
+                            <Text
+                                style={styles.title_text}
+                            >
+                                Repeat
+                            </Text>
+                        </View>
+
+                        <View
+                            style={{
+                                marginTop: 25,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                marginLeft: 59,
                             }}
                         >
                             <TouchableOpacity
                                 style={{
-                                    flex: 1,
-                                    width: window_width,
-                                    backgroundColor: "#000000",
-                                    opacity: 0.2,
+                                    flexDirection: "row",
                                 }}
 
-                                onPress={this._closePicker}
+                                onPress={this._chooseInput}
                             >
+                                <Text
+                                    style={styles.every_option_text}
+                                >
+                                    Every
+                                </Text>
+
+                                <TextInput
+                                    style={styles.every_option_input}
+                                    maxLength={2}
+                                    keyboardType="numbers-and-punctuation"
+                                    value={this.state.repeat_input_value}
+                                    onChange={this._onRepeatInputChange}
+                                    ref={this._setRef}
+
+                                    onFocus={this._onFocus}
+                                />
                             </TouchableOpacity>
 
-                            <View
-                                style={{
-                                    position: "absolute",
-                                    height: 200,
-                                    bottom: 0,
-                                    left: 0,
-                                    right: 0,
-                                    backgroundColor: "white",
-                                    justifyContent: "center",
-                                    borderTopLeftRadius: 20,
-                                    borderTopRightRadius: 20,
-                                }}
+
+                            <TouchableOpacity
+                                style={styles.picker_button_container}
+
+                                onPress={this._openPicker}
                             >
-
-                                <Picker
-                                    selectedValue={this.state.selected_repeat_type}
-                                    onValueChange={this._changePickerValue}
-                                    itemStyle={styles.picker_value_text}
+                                <Text
+                                    style={styles.every_option_text}
                                 >
-                                    <Picker.Item
-                                        label="days"
-                                        value="days"
-                                    />
-                                    <Picker.Item
-                                        label="weeks"
-                                        value="weeks"
-                                    />
-                                    <Picker.Item
-                                        label="months"
-                                        value="months"
-                                    />
-                                </Picker>
-                            </View>
+                                    {this.state.selected_repeat_type}
+                                </Text>
+                            </TouchableOpacity>
+
+                            <Modal
+                                transparent={true}
+                                visible={this.state.is_picker_opened}
+                            >
+                                <View
+                                    style={{
+                                        flex: 1,
+                                        position: "relative"
+                                    }}
+                                >
+                                    <TouchableOpacity
+                                        style={{
+                                            flex: 1,
+                                            width: window_width,
+                                            backgroundColor: "#000000",
+                                            opacity: 0.2,
+                                        }}
+
+                                        onPress={this._closePicker}
+                                    >
+                                    </TouchableOpacity>
+
+                                    <View
+                                        style={{
+                                            position: "absolute",
+                                            height: 200,
+                                            bottom: 0,
+                                            left: 0,
+                                            right: 0,
+                                            backgroundColor: "white",
+                                            borderTopLeftRadius: 20,
+                                            borderTopRightRadius: 20,
+                                        }}
+                                    >
+                                        <View
+                                            style={{
+                                                flexDirection: "row",
+                                                justifyContent: "space-between",
+                                                alignItems: "center",
+                                                top: 20,
+                                                left: 0,
+                                                right: 0,
+                                                position: "absolute",
+                                                zIndex: 15,
+                                                height: 30,
+                                                paddingHorizontal: 30,
+                                            }}
+                                        >
+                                            <TouchableOpacity
+                                                style={{
+                                                    height: 30,
+                                                    justifyContent: "center",
+                                                    alignItems: "center"
+                                                }}
+
+                                                onPress={this._chooseCancelPicker}
+                                            >
+                                                <Text
+                                                    style={styles.picker_cancel_option_text}
+                                                >
+                                                    Cancel
+                                                </Text>
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity
+                                                style={{
+                                                    height: 30,
+                                                    justifyContent: "center",
+                                                    alignItems: "center"
+                                                }}
+                                            >
+                                                <Text
+                                                    style={styles.picker_done_option_text}
+                                                >
+                                                    Done
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
+
+                                        <Picker
+                                            selectedValue={this.state.selected_repeat_type}
+                                            onValueChange={this._changePickerValue}
+                                            itemStyle={styles.picker_value_text}
+                                            style={{
+                                                flex: 1,
+                                                justifyContent: "center",
+                                                zIndex: 10,
+                                                marginTop: 50,
+                                            }}
+                                        >
+                                            <Picker.Item
+                                                label="days"
+                                                value="days"
+                                            />
+                                            <Picker.Item
+                                                label="weeks"
+                                                value="weeks"
+                                            />
+                                            <Picker.Item
+                                                label="months"
+                                                value="months"
+                                            />
+                                        </Picker>
+                                    </View>
+                                </View>
+                            </Modal>
                         </View>
-                    </Modal>
-                </View>
 
-                <View
-                    style={{
-                        marginTop: 25,
-                        flexDirection: "row",
-                        alignItems: "center",
-                        marginHorizontal: 30,
-                    }}
-                >
-                    <ChooseDayInWeekOption />
-                </View>
+                        <View
+                            style={{
+                                marginTop: 25,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                marginHorizontal: 30,
+                            }}
+                        >
+                            <ChooseDayInWeekOption />
+                        </View>
 
-                {/* Separating line */}
-                <View
-                    style={styles.separating_line}
-                >
-                </View>
+                        {/* Separating line */}
+                        <View
+                            style={styles.separating_line}
+                        >
+                        </View>
 
-                <RepeatEndOptionsHolder />
-            </Animated.View>
+                        <RepeatEndOptionsHolder
+                            after_occurrence_value={this.state.after_occurrence_value}
+                            _onChangeAfterOccurrenceValue={this._onChangeAfterOccurrenceValue}
+                        />
+
+                        {/* Separating line */}
+                        <View
+                            style={styles.separating_line}
+                        >
+                        </View>
+
+                        <GoalHolder
+                            goal_value={this.state.goal_value}
+                            _onChangeGoalValue={this._onChangeGoalValue}
+                            setPy={this.setPy}
+                        />
+
+                        <View
+                            style={{
+                                marginTop: 30,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "flex-end",
+                                marginHorizontal: 30,
+                                marginBottom: margin_bottom_of_last_row,
+                            }}
+                        >
+                            <TouchableOpacity
+                                style={styles.close_button_container}
+                                onPress={this.close}
+                            >
+                                <FontAwesomeIcon
+                                    icon={faTimes}
+                                    color="white"
+                                />
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={styles.save_button_container}
+                                onPress={this.save}
+                            >
+                                <FontAwesomeIcon
+                                    icon={faCheck}
+                                    color="white"
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    </KeyboardAvoidingView>
+
+                </ScrollView>
+            </Animated.View >
         )
     }
 }
@@ -470,6 +678,14 @@ class RepeatEndOptionsHolder extends React.PureComponent {
                     current_index={this.state.current_index}
                     last_index={this.state.last_index}
                 />
+
+                <RepeatEndAfterOptionRow
+                    index={2}
+                    chooseEndOption={this.chooseEndOption}
+                    current_index={this.state.current_index}
+                    last_index={this.state.last_index}
+                    {...this.props}
+                />
             </View>
         )
     }
@@ -545,6 +761,8 @@ class RepeatEndNeverOptionRow extends React.Component {
 
 class RepeatEndOnOptionRow extends React.Component {
 
+    month_names = ["January", "Febuary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
     date = new Date()
 
     state = {
@@ -590,14 +808,37 @@ class RepeatEndOnOptionRow extends React.Component {
     }
 
     _changeMonthPickerValue = (itemValue, itemIndex) => {
+        let year = parseInt(this.state.year),
+            month = parseInt(itemValue),
+            day = parseInt(this.state.day)
+
+        let date = new Date(year, month, day)
+
+        if (date.getMonth() !== month) {
+            date = new Date(year, month + 1, 0)
+        }
+
         this.setState({
-            month: itemValue
+            month: itemValue,
+            day: date.getDate().toString()
         })
     }
 
     _changeYearPickerValue = (itemValue, itemIndex) => {
+        let year = parseInt(this.state.year),
+            month = parseInt(itemValue),
+            day = parseInt(this.state.day)
+
+        let date = new Date(year, month, day)
+
+        if (date.getMonth() !== month) {
+            date = new Date(year, month + 1, 0)
+        }
+
         this.setState({
-            year: itemValue
+            year: itemValue,
+            day: date.getDate().toString()
+
         })
     }
 
@@ -655,7 +896,7 @@ class RepeatEndOnOptionRow extends React.Component {
                                 <Text
                                     style={text_style}
                                 >
-
+                                    {`${this.state.day} ${this.month_names[this.state.month]} ${this.state.year}`}
                                 </Text>
                             </View>
                         </View>
@@ -851,6 +1092,7 @@ class YearPickerValueHolder extends React.PureComponent {
                     flex: 1,
                     justifyContent: "center"
                 }}
+
             >
                 <Picker.Item label={`${this.year}`} value={`${this.year}`} />
                 <Picker.Item label={`${this.year + 1}`} value={`${this.year + 1}`} />
@@ -858,6 +1100,206 @@ class YearPickerValueHolder extends React.PureComponent {
                 <Picker.Item label={`${this.year + 3}`} value={`${this.year + 3}`} />
                 <Picker.Item label={`${this.year + 4}`} value={`${this.year + 4}`} />
             </Picker>
+        )
+    }
+}
+
+
+class RepeatEndAfterOptionRow extends React.Component {
+
+    state = {
+        is_text_input_readable: false
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return (this.props.index === nextProps.current_index && this.props.current_index !== nextProps.current_index)
+            || (this.props.index === nextProps.last_index && this.props.last_index !== nextProps.last_index)
+            || (this.props.after_occurrence_value !== nextProps.after_occurrence_value)
+    }
+
+    _chooseEndOption = () => {
+        this.props.chooseEndOption(this.props.index)
+        this.setState({
+            is_text_input_readable: true
+        }, () => {
+            this._text_input_ref.focus()
+        })
+    }
+
+    _setTextInputRef = (r) => {
+        this._text_input_ref = r
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.index === this.props.last_index && this.props.last_index !== prevProps.last_index) {
+            this.setState({
+                is_text_input_readable: false,
+            }, () => {
+                this._text_input_ref.blur()
+            })
+        }
+    }
+
+    render() {
+        let text_style = styles.unchosen_every_option_text,
+            button_container = styles.repeat_end_chosen_button_container_deactivated,
+            activated = this.props.index === this.props.current_index,
+            input_text_style = styles.unchosen_every_option_input
+
+        if (this.props.index === this.props.current_index) {
+            text_style = styles.every_option_text
+            button_container = styles.repeat_end_chosen_button_container
+            input_text_style = styles.every_option_input
+        }
+
+        else if (this.props.index === this.props.last_index) {
+            text_style = styles.unchosen_every_option_text
+            button_container = styles.repeat_end_chosen_button_container_deactivated
+            input_text_style = styles.unchosen_every_option_input
+        }
+
+        return (
+            <TouchableOpacity
+                style={{
+                    marginTop: 25,
+                    marginLeft: 59,
+                    marginRight: 30,
+                }}
+
+                onPress={this._chooseEndOption}
+            >
+                <View
+                    style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between"
+                    }}
+                >
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                        }}
+                    >
+                        <Text
+                            style={text_style}
+                        >
+                            After
+                        </Text>
+
+                        <TextInput
+                            style={input_text_style}
+                            editable={this.state.is_text_input_readable}
+                            maxLength={2}
+                            keyboardType="numbers-and-punctuation"
+                            placeholder="1"
+                            value={this.props.after_occurrence_value}
+                            onChange={this.props._onChangeAfterOccurrenceValue}
+                            ref={this._setTextInputRef}
+                        />
+
+                        <View
+                            style={{
+                                marginLeft: 20,
+                            }}
+                        >
+                            <Text
+                                style={text_style}
+                            >
+                                occurrences
+                            </Text>
+                        </View>
+                    </View>
+
+                    <View
+                        style={button_container}
+                    >
+                        {activated ?
+                            <View
+                                style={styles.repeat_end_chosen_button_activated}
+                            >
+
+                            </View>
+                            :
+                            null
+                        }
+                    </View>
+                </View>
+            </TouchableOpacity>
+        )
+    }
+}
+
+class GoalHolder extends React.PureComponent {
+
+    _onPress = () => {
+        if (this._text_input_ref) {
+            this._text_input_ref.focus()
+        }
+    }
+
+    _setRef = (r) => {
+        this._text_input_ref = r
+    }
+
+
+    render() {
+        return (
+            <View>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        marginLeft: 30,
+                        marginTop: 25,
+                        alignItems: "center"
+                    }}
+                >
+                    <FontAwesomeIcon
+                        icon={faFlag}
+                        color="#2C2C2C"
+                        size={14}
+                    />
+
+                    <Text
+                        style={styles.title_text}
+                    >
+                        Goal
+                    </Text>
+                </View>
+
+                <TouchableOpacity
+                    style={{
+                        marginTop: 25,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginLeft: 39,
+                    }}
+
+                    onPress={this._onPress}
+                >
+                    <TextInput
+                        style={styles.every_option_input}
+                        keyboardType="numbers-and-punctuation"
+                        maxLength={2}
+                        placeholder="1"
+                        value={this.props.goal_value}
+                        onChange={this.props._onChangeGoalValue}
+                        ref={this._setRef}
+                    />
+
+                    <View
+                        style={{
+                            marginLeft: 20,
+                        }}
+                    >
+                        <Text
+                            style={styles.every_option_text}
+                        >
+                            times per day
+                        </Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
         )
     }
 }

@@ -8,7 +8,7 @@ import {
     Easing,
 } from 'react-native';
 
-import DayCalendar from '../../../../../../shared/calendar/day-calendar/DayCalendar.Container'
+import DayCalendar from '../../../../../screens/Journal/components/share/day-calendar/DayCalendar.Container'
 
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
@@ -104,7 +104,7 @@ export default class DayAnnotationPanel extends Component {
                 style={{
                     position: 'absolute',
                     width: panel_width,
-                    height: day_calendar_height,
+                    // height: day_calendar_height,
                     backgroundColor: 'white',
                     borderRadius: 10,
                     flexDirection: "row",
@@ -160,6 +160,7 @@ export default class DayAnnotationPanel extends Component {
                             marginHorizontal: 30,
                             flexDirection: "row",
                             justifyContent: "flex-end",
+                            marginBottom: 35,
                         }}
                     >
                         <TouchableOpacity

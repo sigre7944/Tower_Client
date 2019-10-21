@@ -6,8 +6,8 @@ import {
     TouchableOpacity
 } from 'react-native';
 
-import AddTaskButton from './layouts/AddTaskButton'
-import OverlayModal from './layouts/modal-component/OverlayModal.Container'
+import AddTaskButton from './components/AddTaskButton'
+import OverlayModal from './components/modal-component/OverlayModal.Container'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
     faClipboardList,
