@@ -9,6 +9,7 @@ export const changeRouteAction = routeName => ({
 })
 
 export const toggleReturn = () => ({
+    // action for returning to today's position when clicking on header
     type: 'TOGGLE_RETURN'
 })
 
