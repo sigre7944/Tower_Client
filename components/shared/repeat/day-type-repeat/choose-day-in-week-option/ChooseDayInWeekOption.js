@@ -25,7 +25,6 @@ export default class ChooseDayInWeekOption extends React.PureComponent {
 
     render() {
         return (
-
             <View
                 style={{
                     marginTop: 25,
@@ -37,30 +36,51 @@ export default class ChooseDayInWeekOption extends React.PureComponent {
                 <DayInWeekOptionHolder
                     index={0}
                     day_in_week={"Mon"}
+                    selected_repeat_type={this.props.selected_repeat_type}
+                    is_toggled={this.props.days_in_week_option_array[0]}
+                    _toggleDayInWeek={this.props._toggleDayInWeek}
                 />
                 <DayInWeekOptionHolder
                     index={1}
                     day_in_week={"Tue"}
+                    selected_repeat_type={this.props.selected_repeat_type}
+                    is_toggled={this.props.days_in_week_option_array[1]}
+                    _toggleDayInWeek={this.props._toggleDayInWeek}
                 />
                 <DayInWeekOptionHolder
                     index={2}
                     day_in_week={"Wed"}
+                    selected_repeat_type={this.props.selected_repeat_type}
+                    is_toggled={this.props.days_in_week_option_array[2]}
+                    _toggleDayInWeek={this.props._toggleDayInWeek}
                 />
                 <DayInWeekOptionHolder
                     index={3}
                     day_in_week={"Thu"}
+                    selected_repeat_type={this.props.selected_repeat_type}
+                    is_toggled={this.props.days_in_week_option_array[3]}
+                    _toggleDayInWeek={this.props._toggleDayInWeek}
                 />
                 <DayInWeekOptionHolder
                     index={4}
                     day_in_week={"Fri"}
+                    selected_repeat_type={this.props.selected_repeat_type}
+                    is_toggled={this.props.days_in_week_option_array[4]}
+                    _toggleDayInWeek={this.props._toggleDayInWeek}
                 />
                 <DayInWeekOptionHolder
                     index={5}
                     day_in_week={"Sat"}
+                    selected_repeat_type={this.props.selected_repeat_type}
+                    is_toggled={this.props.days_in_week_option_array[5]}
+                    _toggleDayInWeek={this.props._toggleDayInWeek}
                 />
                 <DayInWeekOptionHolder
                     index={6}
                     day_in_week={"Sun"}
+                    selected_repeat_type={this.props.selected_repeat_type}
+                    is_toggled={this.props.days_in_week_option_array[6]}
+                    _toggleDayInWeek={this.props._toggleDayInWeek}
                 />
             </View>
         )
@@ -69,79 +89,140 @@ export default class ChooseDayInWeekOption extends React.PureComponent {
 
 class DayInWeekOptionHolder extends React.PureComponent {
 
-    handleIndex = (index) => {
-        if (index === 0) {
-            return styles.unchosen_left_end_day_in_week_container
-        }
+    // handleIndex = (index) => {
+    //     if (index === 0) {
+    //         return styles.unchosen_left_end_day_in_week_container
+    //     }
 
-        else if (index === 6) {
-            return styles.unchosen_right_end_day_in_week_container
-        }
-        else {
-            return styles.unchosen_normal_day_in_week_container
-        }
-    }
+    //     else if (index === 6) {
+    //         return styles.unchosen_right_end_day_in_week_container
+    //     }
+    //     else {
+    //         return styles.unchosen_normal_day_in_week_container
+    //     }
+    // }
 
     state = {
-        container_style: this.handleIndex(this.props.index),
+        container_style: {},
         text_style: styles.unchosen_day_in_week_text,
 
-        is_chosen: false,
+        disabled: false
     }
 
     _onChooseDayInWeek = () => {
-        let { index } = this.props
+        this.props._toggleDayInWeek(this.props.index)
+    }
 
-        this.setState(prevState => ({
-            is_chosen: !prevState.is_chosen
-        }), () => {
-            if (this.state.is_chosen) {
-                if (index === 0) {
-                    this.setState({
-                        container_style: styles.chosen_left_end_day_in_week_container,
-                        text_style: styles.chosen_day_in_week_text
-                    })
-                }
+    _compareToggledIndex = () => {
+        let { index, is_toggled } = this.props
 
-                else if (index === 6) {
-                    this.setState({
-                        container_style: styles.chosen_right_end_day_in_week_container,
-                        text_style: styles.chosen_day_in_week_text
-                    })
-                }
+        if (is_toggled) {
+            if (index === 0) {
+                this.setState({
+                    container_style: styles.chosen_left_end_day_in_week_container,
+                    text_style: styles.chosen_day_in_week_text,
+                    disabled: false
+                })
+            }
 
-                else {
-                    this.setState({
-                        container_style: styles.chosen_normal_day_in_week_container,
-                        text_style: styles.chosen_day_in_week_text
-                    })
-                }
+            else if (index === 6) {
+                this.setState({
+                    container_style: styles.chosen_right_end_day_in_week_container,
+                    text_style: styles.chosen_day_in_week_text,
+                    disabled: false
+                })
             }
 
             else {
-                if (index === 0) {
-                    this.setState({
-                        container_style: styles.unchosen_left_end_day_in_week_container,
-                        text_style: styles.unchosen_day_in_week_text
-                    })
-                }
-
-                else if (index === 6) {
-                    this.setState({
-                        container_style: styles.unchosen_right_end_day_in_week_container,
-                        text_style: styles.unchosen_day_in_week_text
-                    })
-                }
-
-                else {
-                    this.setState({
-                        container_style: styles.unchosen_normal_day_in_week_container,
-                        text_style: styles.unchosen_day_in_week_text
-                    })
-                }
+                this.setState({
+                    container_style: styles.chosen_normal_day_in_week_container,
+                    text_style: styles.chosen_day_in_week_text,
+                    disabled: false
+                })
             }
-        })
+        }
 
+        else {
+            if (index === 0) {
+                this.setState({
+                    container_style: styles.unchosen_left_end_day_in_week_container,
+                    text_style: styles.unchosen_day_in_week_text,
+                    disabled: false
+                })
+            }
+
+            else if (index === 6) {
+                this.setState({
+                    container_style: styles.unchosen_right_end_day_in_week_container,
+                    text_style: styles.unchosen_day_in_week_text,
+                    disabled: false
+                })
+            }
+
+            else {
+                this.setState({
+                    container_style: styles.unchosen_normal_day_in_week_container,
+                    text_style: styles.unchosen_day_in_week_text,
+                    disabled: false
+                })
+            }
+        }
+    }
+
+    _deactiveStyle = () => {
+        let { index } = this.props
+
+        if (index === 0) {
+            this.setState({
+                container_style: styles.deactivated_left_end_day_in_week_container,
+                text_style: styles.deactivated_day_in_week_text,
+                disabled: true
+            })
+        }
+
+        else if (index === 6) {
+            this.setState({
+                container_style: styles.deactivated_right_end_day_in_week_container,
+                text_style: styles.deactivated_day_in_week_text,
+                disabled: true
+            })
+        }
+
+        else {
+            this.setState({
+                container_style: styles.deactivated_normal_end_day_in_week_container,
+                text_style: styles.deactivated_day_in_week_text,
+                disabled: true
+            })
+        }
+    }
+
+    componentDidMount() {
+        if (this.props.selected_repeat_type === "weeks") {
+            this._compareToggledIndex()
+        }
+
+        else {
+
+            this._deactiveStyle()
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.selected_repeat_type !== prevState.selected_repeat_type) {
+            if (this.props.selected_repeat_type === "weeks") {
+                this._compareToggledIndex()
+            }
+
+            else {
+
+                this._deactiveStyle()
+            }
+        }
+
+        if (this.props.is_toggled !== prevProps.is_toggled && this.props.selected_repeat_type === "weeks") {
+            this._compareToggledIndex()
+        }
     }
 
     render() {
@@ -151,6 +232,7 @@ class DayInWeekOptionHolder extends React.PureComponent {
                     <TouchableOpacity
                         style={this.state.container_style}
                         onPress={this._onChooseDayInWeek}
+                        disabled={this.state.disabled}
                     >
                         <Text
                             style={this.state.text_style}
@@ -166,6 +248,7 @@ class DayInWeekOptionHolder extends React.PureComponent {
                             <TouchableOpacity
                                 style={this.state.container_style}
                                 onPress={this._onChooseDayInWeek}
+                                disabled={this.state.disabled}
                             >
                                 <Text
                                     style={this.state.text_style}
@@ -178,6 +261,7 @@ class DayInWeekOptionHolder extends React.PureComponent {
                             <TouchableOpacity
                                 style={this.state.container_style}
                                 onPress={this._onChooseDayInWeek}
+                                disabled={this.state.disabled}
                             >
                                 <Text
                                     style={this.state.text_style}

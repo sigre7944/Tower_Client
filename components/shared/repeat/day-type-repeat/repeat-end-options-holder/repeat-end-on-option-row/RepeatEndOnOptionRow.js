@@ -21,9 +21,9 @@ export default class RepeatEndOnOptionRow extends React.Component {
 
     state = {
         is_date_picker_chosen: false,
-        day: this.date.getDate().toString(),
-        month: this.date.getMonth().toString(),
-        year: this.date.getFullYear().toString()
+        selected_day: this.date.getDate().toString(),
+        selected_month: this.date.getMonth().toString(),
+        selected_year: this.date.getFullYear().toString(),
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -33,10 +33,15 @@ export default class RepeatEndOnOptionRow extends React.Component {
     }
 
     _chooseEndOption = () => {
+        let {chosen_day, chosen_month, chosen_year} = this.props
         this.props.chooseEndOption(this.props.index)
-        this.setState({
-            is_date_picker_chosen: true
-        })
+        this.setState(prevState => ({
+            is_date_picker_chosen: true,
+
+            selected_day: chosen_day,
+            selected_month: chosen_month,
+            selected_year: chosen_year
+        }))
     }
 
     closeDatePicker = () => {
@@ -45,9 +50,14 @@ export default class RepeatEndOnOptionRow extends React.Component {
         })
     }
 
+    _chooseDonePicker = (day, month, year) => {
+        this.props._setEndAtDayMonthYear(day, month, year)
+        this.closeDatePicker()
+    }
+
     _changeDayPickerValue = (itemValue, itemIndex) => {
-        let year = parseInt(this.state.year),
-            month = parseInt(this.state.month),
+        let year = parseInt(this.state.selected_year),
+            month = parseInt(this.state.selected_month),
             day = parseInt(itemValue)
 
         let date = new Date(year, month, day)
@@ -57,14 +67,14 @@ export default class RepeatEndOnOptionRow extends React.Component {
         }
 
         this.setState({
-            day: date.getDate().toString()
+            selected_day: date.getDate().toString()
         })
     }
 
     _changeMonthPickerValue = (itemValue, itemIndex) => {
-        let year = parseInt(this.state.year),
+        let year = parseInt(this.state.selected_year),
             month = parseInt(itemValue),
-            day = parseInt(this.state.day)
+            day = parseInt(this.state.selected_day)
 
         let date = new Date(year, month, day)
 
@@ -73,15 +83,15 @@ export default class RepeatEndOnOptionRow extends React.Component {
         }
 
         this.setState({
-            month: itemValue,
-            day: date.getDate().toString()
+            selected_month: itemValue,
+            selected_day: date.getDate().toString()
         })
     }
 
     _changeYearPickerValue = (itemValue, itemIndex) => {
         let year = parseInt(itemValue),
-            month = parseInt(this.state.month),
-            day = parseInt(this.state.day)
+            month = parseInt(this.state.selected_month),
+            day = parseInt(this.state.selected_day)
 
 
         let date = new Date(year, month, day)
@@ -91,9 +101,8 @@ export default class RepeatEndOnOptionRow extends React.Component {
         }
 
         this.setState({
-            year: itemValue,
-            day: date.getDate().toString()
-
+            selected_year: itemValue,
+            selected_day: date.getDate().toString()
         })
     }
 
@@ -151,7 +160,7 @@ export default class RepeatEndOnOptionRow extends React.Component {
                                 <Text
                                     style={text_style}
                                 >
-                                    {`${this.state.day} ${this.month_names[this.state.month]} ${this.state.year}`}
+                                    {`${this.props.chosen_day} ${this.month_names[this.props.chosen_month]} ${this.props.chosen_year}`}
                                 </Text>
                             </View>
                         </View>
@@ -196,13 +205,13 @@ export default class RepeatEndOnOptionRow extends React.Component {
                         </TouchableOpacity>
 
                         <DatePickerWheel
-                            day={this.state.day}
-                            month={this.state.month}
-                            year={this.state.year}
+                            day={this.state.selected_day}
+                            month={this.state.selected_month}
+                            year={this.state.selected_year}
                             _changeDayPickerValue={this._changeDayPickerValue}
                             _changeMonthPickerValue={this._changeMonthPickerValue}
                             _changeYearPickerValue={this._changeYearPickerValue}
-
+                            _chooseDonePicker={this._chooseDonePicker}
                             closeDatePicker={this.closeDatePicker}
                         />
                     </View>
@@ -213,6 +222,10 @@ export default class RepeatEndOnOptionRow extends React.Component {
 }
 
 class DatePickerWheel extends React.PureComponent {
+
+    _chooseDonePicker = () => {
+        this.props._chooseDonePicker(this.props.day, this.props.month, this.props.year)
+    }
 
     render() {
         return (

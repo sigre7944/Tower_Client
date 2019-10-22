@@ -1,6 +1,7 @@
 import {connect} from 'react-redux'
 
 import DayTypeRepeat from './DayTypeRepeat'
+import {updateThunk} from './actions/updateThunk'
 
 const mapStateToProps = (state) => ({
     currentDayTask: state.get("currentDayTask"),

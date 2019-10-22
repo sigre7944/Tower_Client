@@ -17,20 +17,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 export default class RepeatEndOptionsHolder extends React.PureComponent {
-    state = {
-        current_index: 0,
-        last_index: -1
-    }
-
-    chooseEndOption = (index) => {
-        if (this.state.current_index !== index) {
-            this.setState(prevState => ({
-                current_index: index,
-                last_index: prevState.current_index
-            }))
-        }
-    }
-
     render() {
         return (
             <View>
@@ -57,24 +43,30 @@ export default class RepeatEndOptionsHolder extends React.PureComponent {
 
                 <RepeatEndNeverOptionRow
                     index={0}
-                    chooseEndOption={this.chooseEndOption}
-                    current_index={this.state.current_index}
-                    last_index={this.state.last_index}
+                    chooseEndOption={this.props.chooseEndOption}
+                    current_index={this.props.current_index}
+                    last_index={this.props.last_index}
                 />
 
                 <RepeatEndOnOptionRow
                     index={1}
-                    chooseEndOption={this.chooseEndOption}
-                    current_index={this.state.current_index}
-                    last_index={this.state.last_index}
+                    chooseEndOption={this.props.chooseEndOption}
+                    current_index={this.props.current_index}
+                    last_index={this.props.last_index}
+
+                    _setEndAtDayMonthYear={this.props._setEndAtDayMonthYear}
+                    chosen_day={this.props.chosen_day}
+                    chosen_month={this.props.chosen_month}
+                    chosen_year={this.props.chosen_year}
                 />
 
                 <RepeatEndAfterOptionRow
                     index={2}
-                    chooseEndOption={this.chooseEndOption}
-                    current_index={this.state.current_index}
-                    last_index={this.state.last_index}
-                    {...this.props}
+                    chooseEndOption={this.props.chooseEndOption}
+                    current_index={this.props.current_index}
+                    last_index={this.props.last_index}
+                    after_occurrence_value={this.props.after_occurrence_value}
+                    _onChangeAfterOccurrenceValue={this.props._onChangeAfterOccurrenceValue}
                 />
             </View>
         )

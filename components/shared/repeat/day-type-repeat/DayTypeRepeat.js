@@ -27,6 +27,8 @@ import {
     faCheck
 } from '@fortawesome/free-solid-svg-icons'
 
+import { fromJS } from 'immutable'
+
 const animation_duration = 250
 const easing = Easing.inOut(Easing.linear)
 const window_width = Dimensions.get("window").width
@@ -36,6 +38,7 @@ export default class DayTypeRepeat extends React.PureComponent {
 
     repeat_opacity_value = new Animated.Value(0.3)
     repeat_scale_value = new Animated.Value(0.3)
+    date = new Date()
 
     state = {
         selected_repeat_type: "days",
@@ -46,7 +49,34 @@ export default class DayTypeRepeat extends React.PureComponent {
 
         goal_value: "1",
 
-        should_animate_translate_y: true
+        should_animate_translate_y: true,
+
+        days_in_week_option_array: [false, false, false, false, false, false, false],
+
+        end_current_index: 0,
+
+        end_last_index: -1,
+
+        end_at_chosen_day: this.date.getDate().toString(),
+        end_at_chosen_month: this.date.getMonth().toString(),
+        end_at_chosen_year: this.date.getFullYear().toString(),
+    }
+
+    _setEndAtDayMonthYear = (day, month, year) => {
+        this.setState({
+            end_at_chosen_day: day,
+            end_at_chosen_month: month,
+            end_at_chosen_year: year
+        })
+    }
+
+    chooseEndOption = (index) => {
+        if (this.state.end_current_index !== index) {
+            this.setState(prevState => ({
+                end_current_index: index,
+                end_last_index: prevState.end_current_index
+            }))
+        }
     }
 
     _setRepeatType = (repeat_type) => {
@@ -141,7 +171,83 @@ export default class DayTypeRepeat extends React.PureComponent {
     }
 
     save = () => {
+        let { selected_repeat_type,
+            goal_value,
+            repeat_input_value,
+            after_occurrence_value,
+            end_current_index,
+            days_in_week_option_array,
+            end_at_chosen_day,
+            end_at_chosen_month,
+            end_at_chosen_year } = this.state
+
+        let end_value_data = {},
+            repeat_value_data = {}
+
+        if (end_current_index === 0) {
+            end_value_data.type = "never"
+        }
+        else if (end_current_index === 1) {
+            end_value_data.type = "on"
+            end_value_data.endAt = new Date(end_at_chosen_year, end_at_chosen_month, end_at_chosen_day).getTime()
+        }
+
+        else {
+            end_value_data.type = "after"
+            end_value_data.occurrence = after_occurrence_value
+        }
+
+        if (selected_repeat_type === "days") {
+            repeat_value_data.type = "daily"
+            repeat_value_data.interval = {
+                value: repeat_input_value
+            }
+        }
+
+        else if (selected_repeat_type === "weeks") {
+            repeat_value_data.type = "weekly"
+            repeat_value_data.interval = {
+                value: repeat_input_value
+            }
+        }
+
+        else {
+            repeat_value_data.type = "monthly"
+            repeat_value_data.interval = {
+                value: repeat_input_value
+            }
+        }
+
+        let sending_data = {
+            repeat_data: {
+                keyPath: ["repeat"],
+                notSetValue: fromJS(repeat_value_data),
+                updater: (value) => fromJS(repeat_value_data)
+            },
+            goal_data: {
+                keyPath: ["goal", "max"],
+                notSetValue: goal_value,
+                updater: (value) => goal_value
+            },
+            end_data: {
+                keyPath: ["end"],
+                notSetValue: fromJS(end_value_data),
+                updater: (value) => fromJS(end_value_data)
+            }
+        }
+
+        this.props.updateThunk(sending_data)
+
         this.props.hideAction()
+    }
+
+    _toggleDayInWeek = (index) => {
+        let days_in_week_option_array = [... this.state.days_in_week_option_array]
+        days_in_week_option_array[index] = !days_in_week_option_array[index]
+
+        this.setState({
+            days_in_week_option_array: [...days_in_week_option_array]
+        })
     }
 
     componentDidMount() {
@@ -184,7 +290,11 @@ export default class DayTypeRepeat extends React.PureComponent {
                             _setRepeatType={this._setRepeatType}
                         />
 
-                        <ChooseDayInWeekOption />
+                        <ChooseDayInWeekOption
+                            selected_repeat_type={this.state.selected_repeat_type}
+                            _toggleDayInWeek={this._toggleDayInWeek}
+                            days_in_week_option_array={this.state.days_in_week_option_array}
+                        />
 
                         {/* Separating line */}
                         <View
@@ -195,6 +305,14 @@ export default class DayTypeRepeat extends React.PureComponent {
                         <RepeatEndOptionsHolder
                             after_occurrence_value={this.state.after_occurrence_value}
                             _onChangeAfterOccurrenceValue={this._onChangeAfterOccurrenceValue}
+                            current_index={this.state.end_current_index}
+                            last_index={this.state.end_last_index}
+                            chooseEndOption={this.chooseEndOption}
+
+                            _setEndAtDayMonthYear={this._setEndAtDayMonthYear}
+                            chosen_day={this.state.end_at_chosen_day}
+                            chosen_month={this.state.end_at_chosen_month}
+                            chosen_year={this.state.end_at_chosen_year}
                         />
 
                         {/* Separating line */}
