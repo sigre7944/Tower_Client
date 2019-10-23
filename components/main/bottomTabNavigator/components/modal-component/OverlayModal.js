@@ -8,11 +8,12 @@ import {
 } from 'react-native';
 
 import AddTaskPanel from './add-task-panel/AddTaskPanel'
-import Calendar from './calendar/Calendar'
+import Calendar from '../../../screens/Journal/components/share/calendar/Calendar'
 
 import Category from '../../../../shared/category/Category.Container'
-import Goal from '../../../../shared/goal/Goal.Container'
 import Priority from '../../../../shared/priority/Priority.Container'
+
+import Repeat from '../../../screens/Journal/components/share/repeat/Repeat.Container'
 
 import { Map, fromJS } from 'immutable'
 
@@ -48,9 +49,9 @@ export default class OverlayModal extends Component {
     state = {
         currentAnnotation: 'day',
         calendarChosen: false,
+        repeatChosen: false,
         categoryChosen: false,
         priorityChosen: false,
-        goalChosen: false,
         addTaskMenuChosen: true,
 
         shouldCallBackKeyboard: false
@@ -63,9 +64,9 @@ export default class OverlayModal extends Component {
     disableAllTabs = () => {
         this.setState({
             calendarChosen: false,
+            repeatChosen: false,
             categoryChosen: false,
             priorityChosen: false,
-            goalChosen: false,
             addTaskMenuChosen: true,
         })
     }
@@ -73,17 +74,17 @@ export default class OverlayModal extends Component {
     chooseCalenderOption = () => {
         this.setState(prevState => ({
             calendarChosen: !prevState.calendarChosen,
+            repeatChosen: false,
             categoryChosen: false,
             priorityChosen: false,
-            goalChosen: false,
             addTaskMenuChosen: false,
         }))
     }
 
-    chooseGoalOption = () => {
+    chooseRepeatOption = () => {
         this.setState(prevState => ({
             calendarChosen: false,
-            goalChosen: !prevState.goalChosen,
+            repeatChosen: !prevState.repeatChosen,
             categoryChosen: false,
             priorityChosen: false,
             addTaskMenuChosen: false,
@@ -93,7 +94,7 @@ export default class OverlayModal extends Component {
     chosenCategoryOption = () => {
         this.setState(prevState => ({
             calendarChosen: false,
-            goalChosen: false,
+            repeatChosen: false,
             priorityChosen: false,
             categoryChosen: !prevState.categoryChosen,
             addTaskMenuChosen: false,
@@ -103,9 +104,9 @@ export default class OverlayModal extends Component {
     choosePriorityOption = () => {
         this.setState(prevState => ({
             calendarChosen: false,
+            repeatChosen: false,
             categoryChosen: false,
             priorityChosen: !prevState.priorityChosen,
-            goalChosen: false,
             addTaskMenuChosen: false,
         }))
     }
@@ -449,7 +450,7 @@ export default class OverlayModal extends Component {
                             <AddTaskPanel
                                 chooseCalenderOption={this.chooseCalenderOption}
                                 chosenCategoryOption={this.chosenCategoryOption}
-                                chooseGoalOption={this.chooseGoalOption}
+                                chooseRepeatOption={this.chooseRepeatOption}
                                 choosePriorityOption={this.choosePriorityOption}
 
                                 setCurrentAnnotation={this.setCurrentAnnotation}
@@ -465,6 +466,7 @@ export default class OverlayModal extends Component {
                                     <Calendar
                                         currentAnnotation={this.state.currentAnnotation}
                                         disableAllTabs={this.disableAllTabs}
+                                        edit={false}
                                     />
 
                                     :
@@ -481,8 +483,8 @@ export default class OverlayModal extends Component {
 
                                             <>
                                                 {/* Repeat Panel */}
-                                                {this.state.goalChosen ?
-                                                    <Goal
+                                                {this.state.repeatChosen ?
+                                                    <Repeat
                                                         currentAnnotation={this.state.currentAnnotation}
                                                         edit={false}
                                                         hideAction={this.disableAllTabs}

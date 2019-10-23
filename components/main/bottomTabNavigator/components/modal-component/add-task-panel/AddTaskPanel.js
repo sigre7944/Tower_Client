@@ -136,7 +136,7 @@ export default class AddTaskPanel extends Component {
                     chooseCalenderOption={this.props.chooseCalenderOption}
                     chosenCategoryOption={this.props.chosenCategoryOption}
                     choosePriorityOption={this.props.choosePriorityOption}
-                    chooseGoalOption={this.props.chooseGoalOption}
+                    chooseRepeatOption={this.props.chooseRepeatOption}
                     toggleAddTask={this.props.toggleAddTask}
                     disableAddTaskPanel={this.disableAddTaskPanel}
                 />

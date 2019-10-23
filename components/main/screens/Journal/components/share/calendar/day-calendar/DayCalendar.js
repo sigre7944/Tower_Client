@@ -4,19 +4,153 @@ import {
     View,
     Text,
     StyleSheet,
-    TouchableOpacity
+    TouchableOpacity,
+    Animated,
+    Easing
 } from 'react-native'
 
 import { Map } from 'immutable'
 
 import { styles } from './styles/styles'
 
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import {
+    faTimes,
+    faCheck
+} from '@fortawesome/free-solid-svg-icons'
+
 const panel_width = 338
 const margin_top_for_calendar_row = 20
 const margin_top_for_month_year_text = 30
 const calendar_total_height = margin_top_for_calendar_row * 6 + 32 * 6
+const animation_duration = 250
+const easing = Easing.inOut(Easing.linear)
 
 export default class DayCalendar extends React.Component {
+    chosen_day = -1
+    chosen_month = -1
+    chosen_year = -1
+
+    calendar_scale_value = new Animated.Value(0.3)
+    calendar_opacity_value = new Animated.Value(0.3)
+
+    save = () => {
+        if (this.chosen_day > 0 && this.chosen_month > 0 && this.chosen_year > 0) {
+            this._updateTask(this.chosen_day, this.chosen_month, this.chosen_year)
+        }
+
+        this.props.hideAction()
+    }
+
+    cancel = () => {
+        this.props.hideAction()
+    }
+
+    setData = (day, month, year) => {
+        this.chosen_day = day
+        this.chosen_month = month
+        this.chosen_year = year
+    }
+
+    _updateTask = (day, month, year) => {
+        this.props.updateTaskSchedule({
+            day,
+            month,
+            year,
+        })
+    }
+
+    animateCalendar = () => {
+        Animated.parallel([
+            Animated.timing(
+                this.calendar_opacity_value,
+                {
+                    toValue: 1,
+                    duration: animation_duration,
+                    easing,
+                    useNativeDriver: true
+                }
+            ),
+            Animated.timing(
+                this.calendar_scale_value,
+                {
+                    toValue: 1,
+                    duration: animation_duration,
+                    easing,
+                    useNativeDriver: true
+                }
+            )
+        ]).start()
+    }
+
+    componentDidMount() {
+        this.animateCalendar()
+    }
+
+
+    render() {
+        return (
+            <Animated.View
+                style={{
+                    position: 'absolute',
+                    width: panel_width,
+                    backgroundColor: 'white',
+                    borderRadius: 10,
+                    flexDirection: "row",
+                    overflow: "hidden",
+                    transform: [{ scale: this.calendar_scale_value }],
+                    opacity: this.calendar_opacity_value
+                }}
+            >
+                <View>
+                    {/* Main content of day calendar */}
+                    <Calendar
+                        edit={this.props.edit}
+                        setData={this.setData}
+                        task_data={this.props.task_data}
+                    />
+
+                    <View
+                        style={styles.separating_line}
+                    >
+                    </View>
+
+                    <View
+                        style={{
+                            marginTop: 28,
+                            marginHorizontal: 30,
+                            flexDirection: "row",
+                            justifyContent: "flex-end",
+                            marginBottom: 35,
+                        }}
+                    >
+                        <TouchableOpacity
+                            style={styles.close_icon_holder}
+                            onPress={this.cancel}
+                        >
+                            <FontAwesomeIcon
+                                icon={faTimes}
+                                color="white"
+                            />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.save_icon_holder}
+                            onPress={this.save}
+                        >
+                            <FontAwesomeIcon
+                                icon={faCheck}
+                                color="white"
+                            />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Animated.View>
+        )
+    }
+}
+
+class Calendar extends React.Component {
     year_in_between = 4
     current_day = new Date().getDate()
     current_year = new Date().getFullYear()
@@ -160,6 +294,7 @@ export default class DayCalendar extends React.Component {
 
     render() {
         return (
+
             <View
                 style={{
                     backgroundColor: "white",
@@ -235,6 +370,7 @@ class MonthHolder extends React.Component {
                     findMonthIndex={this.props.findMonthIndex}
                     findDayIndex={this.props.findDayIndex}
                     scrollToMonth={this.props.scrollToMonth}
+                    setData={this.props.setData}
                 />
             )
         }
@@ -417,11 +553,23 @@ class DayHolder extends React.Component {
             })
         }
 
+        else {
+            if (nextProps.day_data.day === nextProps.current_day &&
+                nextProps.day_data.month === nextProps.current_month &&
+                nextProps.day_data.year === nextProps.current_year
+            ) {
+                return ({
+                    round_day_container_style: styles.not_chosen_round_day_container,
+                    day_text_style: styles.chosen_day_text
+                })
+            }
+        }
+
         return null
     }
 
     _chooseDayFromCurrentMonth = () => {
-        let {day, month, year} = this.props.day_data
+        let { day, month, year } = this.props.day_data
         this.props.setData(day, month, year)
         this.props.chooseDay(this.props.month_index, this.props.day_index)
     }

@@ -33,10 +33,6 @@ export default class DayAnnotationPanel extends Component {
     calendar_scale_value = new Animated.Value(0.3)
     calendar_opacity_value = new Animated.Value(0.3)
 
-    _chooseRepeatOption = () => {
-        this.props.chooseRepeatOption()
-    }
-
     save = () => {
         let date = new Date()
 
@@ -104,7 +100,6 @@ export default class DayAnnotationPanel extends Component {
                 style={{
                     position: 'absolute',
                     width: panel_width,
-                    // height: day_calendar_height,
                     backgroundColor: 'white',
                     borderRadius: 10,
                     flexDirection: "row",
@@ -123,35 +118,6 @@ export default class DayAnnotationPanel extends Component {
                     <View
                         style={styles.separating_line}
                     >
-                    </View>
-
-                    <View
-                        style={{
-                            marginHorizontal: 15,
-                            marginTop: 15,
-                        }}
-                    >
-                        <TouchableOpacity
-                            style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                            }}
-
-                            onPress={this._chooseRepeatOption}
-                        >
-                            <>
-                                <FontAwesomeIcon
-                                    icon={faRedoAlt}
-                                    color="rgba(0, 0, 0, 0.3)"
-                                />
-
-                                <Text
-                                    style={styles.option_text}
-                                >
-                                    Add repeat
-                            </Text>
-                            </>
-                        </TouchableOpacity>
                     </View>
 
                     <View
