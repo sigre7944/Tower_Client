@@ -27,7 +27,7 @@ import {
     faCheck
 } from '@fortawesome/free-solid-svg-icons'
 
-import { fromJS } from 'immutable'
+import { Map, fromJS } from 'immutable'
 
 const animation_duration = 250
 const easing = Easing.inOut(Easing.linear)
@@ -207,7 +207,8 @@ export default class DayTypeRepeat extends React.PureComponent {
         else if (selected_repeat_type === "weeks") {
             repeat_value_data.type = "weekly"
             repeat_value_data.interval = {
-                value: repeat_input_value
+                value: repeat_input_value,
+                daysInWeek: days_in_week_option_array
             }
         }
 
@@ -250,10 +251,80 @@ export default class DayTypeRepeat extends React.PureComponent {
         })
     }
 
+    initializeData = () => {
+        let current_task_map = Map(this.props.currentTask),
+            repeat_type = current_task_map.getIn(["repeat", "type"]),
+            goal_value = current_task_map.getIn(["goal", "max"]).toString(),
+            end_type = current_task_map.getIn(["end", "type"]),
+            repeat_value = "1",
+            days_in_week_option_array = [false, false, false, false, false, false, false],
+            selected_repeat_type = "days",
+            end_current_index = 0,
+            end_at_chosen_day = this.date.getDate(),
+            end_at_chosen_month = this.date.getMonth(),
+            end_at_chosen_year = this.date.getFullYear(),
+            after_occurrence_value = "1"
+
+
+        if (repeat_type === "daily") {
+            repeat_value = current_task_map.getIn(["repeat", "interval", "value"]).toString()
+            selected_repeat_type = "days"
+
+
+        }
+
+        else if (repeat_type === "weekly") {
+            repeat_value = current_task_map.getIn(["repeat", "interval", "value"]).toString()
+            days_in_week_option_array = current_task_map.getIn(["repeat", "interval", "daysInWeek"])
+            selected_repeat_type = "weeks"
+        }
+
+        else {
+            selected_repeat_type = "months"
+            repeat_value = current_task_map.getIn(["repeat", "interval", "value"])
+        }
+
+        if (end_type === "never") {
+            end_current_index = 0
+        }
+
+        else if (end_type === "on") {
+            let timestamp = current_task_map.getIn(["end", "endAt"]),
+                date = new Date(timestamp)
+
+            end_at_chosen_day = date.getDate().toString()
+            end_at_chosen_month = date.getMonth().toString()
+            end_at_chosen_year = date.getFullYear().toString()
+
+            end_current_index = 1
+        }
+
+        else {
+            after_occurrence_value = current_task_map.getIn(["end", "occurrence"]).toString()
+            end_current_index = 2
+        }
+
+        this.chooseEndOption(end_current_index)
+
+        this.setState({
+            selected_repeat_type,
+            repeat_input_value: repeat_value,
+            goal_value,
+            end_current_index,
+            end_at_chosen_day,
+            end_at_chosen_month,
+            end_at_chosen_year,
+            after_occurrence_value,
+            days_in_week_option_array: [...days_in_week_option_array]
+        })
+    }
+
     componentDidMount() {
         this.animateRepeat()
 
         this._keyboardWillHideListener = Keyboard.addListener("keyboardWillHide", this._keyboardWillHideHandler)
+
+        this.initializeData()
     }
 
     componentWillUnmount() {

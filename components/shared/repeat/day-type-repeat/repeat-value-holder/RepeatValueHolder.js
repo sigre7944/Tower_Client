@@ -16,18 +16,9 @@ import { styles } from './styles/styles'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
     faRedoAlt,
-    faHourglassEnd,
-    faFlag,
-    faTimes,
-    faCheck
 } from '@fortawesome/free-solid-svg-icons'
 
-const animation_duration = 250
-const easing = Easing.inOut(Easing.linear)
 const window_width = Dimensions.get("window").width
-const window_height = Dimensions.get("window").height
-const repeat_panel_height = 584
-const margin_bottom_of_last_row = 35
 
 export default class RepeatValueHolder extends React.PureComponent {
 
@@ -167,10 +158,12 @@ class RepeatTypePicker extends React.PureComponent {
         this.props._chooseDonePicker(this.state.current_chosen_repeat_type)
     }
 
-    componentDidMount() {
-        this.setState({
-            current_chosen_repeat_type: this.props.selected_repeat_type
-        })
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.selected_repeat_type !== prevProps.selected_repeat_type) {
+            this.setState({
+                current_chosen_repeat_type: this.props.selected_repeat_type
+            })
+        }
     }
 
     render() {
