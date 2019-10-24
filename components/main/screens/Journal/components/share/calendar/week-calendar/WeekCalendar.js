@@ -56,11 +56,13 @@ export default class WeekCalendar extends React.Component {
         this.chosen_noWeekInMonth = noWeekInMonth
     }
 
-    _updateTask = (day, month, year) => {
+    _updateTask = (day, week, month, year, noWeekInMonth) => {
         this.props.updateTaskSchedule({
             day,
+            week,
             month,
             year,
+            noWeekInMonth
         })
     }
 
@@ -571,6 +573,7 @@ class WeekRowHolder extends React.Component {
         return (this.props.week_index === nextProps.current_week_index && this.props.month_index === nextProps.current_month_index)
             || (this.props.week_index === nextProps.last_week_index && this.props.month_index === nextProps.current_month_index)
             || (this.props.week_index === nextProps.last_week_index && this.props.month_index === nextProps.last_month_index)
+            || (this.state.should_flatlist_update !== nextState.should_flatlist_update)
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -601,6 +604,30 @@ class WeekRowHolder extends React.Component {
         return null
     }
 
+    getWeek = (date) => {
+        let target = new Date(date);
+        let dayNr = (date.getDay() + 6) % 7;
+        target.setDate(target.getDate() - dayNr + 3);
+        let firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() != 4) {
+            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+        }
+        return 1 + Math.ceil((firstThursday - target) / 604800000);
+    }
+
+    getMonday = (date) => {
+        let dayInWeek = new Date(date).getDay()
+        let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
+        return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
+    }
+
+    getNoWeekInMonth = (date) => {
+        let nearest_monday_timestamp = this.getMonday(date).getTime()
+        let first_monday_of_month_timestamp = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 1)).getTime()
+
+        return Math.floor((nearest_monday_timestamp - first_monday_of_month_timestamp) / (7 * 86400 * 1000)) + 1
+    }
 
     _keyExtractor = (item, index) => `week-type-calendar-week-row-${item.week}-${item.day}-${item.month}-${item.year}`
 
@@ -644,12 +671,13 @@ class WeekRowHolder extends React.Component {
     }
 
     componentDidMount() {
-        let task_data_map = Map(this.props.task_data),
-            day = task_data_map.getIn(["schedule", "day"]),
-            week = task_data_map.getIn(["schedule", "week"]),
-            month = task_data_map.getIn(["schedule", "month"]),
-            year = task_data_map.getIn(["schedule", "year"]),
-            noWeekInMonth = task_data_map.getIn(["schedule", "noWeekInMonth"])
+        let date = new Date(),
+            monday = this.getMonday(date),
+            day = monday.getDate(),
+            week = this.getWeek(monday),
+            month = monday.getMonth(),
+            year = monday.getFullYear(),
+            noWeekInMonth = this.getNoWeekInMonth(monday)
 
         if (day === this.props.week_data[0].day
             && week === this.props.week_data[0].week
@@ -659,6 +687,7 @@ class WeekRowHolder extends React.Component {
 
             this.setState(prevState => ({
                 is_present: true,
+                should_flatlist_update: prevState.should_flatlist_update + 1
             }))
         }
     }
@@ -708,43 +737,26 @@ class WeekHolder extends React.Component {
     }
 }
 
-class DayHolder extends React.Component {
-
-    is_present = false
+class DayHolder extends React.PureComponent {
 
     state = {
         round_day_container_style: styles.not_chosen_round_day_container,
-        day_text_style: styles.not_chosen_day_text
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return this.props.is_chosen !== nextProps.is_chosen || this.props.is_present !== nextProps.is_present
-    }
-
-    static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.is_present) {
-            return ({
-                day_text_style: styles.chosen_day_text
-            })
+    render() {
+        let day_text_style = styles.not_chosen_day_text
+        if (this.props.is_present) {
+            day_text_style = styles.chosen_day_text
         }
         else {
-            if (nextProps.is_chosen) {
-                return ({
-                    day_text_style: styles.chosen_day_text
-                })
+            if (this.props.is_chosen) {
+                day_text_style = styles.chosen_day_text
             }
 
             else {
-                return ({
-                    day_text_style: styles.not_chosen_day_text
-                })
+                day_text_style = styles.not_chosen_day_text
             }
         }
-    }
-
-
-
-    render() {
         return (
             <View
                 style={styles.day_holder_container}
@@ -753,7 +765,7 @@ class DayHolder extends React.Component {
                     style={this.state.round_day_container_style}
                 >
                     <Text
-                        style={this.state.day_text_style}
+                        style={day_text_style}
                     >
                         {this.props.week_row_data.day}
                     </Text>
