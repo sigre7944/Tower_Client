@@ -143,10 +143,10 @@ function getMonday(date) {
 }
 
 function getNoWeekInMonth(date) {
-    let nearest_monday = getMonday(date).getDate()
-    let first_moday_of_month = getMonday(new Date(date.getFullYear(), date.getMonth(), 7)).getDate()
+    let nearest_monday_timestamp = getMonday(date).getTime()
+    let first_monday_of_month_timestamp = getMonday(new Date(date.getFullYear(), date.getMonth(), 1)).getTime()
 
-    return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
+    return Math.floor((nearest_monday_timestamp - first_monday_of_month_timestamp) / (7 * 86400 * 1000)) + 1
 }
 
 let date = new Date(),

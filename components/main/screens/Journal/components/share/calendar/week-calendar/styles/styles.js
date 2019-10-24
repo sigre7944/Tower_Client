@@ -35,7 +35,7 @@ export const styles = StyleSheet.create({
         lineHeight: 14,
         color: CommonStyle.text_icon_colors.ti_1,
         opacity: 0.3,
-        marginLeft: 5,
+        // marginLeft: 5,
         letterSpacing: -0.02,
         textTransform: "uppercase",
     },
@@ -47,7 +47,7 @@ export const styles = StyleSheet.create({
         fontSize: 12,
         lineHeight: 14,
         color: CommonStyle.primary_colors.prim_1,
-        marginLeft: 5,
+        // marginLeft: 5,
         letterSpacing: -0.02,
     },
 
@@ -67,13 +67,25 @@ export const styles = StyleSheet.create({
         opacity: 0.3,
     },
 
+    not_chosen_week_row_container: {
+        width: 328,
+        marginTop: 20,
+        borderRadius: 32,
+    },
+
+    chosen_week_row_container: {
+        width: 328,
+        marginTop: 20,
+        borderRadius: 32,
+        backgroundColor: CommonStyle.primary_colors.prim_3
+    },
+
     not_chosen_round_day_container: {
         width: 32,
         height: 32,
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 16,
-        backgroundColor: "white"
     },
 
     chosen_round_day_container: {
@@ -83,6 +95,14 @@ export const styles = StyleSheet.create({
         alignItems: "center",
         borderRadius: 16,
         backgroundColor: CommonStyle.primary_colors.prim_3
+    },
+
+    week_text: {
+        fontFamily: CommonStyle.sf_ui_display_light_font,
+        fontSize: 15,
+        lineHeight: 18,
+        letterSpacing: -0.02,
+        color: CommonStyle.primary_colors.prim_1
     },
 
     not_chosen_day_text: {

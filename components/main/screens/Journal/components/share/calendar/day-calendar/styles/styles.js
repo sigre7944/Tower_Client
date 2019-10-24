@@ -35,7 +35,7 @@ export const styles = StyleSheet.create({
         lineHeight: 14,
         color: CommonStyle.text_icon_colors.ti_1,
         opacity: 0.3,
-        marginLeft: 5,
+        // marginLeft: 5,
         letterSpacing: -0.02,
         textTransform: "uppercase",
     },
@@ -47,7 +47,7 @@ export const styles = StyleSheet.create({
         fontSize: 12,
         lineHeight: 14,
         color: CommonStyle.primary_colors.prim_1,
-        marginLeft: 5,
+        // marginLeft: 5,
         letterSpacing: -0.02,
     },
 

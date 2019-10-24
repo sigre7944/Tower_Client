@@ -48,10 +48,12 @@ export default class WeekCalendar extends React.Component {
         this.props.hideAction()
     }
 
-    setData = (day, month, year) => {
+    setData = (day, week, month, year, noWeekInMonth) => {
         this.chosen_day = day
+        this.chosen_week = week
         this.chosen_month = month
         this.chosen_year = year
+        this.chosen_noWeekInMonth = noWeekInMonth
     }
 
     _updateTask = (day, month, year) => {
@@ -195,10 +197,10 @@ class Calendar extends React.Component {
     }
 
     getNoWeekInMonth = (date) => {
-        let nearest_monday = this.getMonday(date)
-        let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
+        let nearest_monday_timestamp = this.getMonday(date).getTime()
+        let first_monday_of_month_timestamp = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 1)).getTime()
 
-        return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
+        return Math.floor((nearest_monday_timestamp - first_monday_of_month_timestamp) / (7 * 86400 * 1000)) + 1
     }
 
     scrollToMonth = (month_index) => {
@@ -235,18 +237,13 @@ class Calendar extends React.Component {
             last_week_index={this.state.last_week_index}
 
             chooseWeek={this.chooseWeek}
+
             scrollToMonth={this.scrollToMonth}
             present_month_index={this.present_month_index}
 
             setData={this.props.setData}
+
             task_data={this.props.task_data}
-
-            findMonthIndex={this.findMonthIndex}
-            findDayIndex={this.findDayIndex}
-
-            current_day={this.current_day}
-            current_month={this.current_month}
-            current_year={this.current_year}
         />
     )
 
@@ -308,7 +305,6 @@ class Calendar extends React.Component {
         return (year - this.left_end_year) * 12 + month
     }
 
-
     componentDidMount() {
         this.initMonthData()
     }
@@ -369,8 +365,6 @@ class Calendar extends React.Component {
 class MonthHolder extends React.Component {
     month_names = ["January", "Febuary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
-    days_in_month_data = []
-
     weeks_in_month_data = []
 
     state = {
@@ -400,10 +394,10 @@ class MonthHolder extends React.Component {
     }
 
     getNoWeekInMonth = (date) => {
-        let nearest_monday = this.getMonday(date).getDate()
-        let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7)).getDate()
+        let nearest_monday_timestamp = this.getMonday(date).getTime()
+        let first_monday_of_month_timestamp = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 1)).getTime()
 
-        return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
+        return Math.floor((nearest_monday_timestamp - first_monday_of_month_timestamp) / (7 * 86400 * 1000)) + 1
     }
 
     _keyExtractor = (item, index) => `day-type-calendar-${item[0].week}-${item[0].month}-${item[0].year}-${index}`
@@ -413,13 +407,18 @@ class MonthHolder extends React.Component {
             <WeekRowHolder
                 week_data={item}
                 week_index={index}
+
                 chooseWeek={this.props.chooseWeek}
                 month_index={this.props.month_index}
-                findMonthIndex={this.props.findMonthIndex}
-                scrollToMonth={this.props.scrollToMonth}
+
+                current_month_index={this.props.current_month_index}
+                last_month_index={this.props.last_month_index}
+
                 current_week_index={this.props.current_week_index}
                 last_week_index={this.props.last_week_index}
-                present_month_index={this.props.present_month_index}
+
+                setData={this.props.setData}
+                task_data={this.props.task_data}
             />
         )
     }
@@ -454,6 +453,7 @@ class MonthHolder extends React.Component {
 
             data.push({
                 week: this.getWeek(new Date(monday)),
+                day: new Date(monday).getDate(),
                 month: new Date(monday).getMonth(),
                 year: new Date(monday).getFullYear(),
                 noWeekInMonth: this.getNoWeekInMonth(new Date(monday))
@@ -491,8 +491,22 @@ class MonthHolder extends React.Component {
         }
 
         this.setState(prevState => ({
-            should_flatlist_update: !prevState.should_flatlist_update + 1,
+            should_flatlist_update: prevState.should_flatlist_update + 1,
         }))
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.month_index === this.props.current_month_index && this.props.current_week_index !== prevProps.current_week_index) {
+            this.setState(prevState => ({
+                should_flatlist_update: prevState.should_flatlist_update + 1,
+            }))
+        }
+
+        if (this.props.month_index === this.props.last_month_index && this.props.current_month_index !== prevProps.current_month_index) {
+            this.setState(prevState => ({
+                should_flatlist_update: prevState.should_flatlist_update + 1,
+            }))
+        }
     }
 
     render() {
@@ -546,6 +560,12 @@ class MonthHolder extends React.Component {
 
 class WeekRowHolder extends React.Component {
 
+    state = {
+        is_chosen: false,
+        is_present: false,
+        container_style: styles.not_chosen_week_row_container,
+        should_flatlist_update: 0,
+    }
 
     shouldComponentUpdate(nextProps, nextState) {
         return (this.props.week_index === nextProps.current_week_index && this.props.month_index === nextProps.current_month_index)
@@ -553,9 +573,34 @@ class WeekRowHolder extends React.Component {
             || (this.props.week_index === nextProps.last_week_index && this.props.month_index === nextProps.last_month_index)
     }
 
-    state = {
-        should_flatlist_update: 0
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.week_index === nextProps.current_week_index && nextProps.month_index === nextProps.current_month_index) {
+            return ({
+                container_style: styles.chosen_week_row_container,
+                should_flatlist_update: prevState.should_flatlist_update + 1,
+                is_chosen: true
+            })
+        }
+
+        else if (nextProps.week_index === nextProps.last_week_index && nextProps.month_index === nextProps.current_month_index) {
+            return ({
+                container_style: styles.not_chosen_week_row_container,
+                should_flatlist_update: prevState.should_flatlist_update + 1,
+                is_chosen: false
+            })
+        }
+
+        else if (nextProps.week_index === nextProps.last_week_index && nextProps.month_index === nextProps.last_month_index) {
+            return ({
+                container_style: styles.not_chosen_week_row_container,
+                should_flatlist_update: prevState.should_flatlist_update + 1,
+                is_chosen: false
+            })
+        }
+
+        return null
     }
+
 
     _keyExtractor = (item, index) => `week-type-calendar-week-row-${item.week}-${item.day}-${item.month}-${item.year}`
 
@@ -564,6 +609,7 @@ class WeekRowHolder extends React.Component {
             return (
                 <WeekHolder
                     week_row_data={item}
+                    is_chosen={this.state.is_chosen}
                 />
             )
         }
@@ -573,6 +619,7 @@ class WeekRowHolder extends React.Component {
                 return (
                     <UnchosenDayHolder
                         week_row_data={item}
+                        is_chosen={this.state.is_chosen}
                     />
                 )
             }
@@ -581,20 +628,46 @@ class WeekRowHolder extends React.Component {
                 return (
                     <DayHolder
                         week_row_data={item}
+                        is_chosen={this.state.is_chosen}
+                        is_present={this.state.is_present}
                     />
                 )
             }
         }
     }
 
+    _chooseWeekRow = () => {
+        let { day, week, month, year, noWeekInMonth } = this.props.week_data[0]
+        this.props.setData(day, week, month, year, noWeekInMonth)
+
+        this.props.chooseWeek(this.props.month_index, this.props.week_index)
+    }
+
+    componentDidMount() {
+        let task_data_map = Map(this.props.task_data),
+            day = task_data_map.getIn(["schedule", "day"]),
+            week = task_data_map.getIn(["schedule", "week"]),
+            month = task_data_map.getIn(["schedule", "month"]),
+            year = task_data_map.getIn(["schedule", "year"]),
+            noWeekInMonth = task_data_map.getIn(["schedule", "noWeekInMonth"])
+
+        if (day === this.props.week_data[0].day
+            && week === this.props.week_data[0].week
+            && month === this.props.week_data[0].month
+            && year === this.props.week_data[0].year
+            && noWeekInMonth === this.props.week_data[0].noWeekInMonth) {
+
+            this.setState(prevState => ({
+                is_present: true,
+            }))
+        }
+    }
 
     render() {
         return (
             <TouchableOpacity
-                style={{
-                    width: panel_width - 10,
-                    marginTop: margin_top_for_calendar_row,
-                }}
+                style={this.state.container_style}
+                onPress={this._chooseWeekRow}
             >
                 <FlatList
                     data={this.props.week_data}
@@ -602,6 +675,7 @@ class WeekRowHolder extends React.Component {
                     numColumns={8}
                     keyExtractor={this._keyExtractor}
                     renderItem={this._renderItem}
+                    scrollEnabled={false}
                 />
             </TouchableOpacity>
         )
@@ -609,6 +683,10 @@ class WeekRowHolder extends React.Component {
 }
 
 class WeekHolder extends React.Component {
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return false
+    }
 
     render() {
         return (
@@ -620,7 +698,9 @@ class WeekHolder extends React.Component {
                     alignItems: "center",
                 }}
             >
-                <Text>
+                <Text
+                    style={styles.week_text}
+                >
                     {this.props.week_row_data.week}
                 </Text>
             </View>
@@ -630,80 +710,39 @@ class WeekHolder extends React.Component {
 
 class DayHolder extends React.Component {
 
+    is_present = false
+
     state = {
         round_day_container_style: styles.not_chosen_round_day_container,
         day_text_style: styles.not_chosen_day_text
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        return (nextProps.current_day_index === this.props.day_index && nextProps.current_month_index === this.props.month_index)
-            || (nextProps.last_day_index === this.props.day_index && nextProps.last_month_index === this.props.month_index)
-            || (nextProps.last_day_index === this.props.day_index && nextProps.current_month_index === this.props.month_index)
+        return this.props.is_chosen !== nextProps.is_chosen || this.props.is_present !== nextProps.is_present
     }
 
-    // static getDerivedStateFromProps(nextProps, prevState) {
-    //     if (nextProps.current_day_index === nextProps.day_index && nextProps.current_month_index === nextProps.month_index) {
-    //         if (nextProps.data.day === nextProps.current_day &&
-    //             nextProps.data.month === nextProps.current_month &&
-    //             nextProps.data.year === nextProps.current_year
-    //         ) {
-    //             return ({
-    //                 round_day_container_style: styles.chosen_round_day_container,
-    //                 day_text_style: styles.chosen_day_text
-    //             })
-    //         }
-    //         return ({
-    //             round_day_container_style: styles.chosen_round_day_container,
-    //             day_text_style: styles.chosen_day_text
-    //         })
-    //     }
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.is_present) {
+            return ({
+                day_text_style: styles.chosen_day_text
+            })
+        }
+        else {
+            if (nextProps.is_chosen) {
+                return ({
+                    day_text_style: styles.chosen_day_text
+                })
+            }
 
-    //     else if (nextProps.last_day_index === nextProps.day_index && nextProps.last_month_index === nextProps.month_index) {
-    //         if (nextProps.data.day === nextProps.current_day &&
-    //             nextProps.data.month === nextProps.current_month &&
-    //             nextProps.data.year === nextProps.current_year
-    //         ) {
-    //             return ({
-    //                 round_day_container_style: styles.not_chosen_round_day_container,
-    //                 day_text_style: styles.chosen_day_text
-    //             })
-    //         }
-    //         return ({
-    //             round_day_container_style: styles.not_chosen_round_day_container,
-    //             day_text_style: styles.not_chosen_day_text
-    //         })
-    //     }
+            else {
+                return ({
+                    day_text_style: styles.not_chosen_day_text
+                })
+            }
+        }
+    }
 
-    //     else if (nextProps.last_day_index === nextProps.day_index && nextProps.current_month_index === nextProps.month_index) {
-    //         if (nextProps.data.day === nextProps.current_day &&
-    //             nextProps.data.month === nextProps.current_month &&
-    //             nextProps.data.year === nextProps.current_year
-    //         ) {
-    //             return ({
-    //                 round_day_container_style: styles.not_chosen_round_day_container,
-    //                 day_text_style: styles.chosen_day_text
-    //             })
-    //         }
-    //         return ({
-    //             round_day_container_style: styles.not_chosen_round_day_container,
-    //             day_text_style: styles.not_chosen_day_text
-    //         })
-    //     }
 
-    //     else {
-    //         if (nextProps.data.day === nextProps.current_day &&
-    //             nextProps.data.month === nextProps.current_month &&
-    //             nextProps.data.year === nextProps.current_year
-    //         ) {
-    //             return ({
-    //                 round_day_container_style: styles.not_chosen_round_day_container,
-    //                 day_text_style: styles.chosen_day_text
-    //             })
-    //         }
-    //     }
-
-    //     return null
-    // }
 
     render() {
         return (

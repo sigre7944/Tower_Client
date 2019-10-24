@@ -130,10 +130,10 @@ export default class OverlayModal extends Component {
     }
 
     getNoWeekInMonth = (date) => {
-        let nearest_monday = this.getMonday(date).getDate()
-        let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7)).getDate()
+        let nearest_monday_timestamp = this.getMonday(date).getTime()
+        let first_monday_of_month_timestamp = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 1)).getTime()
 
-        return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
+        return Math.floor((nearest_monday_timestamp - first_monday_of_month_timestamp) / (7 * 86400 * 1000)) + 1
     }
 
     componentDidMount() {
