@@ -37,7 +37,7 @@ export default class WeekCalendar extends React.Component {
     calendar_opacity_value = new Animated.Value(0.3)
 
     save = () => {
-        if (this.chosen_day > 0 && this.chosen_week > 0 && this.chosen_month > 0 && this.chosen_year > 0 && this.chosen_noWeekInMonth > 0) {
+        if (this.chosen_day > 0 && this.chosen_week > 0 && this.chosen_month >= 0 && this.chosen_year > 0 && this.chosen_noWeekInMonth > 0) {
             this._updateTask(this.chosen_day, this.chosen_week, this.chosen_month, this.chosen_year, this.chosen_noWeekInMonth)
         }
 
@@ -158,9 +158,10 @@ export default class WeekCalendar extends React.Component {
 
 class Calendar extends React.Component {
     year_in_between = 4
-    current_day = new Date().getDate()
+
     current_year = new Date().getFullYear()
     current_month = new Date().getMonth()
+
     left_end_year = this.current_year - this.year_in_between
     right_end_year = this.current_year + this.year_in_between
 
@@ -244,8 +245,6 @@ class Calendar extends React.Component {
             present_month_index={this.present_month_index}
 
             setData={this.props.setData}
-
-            task_data={this.props.task_data}
         />
     )
 
@@ -420,7 +419,6 @@ class MonthHolder extends React.Component {
                 last_week_index={this.props.last_week_index}
 
                 setData={this.props.setData}
-                task_data={this.props.task_data}
             />
         )
     }

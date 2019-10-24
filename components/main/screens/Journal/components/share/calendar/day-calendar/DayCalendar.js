@@ -35,7 +35,7 @@ export default class DayCalendar extends React.Component {
     calendar_opacity_value = new Animated.Value(0.3)
 
     save = () => {
-        if (this.chosen_day > 0 && this.chosen_month > 0 && this.chosen_year > 0) {
+        if (this.chosen_day > 0 && this.chosen_month >= 0 && this.chosen_year > 0) {
             this._updateTask(this.chosen_day, this.chosen_month, this.chosen_year)
         }
 
@@ -431,7 +431,7 @@ class MonthHolder extends React.Component {
         }
 
         this.setState(prevState => ({
-            should_flatlist_update: !prevState.should_flatlist_update + 1,
+            should_flatlist_update: prevState.should_flatlist_update + 1,
         }))
     }
 
