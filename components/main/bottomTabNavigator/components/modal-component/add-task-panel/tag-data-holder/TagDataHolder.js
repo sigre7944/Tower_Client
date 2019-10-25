@@ -3,14 +3,7 @@ import React, { Component } from 'react'
 import {
     View,
     Text,
-    TouchableHighlight,
-    TextInput,
-    Dimensions,
-    KeyboardAvoidingView,
-    Animated,
-    Keyboard,
     ScrollView,
-    FlatList
 } from 'react-native';
 
 import { styles } from './styles/styles'
@@ -407,8 +400,17 @@ class WeekTagDataElement extends React.PureComponent {
         }
 
         else if (property === "repeat") {
-            let value = Map(this.props.data).getIn(["interval", "value"]),
-                type = Map(this.props.data).get("type")
+            let value = parseInt(Map(this.props.data).getIn(["interval", "value"])),
+                type = Map(this.props.data).get("type"),
+                nth_week_array = ["First", "Second", "Third", "Last"],
+                nth_week_text = ""
+
+            if(type === "weekly-nth"){
+                if(value > 4){
+                    value = 4
+                }
+                nth_week_text = nth_week_array[value - 1] + " week every month"
+            }
 
             this.setState({
                 render_component:
@@ -428,7 +430,13 @@ class WeekTagDataElement extends React.PureComponent {
 
                                 :
 
-                                `every ${value} month(s)`
+                                <>
+                                    {type === "weekly-nth" ?
+                                        `${nth_week_text}`
+                                        :
+                                        `every ${value} month(s)`
+                                    }
+                                </>
                             }
                         </Text>
                     </View>
