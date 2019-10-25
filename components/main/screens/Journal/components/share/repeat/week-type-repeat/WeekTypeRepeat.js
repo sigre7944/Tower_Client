@@ -16,7 +16,7 @@ import {
 import { styles } from './styles/styles'
 
 import RepeatValueHolder from './repeat-value-holder/RepeatValueHolder'
-import ChooseDayInWeekOption from './choose-day-in-week-option/ChooseDayInWeekOption'
+import ChooseWeekNthInMonth from './choose-week-nth-in-month/ChooseWeekNthInMonth'
 
 import RepeatEndOptionsHolder from './repeat-end-options-holder/RepeatEndOptionsHolder'
 
@@ -34,14 +34,18 @@ const easing = Easing.inOut(Easing.linear)
 const window_width = Dimensions.get("window").width
 const margin_bottom_of_last_row = 35
 
-export default class DayTypeRepeat extends React.PureComponent {
+export default class WeekTypeRepeat extends React.PureComponent {
 
     repeat_opacity_value = new Animated.Value(0.3)
     repeat_scale_value = new Animated.Value(0.3)
     date = new Date()
 
     state = {
-        selected_repeat_type: "days",
+        selected_repeat_type: "weeks",
+
+        is_week_nth_option_selected: false,
+
+        no_week_in_month: 1,
 
         repeat_input_value: "1",
 
@@ -50,8 +54,6 @@ export default class DayTypeRepeat extends React.PureComponent {
         goal_value: "1",
 
         should_animate_translate_y: true,
-
-        days_in_week_option_array: [false, false, false, false, false, false, false],
 
         end_current_index: 0,
 
@@ -82,6 +84,18 @@ export default class DayTypeRepeat extends React.PureComponent {
     _setRepeatType = (repeat_type) => {
         this.setState({
             selected_repeat_type: repeat_type
+        })
+    }
+
+    _chooseWeekNthOptionRepeat = () => {
+        this.setState({
+            is_week_nth_option_selected: true
+        })
+    }
+
+    _chooseEveryOptionRepeat = () => {
+        this.setState({
+            is_week_nth_option_selected: false
         })
     }
 
@@ -176,10 +190,11 @@ export default class DayTypeRepeat extends React.PureComponent {
             repeat_input_value,
             after_occurrence_value,
             end_current_index,
-            days_in_week_option_array,
             end_at_chosen_day,
             end_at_chosen_month,
-            end_at_chosen_year } = this.state
+            end_at_chosen_year,
+            no_week_in_month,
+            is_week_nth_option_selected } = this.state
 
         let end_value_data = {},
             repeat_value_data = {}
@@ -197,27 +212,29 @@ export default class DayTypeRepeat extends React.PureComponent {
             end_value_data.occurrence = after_occurrence_value
         }
 
-        if (selected_repeat_type === "days") {
-            repeat_value_data.type = "daily"
+        if (is_week_nth_option_selected) {
+            repeat_value_data.type = "weekly-nth"
             repeat_value_data.interval = {
-                value: repeat_input_value
-            }
-        }
-
-        else if (selected_repeat_type === "weeks") {
-            repeat_value_data.type = "weekly"
-            repeat_value_data.interval = {
-                value: repeat_input_value,
-                daysInWeek: days_in_week_option_array
+                value: parseInt(no_week_in_month)
             }
         }
 
         else {
-            repeat_value_data.type = "monthly"
-            repeat_value_data.interval = {
-                value: repeat_input_value
+            if (selected_repeat_type === "weeks") {
+                repeat_value_data.type = "weekly-w"
+                repeat_value_data.interval = {
+                    value: repeat_input_value
+                }
+            }
+
+            else {
+                repeat_value_data.type = "monthly"
+                repeat_value_data.interval = {
+                    value: repeat_input_value
+                }
             }
         }
+
 
         let sending_data = {
             repeat_data: {
@@ -242,13 +259,11 @@ export default class DayTypeRepeat extends React.PureComponent {
         this.props.hideAction()
     }
 
-    _toggleDayInWeek = (index) => {
-        let days_in_week_option_array = [... this.state.days_in_week_option_array]
-        days_in_week_option_array[index] = !days_in_week_option_array[index]
+    getNoWeekInMonth = (date) => {
+        let nearest_monday_timestamp = this.getMonday(date).getTime()
+        let first_monday_of_month_timestamp = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 1)).getTime()
 
-        this.setState({
-            days_in_week_option_array: [...days_in_week_option_array]
-        })
+        return Math.floor((nearest_monday_timestamp - first_monday_of_month_timestamp) / (7 * 86400 * 1000)) + 1
     }
 
     initializeData = () => {
@@ -257,26 +272,26 @@ export default class DayTypeRepeat extends React.PureComponent {
             goal_value = current_task_map.getIn(["goal", "max"]).toString(),
             end_type = current_task_map.getIn(["end", "type"]),
             repeat_value = "1",
-            days_in_week_option_array = [false, false, false, false, false, false, false],
-            selected_repeat_type = "days",
+            selected_repeat_type = "weeks",
             end_current_index = 0,
             end_at_chosen_day = this.date.getDate(),
             end_at_chosen_month = this.date.getMonth(),
             end_at_chosen_year = this.date.getFullYear(),
-            after_occurrence_value = "1"
+            after_occurrence_value = "1",
+            is_week_nth_option_selected = false,
+            no_week_in_month = parseInt(current_task_map.getIn(["schedule", "noWeekInMonth"]))
 
-
-        if (repeat_type === "daily") {
-            repeat_value = current_task_map.getIn(["repeat", "interval", "value"]).toString()
-            selected_repeat_type = "days"
-
-
+        if (no_week_in_month > 4) {
+            no_week_in_month = 4
         }
 
-        else if (repeat_type === "weekly") {
+        if (repeat_type === "weekly-w") {
             repeat_value = current_task_map.getIn(["repeat", "interval", "value"]).toString()
-            days_in_week_option_array = current_task_map.getIn(["repeat", "interval", "daysInWeek"])
             selected_repeat_type = "weeks"
+        }
+
+        else if (repeat_type === "weekly-nth") {
+            is_week_nth_option_selected = true
         }
 
         else {
@@ -315,7 +330,8 @@ export default class DayTypeRepeat extends React.PureComponent {
             end_at_chosen_month,
             end_at_chosen_year,
             after_occurrence_value,
-            days_in_week_option_array: [...days_in_week_option_array]
+            is_week_nth_option_selected,
+            no_week_in_month
         })
     }
 
@@ -359,12 +375,15 @@ export default class DayTypeRepeat extends React.PureComponent {
                             _dontAnimateRepeatWhenFocusInput={this._dontAnimateRepeatWhenFocusInput}
                             selected_repeat_type={this.state.selected_repeat_type}
                             _setRepeatType={this._setRepeatType}
+
+                            is_week_nth_option_selected={this.state.is_week_nth_option_selected}
+                            _chooseEveryOptionRepeat={this._chooseEveryOptionRepeat}
                         />
 
-                        <ChooseDayInWeekOption
-                            selected_repeat_type={this.state.selected_repeat_type}
-                            _toggleDayInWeek={this._toggleDayInWeek}
-                            days_in_week_option_array={this.state.days_in_week_option_array}
+                        <ChooseWeekNthInMonth
+                            is_week_nth_option_selected={this.state.is_week_nth_option_selected}
+                            _chooseWeekNthOptionRepeat={this._chooseWeekNthOptionRepeat}
+                            no_week_in_month={this.state.no_week_in_month}
                         />
 
                         {/* Separating line */}

@@ -52,6 +52,16 @@ const task = {
             value: 2
         },
 
+        type: "weekly-m",
+        interval: {
+            value: 2
+        },
+
+        type: "weekly-nth",
+        interval: {
+            value: 3 // 4 is the max value (meaning the last week of the month). When the month has 5 weeks, the fifth week will be refered as 4
+        },
+
         // these properties are used for 'Month' type task
         type: "monthly-m",
         interval: {

@@ -454,9 +454,9 @@ class MonthHolder extends React.Component {
             data.push({
                 week: this.getWeek(new Date(monday)),
                 day: new Date(monday).getDate(),
-                month: new Date(monday).getMonth(),
-                year: new Date(monday).getFullYear(),
-                noWeekInMonth: this.getNoWeekInMonth(new Date(monday))
+                month,
+                year,
+                noWeekInMonth
             })
 
             for (let i = 0; i < 7; i++) {

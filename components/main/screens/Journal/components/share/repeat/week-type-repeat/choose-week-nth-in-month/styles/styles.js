@@ -6,57 +6,56 @@ import {
 import * as CommonStyle from '../../../../../../../../../shared/styles/style'
 
 export const styles = StyleSheet.create({
-    title_text: {
-        fontFamily: CommonStyle.sf_ui_display_light_font,
-        fontSize: 18,
-        lineHeight: 21,
-        letterSpacing: -0.02,
-        color: CommonStyle.text_icon_colors.ti_1,
-        marginLeft: 15,
+    unchosen_weekth_container: {
+        width: 84,
+        height: 28,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(214, 214, 214, 0.3)",
+        borderRadius: 15,
     },
 
-    every_option_text: {
+    chosen_weekth_container: {
+        width: 84,
+        height: 28,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: CommonStyle.primary_colors.prim_3,
+        borderRadius: 15,
+    },
+
+    unchosen_weekth_text: {
         fontFamily: CommonStyle.sf_ui_display_light_font,
         fontSize: 15,
         lineHeight: 18,
         letterSpacing: -0.02,
-        color: CommonStyle.primary_colors.prim_1
+        color: CommonStyle.text_icon_colors.ti_3,
     },
 
-    unchosen_every_option_text: {
-        fontFamily: CommonStyle.sf_ui_display_light_font,
-        fontSize: 15,
-        lineHeight: 18,
-        letterSpacing: -0.02,
-        color: CommonStyle.text_icon_colors.ti_3
-    },
-
-    every_option_input: {
+    chosen_weekth_text: {
         fontFamily: CommonStyle.sf_ui_display_light_font,
         fontSize: 15,
         lineHeight: 18,
         letterSpacing: -0.02,
         color: CommonStyle.primary_colors.prim_1,
-        width: 27,
-        height: 28,
-        borderBottomWidth: 1,
-        borderBottomColor: CommonStyle.primary_colors.prim_3,
-        marginLeft: 20,
-        textAlign: "center"
     },
 
-    unchosen_every_option_input: {
+    unchosen_week_every_month_text: {
+        fontFamily: CommonStyle.sf_ui_display_light_font,
+        fontSize: 15,
+        lineHeight: 18,
+        letterSpacing: -0.02,
+        color: CommonStyle.text_icon_colors.ti_3,
+        marginLeft: 11,
+    },
+
+    chosen_week_every_month_text: {
         fontFamily: CommonStyle.sf_ui_display_light_font,
         fontSize: 15,
         lineHeight: 18,
         letterSpacing: -0.02,
         color: CommonStyle.primary_colors.prim_1,
-        width: 27,
-        height: 28,
-        borderBottomWidth: 1,
-        borderBottomColor: CommonStyle.text_icon_colors.ti_3,
-        marginLeft: 20,
-        textAlign: "center"
+        marginLeft: 11,
     },
 
     picker_value_text: {
@@ -92,14 +91,4 @@ export const styles = StyleSheet.create({
         borderRadius: 15,
         backgroundColor: CommonStyle.primary_colors.prim_3
     },
-
-    unchosen_picker_button_container: {
-        marginLeft: 20,
-        width: 84,
-        height: 28,
-        justifyContent: "center",
-        alignItems: "center",
-        borderRadius: 15,
-        backgroundColor: "rgba(214, 214, 214, 0.3)"
-    }
 })
