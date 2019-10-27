@@ -288,7 +288,7 @@ class UncompletedTaskCard extends React.PureComponent {
         let start_date_time = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)).getTime(),
             current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime(),
             interval_value = repeat.interval.value,
-            diff = (current_date_time - start_date_time) / (86400 * 1000 * 7)
+            diff = (current_date_time - start_date_time) / (86400 * 1000)
 
         if (diff > 0 && diff % interval_value === 0) {
             return true

@@ -1,8 +1,8 @@
 import {createMaterialTopTabNavigator} from 'react-navigation'
 
-import Daily from './layouts/Daily/Daily.Container'
-import Weekly from './layouts/Weekly/Weekly'
-import Monthly from './layouts/Monthly/Monthly'
+import Daily from './components/Daily/Daily.Container'
+import Weekly from './components/Weekly/Weekly'
+import Monthly from './components/Monthly/Monthly'
 
 import CustomTabBarComponent from './custom-tab-bar-component/CustomTabBarComponent'
 
