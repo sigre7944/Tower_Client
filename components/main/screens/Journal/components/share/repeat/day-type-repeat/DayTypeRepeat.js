@@ -41,7 +41,7 @@ export default class DayTypeRepeat extends React.PureComponent {
     date = new Date()
 
     state = {
-        selected_repeat_type: "days",
+        selected_repeat_type: "day",
 
         repeat_input_value: "1",
 
@@ -57,9 +57,9 @@ export default class DayTypeRepeat extends React.PureComponent {
 
         end_last_index: -1,
 
-        end_at_chosen_day: this.date.getDate().toString(),
-        end_at_chosen_month: this.date.getMonth().toString(),
-        end_at_chosen_year: this.date.getFullYear().toString(),
+        end_at_chosen_day: this.date.getDate(),
+        end_at_chosen_month: this.date.getMonth(),
+        end_at_chosen_year: this.date.getFullYear(),
     }
 
     _setEndAtDayMonthYear = (day, month, year) => {
@@ -194,20 +194,20 @@ export default class DayTypeRepeat extends React.PureComponent {
 
         else {
             end_value_data.type = "after"
-            end_value_data.occurrence = after_occurrence_value
+            end_value_data.occurrence = parseInt(after_occurrence_value)
         }
 
-        if (selected_repeat_type === "days") {
+        if (selected_repeat_type === "day") {
             repeat_value_data.type = "daily"
             repeat_value_data.interval = {
-                value: repeat_input_value
+                value: parseInt(repeat_input_value)
             }
         }
 
-        else if (selected_repeat_type === "weeks") {
+        else if (selected_repeat_type === "week") {
             repeat_value_data.type = "weekly"
             repeat_value_data.interval = {
-                value: repeat_input_value,
+                value: parseInt(repeat_input_value),
                 daysInWeek: days_in_week_option_array
             }
         }
@@ -215,7 +215,7 @@ export default class DayTypeRepeat extends React.PureComponent {
         else {
             repeat_value_data.type = "monthly"
             repeat_value_data.interval = {
-                value: repeat_input_value
+                value: parseInt(repeat_input_value)
             }
         }
 
@@ -227,8 +227,8 @@ export default class DayTypeRepeat extends React.PureComponent {
             },
             goal_data: {
                 keyPath: ["goal", "max"],
-                notSetValue: goal_value,
-                updater: (value) => goal_value
+                notSetValue: parseInt(goal_value),
+                updater: (value) => parseInt(goal_value)
             },
             end_data: {
                 keyPath: ["end"],
@@ -258,7 +258,7 @@ export default class DayTypeRepeat extends React.PureComponent {
             end_type = current_task_map.getIn(["end", "type"]),
             repeat_value = "1",
             days_in_week_option_array = [false, false, false, false, false, false, false],
-            selected_repeat_type = "days",
+            selected_repeat_type = "day",
             end_current_index = 0,
             end_at_chosen_day = this.date.getDate(),
             end_at_chosen_month = this.date.getMonth(),
@@ -268,7 +268,7 @@ export default class DayTypeRepeat extends React.PureComponent {
 
         if (repeat_type === "daily") {
             repeat_value = current_task_map.getIn(["repeat", "interval", "value"]).toString()
-            selected_repeat_type = "days"
+            selected_repeat_type = "day"
 
 
         }
@@ -276,12 +276,12 @@ export default class DayTypeRepeat extends React.PureComponent {
         else if (repeat_type === "weekly") {
             repeat_value = current_task_map.getIn(["repeat", "interval", "value"]).toString()
             days_in_week_option_array = current_task_map.getIn(["repeat", "interval", "daysInWeek"])
-            selected_repeat_type = "weeks"
+            selected_repeat_type = "week"
         }
 
         else {
-            selected_repeat_type = "months"
-            repeat_value = current_task_map.getIn(["repeat", "interval", "value"])
+            selected_repeat_type = "month"
+            repeat_value = current_task_map.getIn(["repeat", "interval", "value"]).toString()
         }
 
         if (end_type === "never") {
@@ -292,9 +292,9 @@ export default class DayTypeRepeat extends React.PureComponent {
             let timestamp = current_task_map.getIn(["end", "endAt"]),
                 date = new Date(timestamp)
 
-            end_at_chosen_day = date.getDate().toString()
-            end_at_chosen_month = date.getMonth().toString()
-            end_at_chosen_year = date.getFullYear().toString()
+            end_at_chosen_day = date.getDate()
+            end_at_chosen_month = date.getMonth()
+            end_at_chosen_year = date.getFullYear()
 
             end_current_index = 1
         }

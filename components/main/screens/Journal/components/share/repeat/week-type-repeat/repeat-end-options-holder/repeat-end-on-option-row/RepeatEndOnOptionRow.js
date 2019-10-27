@@ -38,9 +38,9 @@ export default class RepeatEndOnOptionRow extends React.Component {
         this.setState(prevState => ({
             is_date_picker_chosen: true,
 
-            selected_day: chosen_day,
-            selected_month: chosen_month,
-            selected_year: chosen_year
+            selected_day: chosen_day.toString(),
+            selected_month: chosen_month.toString(),
+            selected_year: chosen_year.toString()
         }))
     }
 

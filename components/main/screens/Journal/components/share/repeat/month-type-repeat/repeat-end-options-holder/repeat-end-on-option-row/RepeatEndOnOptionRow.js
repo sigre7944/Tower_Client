@@ -30,6 +30,9 @@ export default class RepeatEndOnOptionRow extends React.Component {
         return (this.props.index === nextProps.current_index && this.props.current_index !== nextProps.current_index)
             || (this.props.index === nextProps.last_index && this.props.last_index !== nextProps.last_index)
             || (this.state !== nextState)
+            || (this.props.chosen_day !== nextProps.chosen_day)
+            || (this.props.chosen_month !== nextProps.chosen_month)
+            || (this.props.chosen_year !== nextProps.chosen_year)
     }
 
     _chooseEndOption = () => {

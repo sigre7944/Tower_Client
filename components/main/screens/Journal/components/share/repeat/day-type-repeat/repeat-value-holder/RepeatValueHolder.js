@@ -261,16 +261,16 @@ class RepeatTypePicker extends React.PureComponent {
                             }}
                         >
                             <Picker.Item
-                                label="days"
-                                value="days"
+                                label="day"
+                                value="day"
                             />
                             <Picker.Item
-                                label="weeks"
-                                value="weeks"
+                                label="week"
+                                value="week"
                             />
                             <Picker.Item
-                                label="months"
-                                value="months"
+                                label="month"
+                                value="month"
                             />
                         </Picker>
                     </View>
