@@ -239,7 +239,7 @@ export default class WeekTypeRepeat extends React.PureComponent {
         let sending_data = {
             repeat_data: {
                 keyPath: ["repeat"],
-                notSetValue: fromJS(repeat_value_data),
+                notSetValue: {},
                 updater: (value) => fromJS(repeat_value_data)
             },
             goal_data: {
@@ -249,7 +249,7 @@ export default class WeekTypeRepeat extends React.PureComponent {
             },
             end_data: {
                 keyPath: ["end"],
-                notSetValue: fromJS(end_value_data),
+                notSetValue: {},
                 updater: (value) => fromJS(end_value_data)
             }
         }

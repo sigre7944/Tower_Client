@@ -51,5 +51,21 @@ export const styles = StyleSheet.create({
         letterSpacing: -0.02,
         marginTop: 18,
         marginLeft: 30,
+    },
+
+    title_warning_text: {
+        fontFamily: CommonStyle.sf_ui_display_light_font,
+        fontSize: 18,
+        lineHeight: 21,
+        color: CommonStyle.text_icon_colors.ti_1,
+        letterSpacing: -0.02,
+    },
+
+    warning_close_text: {
+        fontFamily: CommonStyle.sf_ui_display_light_font,
+        fontSize: 18,
+        lineHeight: 21,
+        color: CommonStyle.text_icon_colors.ti_3,
+        letterSpacing: -0.02,
     }
 })

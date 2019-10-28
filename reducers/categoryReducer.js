@@ -11,11 +11,9 @@ let initialState = fromJS({
 
 export const categories = (state = Map(initialState), action) => {
     switch (action.type) {
-        // case 'CREATE_CATEGORY':
-        //     return state.set(action.id, { ...action.data })
-
+        
         case 'UPDATE_CATEGORY':
-            return state.updateIn(action.keyPath, action.updater)
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
         case 'DELETE_CATEGORY':
             return state.delete(action.id)

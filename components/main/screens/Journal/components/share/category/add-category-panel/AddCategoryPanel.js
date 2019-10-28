@@ -41,6 +41,14 @@ export default class AddCategoryPanel extends React.PureComponent {
         color: "no color",
 
         should_color_panel_display: false,
+
+        category_title_exists: false
+    }
+
+    _closeTitleWarning = () => {
+        this.setState({
+            category_title_exists: false
+        })
     }
 
     _setColor = (color) => {
@@ -79,7 +87,7 @@ export default class AddCategoryPanel extends React.PureComponent {
     }
 
     _save = () => {
-        if (this.state.category_title.length > 0) {
+        if (this.state.category_title.length > 0 && !this._checkIfCategoryNameExists(this.state.category_title)) {
             let id = `category-${short_id.generate()}`,
                 category_obj = fromJS({
                     id,
@@ -90,14 +98,30 @@ export default class AddCategoryPanel extends React.PureComponent {
 
                 sending_data = {
                     keyPath: [id],
-                    notSetValue: category_obj,
-                    updater: (value = category_obj) => value
+                    notSetValue: {},
+                    updater: (value) => category_obj
                 }
 
             this.props.updateCategory(sending_data)
-
-            this.props._closeAddCategoryPanel()
         }
+    }
+
+    _checkIfCategoryNameExists = (name) => {
+        let found = false
+        Map(this.props.categories).valueSeq().every((value) => {
+            if (Map(value).get("name") === name) {
+                found = true
+                return false
+            }
+
+            return true
+        })
+
+        this.setState({
+            category_title_exists: found
+        })
+
+        return found
     }
 
     _onCategoryTitleChange = (e) => {
@@ -120,6 +144,12 @@ export default class AddCategoryPanel extends React.PureComponent {
 
     componentDidMount() {
         this._appearAnim()
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.can_close_add_category_panel !== prevProps.can_close_add_category_panel && this.props.can_close_add_category_panel) {
+            this.props._closeAddCategoryPanel()
+        }
     }
 
     render() {
@@ -284,6 +314,14 @@ export default class AddCategoryPanel extends React.PureComponent {
                                     null
                                 }
 
+                                {this.state.category_title_exists ?
+                                    <NameExistsWarning
+                                        _closeTitleWarning={this._closeTitleWarning}
+                                    />
+                                    :
+                                    null
+                                }
+
                                 <View
                                     style={{
                                         marginTop: 30,
@@ -307,6 +345,73 @@ export default class AddCategoryPanel extends React.PureComponent {
                             </ScrollView>
                         </SafeAreaView>
                     </Animated.View>
+                </View>
+            </Modal>
+        )
+    }
+}
+
+class NameExistsWarning extends React.PureComponent {
+
+    render() {
+        return (
+            <Modal
+                transparent={true}
+            >
+                <View
+                    style={{
+                        flex: 1,
+                        position: "relative",
+                        justifyContent: "center",
+                        alignItems: "center"
+                    }}
+                >
+                    <TouchableOpacity
+                        style={{
+                            flex: 1,
+                            width: window_width,
+                            backgroundColor: "black",
+                            opacity: 0.2
+                        }}
+
+                        onPress={this.props._closeTitleWarning}
+                    >
+
+                    </TouchableOpacity>
+
+                    <View
+                        style={{
+                            position: "absolute",
+                            backgroundColor: "white",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            borderRadius: 10,
+                            paddingHorizontal: 30,
+                            paddingVertical: 30,
+                        }}
+                    >
+                        <Text
+                            style={styles.title_warning_text}
+                        >
+                            Category's title exists
+                        </Text>
+                        <TouchableOpacity
+                            style={{
+                                marginTop: 18,
+                                height: 25,
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
+
+                            onPress={this.props._closeTitleWarning}
+                        >
+                            <Text
+                                style={styles.warning_close_text}
+                            >
+                                Close
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </Modal>
         )

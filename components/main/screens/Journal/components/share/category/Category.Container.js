@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-// import { updateTaskSchedule } from './actions/updateThunk'
+import { updateTaskCategory } from './actions/updateTaskCategory'
 import Category from './Category'
 
 const mapStateToProps = (state, ownProps) => {
@@ -11,7 +11,7 @@ const mapStateToProps = (state, ownProps) => {
             })
         }
 
-        else if (ownProps.currentAnnotation === "week"){
+        else if (ownProps.currentAnnotation === "week") {
             return ({
                 task_data: state.get("currentWeekTask"),
                 categories: state.get("categories")
@@ -29,9 +29,25 @@ const mapStateToProps = (state, ownProps) => {
     }
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
-    updateTaskSchedule: (data) => dispatch(updateTaskSchedule(data))
-})
+const mapDispatchToProps = (dispatch, ownProps) => {
+    if (ownProps.currentAnnotation === "day") {
+        return ({
+            updateTaskCategory: (data) => dispatch(updateTaskCategory("UPDATE_NEW_DAY_TASK", data))
+        })
+    }
+
+    else if (ownProps.currentAnnotation === "week") {
+        return ({
+            updateTaskCategory: (data) => dispatch(updateTaskCategory("UPDATE_NEW_WEEK_TASK", data))
+        })
+    }
+
+    else {
+        return ({
+            updateTaskCategory: (data) => dispatch(updateTaskCategory("UPDATE_NEW_MONTH_TASK", data))
+        })
+    }
+}
 
 export default connect(
     mapStateToProps,
