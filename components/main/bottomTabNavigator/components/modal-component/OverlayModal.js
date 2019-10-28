@@ -10,7 +10,7 @@ import {
 import AddTaskPanel from './add-task-panel/AddTaskPanel'
 import Calendar from '../../../screens/Journal/components/share/calendar/Calendar'
 
-import Category from '../../../../shared/category/Category.Container'
+import Category from '../../../screens/Journal/components/share/category/Category.Container'
 import Priority from '../../../../shared/priority/Priority.Container'
 
 import Repeat from '../../../screens/Journal/components/share/repeat/Repeat.Container'
