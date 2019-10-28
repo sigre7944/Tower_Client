@@ -1,21 +1,21 @@
 import { Map, fromJS } from "immutable"
 
-let initialState = Map({
-    cate_0: fromJS({
+let initialState = fromJS({
+    cate_0: {
         id: "cate_0",
         name: "Inbox",
         color: "#F78096",
         quantity: 0
-    })
+    }
 })
 
-export const categories = (state = initialState, action) => {
+export const categories = (state = Map(initialState), action) => {
     switch (action.type) {
         // case 'CREATE_CATEGORY':
         //     return state.set(action.id, { ...action.data })
 
         case 'UPDATE_CATEGORY':
-            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
+            return state.updateIn(action.keyPath, action.updater)
 
         case 'DELETE_CATEGORY':
             return state.delete(action.id)

@@ -230,11 +230,9 @@ let initial_currentMonthTask = fromJS({
 
 export const currentMonthTask = (state = initial_currentMonthTask, action) => {
     switch (action.type) {
-        // case 'UPDATE_NEW_MONTH_TASK':
-        //     return { ...state, ...action.data }
 
         case 'UPDATE_NEW_MONTH_TASK':
-            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
+            return state.updateIn(action.keyPath, action.updater)
 
         default:
             return state
@@ -243,11 +241,9 @@ export const currentMonthTask = (state = initial_currentMonthTask, action) => {
 
 export const currentDayTask = (state = initial_currentDayTask, action) => {
     switch (action.type) {
-        // case 'UPDATE_NEW_DAY_TASK':
-        //     return { ...state, ...action.data }
 
         case 'UPDATE_NEW_DAY_TASK':
-            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
+            return state.updateIn(action.keyPath, action.updater)
 
         default:
             return state
@@ -256,11 +252,9 @@ export const currentDayTask = (state = initial_currentDayTask, action) => {
 
 export const currentWeekTask = (state = initial_currentWeekTask, action) => {
     switch (action.type) {
-        // case 'UPDATE_NEW_WEEK_TASK':
-        //     return { ...state, ...action.data }
 
         case 'UPDATE_NEW_WEEK_TASK':
-            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
+            return state.updateIn(action.keyPath, action.updater)
 
         default:
             return state

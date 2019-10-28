@@ -35,8 +35,6 @@ export default class Category extends React.PureComponent {
     repeat_opacity_value = new Animated.Value(0.3)
     repeat_scale_value = new Animated.Value(0.3)
 
-    data = []
-
     state = {
         should_flatlist_update: 0,
         current_category_index: 0,
@@ -66,12 +64,12 @@ export default class Category extends React.PureComponent {
         }
     }
 
-    _keyExtractor = (item, index) => `category-row-${Map(item).get("id")}`
+    _keyExtractor = (item, index) => `category-row-${item[0]}`
 
     _renderItem = ({ item, index }) => {
         return (
             <CategoryRow
-                data={item}
+                data={item[1]}
                 category_index={index}
                 _chooseCategoryRow={this._chooseCategoryRow}
 
@@ -111,48 +109,17 @@ export default class Category extends React.PureComponent {
     componentDidMount() {
         this._animate()
 
-        this.data.push(
-            fromJS({
-                id: "cate_0",
-                name: "Inbox",
-                color: "#F78096",
-                quantity: 0
-            }),
-
-            fromJS({
-                id: short_id.generate(),
-                name: "Work",
-                color: "#6F73D9",
-                quantity: 0
-            }),
-
-            fromJS({
-                id: short_id.generate(),
-                name: "Study",
-                color: "#3D868B",
-                quantity: 0
-            }),
-
-            fromJS({
-                id: short_id.generate(),
-                name: "Family",
-                color: "#EFDA6E",
-                quantity: 0
-            }),
-
-            fromJS({
-                id: short_id.generate(),
-                name: "Relax",
-                color: "#DDC8C4",
-                quantity: 0
-            }),
-        )
-
         this.setState(prevState => ({
             should_flatlist_update: prevState.should_flatlist_update + 1
         }))
     }
 
+
+    componentDidUpdate(prevProps, prevState){
+        if(this.props.categories !== prevProps.categories){
+            // console.log(this.props.categories)
+        }
+    }
 
     render() {
         return (
@@ -195,7 +162,7 @@ export default class Category extends React.PureComponent {
                     }}
                 >
                     <FlatList
-                        data={this.data}
+                        data={Map(this.props.categories).toArray()}
                         extraData={this.state.should_flatlist_update}
 
                         keyExtractor={this._keyExtractor}
@@ -244,6 +211,7 @@ export default class Category extends React.PureComponent {
                         _closeAddCategoryPanel={this._closeAddCategoryPanel}
                     />
                     :
+
                     null
                 }
 
