@@ -3,11 +3,8 @@ import React from 'react'
 import {
     View,
     Text,
-    ScrollView,
-    KeyboardAvoidingView,
     FlatList,
     TouchableOpacity,
-    TextInput,
     Animated,
     Easing
 } from 'react-native'
@@ -26,7 +23,6 @@ import { Map, fromJS } from "immutable"
 import AddCategoryPanel from './add-category-panel/AddCategoryPanel.Container'
 
 const panel_width = 338
-const short_id = require("shortid")
 const animation_duration = 250
 const easing = Easing.inOut(Easing.linear)
 const category_height = 45 // row's height = 25 + margin top = 20

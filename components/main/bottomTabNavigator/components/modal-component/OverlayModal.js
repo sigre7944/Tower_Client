@@ -11,7 +11,7 @@ import AddTaskPanel from './add-task-panel/AddTaskPanel'
 import Calendar from '../../../screens/Journal/components/share/calendar/Calendar'
 
 import Category from '../../../screens/Journal/components/share/category/Category.Container'
-import Priority from '../../../../shared/priority/Priority.Container'
+import Priority from '../../../screens/Journal/components/share/priority/Priority.Container'
 
 import Repeat from '../../../screens/Journal/components/share/repeat/Repeat.Container'
 
