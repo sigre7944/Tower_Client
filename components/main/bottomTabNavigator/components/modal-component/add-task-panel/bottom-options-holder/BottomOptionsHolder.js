@@ -139,8 +139,6 @@ class BottomConfirmElement extends React.PureComponent {
             new_task_with_id.update("title", (value) => this.props.title_value)
             new_task_with_id.update("description", (value) => this.props.description_value)
 
-            console.log(new_task_with_id)
-
             let sending_obj = {
                 add_task_data: {
                     type: add_task_type,

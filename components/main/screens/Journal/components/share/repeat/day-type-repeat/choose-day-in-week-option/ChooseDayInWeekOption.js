@@ -89,19 +89,6 @@ export default class ChooseDayInWeekOption extends React.PureComponent {
 
 class DayInWeekOptionHolder extends React.PureComponent {
 
-    // handleIndex = (index) => {
-    //     if (index === 0) {
-    //         return styles.unchosen_left_end_day_in_week_container
-    //     }
-
-    //     else if (index === 6) {
-    //         return styles.unchosen_right_end_day_in_week_container
-    //     }
-    //     else {
-    //         return styles.unchosen_normal_day_in_week_container
-    //     }
-    // }
-
     state = {
         container_style: {},
         text_style: styles.unchosen_day_in_week_text,
@@ -198,7 +185,7 @@ class DayInWeekOptionHolder extends React.PureComponent {
     }
 
     componentDidMount() {
-        if (this.props.selected_repeat_type === "weeks") {
+        if (this.props.selected_repeat_type === "week") {
             this._compareToggledIndex()
         }
 
@@ -210,7 +197,7 @@ class DayInWeekOptionHolder extends React.PureComponent {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.props.selected_repeat_type !== prevState.selected_repeat_type) {
-            if (this.props.selected_repeat_type === "weeks") {
+            if (this.props.selected_repeat_type === "week") {
                 this._compareToggledIndex()
             }
 
@@ -220,7 +207,7 @@ class DayInWeekOptionHolder extends React.PureComponent {
             }
         }
 
-        if (this.props.is_toggled !== prevProps.is_toggled && this.props.selected_repeat_type === "weeks") {
+        if (this.props.is_toggled !== prevProps.is_toggled && this.props.selected_repeat_type === "week") {
             this._compareToggledIndex()
         }
     }
