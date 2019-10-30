@@ -37,6 +37,14 @@ export default class PriorityPicker extends React.PureComponent {
         this.props._closePriorityPicker()
     }
 
+    _closePriorityPicker = () => {
+        this.setState({
+            current_selected_priority: this.props.selected_priority_value
+        }, () => {
+            this.props._closePriorityPicker()
+        })
+    }
+
     componentDidUpdate(prevProps, prevState) {
         if (this.props.selected_priority_value !== prevProps.selected_priority_value) {
             this.setState({
@@ -65,7 +73,7 @@ export default class PriorityPicker extends React.PureComponent {
                             opacity: 0.2
                         }}
 
-                        onPress={this.props._closePriorityPicker}
+                        onPress={this._closePriorityPicker}
                     >
 
                     </TouchableOpacity>
@@ -103,7 +111,7 @@ export default class PriorityPicker extends React.PureComponent {
                                     alignItems: "center"
                                 }}
 
-                                onPress={this.props._closePriorityPicker}
+                                onPress={this._closePriorityPicker}
                             >
                                 <Text
                                     style={styles.picker_cancel_option_text}

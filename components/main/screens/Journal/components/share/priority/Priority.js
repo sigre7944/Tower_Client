@@ -43,12 +43,26 @@ export default class Priority extends React.PureComponent {
     scale_value = new Animated.Value(0.3)
     translate_y_value = new Animated.Value(0)
 
-
     priority_stored_rewards = {
         pri_01: {
             defaultValue: Map(this.props.priorities).getIn(["pri_01", "defaultValue"]),
+            setValue: Map(this.props.priorities).getIn(["pri_01", "defaultValue"])
+        },
 
-        }
+        pri_02: {
+            defaultValue: Map(this.props.priorities).getIn(["pri_02", "defaultValue"]),
+            setValue: Map(this.props.priorities).getIn(["pri_02", "defaultValue"])
+        },
+
+        pri_03: {
+            defaultValue: Map(this.props.priorities).getIn(["pri_03", "defaultValue"]),
+            setValue: Map(this.props.priorities).getIn(["pri_03", "defaultValue"])
+        },
+
+        pri_04: {
+            defaultValue: Map(this.props.priorities).getIn(["pri_04", "defaultValue"]),
+            setValue: Map(this.props.priorities).getIn(["pri_04", "defaultValue"])
+        },
     }
 
     state = {
@@ -81,6 +95,7 @@ export default class Priority extends React.PureComponent {
                 selected_priority_value: value,
                 is_important: true,
                 is_urgent: true,
+                reward_value: Map(this.props.priorities).getIn(["pri_01", "defaultValue"]).toString()
             })
         }
 
@@ -89,6 +104,7 @@ export default class Priority extends React.PureComponent {
                 selected_priority_value: value,
                 is_important: true,
                 is_urgent: false,
+                reward_value: Map(this.props.priorities).getIn(["pri_02", "defaultValue"]).toString()
             })
         }
 
@@ -97,6 +113,7 @@ export default class Priority extends React.PureComponent {
                 selected_priority_value: value,
                 is_important: false,
                 is_urgent: true,
+                reward_value: Map(this.props.priorities).getIn(["pri_03", "defaultValue"]).toString()
             })
         }
 
@@ -105,6 +122,7 @@ export default class Priority extends React.PureComponent {
                 selected_priority_value: value,
                 is_important: false,
                 is_urgent: false,
+                reward_value: Map(this.props.priorities).getIn(["pri_04", "defaultValue"]).toString()
             })
         }
     }
@@ -114,14 +132,16 @@ export default class Priority extends React.PureComponent {
             if (this.state.is_urgent) {
                 this.setState({
                     is_important: value,
-                    selected_priority_value: "Do first"
+                    selected_priority_value: "Do first",
+                    reward_value: Map(this.props.priorities).getIn(["pri_01", "defaultValue"]).toString()
                 })
             }
 
             else {
                 this.setState({
                     is_important: value,
-                    selected_priority_value: "Plan"
+                    selected_priority_value: "Plan",
+                    reward_value: Map(this.props.priorities).getIn(["pri_02", "defaultValue"]).toString()
                 })
             }
         }
@@ -130,14 +150,16 @@ export default class Priority extends React.PureComponent {
             if (this.state.is_urgent) {
                 this.setState({
                     is_important: value,
-                    selected_priority_value: "Delay"
+                    selected_priority_value: "Delay",
+                    reward_value: Map(this.props.priorities).getIn(["pri_03", "defaultValue"]).toString()
                 })
             }
 
             else {
                 this.setState({
                     is_important: value,
-                    selected_priority_value: "Delegate"
+                    selected_priority_value: "Delegate",
+                    reward_value: Map(this.props.priorities).getIn(["pri_04", "defaultValue"]).toString()
                 })
             }
         }
@@ -148,14 +170,16 @@ export default class Priority extends React.PureComponent {
             if (this.state.is_important) {
                 this.setState({
                     is_urgent: value,
-                    selected_priority_value: "Do first"
+                    selected_priority_value: "Do first",
+                    reward_value: Map(this.props.priorities).getIn(["pri_01", "defaultValue"]).toString()
                 })
             }
 
             else {
                 this.setState({
                     is_urgent: value,
-                    selected_priority_value: "Delay"
+                    selected_priority_value: "Delay",
+                    reward_value: Map(this.props.priorities).getIn(["pri_03", "defaultValue"]).toString()
                 })
             }
         }
@@ -164,14 +188,16 @@ export default class Priority extends React.PureComponent {
             if (this.state.is_important) {
                 this.setState({
                     is_urgent: value,
-                    selected_priority_value: "Plan"
+                    selected_priority_value: "Plan",
+                    reward_value: Map(this.props.priorities).getIn(["pri_02", "defaultValue"]).toString()
                 })
             }
 
             else {
                 this.setState({
                     is_urgent: value,
-                    selected_priority_value: "Delegate"
+                    selected_priority_value: "Delegate",
+                    reward_value: Map(this.props.priorities).getIn(["pri_04", "defaultValue"]).toString()
                 })
             }
         }
@@ -328,12 +354,6 @@ export default class Priority extends React.PureComponent {
             selected_priority_value: priority_value,
             reward_value
         })
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        // if (this.state.selected_priority_value !== prevState.selected_priority_value) {
-        //     this._setDefaultRewardValue()
-        // }
     }
 
     componentWillUnmount() {
