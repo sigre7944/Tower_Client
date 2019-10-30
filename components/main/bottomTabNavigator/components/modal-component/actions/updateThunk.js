@@ -4,8 +4,6 @@ import { updateTask } from '../../../../../shared/actions/taskAction'
 
 export const updateThunk = ({
     type,
-    startTime_data,
-    trackingTime_data,
     schedule_data,
     category_data,
     repeat_data,
@@ -16,8 +14,6 @@ export const updateThunk = ({
 }) => (dispatch, getState) => {
 
     let action_arrays = [
-        updateTask(type, startTime_data.keyPath, startTime_data.notSetValue, startTime_data.updater),
-        updateTask(type, trackingTime_data.keyPath, trackingTime_data.notSetValue, trackingTime_data.updater),
         updateTask(type, schedule_data.keyPath, schedule_data.notSetValue, schedule_data.updater),
         updateTask(type, category_data.keyPath, category_data.notSetValue, category_data.updater),
         updateTask(type, repeat_data.keyPath, repeat_data.notSetValue, repeat_data.updater),

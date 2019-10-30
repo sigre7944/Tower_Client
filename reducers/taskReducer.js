@@ -11,6 +11,9 @@ export const day_tasks = (state = Map(), action) => {
         case 'EDIT_DAY_TASK':
             return state.updateIn(action.keyPath, (value) => action.data)
 
+        case 'UPDATE_DAY_TASK':
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
+
         case 'DELETE_DAY_TASK':
             return state.delete(action.id)
 
@@ -245,7 +248,10 @@ export const currentMonthTask = (state = initial_currentMonthTask, action) => {
     switch (action.type) {
 
         case 'UPDATE_NEW_MONTH_TASK':
-            return state.updateIn(action.keyPath, action.updater)
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
+
+        case 'RESET_NEW_MONTH_TASK':
+            return Map(initial_currentMonthTask).toMap()
 
         default:
             return state
@@ -256,7 +262,10 @@ export const currentDayTask = (state = initial_currentDayTask, action) => {
     switch (action.type) {
 
         case 'UPDATE_NEW_DAY_TASK':
-            return state.updateIn(action.keyPath, action.updater)
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
+
+        case 'RESET_NEW_DAY_TASK':
+            return Map(initial_currentDayTask).toMap()
 
         default:
             return state
@@ -267,7 +276,10 @@ export const currentWeekTask = (state = initial_currentWeekTask, action) => {
     switch (action.type) {
 
         case 'UPDATE_NEW_WEEK_TASK':
-            return state.updateIn(action.keyPath, action.updater)
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
+
+        case 'RESET_NEW_WEEK_TASK':
+            return Map(initial_currentWeekTask).toMap()
 
         default:
             return state

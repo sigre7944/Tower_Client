@@ -138,9 +138,7 @@ export default class OverlayModal extends Component {
 
     componentDidMount() {
         let currentDayTask = Map(this.props.currentDayTask)
-        if (!currentDayTask.has("startTime") ||
-            !currentDayTask.has("trackingTime") ||
-            !currentDayTask.has("schedule") ||
+        if (!currentDayTask.has("schedule") ||
             !currentDayTask.has("category") ||
             !currentDayTask.has("repeat") ||
             !currentDayTask.has("end") ||
@@ -152,17 +150,6 @@ export default class OverlayModal extends Component {
 
             let sending_obj = {
                 type,
-
-                startTime_data: {
-                    keyPath: ["startTime"],
-                    notSetValue: timestamp,
-                    updater: (value) => timestamp
-                },
-                trackingTime_data: {
-                    keyPath: ["trackingTime"],
-                    notSetValue: timestamp,
-                    updater: (value) => timestamp
-                },
                 schedule_data: {
                     keyPath: ["schedule"],
                     notSetValue: fromJS({
@@ -242,9 +229,7 @@ export default class OverlayModal extends Component {
         }
 
         let currentWeekTask = this.props.currentWeekTask
-        if (!currentWeekTask.has("startTime") ||
-            !currentWeekTask.has("trackingTime") ||
-            !currentWeekTask.has("schedule") ||
+        if (!currentWeekTask.has("schedule") ||
             !currentWeekTask.has("category") ||
             !currentWeekTask.has("repeat") ||
             !currentWeekTask.has("end") ||
@@ -258,16 +243,6 @@ export default class OverlayModal extends Component {
             let sending_obj = {
                 type,
 
-                startTime_data: {
-                    keyPath: ["startTime"],
-                    notSetValue: timestamp,
-                    updater: (value) => timestamp
-                },
-                trackingTime_data: {
-                    keyPath: ["trackingTime"],
-                    notSetValue: timestamp,
-                    updater: (value) => timestamp
-                },
                 schedule_data: {
                     keyPath: ["schedule"],
                     notSetValue: fromJS({
@@ -351,9 +326,7 @@ export default class OverlayModal extends Component {
         }
 
         let currentMonthTask = this.props.currentMonthTask
-        if (!currentMonthTask.has("startTime") ||
-            !currentMonthTask.has("trackingTime") ||
-            !currentMonthTask.has("schedule") ||
+        if (!currentMonthTask.has("schedule") ||
             !currentMonthTask.has("category") ||
             !currentMonthTask.has("repeat") ||
             !currentMonthTask.has("end") ||
@@ -365,17 +338,6 @@ export default class OverlayModal extends Component {
 
             let sending_obj = {
                 type,
-
-                startTime_data: {
-                    keyPath: ["startTime"],
-                    notSetValue: timestamp,
-                    updater: (value) => timestamp
-                },
-                trackingTime_data: {
-                    keyPath: ["trackingTime"],
-                    notSetValue: timestamp,
-                    updater: (value) => timestamp
-                },
                 schedule_data: {
                     keyPath: ["schedule"],
                     notSetValue: fromJS({

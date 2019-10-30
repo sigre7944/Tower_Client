@@ -1,8 +1,4 @@
 import { connect } from 'react-redux'
-import {
-    updateTitle,
-    updateDescription,
-} from '../../../../../../shared/actions/otherAction'
 import { addTaskThunk } from './actions/addTaskThunk'
 
 import BottomOptionsHolder from './BottomOptionsHolder'
@@ -11,7 +7,7 @@ import BottomOptionsHolder from './BottomOptionsHolder'
 const mapStateToProps = (state, ownProps) => {
     if (ownProps.currentAnnotation === "day") {
         return ({
-            currentTask: state.get("currentDayTask"),
+            task_data: state.get("currentDayTask"),
 
             categories: state.get("categories"),
             priorities: state.get("priorities"),
@@ -23,7 +19,7 @@ const mapStateToProps = (state, ownProps) => {
 
     else if (ownProps.currentAnnotation === "week") {
         return ({
-            currentTask: state.get("currentWeekTask"),
+            task_data: state.get("currentWeekTask"),
 
             categories: state.get("categories"),
             priorities: state.get("priorities"),
@@ -35,7 +31,7 @@ const mapStateToProps = (state, ownProps) => {
 
     else
         return ({
-            currentTask: state.get("currentMonthTask"),
+            task_data: state.get("currentMonthTask"),
 
             categories: state.get("categories"),
             priorities: state.get("priorities"),
@@ -47,14 +43,6 @@ const mapStateToProps = (state, ownProps) => {
 
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    updateTitle: (data) => {
-        dispatch(updateTitle(data))
-    },
-
-    updateDescription: (data) => {
-        dispatch(updateDescription(data))
-    },
-
     addTaskThunk: (data) => { dispatch(addTaskThunk(data)) }
 })
 

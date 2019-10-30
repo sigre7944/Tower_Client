@@ -25,6 +25,10 @@ import { primary_color } from "../../../../../../shared/styles/style";
 
 import { styles } from "./styles/styles";
 
+import { Map } from 'immutable'
+
+const uuidv1 = require('uuid')
+
 export default class BottomOptionsHolder extends React.PureComponent {
 
     render() {
@@ -76,9 +80,6 @@ export default class BottomOptionsHolder extends React.PureComponent {
                     title_value={this.props.addTaskTitle}
                     description_value={this.props.addTaskDescription}
 
-                    updateTitle={this.props.updateTitle}
-                    updateDescription={this.props.updateDescription}
-
                     icon={faCheck}
                 />
             </View>
@@ -112,10 +113,67 @@ class BottomOptionElement extends React.PureComponent {
 
 class BottomConfirmElement extends React.PureComponent {
 
+    _createTask = () => {
+        if (this.props.title_value.length > 0) {
+            let task_id = `day-task-${uuidv1()}`,
+                reset_new_task_type = "RESET_NEW_DAY_TASK",
+                add_task_type = "UPDATE_DAY_TASK"
+
+            if (this.props.currentAnnotation === "week") {
+                task_id = `week-task-${uuidv1()}`
+                reset_new_task_type = "RESET_NEW_WEEK_TASK"
+                add_task_type = "UPDATE_WEEK_TASK"
+            }
+
+            else if (this.props.currentAnnotation === "month") {
+                task_id = `month-task-${uuidv1()}`
+                reset_new_task_type = "RESET_NEW_MONTH_TASK"
+                add_task_type = "UPDATE_MONTH_TASK"
+            }
+
+            let new_task = Map(this.props.task_data)
+            let category_id = new_task.get("category")
+
+            let new_task_with_id = Map(this.props.task_data).asMutable()
+            new_task_with_id.update("id", (value) => task_id)
+            new_task_with_id.update("title", (value) => this.props.title_value)
+            new_task_with_id.update("description", (value) => this.props.description_value)
+
+            console.log(new_task_with_id)
+
+            let sending_obj = {
+                add_task_data: {
+                    type: add_task_type,
+                    keyPath: [task_id],
+                    notSetValue: {},
+                    updater: (value) => new_task_with_id
+                },
+
+                category_data: {
+                    keyPath: [category_id, "quantity"],
+                    notSetValue: {},
+                    updater: (value) => value + 1
+                },
+
+                reset_new_task_type
+            }
+
+            this.props.addTaskThunk(sending_obj)
+
+            this.props.toggleAddTask()
+        }
+
+        else {
+            this.props.toggleAddTask()
+        }
+    }
+
     render() {
         return (
             <TouchableOpacity
                 style={styles.confirm_container}
+
+                onPress={this._createTask}
             >
                 <FontAwesomeIcon
                     icon={this.props.icon}

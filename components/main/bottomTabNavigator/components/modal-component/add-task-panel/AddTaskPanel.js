@@ -21,7 +21,7 @@ import BottomOptionsHolder from "./bottom-options-holder/BottomOptionsHolder.Con
 
 import { styles } from './styles/styles'
 
-const uuidv1 = require('uuid')
+
 
 export default class AddTaskPanel extends Component {
     taskTextInputRef = React.createRef()
@@ -139,6 +139,8 @@ export default class AddTaskPanel extends Component {
                     chooseRepeatOption={this.props.chooseRepeatOption}
                     toggleAddTask={this.props.toggleAddTask}
                     disableAddTaskPanel={this.disableAddTaskPanel}
+
+                    currentAnnotation={this.props.currentAnnotation}
                 />
             </Animated.View>
         )

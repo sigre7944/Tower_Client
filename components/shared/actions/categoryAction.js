@@ -9,10 +9,11 @@ export const createCategory = (id, data) => ({
     data
 })
 
-export const updateCategory = (id, data) => ({
+export const updateCategory = (keyPath, notSetValue, updater) => ({
     type: "UPDATE_CATEGORY",
-    id,
-    data
+    keyPath,
+    notSetValue,
+    updater
 })
 
 export const deleteCategory = (id) => ({
