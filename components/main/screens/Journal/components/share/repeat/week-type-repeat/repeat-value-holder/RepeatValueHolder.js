@@ -23,9 +23,16 @@ const window_width = Dimensions.get("window").width
 export default class RepeatValueHolder extends React.PureComponent {
 
     state = {
+        current_chosen_repeat_type: "weeks",
+
         is_picker_opened: false,
     }
 
+    _changePickerValue = (itemValue, itemIndex) => {
+        this.setState({
+            current_chosen_repeat_type: itemValue
+        })
+    }
 
     _setRef = (r) => {
         this._text_input_ref = r
@@ -39,10 +46,6 @@ export default class RepeatValueHolder extends React.PureComponent {
         }
     }
 
-    _onFocus = () => {
-        this.props._dontAnimateRepeatWhenFocusInput()
-    }
-
     _openPicker = () => {
         this.props._chooseEveryOptionRepeat()
 
@@ -54,6 +57,7 @@ export default class RepeatValueHolder extends React.PureComponent {
     _closePicker = () => {
         this.setState({
             is_picker_opened: false,
+            current_chosen_repeat_type: this.props.selected_repeat_type
         })
     }
 
@@ -62,13 +66,21 @@ export default class RepeatValueHolder extends React.PureComponent {
         this._closePicker()
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.selected_repeat_type !== prevProps.selected_repeat_type) {
+            this.setState({
+                current_chosen_repeat_type: this.props.selected_repeat_type
+            })
+        }
+    }
+
     render() {
         let every_text_style = styles.every_option_text,
             every_input_style = styles.every_option_input,
             picker_button_style = styles.picker_button_container,
             picker_text_style = styles.every_option_text
 
-        if(this.props.is_week_nth_option_selected){
+        if (this.props.is_week_nth_option_selected) {
             every_text_style = styles.unchosen_every_option_text
             every_input_style = styles.unchosen_every_option_input
             picker_button_style = styles.unchosen_picker_button_container
@@ -122,11 +134,10 @@ export default class RepeatValueHolder extends React.PureComponent {
                         <TextInput
                             style={every_input_style}
                             maxLength={2}
-                            keyboardType="numbers-and-punctuation"
+                            keyboardType="number-pad"
                             value={this.props.repeat_input_value}
                             onChange={this.props._onChangeRepeatInput}
                             ref={this._setRef}
-                            onFocus={this._onFocus}
                             autoCorrect={false}
                         />
                     </TouchableOpacity>
@@ -147,8 +158,10 @@ export default class RepeatValueHolder extends React.PureComponent {
                     <RepeatTypePicker
                         _closePicker={this._closePicker}
                         _chooseDonePicker={this._chooseDonePicker}
-                        selected_repeat_type={this.props.selected_repeat_type}
                         is_picker_opened={this.state.is_picker_opened}
+
+                        current_chosen_repeat_type={this.state.current_chosen_repeat_type}
+                        _changePickerValue={this._changePickerValue}
                     />
                 </View>
             </View>
@@ -158,26 +171,8 @@ export default class RepeatValueHolder extends React.PureComponent {
 
 class RepeatTypePicker extends React.PureComponent {
 
-    state = {
-        current_chosen_repeat_type: "weeks"
-    }
-
-    _changePickerValue = (itemValue, itemIndex) => {
-        this.setState(prevState => ({
-            current_chosen_repeat_type: itemValue
-        }))
-    }
-
     _chooseDonePicker = () => {
-        this.props._chooseDonePicker(this.state.current_chosen_repeat_type)
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (this.props.selected_repeat_type !== prevProps.selected_repeat_type) {
-            this.setState({
-                current_chosen_repeat_type: this.props.selected_repeat_type
-            })
-        }
+        this.props._chooseDonePicker(this.props.current_chosen_repeat_type)
     }
 
     render() {
@@ -264,8 +259,8 @@ class RepeatTypePicker extends React.PureComponent {
                         </View>
 
                         <Picker
-                            selectedValue={this.state.current_chosen_repeat_type}
-                            onValueChange={this._changePickerValue}
+                            selectedValue={this.props.current_chosen_repeat_type}
+                            onValueChange={this.props._changePickerValue}
                             itemStyle={styles.picker_value_text}
                             style={{
                                 flex: 1,

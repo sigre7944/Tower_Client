@@ -209,11 +209,11 @@ export default class OverlayModal extends Component {
                     keyPath: ["priority"],
                     notSetValue: fromJS({
                         value: "pri_01",
-                        reward: 0,
+                        reward: 5,
                     }),
                     updater: (value) => fromJS({
                         value: "pri_01",
-                        reward: 0,
+                        reward: 5,
                     })
                 },
                 goal_data: {
@@ -309,11 +309,11 @@ export default class OverlayModal extends Component {
                     keyPath: ["priority"],
                     notSetValue: fromJS({
                         value: "pri_01",
-                        reward: 0,
+                        reward: 5,
                     }),
                     updater: (value) => fromJS({
                         value: "pri_01",
-                        reward: 0,
+                        reward: 5,
                     })
                 },
                 goal_data: {
@@ -402,11 +402,11 @@ export default class OverlayModal extends Component {
                     keyPath: ["priority"],
                     notSetValue: fromJS({
                         value: "pri_01",
-                        reward: 0,
+                        reward: 5,
                     }),
                     updater: (value) => fromJS({
                         value: "pri_01",
-                        reward: 0,
+                        reward: 5,
                     })
                 },
                 goal_data: {

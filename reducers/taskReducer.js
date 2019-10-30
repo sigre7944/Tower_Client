@@ -169,7 +169,7 @@ let initial_currentMonthTask = fromJS({
     },
     priority: {
         value: "pri_01",
-        reward: 0,
+        reward: 5,
     },
     goal: {
         max: 1
@@ -195,7 +195,7 @@ let initial_currentMonthTask = fromJS({
         },
         priority: {
             value: "pri_01",
-            reward: 0,
+            reward: 5,
         },
         goal: {
             max: 1
@@ -220,7 +220,7 @@ let initial_currentMonthTask = fromJS({
         },
         priority: {
             value: "pri_01",
-            reward: 0,
+            reward: 5,
         },
         goal: {
             max: 1

@@ -32,10 +32,6 @@ export default class RepeatValueHolder extends React.PureComponent {
         }
     }
 
-    _onFocus = () => {
-        this.props._dontAnimateRepeatWhenFocusInput()
-    }
-
 
     render() {
         let every_text_style = styles.every_option_text,
@@ -91,11 +87,10 @@ export default class RepeatValueHolder extends React.PureComponent {
                         <TextInput
                             style={every_input_style}
                             maxLength={2}
-                            keyboardType="numbers-and-punctuation"
+                            keyboardType="number-pad"
                             value={this.props.repeat_input_value}
                             onChange={this.props._onChangeRepeatInput}
                             ref={this._setRef}
-                            onFocus={this._onFocus}
                             autoCorrect={false}
                         />
                     </View>

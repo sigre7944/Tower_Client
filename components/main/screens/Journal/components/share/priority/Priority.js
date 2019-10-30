@@ -36,12 +36,20 @@ const window_height = Dimensions.get("window").height
 
 const extra_margin_from_keyboard = 10
 
+const text_input_state = TextInput.State
+
 export default class Priority extends React.PureComponent {
     opacity_value = new Animated.Value(0.3)
     scale_value = new Animated.Value(0.3)
     translate_y_value = new Animated.Value(0)
 
-    currently_focused_input = TextInput.State
+
+    priority_stored_rewards = {
+        pri_01: {
+            defaultValue: Map(this.props.priorities).getIn(["pri_01", "defaultValue"]),
+
+        }
+    }
 
     state = {
         selected_priority_value: "Do first",
@@ -203,6 +211,41 @@ export default class Priority extends React.PureComponent {
         this.props.hideAction()
     }
 
+    _save = () => {
+        let { selected_priority_value, reward_value } = this.state
+
+        let priority_id = ""
+
+        if (selected_priority_value === "Do first") {
+            priority_id = "pri_01"
+        }
+
+        else if (selected_priority_value === "Plan") {
+            priority_id = "pri_02"
+        }
+
+        else if (selected_priority_value === "Delay") {
+            priority_id = "pri_03"
+        }
+
+        else {
+            priority_id = "pri_04"
+        }
+
+        let sending_obj = {
+            keyPath: ["priority"],
+            notSetValue: {},
+            updater: (value) => fromJS({
+                value: priority_id,
+                reward: parseFloat(reward_value)
+            })
+        }
+
+        this.props.updateTaskPriority(sending_obj)
+
+        this.props.hideAction()
+    }
+
     _setDefaultRewardValue = () => {
         if (this.state.selected_priority_value === "Do first") {
             this.setState({
@@ -234,14 +277,21 @@ export default class Priority extends React.PureComponent {
             this._setDefaultRewardValue()
         }
 
-        this._animateContentWhenInputCovered(0, e.duration)
+        Animated.timing(
+            this.translate_y_value,
+            {
+                toValue: 0,
+                duration: e.duration,
+                useNativeDriver: true
+            }
+        ).start()
     }
 
     _keyboardWillShowHandler = (e) => {
         let keyboard_height = e.endCoordinates.height,
             keyboard_duration = e.duration
 
-        let currently_focused_input = this.currently_focused_input.currentlyFocusedField()
+        let currently_focused_input = text_input_state.currentlyFocusedField()
 
         UIManager.measure(currently_focused_input, (x, y, width, height, pageX, pageY) => {
             let input_height = height,
@@ -249,24 +299,19 @@ export default class Priority extends React.PureComponent {
 
             let gap = (window_height - keyboard_height) - (input_height + input_py) - extra_margin_from_keyboard
 
-            if (gap >= 0) {
-                return
+            if(gap < 0){
+                Animated.timing(
+                    this.translate_y_value,
+                    {
+                        toValue: gap,
+                        duration: keyboard_duration,
+                        useNativeDriver: true
+                    }
+                ).start()
             }
-
-            this._animateContentWhenInputCovered(gap, keyboard_duration)
         })
     }
 
-    _animateContentWhenInputCovered = (toValue, duration) => {
-        Animated.timing(
-            this.translate_y_value,
-            {
-                toValue,
-                duration,
-                useNativeDriver: true
-            }
-        ).start()
-    }
 
     componentDidMount() {
         this._animate()
@@ -274,17 +319,21 @@ export default class Priority extends React.PureComponent {
         this.keyboardWillHideListener = Keyboard.addListener("keyboardWillHide", this._keyboardWillHideHandler)
         this.keyboardWillShowListener = Keyboard.addListener("keyboardWillShow", this._keyboardWillShowHandler)
 
-        let priority_value = Map(this.props.task_data).getIn(["priority", "value"])
+        let priority_id = Map(this.props.task_data).getIn(["priority", "value"]),
+            reward_value = Map(this.props.task_data).getIn(["priority", "reward"]).toString()
+
+        let priority_value = Map(this.props.priorities).getIn([priority_id, "name"])
 
         this.setState({
-            selected_priority_value: Map(this.props.priorities).getIn([priority_value, "name"])
+            selected_priority_value: priority_value,
+            reward_value
         })
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.state.selected_priority_value !== prevState.selected_priority_value) {
-            this._setDefaultRewardValue()
-        }
+        // if (this.state.selected_priority_value !== prevState.selected_priority_value) {
+        //     this._setDefaultRewardValue()
+        // }
     }
 
     componentWillUnmount() {

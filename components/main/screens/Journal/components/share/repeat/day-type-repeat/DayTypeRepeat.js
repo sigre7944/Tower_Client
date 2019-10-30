@@ -9,7 +9,6 @@ import {
     Dimensions,
     Animated,
     Easing,
-    KeyboardAvoidingView,
     ScrollView,
     UIManager
 } from 'react-native';
@@ -160,7 +159,15 @@ export default class DayTypeRepeat extends React.PureComponent {
         this._resetRepeatInput()
         this._resetAfterOccurrenceInput()
         this._resetGoalValueInput()
-        this._animateContentIfInputCovered(0, e.duration)
+
+        Animated.timing(
+            this.translate_y,
+            {
+                toValue: 0,
+                duration: e.duration,
+                useNativeDriver: true
+            }
+        ).start()
     }
 
     _keyboardWillShowHandler = (e) => {
@@ -174,24 +181,20 @@ export default class DayTypeRepeat extends React.PureComponent {
 
             let gap = (window_height - keyboard_height) - (input_py + input_height) - extra_margin_from_keyboard
 
-            if (gap >= 0) {
-                return
-            }
+            if (gap < 0) {
 
-            this._animateContentIfInputCovered(gap, keyboard_duration)
+                Animated.timing(
+                    this.translate_y,
+                    {
+                        toValue: gap,
+                        duration: keyboard_duration,
+                        useNativeDriver: true
+                    }
+                ).start()
+            }
         })
     }
 
-    _animateContentIfInputCovered = (toValue, duration) => {
-        Animated.timing(
-            this.translate_y,
-            {
-                toValue,
-                duration,
-                useNativeDriver: true
-            }
-        ).start()
-    }
 
     close = () => {
         this.props.hideAction()
@@ -514,7 +517,7 @@ class GoalHolder extends React.PureComponent {
                 >
                     <TextInput
                         style={styles.every_option_input}
-                        keyboardType="numbers-and-punctuation"
+                        keyboardType="number-pad"
                         maxLength={2}
                         placeholder="1"
                         value={this.props.goal_value}

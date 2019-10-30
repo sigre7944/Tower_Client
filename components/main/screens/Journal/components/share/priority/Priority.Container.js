@@ -32,19 +32,19 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
     if (ownProps.currentAnnotation === "day") {
         return ({
-            updateTaskCategory: (data) => dispatch(updateTaskCategory("UPDATE_NEW_DAY_TASK", data))
+            updateTaskPriority: (data) => dispatch(updateTaskPriority("UPDATE_NEW_DAY_TASK", data))
         })
     }
 
     else if (ownProps.currentAnnotation === "week") {
         return ({
-            updateTaskCategory: (data) => dispatch(updateTaskCategory("UPDATE_NEW_WEEK_TASK", data))
+            updateTaskPriority: (data) => dispatch(updateTaskPriority("UPDATE_NEW_WEEK_TASK", data))
         })
     }
 
     else {
         return ({
-            updateTaskCategory: (data) => dispatch(updateTaskCategory("UPDATE_NEW_MONTH_TASK", data))
+            updateTaskPriority: (data) => dispatch(updateTaskPriority("UPDATE_NEW_MONTH_TASK", data))
         })
     }
 }

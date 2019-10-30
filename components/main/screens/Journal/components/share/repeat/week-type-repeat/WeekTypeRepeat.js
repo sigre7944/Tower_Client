@@ -9,8 +9,8 @@ import {
     Dimensions,
     Animated,
     Easing,
-    KeyboardAvoidingView,
-    ScrollView
+    ScrollView,
+    UIManager
 } from 'react-native';
 
 import { styles } from './styles/styles'
@@ -33,12 +33,19 @@ const animation_duration = 250
 const easing = Easing.inOut(Easing.linear)
 const window_width = Dimensions.get("window").width
 const margin_bottom_of_last_row = 35
+const extra_margin_from_keyboard = 10
+const window_height = Dimensions.get("window").height
 
 export default class WeekTypeRepeat extends React.PureComponent {
 
     repeat_opacity_value = new Animated.Value(0.3)
     repeat_scale_value = new Animated.Value(0.3)
+
+    translate_y = new Animated.Value(0)
+
     date = new Date()
+
+    currently_focused_input = TextInput.State
 
     state = {
         selected_repeat_type: "week",
@@ -52,8 +59,6 @@ export default class WeekTypeRepeat extends React.PureComponent {
         after_occurrence_value: "1",
 
         goal_value: "1",
-
-        should_animate_translate_y: true,
 
         end_current_index: 0,
 
@@ -164,21 +169,47 @@ export default class WeekTypeRepeat extends React.PureComponent {
         ]).start()
     }
 
-    _dontAnimateRepeatWhenFocusInput = () => {
-        this.setState({
-            should_animate_translate_y: false
-        })
-    }
-
     _keyboardWillHideHandler = (e) => {
-        this.setState({
-            should_animate_translate_y: true
-        })
-
         this._resetRepeatInput()
         this._resetAfterOccurrenceInput()
         this._resetGoalValueInput()
+
+        Animated.timing(
+            this.translate_y,
+            {
+                toValue: 0,
+                duration: e.duration,
+                useNativeDriver: true
+            }
+        ).start()
     }
+
+    _keyboardWillShowHandler = (e) => {
+        let keyboard_height = e.endCoordinates.height,
+            keyboard_duration = e.duration
+        let currently_focused_input = this.currently_focused_input.currentlyFocusedField()
+
+        UIManager.measure(currently_focused_input, (originX, originY, width, height, pageX, pageY) => {
+            let input_height = height,
+                input_py = pageY
+
+            let gap = (window_height - keyboard_height) - (input_py + input_height) - extra_margin_from_keyboard
+
+            if (gap < 0) {
+                Animated.timing(
+                    this.translate_y,
+                    {
+                        toValue: gap,
+                        duration: keyboard_duration,
+                        useNativeDriver: true
+                    }
+                ).start()
+            }
+
+        })
+    }
+
+
 
     close = () => {
         this.props.hideAction()
@@ -339,12 +370,14 @@ export default class WeekTypeRepeat extends React.PureComponent {
         this.animateRepeat()
 
         this._keyboardWillHideListener = Keyboard.addListener("keyboardWillHide", this._keyboardWillHideHandler)
+        this._keyboardWillShowListener = Keyboard.addListener("keyboardWillShow", this._keyboardWillShowHandler)
 
         this.initializeData()
     }
 
     componentWillUnmount() {
         Keyboard.removeListener("keyboardWillHide", this._keyboardWillHideHandler)
+        Keyboard.removeListener("keyboardWillShow", this._keyboardWillShowHandler)
     }
 
     render() {
@@ -360,9 +393,10 @@ export default class WeekTypeRepeat extends React.PureComponent {
                     overflow: "hidden"
                 }}
             >
-                <KeyboardAvoidingView
-                    behavior={"position"}
-                    enabled={this.state.should_animate_translate_y}
+                <Animated.View
+                    style={{
+                        transform: [{ translateY: this.translate_y }]
+                    }}
                 >
                     <ScrollView
                         keyboardDismissMode="on-drag"
@@ -372,7 +406,6 @@ export default class WeekTypeRepeat extends React.PureComponent {
                         <RepeatValueHolder
                             repeat_input_value={this.state.repeat_input_value}
                             _onChangeRepeatInput={this._onChangeRepeatInput}
-                            _dontAnimateRepeatWhenFocusInput={this._dontAnimateRepeatWhenFocusInput}
                             selected_repeat_type={this.state.selected_repeat_type}
                             _setRepeatType={this._setRepeatType}
 
@@ -448,8 +481,7 @@ export default class WeekTypeRepeat extends React.PureComponent {
                         </View>
 
                     </ScrollView>
-                </KeyboardAvoidingView>
-
+                </Animated.View>
             </Animated.View >
         )
     }
@@ -504,7 +536,7 @@ class GoalHolder extends React.PureComponent {
                 >
                     <TextInput
                         style={styles.every_option_input}
-                        keyboardType="numbers-and-punctuation"
+                        keyboardType="number-pad"
                         maxLength={2}
                         placeholder="1"
                         value={this.props.goal_value}
