@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { updateTaskPriority } from './actions/updateTaskPriority'
+import { updateTaskPriorityAndReward } from './actions/updateTaskPriorityAndReward'
 import Priority from './Priority'
 
 const mapStateToProps = (state, ownProps) => {
@@ -32,19 +32,19 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
     if (ownProps.currentAnnotation === "day") {
         return ({
-            updateTaskPriority: (data) => dispatch(updateTaskPriority("UPDATE_NEW_DAY_TASK", data))
+            updateTaskPriorityAndReward: (data) => dispatch(updateTaskPriorityAndReward("UPDATE_NEW_DAY_TASK", data))
         })
     }
 
     else if (ownProps.currentAnnotation === "week") {
         return ({
-            updateTaskPriority: (data) => dispatch(updateTaskPriority("UPDATE_NEW_WEEK_TASK", data))
+            updateTaskPriorityAndReward: (data) => dispatch(updateTaskPriorityAndReward("UPDATE_NEW_WEEK_TASK", data))
         })
     }
 
     else {
         return ({
-            updateTaskPriority: (data) => dispatch(updateTaskPriority("UPDATE_NEW_MONTH_TASK", data))
+            updateTaskPriorityAndReward: (data) => dispatch(updateTaskPriorityAndReward("UPDATE_NEW_MONTH_TASK", data))
         })
     }
 }

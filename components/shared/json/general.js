@@ -103,8 +103,11 @@ const task = {
 
     priority: {
         value: "pri_01", //use priority id
-        reward: 50
     },
+
+    reward: {
+        value: 50
+    }
 }
 
 const category = {
@@ -184,8 +187,11 @@ const day_tasks = {
 
         priority: {
             value: "pri_01", //use priority id
-            reward: 50
         },
+
+        reward: {
+            value: 50
+        }
     }
 }
 

@@ -259,15 +259,24 @@ export default class Priority extends React.PureComponent {
         }
 
         let sending_obj = {
-            keyPath: ["priority"],
-            notSetValue: {},
-            updater: (value) => fromJS({
-                value: priority_id,
-                reward: parseFloat(reward_value)
-            })
+            priority_data: {
+                keyPath: ["priority"],
+                notSetValue: {},
+                updater: (value) => fromJS({
+                    value: priority_id,
+                })
+            },
+
+            reward_data: {
+                keyPath: ["reward"],
+                notSetValue: {},
+                updater: (value) => fromJS({
+                    value: parseFloat(reward_value),
+                })
+            }
         }
 
-        this.props.updateTaskPriority(sending_obj)
+        this.props.updateTaskPriorityAndReward(sending_obj)
 
         this.props.hideAction()
     }
@@ -325,7 +334,7 @@ export default class Priority extends React.PureComponent {
 
             let gap = (window_height - keyboard_height) - (input_height + input_py) - extra_margin_from_keyboard
 
-            if(gap < 0){
+            if (gap < 0) {
                 Animated.timing(
                     this.translate_y_value,
                     {
@@ -346,7 +355,7 @@ export default class Priority extends React.PureComponent {
         this.keyboardWillShowListener = Keyboard.addListener("keyboardWillShow", this._keyboardWillShowHandler)
 
         let priority_id = Map(this.props.task_data).getIn(["priority", "value"]),
-            reward_value = Map(this.props.task_data).getIn(["priority", "reward"]).toString()
+            reward_value = Map(this.props.task_data).getIn(["reward", "value"]).toString()
 
         let priority_value = Map(this.props.priorities).getIn([priority_id, "name"])
 

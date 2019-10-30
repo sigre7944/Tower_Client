@@ -11,6 +11,7 @@ export const updateThunk = ({
     repeat_data,
     end_data,
     priority_data,
+    reward_data,
     goal_data
 }) => (dispatch, getState) => {
 
@@ -22,6 +23,7 @@ export const updateThunk = ({
         updateTask(type, repeat_data.keyPath, repeat_data.notSetValue, repeat_data.updater),
         updateTask(type, end_data.keyPath, end_data.notSetValue, end_data.updater),
         updateTask(type, priority_data.keyPath, priority_data.notSetValue, priority_data.updater),
+        updateTask(type, reward_data.keyPath, reward_data.notSetValue, reward_data.updater),
         updateTask(type, goal_data.keyPath, goal_data.notSetValue, goal_data.updater)
     ]
 

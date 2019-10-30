@@ -209,13 +209,22 @@ export default class OverlayModal extends Component {
                     keyPath: ["priority"],
                     notSetValue: fromJS({
                         value: "pri_01",
-                        reward: 5,
                     }),
                     updater: (value) => fromJS({
                         value: "pri_01",
-                        reward: 5,
                     })
                 },
+
+                reward_data: {
+                    keyPath: ["reward"],
+                    notSetValue: fromJS({
+                        value: 5,
+                    }),
+                    updater: (value) => fromJS({
+                        value: 5,
+                    })
+                },
+
                 goal_data: {
                     keyPath: ["goal"],
                     notSetValue: fromJS({
@@ -309,13 +318,22 @@ export default class OverlayModal extends Component {
                     keyPath: ["priority"],
                     notSetValue: fromJS({
                         value: "pri_01",
-                        reward: 5,
                     }),
                     updater: (value) => fromJS({
                         value: "pri_01",
-                        reward: 5,
                     })
                 },
+
+                reward_data: {
+                    keyPath: ["reward"],
+                    notSetValue: fromJS({
+                        value: 5,
+                    }),
+                    updater: (value) => fromJS({
+                        value: 5,
+                    })
+                },
+
                 goal_data: {
                     keyPath: ["goal"],
                     notSetValue: fromJS({
@@ -402,13 +420,23 @@ export default class OverlayModal extends Component {
                     keyPath: ["priority"],
                     notSetValue: fromJS({
                         value: "pri_01",
-                        reward: 5,
                     }),
                     updater: (value) => fromJS({
                         value: "pri_01",
                         reward: 5,
                     })
                 },
+
+                reward_data: {
+                    keyPath: ["reward"],
+                    notSetValue: fromJS({
+                        value: 5,
+                    }),
+                    updater: (value) => fromJS({
+                        value: 5,
+                    })
+                },
+
                 goal_data: {
                     keyPath: ["goal"],
                     notSetValue: fromJS({

@@ -14,7 +14,8 @@ import {
     faFlag,
     faHourglassEnd,
     faList,
-    faExclamationTriangle
+    faExclamationTriangle,
+    faTrophy
 } from '@fortawesome/free-solid-svg-icons'
 
 import { Map } from 'immutable'
@@ -278,20 +279,21 @@ class DayTagDataElement extends React.PureComponent {
         }
 
         else if (property === "reward") {
+            let value = Map(this.props.data).get("value")
             this.setState({
                 render_component:
                     <View
                         style={styles.day_tag_container}
                     >
                         <FontAwesomeIcon
-                            icon={faExclamationTriangle}
+                            icon={faTrophy}
                             color="#BDBDBD"
                             size={14}
                         />
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
-                            {`${this.props.data}`}
+                            {`${value} €`}
                         </Text>
                     </View>
             })
@@ -405,8 +407,8 @@ class WeekTagDataElement extends React.PureComponent {
                 nth_week_array = ["First", "Second", "Third", "Last"],
                 nth_week_text = ""
 
-            if(type === "weekly-nth"){
-                if(value > 4){
+            if (type === "weekly-nth") {
+                if (value > 4) {
                     value = 4
                 }
                 nth_week_text = nth_week_array[value - 1] + " week every month"
@@ -556,20 +558,21 @@ class WeekTagDataElement extends React.PureComponent {
         }
 
         else if (property === "reward") {
+            let value = Map(this.props.data).get("value")
             this.setState({
                 render_component:
                     <View
                         style={styles.day_tag_container}
                     >
                         <FontAwesomeIcon
-                            icon={faExclamationTriangle}
+                            icon={faTrophy}
                             color="#BDBDBD"
                             size={14}
                         />
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
-                            {`${this.props.data}`}
+                            {`${value} €`}
                         </Text>
                     </View>
             })
@@ -799,20 +802,21 @@ class MonthTagDataElement extends React.PureComponent {
         }
 
         else if (property === "reward") {
+            let value = Map(this.props.data).get("value")
             this.setState({
                 render_component:
                     <View
                         style={styles.day_tag_container}
                     >
                         <FontAwesomeIcon
-                            icon={faExclamationTriangle}
+                            icon={faTrophy}
                             color="#BDBDBD"
                             size={14}
                         />
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
-                            {`${this.props.data}`}
+                            {`${value} €`}
                         </Text>
                     </View>
             })
