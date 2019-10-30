@@ -2,7 +2,7 @@ import { Map, fromJS } from 'immutable'
 
 let initialState = {
     pri_01: {
-        name: "Do First",
+        name: "Do first",
         importance: 1,
         urgency: 1,
         defaultValue: 5
@@ -12,7 +12,7 @@ let initialState = {
         name: "Plan",
         importance: 1,
         urgency: 0,
-        defaultValue: 3
+        defaultValue: 3.5
     },
 
     pri_03: {
@@ -26,7 +26,7 @@ let initialState = {
         name: "Delegate",
         importance: 0,
         urgency: 0,
-        defaultValue: 1
+        defaultValue: 0.5
     },
 
 }

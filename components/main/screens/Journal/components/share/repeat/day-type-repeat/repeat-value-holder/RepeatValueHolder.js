@@ -39,10 +39,6 @@ export default class RepeatValueHolder extends React.PureComponent {
         }
     }
 
-    _onFocus = () => {
-        this.props._dontAnimateRepeatWhenFocusInput()
-    }
-
     _openPicker = () => {
         this.setState({
             is_picker_opened: true
@@ -112,7 +108,6 @@ export default class RepeatValueHolder extends React.PureComponent {
                             value={this.props.repeat_input_value}
                             onChange={this.props._onChangeRepeatInput}
                             ref={this._setRef}
-                            onFocus={this._onFocus}
                             autoCorrect={false}
                         />
                     </TouchableOpacity>

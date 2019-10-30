@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
 
     reward_input: {
         height: 25,
-        width: 37,
+        width: 47,
         justifyContent: "center",
         fontFamily: CommonStyle.sf_ui_display_light_font,
         fontSize: 18,
@@ -63,5 +63,69 @@ export const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: CommonStyle.primary_colors.prim_1,
         marginLeft: 45
+    },
+
+    priority_do_first_container: {
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+        borderRadius: 15,
+        backgroundColor: "rgba(247, 128, 150, 0.2)"
+    },
+
+    priority_plan_container: {
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+        borderRadius: 15,
+        backgroundColor: "rgba(239, 218, 110, 0.2)"
+    },
+
+    priority_delay_container: {
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+        borderRadius: 15,
+        backgroundColor: "rgba(111, 115, 217, 0.2)"
+    },
+
+    priority_delegate_container: {
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+        borderRadius: 15,
+        backgroundColor: "rgba(203, 200, 200, 0.2)"
+    },
+
+    priority_do_first_text: {
+        fontFamily: CommonStyle.sf_ui_display_light_font,
+        fontSize: 18,
+        fontWeight: "500",
+        lineHeight: 21,
+        letterSpacing: -0.02,
+        color: CommonStyle.priority_colors.prio_1
+    },
+
+    priority_plan_text: {
+        fontFamily: CommonStyle.sf_ui_display_light_font,
+        fontSize: 18,
+        fontWeight: "500",
+        lineHeight: 21,
+        letterSpacing: -0.02,
+        color: CommonStyle.priority_colors.prio_2
+    },
+
+    priority_delay_text: {
+        fontFamily: CommonStyle.sf_ui_display_light_font,
+        fontSize: 18,
+        fontWeight: "500",
+        lineHeight: 21,
+        letterSpacing: -0.02,
+        color: CommonStyle.priority_colors.prio_3
+    },
+
+    priority_delegate_text: {
+        fontFamily: CommonStyle.sf_ui_display_light_font,
+        fontSize: 18,
+        fontWeight: "500",
+        lineHeight: 21,
+        letterSpacing: -0.02,
+        color: CommonStyle.priority_colors.prio_4
     },
 })

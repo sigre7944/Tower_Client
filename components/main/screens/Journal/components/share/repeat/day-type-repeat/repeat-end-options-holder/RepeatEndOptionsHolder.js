@@ -67,6 +67,7 @@ export default class RepeatEndOptionsHolder extends React.PureComponent {
                     last_index={this.props.last_index}
                     after_occurrence_value={this.props.after_occurrence_value}
                     _onChangeAfterOccurrenceValue={this.props._onChangeAfterOccurrenceValue}
+
                 />
             </View>
         )

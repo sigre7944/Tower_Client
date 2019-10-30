@@ -7,7 +7,7 @@ import {
     TextInput,
 } from 'react-native';
 
-import {styles} from './styles/styles'
+import { styles } from './styles/styles'
 
 export default class RepeatEndAfterOptionRow extends React.Component {
 

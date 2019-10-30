@@ -3,14 +3,15 @@ import React from 'react'
 import {
     View,
     Text,
-    FlatList,
     TouchableOpacity,
     Animated,
     Easing,
     Switch,
     TextInput,
-    KeyboardAvoidingView,
-    ScrollView
+    ScrollView,
+    Keyboard,
+    UIManager,
+    Dimensions
 } from 'react-native'
 
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
@@ -25,49 +26,160 @@ import {
 import { styles } from './styles/styles'
 import { Map, fromJS } from "immutable"
 
+import PriorityPicker from './priority-picker/PriorityPicker'
+
 const panel_width = 338
+const panel_height = 375
 const animation_duration = 250
 const easing = Easing.inOut(Easing.linear)
+const window_height = Dimensions.get("window").height
+
+const extra_margin_from_keyboard = 10
 
 export default class Priority extends React.PureComponent {
-    repeat_opacity_value = new Animated.Value(0.3)
-    repeat_scale_value = new Animated.Value(0.3)
+    opacity_value = new Animated.Value(0.3)
+    scale_value = new Animated.Value(0.3)
+    translate_y_value = new Animated.Value(0)
 
-    priority_colors = ["#F78096", "#EFDA6E", "#6F73D9", "#CBC8C8"]
+    currently_focused_input = TextInput.State
 
     state = {
         selected_priority_value: "Do first",
-        selected_priority_color: "#F78096",
 
-        is_important: false,
+        is_important: true,
 
-        is_urgent: false,
+        is_urgent: true,
 
-        reward_value: "5"
+        reward_value: "5",
+
+        should_display_priority_picker: false,
+    }
+
+    _choosePriorityPicker = () => {
+        this.setState({
+            should_display_priority_picker: true
+        })
+    }
+
+    _closePriorityPicker = () => {
+        this.setState({
+            should_display_priority_picker: false
+        })
+    }
+
+    _setPriorityValue = (value) => {
+        if (value === "Do first") {
+            this.setState({
+                selected_priority_value: value,
+                is_important: true,
+                is_urgent: true,
+            })
+        }
+
+        else if (value === "Plan") {
+            this.setState({
+                selected_priority_value: value,
+                is_important: true,
+                is_urgent: false,
+            })
+        }
+
+        else if (value === "Delay") {
+            this.setState({
+                selected_priority_value: value,
+                is_important: false,
+                is_urgent: true,
+            })
+        }
+
+        else {
+            this.setState({
+                selected_priority_value: value,
+                is_important: false,
+                is_urgent: false,
+            })
+        }
     }
 
     _onImportanceChange = (value) => {
-        this.setState({
-            is_important: value
-        })
+        if (value === true) {
+            if (this.state.is_urgent) {
+                this.setState({
+                    is_important: value,
+                    selected_priority_value: "Do first"
+                })
+            }
+
+            else {
+                this.setState({
+                    is_important: value,
+                    selected_priority_value: "Plan"
+                })
+            }
+        }
+
+        else {
+            if (this.state.is_urgent) {
+                this.setState({
+                    is_important: value,
+                    selected_priority_value: "Delay"
+                })
+            }
+
+            else {
+                this.setState({
+                    is_important: value,
+                    selected_priority_value: "Delegate"
+                })
+            }
+        }
     }
 
     _onUrgencyChange = (value) => {
-        this.setState({
-            is_urgent: value
-        })
+        if (value === true) {
+            if (this.state.is_important) {
+                this.setState({
+                    is_urgent: value,
+                    selected_priority_value: "Do first"
+                })
+            }
+
+            else {
+                this.setState({
+                    is_urgent: value,
+                    selected_priority_value: "Delay"
+                })
+            }
+        }
+
+        else {
+            if (this.state.is_important) {
+                this.setState({
+                    is_urgent: value,
+                    selected_priority_value: "Plan"
+                })
+            }
+
+            else {
+                this.setState({
+                    is_urgent: value,
+                    selected_priority_value: "Delegate"
+                })
+            }
+        }
     }
 
     _onRewardValueChange = (e) => {
         this.setState({
-            reward_value: e.nativeEvent.text.replace(/[^0-9]/g, '')
+            reward_value: e.nativeEvent.text.replace(/[,]/g, ".")
         })
     }
+
 
     _animate = () => {
         Animated.parallel([
             Animated.timing(
-                this.repeat_opacity_value,
+                this.opacity_value,
                 {
                     toValue: 1,
                     duration: animation_duration,
@@ -76,7 +188,7 @@ export default class Priority extends React.PureComponent {
                 }
             ),
             Animated.timing(
-                this.repeat_scale_value,
+                this.scale_value,
                 {
                     toValue: 1,
                     duration: animation_duration,
@@ -87,29 +199,139 @@ export default class Priority extends React.PureComponent {
         ]).start()
     }
 
+    _cancel = () => {
+        this.props.hideAction()
+    }
+
+    _setDefaultRewardValue = () => {
+        if (this.state.selected_priority_value === "Do first") {
+            this.setState({
+                reward_value: Map(this.props.priorities).getIn(["pri_01", "defaultValue"]).toString()
+            })
+        }
+
+        else if (this.state.selected_priority_value === "Plan") {
+            this.setState({
+                reward_value: Map(this.props.priorities).getIn(["pri_02", "defaultValue"]).toString()
+            })
+        }
+
+        else if (this.state.selected_priority_value === "Delay") {
+            this.setState({
+                reward_value: Map(this.props.priorities).getIn(["pri_03", "defaultValue"]).toString()
+            })
+        }
+
+        else {
+            this.setState({
+                reward_value: Map(this.props.priorities).getIn(["pri_04", "defaultValue"]).toString()
+            })
+        }
+    }
+
+    _keyboardWillHideHandler = (e) => {
+        if (this.state.reward_value.length === 0) {
+            this._setDefaultRewardValue()
+        }
+
+        this._animateContentWhenInputCovered(0, e.duration)
+    }
+
+    _keyboardWillShowHandler = (e) => {
+        let keyboard_height = e.endCoordinates.height,
+            keyboard_duration = e.duration
+
+        let currently_focused_input = this.currently_focused_input.currentlyFocusedField()
+
+        UIManager.measure(currently_focused_input, (x, y, width, height, pageX, pageY) => {
+            let input_height = height,
+                input_py = pageY
+
+            let gap = (window_height - keyboard_height) - (input_height + input_py) - extra_margin_from_keyboard
+
+            if (gap >= 0) {
+                return
+            }
+
+            this._animateContentWhenInputCovered(gap, keyboard_duration)
+        })
+    }
+
+    _animateContentWhenInputCovered = (toValue, duration) => {
+        Animated.timing(
+            this.translate_y_value,
+            {
+                toValue,
+                duration,
+                useNativeDriver: true
+            }
+        ).start()
+    }
+
     componentDidMount() {
         this._animate()
+
+        this.keyboardWillHideListener = Keyboard.addListener("keyboardWillHide", this._keyboardWillHideHandler)
+        this.keyboardWillShowListener = Keyboard.addListener("keyboardWillShow", this._keyboardWillShowHandler)
+
+        let priority_value = Map(this.props.task_data).getIn(["priority", "value"])
+
+        this.setState({
+            selected_priority_value: Map(this.props.priorities).getIn([priority_value, "name"])
+        })
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.selected_priority_value !== prevState.selected_priority_value) {
+            this._setDefaultRewardValue()
+        }
+    }
+
+    componentWillUnmount() {
+        Keyboard.removeListener("keyboardWillHide", this._keyboardWillHideHandler)
+        Keyboard.removeListener("keyboardWillShow", this._keyboardWillShowHandler)
     }
 
     render() {
+        let priority_container_style = styles.priority_do_first_container,
+            priority_text_style = styles.priority_do_first_text
+
+        if (this.state.selected_priority_value === "Plan") {
+            priority_container_style = styles.priority_plan_container
+            priority_text_style = styles.priority_plan_text
+        }
+
+        else if (this.state.selected_priority_value === "Delay") {
+            priority_container_style = styles.priority_delay_container
+            priority_text_style = styles.priority_delay_text
+        }
+
+        else if (this.state.selected_priority_value === "Delegate") {
+            priority_container_style = styles.priority_delegate_container
+            priority_text_style = styles.priority_delegate_text
+        }
+
         return (
             <Animated.View
                 style={{
                     position: 'absolute',
                     width: panel_width,
+                    height: panel_height,
                     backgroundColor: "white",
                     borderRadius: 10,
                     overflow: "hidden",
-                    transform: [{ scale: this.repeat_scale_value }],
-                    opacity: this.repeat_opacity_value,
+                    transform: [{ scale: this.scale_value }],
+                    opacity: this.opacity_value,
                 }}
             >
-                <ScrollView
-                    scrollEnabled={false}
-                    keyboardDismissMode="on-drag"
+                <Animated.View
+                    style={{
+                        transform: [{ translateY: this.translate_y_value }]
+                    }}
                 >
-                    <KeyboardAvoidingView
-                        behavior="position"
+                    <ScrollView
+                        scrollEnabled={false}
+                        keyboardDismissMode="on-drag"
                     >
                         <View
                             style={{
@@ -158,17 +380,23 @@ export default class Priority extends React.PureComponent {
                             </View>
 
                             <TouchableOpacity
-                                style={{
-                                    paddingHorizontal: 15,
-                                    paddingVertical: 5,
-                                    borderRadius: 15,
-                                    backgroundColor: this.state.selected_priority_color
-                                }}
+                                style={priority_container_style}
+
+                                onPress={this._choosePriorityPicker}
                             >
-                                <Text>
+                                <Text
+                                    style={priority_text_style}
+                                >
                                     {this.state.selected_priority_value}
                                 </Text>
                             </TouchableOpacity>
+
+                            <PriorityPicker
+                                _closePriorityPicker={this._closePriorityPicker}
+                                _setPriorityValue={this._setPriorityValue}
+                                selected_priority_value={this.state.selected_priority_value}
+                                should_display_priority_picker={this.state.should_display_priority_picker}
+                            />
                         </View>
 
                         <View
@@ -180,12 +408,13 @@ export default class Priority extends React.PureComponent {
                                 marginRight: 30,
                                 marginTop: 30,
                             }}
+
                         >
                             <Text
                                 style={styles.normal_text}
                             >
                                 Importance
-                    </Text>
+                                    </Text>
 
                             <Switch
                                 value={this.state.is_important}
@@ -212,7 +441,7 @@ export default class Priority extends React.PureComponent {
                                 style={styles.normal_text}
                             >
                                 Urgency
-                    </Text>
+                                    </Text>
 
                             <Switch
                                 value={this.state.is_urgent}
@@ -274,11 +503,11 @@ export default class Priority extends React.PureComponent {
                             >
                                 <TextInput
                                     style={styles.reward_input}
-
+                                    maxLength={4}
                                     value={this.state.reward_value}
                                     onChange={this._onRewardValueChange}
-                                    maxLength={2}
-                                    keyboardType="numbers-and-punctuation"
+                                    keyboardType="numeric"
+
                                 />
 
                                 <Text
@@ -318,9 +547,9 @@ export default class Priority extends React.PureComponent {
                                 />
                             </TouchableOpacity>
                         </View>
-                    </KeyboardAvoidingView>
-                </ScrollView>
-            </Animated.View>
+                    </ScrollView>
+                </Animated.View>
+            </Animated.View >
         )
     }
 }
