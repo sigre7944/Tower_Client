@@ -27,19 +27,50 @@ const animation_duration = 250
 const easing = Easing.inOut(Easing.linear)
 
 export default class WeekCalendar extends React.Component {
-    chosen_day = -1
+    chosen_monday = -1
+    chosen_sunday = -1
     chosen_week = -1
-    chosen_month = -1
-    chosen_year = -1
-    chosen_noWeekInMonth = -1
+    chosen_start_month = -1
+    chosen_end_month = -1
+    chosen_selected_month = -1
+    chosen_start_year = -1
+    chosen_end_year = -1
+    chosen_selected_year = -1
+    chosen_start_noWeekInMonth = -1
+    chosen_end_noWeekInMonth = -1
 
     calendar_scale_value = new Animated.Value(0.3)
     calendar_opacity_value = new Animated.Value(0.3)
 
     save = () => {
-        if (this.chosen_day > 0 && this.chosen_week > 0 && this.chosen_month >= 0 && this.chosen_year > 0 && this.chosen_noWeekInMonth > 0) {
-            this._updateTask(this.chosen_day, this.chosen_week, this.chosen_month, this.chosen_year, this.chosen_noWeekInMonth)
+
+        if (this.chosen_monday > 0
+            && this.chosen_sunday > 0
+            && this.chosen_week > 0
+            && this.chosen_start_month > 0
+            && this.chosen_end_month > 0
+            && this.chosen_selected_month > 0
+            && this.chosen_start_year > 0
+            && this.chosen_end_year > 0
+            && this.chosen_selected_year > 0
+            && this.chosen_start_noWeekInMonth > 0
+            && this.chosen_end_noWeekInMonth > 0) {
+
+            this._updateTask(
+                this.chosen_monday,
+                this.chosen_sunday,
+                this.chosen_week,
+                this.chosen_start_month,
+                this.chosen_end_month,
+                this.chosen_selected_month,
+                this.chosen_start_year,
+                this.chosen_end_year,
+                this.chosen_selected_year,
+                this.chosen_start_noWeekInMonth,
+                this.chosen_end_noWeekInMonth
+            )
         }
+
 
         this.props.hideAction()
     }
@@ -48,21 +79,23 @@ export default class WeekCalendar extends React.Component {
         this.props.hideAction()
     }
 
-    setData = (day, week, month, year, noWeekInMonth) => {
-        this.chosen_day = day
+    setData = (monday, sunday, week, start_month, end_month, chosen_month, start_year, end_year, chosen_year, start_noWeekInMonth, end_noWeekInMonth) => {
+        this.chosen_monday = monday
+        this.chosen_sunday = sunday
         this.chosen_week = week
-        this.chosen_month = month
-        this.chosen_year = year
-        this.chosen_noWeekInMonth = noWeekInMonth
+        this.chosen_start_month = start_month
+        this.chosen_end_month = end_month
+        this.chosen_selected_month = chosen_month
+        this.chosen_start_year = start_year
+        this.chosen_end_year = end_year
+        this.chosen_selected_year = chosen_year
+        this.chosen_start_noWeekInMonth = start_noWeekInMonth
+        this.chosen_end_noWeekInMonth = end_noWeekInMonth
     }
 
-    _updateTask = (day, week, month, year, noWeekInMonth) => {
+    _updateTask = (monday, sunday, week, start_month, end_month, chosen_month, start_year, end_year, chosen_year, start_noWeekInMonth, end_noWeekInMonth) => {
         this.props.updateTaskSchedule({
-            day,
-            week,
-            month,
-            year,
-            noWeekInMonth
+            monday, sunday, week, start_month, end_month, chosen_month, start_year, end_year, chosen_year, start_noWeekInMonth, end_noWeekInMonth
         })
     }
 
@@ -271,6 +304,7 @@ class Calendar extends React.Component {
         }
 
         else {
+            // console.log(this.props.task_data)
             this.start_index = this.findStartIndexIfNotEdit(this.props.task_data)
         }
     }
@@ -283,10 +317,22 @@ class Calendar extends React.Component {
 
     findStartIndexIfNotEdit = (task_data) => {
         let task_data_map = Map(task_data),
-            month = task_data_map.getIn(["schedule", "month"]),
-            year = task_data_map.getIn(["schedule", "year"]),
-            week_index = task_data_map.getIn(["schedule", "noWeekInMonth"]) - 1,
-            month_index = this.findMonthIndex(month, year)
+            chosen_month = task_data_map.getIn(["schedule", "chosen_month"]),
+            chosen_year = task_data_map.getIn(["schedule", "chosen_year"]),
+            start_month = task_data_map.getIn(["schedule", "start_month"]),
+            end_month = task_data_map.getIn(["schedule", "end_month"]),
+            start_year = task_data_map.getIn(["schedule", "start_year"]),
+            end_year = task_data_map.getIn(["schedule", "end_year"]),
+            week_index = task_data_map.getIn(["schedule", "start_noWeekInMonth"]),
+            month_index = this.findMonthIndex(chosen_month, chosen_year)
+
+        if (chosen_month === start_month) {
+            week_index = task_data_map.getIn(["schedule", "start_noWeekInMonth"]) - 1
+        }
+
+        else if (chosen_month === end_month) {
+            week_index = task_data_map.getIn(["schedule", "end_noWeekInMonth"]) - 1
+        }
 
         this.chooseWeek(month_index, week_index)
 
@@ -467,7 +513,8 @@ class MonthHolder extends React.Component {
                         unchosen: true,
                         day: date.getDate(),
                         month: date.getMonth(),
-                        year: date.getFullYear()
+                        year: date.getFullYear(),
+                        noWeekInMonth: this.getNoWeekInMonth(date),
                     })
                 }
 
@@ -475,7 +522,8 @@ class MonthHolder extends React.Component {
                     data.push({
                         day: date.getDate(),
                         month: date.getMonth(),
-                        year: date.getFullYear()
+                        year: date.getFullYear(),
+                        noWeekInMonth: this.getNoWeekInMonth(date),
                     })
                 }
             }
@@ -662,8 +710,10 @@ class WeekRowHolder extends React.Component {
     }
 
     _chooseWeekRow = () => {
-        let { day, week, month, year, noWeekInMonth } = this.props.week_data[0]
-        this.props.setData(day, week, month, year, noWeekInMonth)
+        let { week, month: chosen_month, year: chosen_year } = this.props.week_data[0]
+        let { day: monday, month: start_month, year: start_year, noWeekInMonth: start_noWeekInMonth } = this.props.week_data[1]
+        let { day: sunday, month: end_month, year: end_year, noWeekInMonth: end_noWeekInMonth } = this.props.week_data[this.props.week_data.length - 1]
+        this.props.setData(monday, sunday, week, start_month, end_month, chosen_month, start_year, chosen_year, end_year, start_noWeekInMonth, end_noWeekInMonth)
 
         this.props.chooseWeek(this.props.month_index, this.props.week_index)
     }
@@ -755,6 +805,7 @@ class DayHolder extends React.PureComponent {
                 day_text_style = styles.not_chosen_day_text
             }
         }
+
         return (
             <View
                 style={styles.day_holder_container}

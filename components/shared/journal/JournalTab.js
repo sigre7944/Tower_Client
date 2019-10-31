@@ -66,8 +66,30 @@ export default class JournalTab extends React.PureComponent {
         }
 
         else if (this.props.type === "week") {
+            let monday = this.getMonday(this.current_date),
+                sunday = new Date(monday)
+
+            sunday.setDate(monday.getDate() + 6)
+
+            let week = this.getWeek(this.current_date),
+                start_month = monday.getMonth(),
+                end_month = sunday.getMonth(),
+                start_year = monday.getFullYear(),
+                end_year = sunday.getFullYear(),
+                start_noWeekInMonth = this.getNoWeekInMonth(monday)
+            end_noWeekInMonth = this.getNoWeekInMonth(sunday)
+
             return ({
-                week: this.getWeek(this.current_date),
+                monday,
+                sunday,
+                week,
+                start_month,
+                end_month,
+                start_year,
+                end_year,
+                start_noWeekInMonth,
+                end_noWeekInMonth,
+
                 month: this.current_date.getMonth(),
                 day: this.current_date.getDate(),
                 year: this.current_date.getFullYear(),
@@ -228,7 +250,7 @@ class UncompletedTaskCardHolder extends React.PureComponent {
         should_flatlist_update: 0
     }
 
-    _keyExtractor = (item, index) => `journal-uncompleted-task-${item[0]}`
+    _keyExtractor = (item, index) => `journal-${this.props.type}-uncompleted-task-${item[0]}`
 
     _renderItem = ({ item, index }) => (
         <UncompletedTaskCard
@@ -385,35 +407,88 @@ class UncompletedTaskCard extends React.PureComponent {
         return false
     }
 
-    compareWeekTypeWeekly = (repeat, schedule, day, month, year) => {
-        let interval_value = repeat.interval.value,
-            start_date = new Date(new Date(new Date(new Date().setDate(schedule.day)).setMonth(schedule.month)).setFullYear(schedule.year)),
-            current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year))
+    compareWeekTypeWeekly = (repeat, schedule, monday, week, start_month, end_month, start_year, end_year, start_noWeekInMonth, end_noWeekInMonth) => {
+        let task_monday = parseInt(Map(schedule).get("monday")),
+            task_sunday = parseInt(Map(schedule).get("sunday")),
+            task_start_month = parseInt(Map(schedule).get("start_month")),
+            task_end_month = parseInt(Map(schedule).get("end_month")),
+            task_chosen_month = parseInt(Map(schedule).get("chosen_month")),
+            task_start_year = parseInt(Map(schedule).get("start_year")),
+            task_end_year = parseInt(Map(schedule).get("end_year")),
+            task_chosen_year = parseInt(Map(schedule).get("chosen_year")),
+            task_week = parseInt(Map(schedule).get("week")),
+            repeat_type = Map(repeat).get("type"),
+            repeat_value = parseInt(Map(repeat).getIn(["interval", "value"]))
 
-        if (month >= schedule.month && year >= schedule.year && current_date.getTime() > start_date.getTime()) {
-            if (Math.abs(this.getWeek(current_date) - schedule.week) % interval_value === 0) {
-                return true
+        if (repeat_type === "weekly-w") {
+            if (start_year >= task_chosen_year) {
+                let diff = Math.abs(week - task_week)
+
+                if (diff >= 0 && diff % repeat_value === 0) {
+                    return true
+                }
             }
         }
 
         return false
     }
 
-    compareWeekTypeMonthly = (repeat, schedule, day, month, year) => {
-        let interval_value = repeat.interval.value,
-            current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)),
-            diff_year = year - schedule.year,
-            diff_month = (month + diff_year * 12) - schedule.month,
-            current_no_week_in_month = this.getNoWeekInMonth(current_date),
-            last_no_week_in_month = this.getNoWeekInMonth(new Date(year, month + 1, 0))
+    getNoWeekInMonth = (date) => {
+        let nearest_monday_timestamp = this.getMonday(date).getTime()
+        let first_monday_of_month_timestamp = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 1)).getTime()
 
-        if (diff_month > 0 && diff_month % interval_value === 0) {
-            if (current_no_week_in_month === schedule.noWeekInMonth) {
-                return true
+        return Math.floor((nearest_monday_timestamp - first_monday_of_month_timestamp) / (7 * 86400 * 1000)) + 1
+    }
+
+
+    compareWeekTypeMonthly = (repeat, schedule, monday, week, start_month, end_month, start_year, end_year, start_noWeekInMonth, end_noWeekInMonth) => {
+        let repeat_value = parseInt(Map(repeat).getIn(["interval", "value"])),
+            task_day = parseInt(Map(schedule).get("day")),
+            task_chosen_month = parseInt(Map(schedule).get("chosen_month")),
+            task_start_month = parseInt(Map(schedule).get("start_month")),
+            task_end_month = parseInt(Map(schedule).get("end_month")),
+            task_chosen_year = parseInt(Map(schedule).get("chosen_year")),
+            task_week = parseInt(Map(schedule).get("week")),
+            task_chosen_noWeekInMonth = parseInt(Map(schedule).get("start_noWeekInMonth")),
+            repeat_type = Map(repeat).get("type")
+
+        if (repeat_type === "weekly-m") {
+            if (task_chosen_month === task_start_month) {
+                let diff_year = start_year - task_chosen_year,
+                    diff_month = (start_month + diff_year * 12) - task_chosen_month
+
+                task_chosen_noWeekInMonth = parseInt(Map(schedule).get("start_noWeekInMonth"))
+
+                if (task_chosen_noWeekInMonth > 4) {
+                    task_chosen_noWeekInMonth = 4
+                }
+
+                if (start_noWeekInMonth > 4) {
+                    start_noWeekInMonth = 4
+                }
+
+                if (diff_month > 0 && diff_month % repeat_value === 0) {
+                    return start_noWeekInMonth === task_chosen_noWeekInMonth
+                }
             }
 
-            else if (current_no_week_in_month === last_no_week_in_month && schedule.noWeekInMonth === 5) {
-                return true
+            else if (task_chosen_month === task_end_month) {
+                let diff_year = end_year - task_chosen_year,
+                    diff_month = (end_month + diff_year * 12) - task_chosen_month
+
+                task_chosen_noWeekInMonth = parseInt(Map(schedule).get("end_noWeekInMonth"))
+
+                if (task_chosen_noWeekInMonth > 4) {
+                    task_chosen_noWeekInMonth = 4
+                }
+
+                if (end_noWeekInMonth > 4) {
+                    end_noWeekInMonth = 4
+                }
+
+                if (diff_month > 0 && diff_month % repeat_value === 0) {
+                    return end_noWeekInMonth === task_chosen_noWeekInMonth
+                }
             }
         }
 
@@ -421,15 +496,24 @@ class UncompletedTaskCard extends React.PureComponent {
     }
 
     compareMonthTypeMonthly = (repeat, schedule, month, year) => {
-        let interval_value = repeat.interval.value,
-            diff_year = year - schedule.year,
-            diff_month = (month + diff_year * 12) - schedule.month
+        let repeat_value = parseInt(Map(repeat).getIn(["interval", "value"])),
+            task_month = Map(schedule).get("month"),
+            task_year = Map(schedule).get("year")
 
-        if (diff_month > 0 && diff_month % interval_value === 0) {
+        let diff_year = year - task_year,
+            diff_month = (month + diff_year * 12) - task_month
+
+        if (diff_month > 0 && diff_month % repeat_value === 0) {
             return true
         }
 
         return false
+    }
+
+    getMonday = (date) => {
+        let dayInWeek = new Date(date).getDay()
+        let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
+        return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
     }
 
     handleUpdate = (completed_task, task, type, current_chosen_category, chosen_date_data) => {
@@ -481,21 +565,22 @@ class UncompletedTaskCard extends React.PureComponent {
             }
 
             else if (type === "week") {
-                let { day, month, week, year } = chosen_date_data,
-                    chosen_week_date = new Date(year, month, day),
-                    chosen_week_timestamp = new Date(year, month, this.getMonday(chosen_week_date).getDate()).getTime(),
+                let { monday, week, start_month, end_month, start_year, end_year, start_noWeekInMonth, end_noWeekInMonth } = chosen_date_data,
+                    chosen_week_timestamp = new Date(start_year, start_month, monday).getTime(),
                     chosen_week_timestamp_to_string = chosen_week_timestamp.toString(),
 
                     task_week = parseInt(Map(schedule).get("week")),
-                    task_year = parseInt(Map(schedule).get("year"))
+                    task_year = parseInt(Map(schedule).get("chosen_year")),
+                    goal_value = parseInt(Map(goal).get("max"))
 
-                if ((task_week === week && task_year === year)
-                    || this.compareWeekTypeWeekly(repeat, schedule, day, month, year)
-                    || this.compareWeekTypeMonthly(repeat, schedule, day, month, year)
+
+                if ((task_week === week && task_year === start_year)
+                    || this.compareWeekTypeWeekly(repeat, schedule, monday, week, start_month, end_month, start_year, end_year, start_noWeekInMonth, end_noWeekInMonth)
+                    || this.compareWeekTypeMonthly(repeat, schedule, monday, week, start_month, end_month, start_year, end_year, start_noWeekInMonth, end_noWeekInMonth)
                 ) {
                     current_goal_value = getIn(completed_task, [chosen_week_timestamp_to_string, "current"], 0)
 
-                    if (current_goal_value < parseInt(goal.max)) {
+                    if (current_goal_value < parseInt(goal_value)) {
                         this.update_obj = {
                             should_render: true,
                             current_goal_value,
@@ -519,13 +604,17 @@ class UncompletedTaskCard extends React.PureComponent {
             else {
                 let { month, year } = chosen_date_data,
                     chosen_month_timestamp = new Date(year, month).getTime(),
-                    chosen_month_timestamp_to_string = chosen_month_timestamp.toString()
+                    chosen_month_timestamp_to_string = chosen_month_timestamp.toString(),
 
-                if ((schedule.month === month && schedule.year === year)
+                    task_month = parseInt(Map(schedule).get("month")),
+                    task_year = parseInt(Map(schedule).get("year")),
+                    goal_value = parseInt(Map(goal).get("max"))
+
+                if ((task_month === month && task_year === year)
                     || this.compareMonthTypeMonthly(repeat, schedule, month, year)
                 ) {
                     current_goal_value = getIn(completed_task, [chosen_month_timestamp_to_string, "current"], 0)
-                    if (current_goal_value < parseInt(goal.max)) {
+                    if (current_goal_value < parseInt(goal_value)) {
                         this.update_obj = {
                             should_render: true,
                             current_goal_value,

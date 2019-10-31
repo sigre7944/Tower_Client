@@ -17,11 +17,6 @@ export default class ChooseWeekNthInMonth extends React.PureComponent {
 
     week_nth_text_array = ["First", "Second", "Third", "Last"]
 
-    _chooseWeekNthOptionRepeat = () => {
-        this.props._chooseWeekNthOptionRepeat()
-    }
-
-
     render() {
         let weekth_container_style = styles.unchosen_weekth_container,
             weekth_text_style = styles.unchosen_weekth_text,
@@ -42,14 +37,12 @@ export default class ChooseWeekNthInMonth extends React.PureComponent {
                     justifyContent: "space-between"
                 }}
             >
-                <TouchableOpacity
+                <View
                     style={{
                         flexDirection: "row",
                         alignItems: "center",
                         marginTop: 25,
                     }}
-
-                    onPress={this._chooseWeekNthOptionRepeat}
                 >
                     <View
                         style={weekth_container_style}
@@ -67,7 +60,7 @@ export default class ChooseWeekNthInMonth extends React.PureComponent {
                     >
                         week every month
                     </Text>
-                </TouchableOpacity>
+                </View>
             </View>
         )
     }

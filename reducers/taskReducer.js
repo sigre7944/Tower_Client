@@ -36,6 +36,9 @@ export const week_tasks = (state = Map(), action) => {
         case 'EDIT_WEEK_TASK':
             return state.updateIn(action.keyPath, (value) => action.data)
 
+        case 'UPDATE_WEEK_TASK':
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
+
         case 'DELETE_WEEK_TASK':
             return state.delete(action.id)
 
@@ -57,6 +60,9 @@ export const month_tasks = (state = Map(), action) => {
 
         case 'EDIT_MONTH_TASK':
             return state.updateIn(action.keyPath, (value) => action.data)
+
+        case 'UPDATE_MONTH_TASK':
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
         case 'DELETE_MONTH_TASK':
             return state.delete(action.id)
@@ -145,6 +151,14 @@ function getMonday(date) {
     return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
 }
 
+function getSunday(date) {
+    let monday = getMonday(new Date(date))
+    let sunday = new Date(monday)
+    sunday.setDate(monday.setDate() + 6)
+
+    return sunday
+}
+
 function getNoWeekInMonth(date) {
     let nearest_monday_timestamp = getMonday(date).getTime()
     let first_monday_of_month_timestamp = getMonday(new Date(date.getFullYear(), date.getMonth(), 1)).getTime()
@@ -185,11 +199,17 @@ let initial_currentMonthTask = fromJS({
 }),
     initial_currentWeekTask = fromJS({
         schedule: {
-            day: getMonday(date).getDate(),
+            monday: getMonday(date).getDate(),
+            sunday: getSunday(date).getDate(),
             week: getWeek(date),
-            month: getMonday(date).getMonth(),
-            year: getMonday(date).getFullYear(),
-            noWeekInMonth: getNoWeekInMonth(date),
+            start_month: getMonday(date).getMonth(),
+            end_month: getSunday(date).getMonth(),
+            chosen_month: date.getMonth(),
+            start_year: getMonday(date).getFullYear(),
+            end_year: getSunday(date).getFullYear(),
+            chosen_year: date.getFullYear(),
+            start_noWeekInMonth: getNoWeekInMonth(getMonday(date)),
+            end_noWeekInMonth: getNoWeekInMonth(getSunday(date)),
         },
         category: "cate_0",
         repeat: {
@@ -276,6 +296,8 @@ export const currentWeekTask = (state = initial_currentWeekTask, action) => {
     switch (action.type) {
 
         case 'UPDATE_NEW_WEEK_TASK':
+            // let new_state = state.updateIn(action.keyPath, action.notSetValue, action.updater)
+            // console.log(new_state)
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
         case 'RESET_NEW_WEEK_TASK':

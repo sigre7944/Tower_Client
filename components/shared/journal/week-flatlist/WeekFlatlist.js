@@ -34,12 +34,9 @@ export default class WeekFlatlist extends React.Component {
             should_update: prevState.should_update + 1
         }))
 
-        let week = this.week_data[week_index].week,
-            year = this.week_data[week_index].year,
-            day = this.week_data[week_index].start_day,
-            month = this.week_data[week_index].month
+        let { monday, sunday, week, start_month, end_month, start_year, end_year, start_noWeekInMonth, end_noWeekInMonth } = this.week_data[week_index]
 
-        this.props.setChosenDateData({ week, year, day, month })
+        this.props.setChosenDateData({ monday, sunday, week, start_month, end_month, start_year, end_year, start_noWeekInMonth, end_noWeekInMonth })
 
         this.scrollToIndex(week_index)
     }
@@ -82,6 +79,13 @@ export default class WeekFlatlist extends React.Component {
         return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
     }
 
+    getNoWeekInMonth = (date) => {
+        let nearest_monday_timestamp = this.getMonday(date).getTime()
+        let first_monday_of_month_timestamp = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 1)).getTime()
+
+        return Math.floor((nearest_monday_timestamp - first_monday_of_month_timestamp) / (7 * 86400 * 1000)) + 1
+    }
+
     initializeWeekData = () => {
         let current_year = new Date().getFullYear(),
             number_of_years_in_between = 4,
@@ -99,12 +103,14 @@ export default class WeekFlatlist extends React.Component {
 
             this.week_data.push({
                 week: this.getWeek(monday),
-                start_day: monday.getDate(),
-                end_day: sunday.getDate(),
                 start_month: monday.getMonth(),
                 end_month: sunday.getMonth(),
-                year: monday.getFullYear(),
-                month: monday.getMonth()
+                start_year: monday.getFullYear(),
+                end_year: sunday.getFullYear(),
+                start_noWeekInMonth: this.getNoWeekInMonth(monday),
+                end_noWeekInMonth: this.getNoWeekInMonth(sunday),
+                monday: monday.getDate(),
+                sunday: sunday.getDate(),
             })
 
 
@@ -129,7 +135,7 @@ export default class WeekFlatlist extends React.Component {
             index = 0
         }
 
-        let string = `${this.month_text_arr[this.week_data[index].month]} - ${this.week_data[index].year}`
+        let string = `${this.month_text_arr[this.week_data[index].start_month]} - ${this.week_data[index].start_year}`
 
         this.props.updateHeaderText(string)
     }
@@ -143,7 +149,7 @@ export default class WeekFlatlist extends React.Component {
 
         this.week_data.every((data, index) => {
 
-            if (data.week === current_week && data.year === current_year) {
+            if (data.week === current_week && data.start_year === current_year) {
 
                 this.start_index = index
 
@@ -171,7 +177,7 @@ export default class WeekFlatlist extends React.Component {
         if (this.props.currentRoute !== prevProps.currentRoute) {
             if (this.props.currentRoute === "Week") {
 
-                let string = `${this.month_text_arr[this.week_data[this.state.current_week_index].month]} - ${this.week_data[this.state.current_week_index].year}`
+                let string = `${this.month_text_arr[this.week_data[this.state.current_week_index].start_month]} - ${this.week_data[this.state.current_week_index].start_year}`
 
                 this.props.updateHeaderText(string)
             }
@@ -282,7 +288,7 @@ class WeekHolder extends React.Component {
                     <Text
                         style={this.state.inform_text_style}
                     >
-                        {`${this.props.data.start_day} ${this.month_text_arr[this.props.data.start_month]} - ${this.props.data.end_day} ${this.month_text_arr[this.props.data.end_month]}`}
+                        {`${this.props.data.monday} ${this.month_text_arr[this.props.data.start_month]} - ${this.props.data.sunday} ${this.month_text_arr[this.props.data.end_month]}`}
                     </Text>
                 </View>
 

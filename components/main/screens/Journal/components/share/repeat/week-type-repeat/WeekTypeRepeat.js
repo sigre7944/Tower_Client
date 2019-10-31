@@ -87,21 +87,19 @@ export default class WeekTypeRepeat extends React.PureComponent {
     }
 
     _setRepeatType = (repeat_type) => {
-        this.setState({
-            selected_repeat_type: repeat_type
-        })
-    }
+        if (repeat_type === "month") {
+            this.setState({
+                selected_repeat_type: repeat_type,
+                is_week_nth_option_selected: true
+            })
+        }
 
-    _chooseWeekNthOptionRepeat = () => {
-        this.setState({
-            is_week_nth_option_selected: true
-        })
-    }
-
-    _chooseEveryOptionRepeat = () => {
-        this.setState({
-            is_week_nth_option_selected: false
-        })
+        else {
+            this.setState({
+                selected_repeat_type: repeat_type,
+                is_week_nth_option_selected: false
+            })
+        }
     }
 
     _onChangeRepeatInput = (e) => {
@@ -216,7 +214,8 @@ export default class WeekTypeRepeat extends React.PureComponent {
     }
 
     save = () => {
-        let { selected_repeat_type,
+        let {
+            selected_repeat_type,
             goal_value,
             repeat_input_value,
             after_occurrence_value,
@@ -224,8 +223,7 @@ export default class WeekTypeRepeat extends React.PureComponent {
             end_at_chosen_day,
             end_at_chosen_month,
             end_at_chosen_year,
-            no_week_in_month,
-            is_week_nth_option_selected } = this.state
+        } = this.state
 
         let end_value_data = {},
             repeat_value_data = {}
@@ -243,26 +241,17 @@ export default class WeekTypeRepeat extends React.PureComponent {
             end_value_data.occurrence = parseInt(after_occurrence_value)
         }
 
-        if (is_week_nth_option_selected) {
-            repeat_value_data.type = "weekly-nth"
+        if (selected_repeat_type === "week") {
+            repeat_value_data.type = "weekly-w"
             repeat_value_data.interval = {
-                value: parseInt(no_week_in_month)
+                value: parseInt(repeat_input_value)
             }
         }
 
         else {
-            if (selected_repeat_type === "week") {
-                repeat_value_data.type = "weekly-w"
-                repeat_value_data.interval = {
-                    value: parseInt(repeat_input_value)
-                }
-            }
-
-            else {
-                repeat_value_data.type = "monthly"
-                repeat_value_data.interval = {
-                    value: parseInt(repeat_input_value)
-                }
+            repeat_value_data.type = "weekly-m"
+            repeat_value_data.interval = {
+                value: parseInt(repeat_input_value)
             }
         }
 
@@ -310,7 +299,18 @@ export default class WeekTypeRepeat extends React.PureComponent {
             end_at_chosen_year = this.date.getFullYear(),
             after_occurrence_value = "1",
             is_week_nth_option_selected = false,
-            no_week_in_month = parseInt(current_task_map.getIn(["schedule", "noWeekInMonth"]))
+            no_week_in_month = parseInt(current_task_map.getIn(["schedule", "start_noWeekInMonth"])),
+            chosen_month = parseInt(current_task_map.getIn(["schedule", "chosen_month"])),
+            start_month = parseInt(current_task_map.getIn(["schedule", "start_month"])),
+            end_month = parseInt(current_task_map.getIn(["schedule", "end_month"]))
+
+        if (chosen_month === start_month) {
+            no_week_in_month = parseInt(current_task_map.getIn(["schedule", "start_noWeekInMonth"]))
+        }
+
+        else if (chosen_month === end_month) {
+            no_week_in_month = parseInt(current_task_map.getIn(["schedule", "end_noWeekInMonth"]))
+        }
 
         if (no_week_in_month > 4) {
             no_week_in_month = 4
@@ -321,12 +321,9 @@ export default class WeekTypeRepeat extends React.PureComponent {
             selected_repeat_type = "week"
         }
 
-        else if (repeat_type === "weekly-nth") {
-            is_week_nth_option_selected = true
-        }
-
         else {
             selected_repeat_type = "month"
+            is_week_nth_option_selected = true
             repeat_value = current_task_map.getIn(["repeat", "interval", "value"]).toString()
         }
 
@@ -408,14 +405,10 @@ export default class WeekTypeRepeat extends React.PureComponent {
                             _onChangeRepeatInput={this._onChangeRepeatInput}
                             selected_repeat_type={this.state.selected_repeat_type}
                             _setRepeatType={this._setRepeatType}
-
-                            is_week_nth_option_selected={this.state.is_week_nth_option_selected}
-                            _chooseEveryOptionRepeat={this._chooseEveryOptionRepeat}
                         />
 
                         <ChooseWeekNthInMonth
                             is_week_nth_option_selected={this.state.is_week_nth_option_selected}
-                            _chooseWeekNthOptionRepeat={this._chooseWeekNthOptionRepeat}
                             no_week_in_month={this.state.no_week_in_month}
                         />
 

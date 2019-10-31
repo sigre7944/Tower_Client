@@ -39,16 +39,12 @@ export default class RepeatValueHolder extends React.PureComponent {
     }
 
     _chooseInput = () => {
-        this.props._chooseEveryOptionRepeat()
-
         if (this._text_input_ref) {
             this._text_input_ref.focus()
         }
     }
 
     _openPicker = () => {
-        this.props._chooseEveryOptionRepeat()
-
         this.setState({
             is_picker_opened: true
         })
@@ -79,13 +75,6 @@ export default class RepeatValueHolder extends React.PureComponent {
             every_input_style = styles.every_option_input,
             picker_button_style = styles.picker_button_container,
             picker_text_style = styles.every_option_text
-
-        if (this.props.is_week_nth_option_selected) {
-            every_text_style = styles.unchosen_every_option_text
-            every_input_style = styles.unchosen_every_option_input
-            picker_button_style = styles.unchosen_picker_button_container
-            picker_text_style = styles.unchosen_every_option_text
-        }
 
         return (
             <View>
