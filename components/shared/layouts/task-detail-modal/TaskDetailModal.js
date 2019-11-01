@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import { TouchableOpacity, Text, View, StyleSheet, ImageBackground, Dimensions, Image, TextInput, Modal as RNModal } from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { CheckBox } from 'react-native-elements';
-import DayCalendar from '../calendar/day-calendar/DayCalendar.Container'
-import WeekCalendar from '../calendar/week-calendar/WeekCalendar.Container'
-import MonthCalendar from '../calendar/month-calendar/MonthCalendar.Container'
-import Category from '../category/Category.Container'
-import Priority from '../priority/Priority.Container'
-import Repeat from '../repeat/Repeat.Container'
-import Goal from '../goal/Goal.Container'
+import DayCalendar from '../../calendar/day-calendar/DayCalendar.Container'
+import WeekCalendar from '../../calendar/week-calendar/WeekCalendar.Container'
+import MonthCalendar from '../../calendar/month-calendar/MonthCalendar.Container'
+import Category from '../../category/Category.Container'
+import Priority from '../../priority/Priority.Container'
+import Repeat from '../../repeat/Repeat.Container'
+import Goal from '../../goal/Goal.Container'
 
 import { Map, List } from 'immutable'
 

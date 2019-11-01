@@ -2,11 +2,11 @@ import {
     updateTask,
     deleteTask,
     returnNewCompletedTask
-} from '../../actions/taskAction'
-import { updateStats, returnNewStats } from '../../actions/statsAction'
-import { updateChartStats, returnNewChartStats } from '../../actions/chartStatsAction'
+} from '../../../actions/taskAction'
+import { updateStats, returnNewStats } from '../../../actions/statsAction'
+import { updateChartStats, returnNewChartStats } from '../../../actions/chartStatsAction'
 import { batchActions } from 'redux-batched-actions'
-import { updateCategory } from '../../actions/categoryAction'
+import { updateCategory } from '../../../actions/categoryAction'
 
 export const deleteTaskThunk = ({
     completed_task_action_type,

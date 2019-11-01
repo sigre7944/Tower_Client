@@ -1,8 +1,12 @@
 import React from 'react';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native'
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { CheckBox } from 'react-native-elements'
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import {
+    faRedoAlt
+} from '@fortawesome/free-solid-svg-icons'
 import { Map, List, fromJS } from 'immutable'
+
+import { styles } from './styles/styles'
 
 export default class TaskCard extends React.PureComponent {
     priority_order = {
@@ -13,8 +17,9 @@ export default class TaskCard extends React.PureComponent {
     }
 
     state = {
-        checked: false,
-        uncomplete_checked: false
+        category_color: "white",
+        priority_color: "#F78096",
+        checked_complete: false
     }
 
     _onPress = () => {
@@ -350,10 +355,6 @@ export default class TaskCard extends React.PureComponent {
         if (this.props.is_chosen_date_today) {
             let sending_obj = {}
 
-            this.setState(prevState => ({
-                checked: !prevState.checked
-            }))
-
             sending_obj.completed_task_data = this.doUpdateOnCompletedTask(this.props.flag, this.props.type, "inc")
             sending_obj.stats_data = this.doUpdateOnStats(this.props.flag, this.props.type, "inc")
 
@@ -365,9 +366,6 @@ export default class TaskCard extends React.PureComponent {
 
     unCheckComplete = () => {
         if (this.props.is_chosen_date_today) {
-            this.setState(prevState => ({
-                uncomplete_checked: !prevState.uncomplete_checked
-            }))
 
             let sending_obj = {}
 
@@ -381,89 +379,180 @@ export default class TaskCard extends React.PureComponent {
 
     render() {
         return (
-            <TouchableOpacity style={styles.container} onPress={this._onPress}>
+            <View
+                style={styles.container}
+            >
+                <View
+                    style={{
+                        flexDirection: "row",
+                        flex: 1,
+                    }}
+                >
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                        }}
+                    >
+                        <PriorityColorBar
+                            priority_color={this.state.priority_color}
+                        />
 
-                <View style={styles.checkBox}>
-                    <CheckBox
-                        center
-                        checkedIcon='dot-circle-o'
-                        uncheckedIcon='circle-o'
-                        checked={this.state.checked}
-                        onPress={this.checkComplete}
-                    />
+                        <TouchableOpacity
+                            style={{
+                                justifyContent: "center",
+                                alignItems: "center",
+                                height: 72,
+                                paddingHorizontal: 15,
+                            }}
+                        >
+                            <CompleteBox
+                                checked_complete={this.state.checked_complete}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                    <TouchableOpacity
+                        style={{
+                            marginLeft: 15,
+                            flex: 1,
+                            justifyContent: "center",
+                        }}
+                        onPress={this._onPress}
+
+                    >
+                        <Text
+                            style={styles.task_title}
+                        >
+                            {this.props.title}
+                        </Text>
+
+                        <Text
+                            style={styles.goal_tracking}
+                        >
+                            {this.props.current_goal_value} / {this.props.goal_value}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
-                <View style={styles.description}>
-                    <Text style={styles.descriptionText}>{this.props.title ? this.props.title : 'Example task'}</Text>
-                    <Text style={styles.descriptionAmount}>{this.props.goal ? `${this.props.current_goal_value}/${this.props.goal.max}` : "0/3"}</Text>
-                </View>
+
+
+
                 {this.props.flag === "uncompleted" ?
                     <View
-                        style={styles.checkBox}
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                        }}
                     >
-                        <CheckBox
-                            center
-                            checkedIcon='dot-circle-o'
-                            uncheckedIcon='circle-o'
-                            checked={this.state.uncomplete_checked}
-                            onPress={this.unCheckComplete}
+                        <TouchableOpacity
+                            style={{
+                                width: 58,
+                                height: 72,
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
+                        >
+                            <FontAwesomeIcon
+                                icon={faRedoAlt}
+                                size={18}
+                                color="#BDBDBD"
+                            />
+                        </TouchableOpacity>
+
+                        <CategoryColorCircle
+                            category_color={this.state.category_color}
                         />
                     </View>
                     :
                     null
                 }
-                <View style={styles.share}>
-                    <FontAwesome name={'link'} style={styles.icon} />
-                </View>
-                <View style={styles.colorBox}>
-                    <FontAwesome name={'circle'} style={styles.icon} />
-                </View>
 
-            </TouchableOpacity>
+            </View>
         )
     }
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-        height: 60,
-        borderWidth: 1,
-        borderColor: 'grey',
-        borderLeftWidth: 3,
-        marginBottom: 4,
-        marginTop: 4,
-        backgroundColor: 'white',
-        zIndex: 30
-    },
-    checkBox: {
-        width: 50,
-        height: 60
-    },
-    description: {
-        flex: 1
-    },
-    descriptionText: {
-        lineHeight: 25,
-        fontSize: 16
-    },
-    descriptionAmount: {
-        lineHeight: 25,
-        opacity: 0.5
-    },
-    share: {
-        width: 50,
-        height: 60,
-    },
-    colorBox: {
-        width: 50,
-        height: 60
-    },
-    icon: {
-        flex: 1,
-        alignSelf: 'center',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: 24,
-        lineHeight: 60
+class PriorityColorBar extends React.PureComponent {
+
+    render() {
+        return (
+            <View
+                style={{
+                    width: 9,
+                    backgroundColor: this.props.priority_color,
+                    borderRadius: 30,
+                    height: 72,
+                    marginLeft: 1,
+                }}
+            >
+
+            </View>
+        )
     }
-});
+}
+
+class CompleteBox extends React.PureComponent {
+
+    render() {
+        return (
+            <View
+                style={styles.complete_box_container}
+            >
+                {this.props.checked_complete ?
+                    <View>
+
+                    </View>
+
+                    :
+
+                    null
+                }
+            </View>
+        )
+    }
+}
+
+class CategoryColorCircle extends React.PureComponent {
+    render() {
+        return (
+            <>
+                {this.props.category_color === "white" || this.props.category_color === "no color" ?
+                    <View
+                        style={{
+                            width: 12,
+                            height: 12,
+                            borderRadius: 6,
+                            borderWidth: 1,
+                            borderColor: "#2C2C2C",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginHorizontal: 15,
+                        }}
+                    >
+                        <View
+                            style={{
+                                flex: 1,
+                                width: 1,
+                                backgroundColor: "#2C2C2C",
+                                transform: [{ rotate: "45deg" }]
+                            }}
+                        >
+                        </View>
+                    </View>
+                    :
+
+                    <View
+                        style={{
+                            backgroundColor: this.props.category_color,
+                            marginHorizontal: 15,
+                            width: 12,
+                            height: 12,
+                            borderRadius: 6,
+                        }}
+                    >
+
+                    </View>
+                }
+            </>
+        )
+    }
+}

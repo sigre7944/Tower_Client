@@ -6,8 +6,8 @@ import {
     FlatList
 } from 'react-native';
 
-import TaskCard from '../layouts/TaskCard.Container'
-import TaskDetailModal from '../layouts/TaskDetailModal.Container'
+import TaskCard from '../layouts/task-card/TaskCard.Container'
+import TaskDetailModal from '../layouts/task-detail-modal/TaskDetailModal.Container'
 
 import DayFlatlist from './day-flatlist/DayFlatlist.Container'
 import WeekFlatlist from './week-flatlist/WeekFlatlist.Container'
@@ -823,7 +823,7 @@ class UncompletedTaskCard extends React.PureComponent {
                             current_goal_value,
                             action_type: "UPDATE_COMPLETED_DAY_TASK",
                             title,
-                            goal,
+                            goal_value,
                             task_data: task
                         }
                     }
@@ -860,7 +860,7 @@ class UncompletedTaskCard extends React.PureComponent {
                             current_goal_value,
                             action_type: "UPDATE_COMPLETED_WEEK_TASK",
                             title,
-                            goal,
+                            goal_value,
                             task_data: task
                         }
                     }
@@ -894,7 +894,7 @@ class UncompletedTaskCard extends React.PureComponent {
                             current_goal_value,
                             action_type: "UPDATE_COMPLETED_MONTH_TASK",
                             title,
-                            goal,
+                            goal_value,
                             task_data: task
                         }
                     }
@@ -971,7 +971,11 @@ class UncompletedTaskCard extends React.PureComponent {
         )
 
         return (
-            <>
+            <View
+                style={{
+                    marginTop: 20,
+                }}
+            >
                 {this.update_obj.should_render ?
                     <TaskCard
                         action_type={this.update_obj.action_type}
@@ -985,14 +989,14 @@ class UncompletedTaskCard extends React.PureComponent {
 
                         current_goal_value={this.update_obj.current_goal_value}
                         title={this.update_obj.title}
-                        goal={this.update_obj.goal}
+                        goal_value={this.update_obj.goal_value}
                     />
 
                     :
 
                     null
                 }
-            </>
+            </View>
         )
     }
 }
@@ -1003,7 +1007,7 @@ class CompletedTaskCardHolder extends React.PureComponent {
         should_flatlist_update: 0
     }
 
-    _keyExtractor = (item, index) => `completed-task-${item[0]}`
+    _keyExtractor = (item, index) => `journal-completed-task-${item[0]}`
 
     _renderItem = ({ item, index }) => (
         <CompletedTaskCard
@@ -1048,8 +1052,11 @@ class CompletedTaskCard extends React.PureComponent {
     }
 
     handleUpdate = (task, completed_task, type, current_chosen_category, chosen_date_data) => {
-        if (task.id && task.id === completed_task.get("id")) {
-            let { title, goal, category } = task,
+        let task_id = Map(task).get("id")
+        if (task_id && task_id === completed_task.get("id")) {
+            let title = Map(task).get("title"),
+                goal_value = Map(task).getIn(["goal", "max"]),
+                category = Map(task).get("category"), // category id
                 current_goal_value = 0
 
             if (current_chosen_category === "general" || current_chosen_category === category) {
@@ -1059,7 +1066,7 @@ class CompletedTaskCard extends React.PureComponent {
                         chosen_day_timestamp_to_string = chosen_day_timestamp.toString()
 
                     if (hasIn(completed_task, [chosen_day_timestamp_to_string, "current"]) &&
-                        parseInt(getIn(completed_task, [chosen_day_timestamp_to_string, "current"], 0)) >= parseInt(goal.max)) {
+                        parseInt(getIn(completed_task, [chosen_day_timestamp_to_string, "current"], 0)) >= parseInt(goal_value)) {
                         current_goal_value = getIn(completed_task, [chosen_day_timestamp_to_string, "current"], 0)
 
                         this.update_obj = {
@@ -1078,13 +1085,12 @@ class CompletedTaskCard extends React.PureComponent {
                 }
 
                 else if (type === "week") {
-                    let { day, month, year } = chosen_date_data,
-                        chosen_week_date = new Date(year, month, day),
-                        chosen_week_timestamp = new Date(year, month, this.getMonday(chosen_week_date).getDate()).getTime(),
+                    let { monday, start_month, start_year } = chosen_date_data,
+                        chosen_week_timestamp = new Date(start_year, start_month, monday).getTime(),
                         chosen_week_timestamp_to_string = chosen_week_timestamp.toString()
 
                     if (hasIn(completed_task, [chosen_week_timestamp_to_string, "current"]) &&
-                        parseInt(getIn(completed_task, [chosen_week_timestamp_to_string, "current"], 0)) >= parseInt(goal.max)) {
+                        parseInt(getIn(completed_task, [chosen_week_timestamp_to_string, "current"], 0)) >= parseInt(goal_value)) {
                         current_goal_value = getIn(completed_task, [chosen_week_timestamp_to_string, "current"], 0)
 
                         this.update_obj = {
@@ -1108,7 +1114,7 @@ class CompletedTaskCard extends React.PureComponent {
                         chosen_month_timestamp_to_string = chosen_month_timestamp.toString()
 
                     if (hasIn(completed_task, [chosen_month_timestamp_to_string, "current"]) &&
-                        parseInt(getIn(completed_task, [chosen_month_timestamp_to_string, "current"], 0)) >= parseInt(goal.max)) {
+                        parseInt(getIn(completed_task, [chosen_month_timestamp_to_string, "current"], 0)) >= parseInt(goal_value)) {
                         current_goal_value = getIn(completed_task, [chosen_month_timestamp_to_string, "current"], 0)
 
                         this.update_obj = {

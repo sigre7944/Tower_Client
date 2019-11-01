@@ -375,7 +375,7 @@ class CategoryRow extends React.Component {
                         marginTop: 20,
                     }}
                 >
-                    {Map(this.props.data).get("color") === "no color" ?
+                    {Map(this.props.data).get("color") === "no color" || Map(this.props.data).get("color") === "white" ?
                         <View
                             style={{
                                 width: 14,

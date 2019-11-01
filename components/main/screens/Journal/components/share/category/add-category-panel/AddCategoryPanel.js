@@ -265,7 +265,7 @@ export default class AddCategoryPanel extends React.PureComponent {
                                         onPress={this._openColorPanel}
                                     >
 
-                                        {this.state.color === "no color" ?
+                                        {this.state.color === "no color" || this.state.color === "white" ?
                                             <View
                                                 style={{
                                                     width: 24,

@@ -1,6 +1,6 @@
-import { updateChartStats } from '../../actions/chartStatsAction'
-import { updateTask } from '../../actions/taskAction'
-import { updateStats } from '../../actions/statsAction'
+import { updateChartStats } from '../../../actions/chartStatsAction'
+import { updateTask } from '../../../actions/taskAction'
+import { updateStats } from '../../../actions/statsAction'
 import { batchActions } from 'redux-batched-actions'
 
 export const updateBulkThunk = ({ completed_task_data, stats_data, chart_data }) => (dispatch, getState) => {

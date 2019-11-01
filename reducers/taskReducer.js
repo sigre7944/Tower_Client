@@ -77,8 +77,11 @@ export const month_tasks = (state = Map(), action) => {
 
 export const completed_day_tasks = (state = Map(), action) => {
     switch (action.type) {
+        // case 'UPDATE_COMPLETED_DAY_TASK':
+        //     return state.set(action.data.get("id"), action.data)
+
         case 'UPDATE_COMPLETED_DAY_TASK':
-            return state.set(action.data.get("id"), action.data)
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
         case 'DELETE_COMPLETED_DAY_TASK':
             return state.delete(action.id)
