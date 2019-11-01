@@ -55,8 +55,6 @@
     + Day type: Map {
         task_id: Map {
             id: task_id,
-            category: category_id,
-            priority_value: priority_value,
             
             //String
             completed_day_timestamp: Map {
@@ -69,11 +67,7 @@
     + Week type: {
         task_id: Map {
             id: task_id,
-            category: category_id,
 
-            // Always the most updated value
-            priority_value: priority_value,
-            
             completed_week_timestamp: Map {
                 // Total equals the sum of day_completed_array
                 current: 0,
@@ -90,7 +84,6 @@
     + Month type: {
         task_id: {
             id: task_id,
-            category: category_id,
 
             completed_month_timestamp: {
                 // Total equals the sum of day_completed_array
