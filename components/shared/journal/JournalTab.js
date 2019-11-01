@@ -258,7 +258,7 @@ class UncompletedTaskCardHolder extends React.PureComponent {
             task_id={item[0]}
             task_data={item[1]}
             current_chosen_category={this.props.current_chosen_category}
-            completed_task={Map(this.props.completed_tasks).get(item[1].id)}
+            completed_task={Map(this.props.completed_tasks).get(Map(item[1]).get("id"))}
             type={this.props.type}
             chosen_date_data={this.props.chosen_date_data}
             openModal={this.props.openModal}
@@ -1074,7 +1074,7 @@ class CompletedTaskCard extends React.PureComponent {
                             current_goal_value,
                             should_render: true,
                             title,
-                            goal,
+                            goal_value,
                             task_data: task
                         }
                     }
@@ -1098,7 +1098,7 @@ class CompletedTaskCard extends React.PureComponent {
                             current_goal_value,
                             should_render: true,
                             title,
-                            goal,
+                            goal_value,
                             task_data: task
                         }
                     }
@@ -1122,7 +1122,7 @@ class CompletedTaskCard extends React.PureComponent {
                             current_goal_value,
                             should_render: true,
                             title,
-                            goal,
+                            goal_value,
                             task_data: task
                         }
                     }
@@ -1207,7 +1207,7 @@ class CompletedTaskCard extends React.PureComponent {
 
                         current_goal_value={this.update_obj.current_goal_value}
                         title={this.update_obj.title}
-                        goal={this.update_obj.goal}
+                        goal_value={this.update_obj.goal_value}
                     />
 
                     :

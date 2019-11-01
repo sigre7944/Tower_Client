@@ -1,7 +1,14 @@
-export const updateChartStats = (type, timestamp, data) => ({
+// export const updateChartStats = (type, timestamp, data) => ({
+//     type,
+//     timestamp,
+//     data
+// })
+
+export const updateChartStats = (type, keyPath, notSetValue, updater) => ({
     type,
-    timestamp,
-    data
+    keyPath,
+    notSetValue,
+    updater
 })
 
 export const returnNewChartStats = (type, data) => ({
