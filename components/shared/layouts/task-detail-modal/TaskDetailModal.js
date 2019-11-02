@@ -1,16 +1,25 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, Text, View, StyleSheet, ImageBackground, Dimensions, Image, TextInput, Modal as RNModal } from 'react-native'
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { CheckBox } from 'react-native-elements';
-import DayCalendar from '../../calendar/day-calendar/DayCalendar.Container'
-import WeekCalendar from '../../calendar/week-calendar/WeekCalendar.Container'
-import MonthCalendar from '../../calendar/month-calendar/MonthCalendar.Container'
-import Category from '../../category/Category.Container'
-import Priority from '../../priority/Priority.Container'
-import Repeat from '../../repeat/Repeat.Container'
-import Goal from '../../goal/Goal.Container'
+import {
+    TouchableOpacity,
+    Text,
+    View,
+    StyleSheet,
+    ImageBackground,
+    Dimensions,
+    Image,
+    TextInput,
+    Modal,
+} from 'react-native'
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 
 import { Map, List } from 'immutable'
+import { styles } from './styles/styles';
+
+import EditDeleteRow from './edit-delete-row/EditDeleteRow'
+import TitleDescriptionRow from './title-description-row/TitleDescriptionRow'
+import ScheduleRow from './schedule-row/ScheduleRow'
+
+const window_width = Dimensions.get("window").width
 
 export default class TaskDetailModal extends Component {
 
@@ -139,24 +148,9 @@ export default class TaskDetailModal extends Component {
         })
     }
 
-    componentDidMount() {
-        this.handleTaskUpdate()
-    }
-
-    componentDidUpdate = (prevProps, prevState) => {
-        if (this.props.task_data !== prevProps.task_data) {
-            this.edit_task = this.props.task_data
-
-            this.handleTaskUpdate()
-        }
-
-        if (this.state.toggle_delete !== prevProps.toggleDelete && this.yes_delete_clicked) {
-            this.props.closeModal()
-        }
-    }
 
 
-    dismissModal = () => {
+    _dismissModal = () => {
         this.props.closeModal()
     }
 
@@ -355,10 +349,10 @@ export default class TaskDetailModal extends Component {
 
         if (categories.has(category)) {
             data = { ...categories.get(category) }
-            if(data.hasOwnProperty("quantity")){
+            if (data.hasOwnProperty("quantity")) {
                 data.quantity -= 1
 
-                if(data.quantity < 0){
+                if (data.quantity < 0) {
                     data.quantity = 0
                 }
             }
@@ -405,9 +399,25 @@ export default class TaskDetailModal extends Component {
         this.yes_delete_clicked = true
     }
 
+    componentDidMount() {
+        this.handleTaskUpdate()
+    }
+
+    componentDidUpdate = (prevProps, prevState) => {
+        if (this.props.task_data !== prevProps.task_data) {
+            this.edit_task = this.props.task_data
+
+            this.handleTaskUpdate()
+        }
+
+        if (this.state.toggle_delete !== prevProps.toggleDelete && this.yes_delete_clicked) {
+            this.props.closeModal()
+        }
+    }
+
     render() {
         return (
-            <RNModal
+            <Modal
                 transparent={true}
             >
                 <View
@@ -420,12 +430,12 @@ export default class TaskDetailModal extends Component {
                     <TouchableOpacity
                         style={{
                             flex: 1,
-                            width: Dimensions.get("window").width,
+                            width: window_width,
                             backgroundColor: "black",
-                            opacity: 0.5,
+                            opacity: 0.2,
                         }}
 
-                        onPress={this.dismissModal}
+                        onPress={this._dismissModal}
                     >
 
                     </TouchableOpacity>
@@ -433,243 +443,46 @@ export default class TaskDetailModal extends Component {
                     <View
                         style={{
                             position: "absolute",
-                            top: 50,
-                            borderRadius: 10,
+                            top: 60,
+                            borderTopRightRadius: 20,
+                            borderTopLeftRadius: 20,
                             width: Dimensions.get("window").width,
                             backgroundColor: "white",
                             bottom: 0,
                         }}
                     >
+                        {/* minus sign - close modal */}
+                        <TouchableOpacity
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "center",
+                                marginTop: 5,
+                            }}
+                        >
+                            <View
+                                style={styles.minus}
+                            >
 
-                        {!this.state.isEditing ?
-                            <>
-                                <View style={{
-                                    flex: 1,
-                                    justifyContent: 'center',
-                                    alignItems: 'center'
-                                }}
-                                >
-                                    <View style={{ alignSelf: 'stretch', flex: 1, justifyContent: 'flex-end' }}>
-                                        <View style={{ alignSelf: 'stretch', flex: 1, zIndex: 10 }}>
-                                            <View>
-                                                <Text style={{ textAlign: 'center' }}><FontAwesome name="minus" style={{ fontSize: 26, color: "grey" }} /></Text>
-                                            </View>
-                                            <View style={{ flexDirection: 'row-reverse', alignItems: 'flex-start' }}>
-                                                <TouchableOpacity onPress={this.toggleDelete}>
-                                                    <FontAwesome name={'trash'} style={{ width: 50, height: 50, fontSize: 24, lineHeight: 50 }} />
-                                                </TouchableOpacity>
-                                                <TouchableOpacity onPress={() => this.toggleEdit(true)}>
-                                                    <FontAwesome name={'edit'} style={{ width: 50, height: 50, fontSize: 24, lineHeight: 50 }} />
-                                                </TouchableOpacity>
-                                            </View>
-                                            <View>
-                                                <View style={styles.container}>
-                                                    <View style={styles.head}>
-                                                        <CheckBox
-                                                            center
-                                                            checkedIcon='dot-circle-o'
-                                                            uncheckedIcon='circle-o'
-                                                            checked={this.props.checked}
-                                                        />
-                                                    </View>
-                                                    <View style={styles.body}>
-                                                        <Text style={styles.text}>{this.edit_task.title}</Text>
-                                                    </View>
-                                                </View>
-                                                {
-                                                    this.edit_task.description && this.edit_task.description.length > 0 ?
-                                                        <View style={styles.container}>
-                                                            <View style={styles.head}>
-                                                                <CheckBox
-                                                                    center
-                                                                    checkedIcon='dot-circle-o'
-                                                                    uncheckedIcon='circle-o'
-                                                                    checked={this.props.checked}
-                                                                />
-                                                            </View>
-                                                            <View style={styles.body}>
-                                                                <Text style={styles.text}>{this.edit_task.description}</Text>
-                                                            </View>
-                                                        </View>
+                            </View>
+                        </TouchableOpacity>
 
-                                                        :
 
-                                                        <></>
-                                                }
-                                                <View style={styles.container}>
-                                                    <View style={styles.head}>
-                                                        <FontAwesome name={'calendar'} style={styles.icon} />
-                                                    </View>
-                                                    <View style={styles.body}>
-                                                        <Text style={styles.text}>{this.state.calendar_text}</Text>
-                                                    </View>
-                                                </View>
+                        <EditDeleteRow
+                        />
 
-                                                <View style={styles.container}>
-                                                    <View style={styles.head}>
-                                                        <FontAwesome name={'circle'} style={styles.icon} />
-                                                    </View>
-                                                    <View style={styles.body}>
-                                                        <Text style={styles.text}>{this.state.category}</Text>
-                                                    </View>
-                                                </View>
-                                                <View style={styles.container}>
-                                                    <View style={styles.head}>
-                                                        <FontAwesome name={'warning'} style={styles.icon} />
-                                                    </View>
-                                                    <View style={styles.body}>
-                                                        <Text style={styles.text}>{this.state.priority}</Text>
-                                                    </View>
-                                                </View>
-                                                <View style={styles.container}>
-                                                    <View style={styles.head}>
-                                                        <FontAwesome name={'warning'} style={styles.icon} />
-                                                    </View>
-                                                    <View style={styles.body}>
-                                                        <Text style={styles.text}>{this.state.repeat}</Text>
-                                                    </View>
-                                                </View>
-                                                <View style={styles.container}>
-                                                    <View style={styles.head}>
-                                                        <FontAwesome name={'warning'} style={styles.icon} />
-                                                    </View>
-                                                    <View style={styles.body}>
-                                                        <Text style={styles.text}>{this.state.goal}</Text>
-                                                    </View>
-                                                </View>
-                                                <View style={styles.container}>
-                                                    <View style={styles.head}>
-                                                        <FontAwesome name={'link'} style={styles.icon} />
-                                                    </View>
-                                                    <View style={styles.body}>
-                                                        <Text style={styles.text}>Link enabled</Text>
-                                                    </View>
-                                                </View>
-                                            </View>
-                                        </View>
-                                    </View>
-                                </View>
+                        <TitleDescriptionRow
+                            title={"Go fishing 20 times"}
+                            description={"Bring the fishing rod and bucket"}
+                        />
 
-                                {this.state.toggle_delete ?
-                                    <RNModal
-                                        transparent={true}
-                                    >
-                                        <View
-                                            style={{
-                                                flex: 1,
-                                                justifyContent: "center",
-                                                alignItems: "center",
-                                                position: "relative",
-                                            }}
-                                        >
-                                            <TouchableOpacity
-                                                style={{
-                                                    flex: 1,
-                                                    backgroundColor: "black",
-                                                    width: Dimensions.get("window").width,
-                                                    opacity: 0.5,
-                                                }}
-
-                                                onPress={this.toggleDelete}
-                                            >
-                                            </TouchableOpacity>
-
-                                            <View
-                                                style={{
-                                                    borderRadius: 11,
-                                                    height: 200,
-                                                    width: 300,
-                                                    backgroundColor: "white",
-                                                    position: "absolute",
-                                                    justifyContent: "center",
-                                                    alignItems: "center",
-                                                    paddingHorizontal: 20,
-                                                    paddingVertical: 10,
-                                                }}
-                                            >
-                                                <Text>
-                                                    Are you certain to delete this task?
-                                                </Text>
-
-                                                <View
-                                                    style={{
-                                                        marginTop: 20,
-                                                        flexDirection: "row",
-                                                        justifyContent: "center",
-                                                        alignItems: "center",
-                                                    }}
-                                                >
-                                                    <TouchableOpacity
-                                                        style={{
-                                                            width: 70,
-                                                            height: 30,
-                                                            borderRadius: 10,
-                                                            backgroundColor: "gainsboro",
-                                                            justifyContent: "center",
-                                                            alignItems: "center",
-                                                            marginHorizontal: 20,
-                                                        }}
-
-                                                        onPress={this.toggleDelete}
-                                                    >
-                                                        <Text>
-                                                            No
-                                                </Text>
-                                                    </TouchableOpacity>
-
-                                                    <TouchableOpacity
-                                                        style={{
-                                                            width: 70,
-                                                            height: 30,
-                                                            borderRadius: 10,
-                                                            backgroundColor: "black",
-                                                            justifyContent: "center",
-                                                            alignItems: "center",
-                                                            marginHorizontal: 20,
-                                                        }}
-
-                                                        onPress={this.delete}
-                                                    >
-                                                        <Text
-                                                            style={{
-                                                                color: "white"
-                                                            }}
-                                                        >
-                                                            Yes
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                </View>
-                                            </View>
-                                        </View>
-
-                                    </RNModal>
-
-                                    :
-
-                                    null
-                                }
-                            </>
-                            :
-
-                            <EditDetails
-                                task_data={this.edit_task}
-                                categories={this.props.categories}
-                                priorities={this.props.priorities}
-                                stats={this.props.stats}
-                                completed_tasks={this.props.completed_tasks}
-                                week_chart_stats={this.props.week_chart_stats}
-                                month_chart_stats={this.props.month_chart_stats}
-                                year_chart_stats={this.props.year_chart_stats}
-                                hideAction={this.toggleEdit}
-                                editThunk={this.props.editThunk}
-                                type={this.props.type}
-                            />
-                        }
+                        <ScheduleRow 
+                        
+                        />
 
                     </View>
 
                 </View>
-            </RNModal>
+            </Modal>
         )
     }
 }
@@ -1743,7 +1556,7 @@ class EditDetails extends React.PureComponent {
                     </View>
                 </View>
 
-                <RNModal
+                <Modal
                     visible={this.state.should_visible}
                     transparent={true}
                 >
@@ -1843,7 +1656,7 @@ class EditDetails extends React.PureComponent {
                             }
                         </>
                     </View>
-                </RNModal>
+                </Modal>
             </>
         )
     }
@@ -2174,62 +1987,5 @@ class DismissArea extends React.PureComponent {
         )
     }
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-        height: 50,
-        borderWidth: 1,
-        borderColor: 'grey',
-        borderLeftWidth: 3,
-        marginBottom: 4
-    },
-    containerEdit: {
-        flexDirection: 'row',
-        height: 50,
-        justifyContent: 'space-around'
-    },
-    checkBox: {
-        width: 50,
-        height: 60
-    },
-    description: {
-        flex: 1
-    },
-    descriptionText: {
-        lineHeight: 25,
-        fontSize: 16
-    },
-    descriptionAmount: {
-        lineHeight: 25,
-        opacity: 0.5
-    },
-    share: {
-        width: 50,
-        height: 60,
-    },
-    colorBox: {
-        width: 50,
-        height: 60
-    },
-    icon: {
-        flex: 1,
-        alignSelf: 'center',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: 24,
-        lineHeight: 50
-    },
-    head: {
-        width: 50,
-        height: 50
-    },
-    body: {
-        lineHeight: 50
-    },
-    text: {
-        lineHeight: 45
-    }
-});
 
 
