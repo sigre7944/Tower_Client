@@ -29,7 +29,7 @@ import { styles } from './styles/styles';
 import SaveButton from './save-button/SaveButton.Container'
 
 import Calendar from '../../../../main/screens/Journal/components/share/calendar/Calendar'
-
+import Category from '../../../../main/screens/Journal/components/share/category/Category.Container'
 const window_width = Dimensions.get("window").width
 
 export default class TaskDetailEditModal extends Component {
@@ -339,7 +339,21 @@ class EdittingModal extends React.PureComponent {
 
                             :
 
-                            null
+                            <>
+                                {this.props.editting_field === "category" ?
+                                    <Category
+                                        hideAction={this.props._closeEdittingField}
+                                        currentAnnotation={this.props.type}
+                                        edit={true}
+                                        edit_task_data={this.props.task_data_map}
+                                        _editFieldData={this.props._editFieldData}
+                                    />
+
+                                    :
+
+                                    null
+                                }
+                            </>
                     }
                 </View>
             </Modal>

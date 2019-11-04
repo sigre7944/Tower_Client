@@ -96,22 +96,32 @@ export default class Category extends React.PureComponent {
 
     _setRef = (r) => this._flatlist_ref = r
 
-    _findStartIndex = () => {
-        let category_id = Map(this.props.task_data).get("category"),
-            counter = 0
+    _findStartIndex = (task_data) => {
+        if (task_data) {
+            let category_id = Map(task_data).get("category"),
+                counter = 0
 
-        Map(this.props.categories).keySeq().every((key) => {
-            if (key === category_id) {
-                return false
-            }
+            Map(this.props.categories).keySeq().every((key) => {
+                if (key === category_id) {
+                    return false
+                }
 
-            counter += 1
-            return true
-        })
+                counter += 1
+                return true
+            })
 
-        this.start_index = counter
+            this.start_index = counter
 
-        this._chooseCategoryRow(this.start_index, category_id)
+            this._chooseCategoryRow(this.start_index, category_id)
+        }
+
+        else {
+            let category_id = Map(this.props.categories).keySeq().get(0)
+            this.start_index = 0
+
+            this._chooseCategoryRow(this.start_index, category_id)
+
+        }
     }
 
     _keyExtractor = (item, index) => `category-row-${item[0]}`
@@ -134,13 +144,24 @@ export default class Category extends React.PureComponent {
     }
 
     _save = () => {
-        let sending_obj = {
-            keyPath: ["category"],
-            notSetValue: this.chosen_category_id,
-            updater: (value) => this.chosen_category_id
+        if (this.props.edit) {
+            let keyPath = ["category"],
+                notSetValue = this.chosen_category_id,
+                updater = (value) => this.chosen_category_id
+
+            this.props._editFieldData(keyPath, notSetValue, updater)
         }
 
-        this.props.updateTaskCategory(sending_obj)
+        else {
+            let sending_obj = {
+                keyPath: ["category"],
+                notSetValue: this.chosen_category_id,
+                updater: (value) => this.chosen_category_id
+            }
+
+            this.props.updateTaskCategory(sending_obj)
+        }
+
         this.props.hideAction()
     }
 
@@ -190,7 +211,13 @@ export default class Category extends React.PureComponent {
     componentDidMount() {
         this._animate()
 
-        this._findStartIndex()
+        if (this.props.edit) {
+            this._findStartIndex(this.props.edit_task_data)
+        }
+
+        else {
+            this._findStartIndex(this.props.task_data)
+        }
     }
 
     componentDidUpdate(prevProps, prevState) {
