@@ -223,6 +223,7 @@ export default class WeekTypeRepeat extends React.PureComponent {
             end_at_chosen_day,
             end_at_chosen_month,
             end_at_chosen_year,
+            no_week_in_month
         } = this.state
 
         let end_value_data = {},
@@ -251,7 +252,8 @@ export default class WeekTypeRepeat extends React.PureComponent {
         else {
             repeat_value_data.type = "weekly-m"
             repeat_value_data.interval = {
-                value: parseInt(repeat_input_value)
+                value: parseInt(repeat_input_value),
+                noWeekInMonth: parseInt(no_week_in_month)
             }
         }
 

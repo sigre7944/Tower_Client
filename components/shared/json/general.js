@@ -37,7 +37,8 @@ const task = {
 
         type: "weekly-m",
         interval: {
-            value: 2
+            value: 2,
+            noWeekInMonth: 3 // 4 is max
         },
 
         // these properties are used for 'Month' type task

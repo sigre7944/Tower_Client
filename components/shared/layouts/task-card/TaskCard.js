@@ -23,8 +23,6 @@ export default class TaskCard extends React.PureComponent {
     }
 
     state = {
-        category_color: "white",
-        priority_color: "#F78096",
         checked_complete: false
     }
 
@@ -329,21 +327,12 @@ export default class TaskCard extends React.PureComponent {
         if (operation === "inc") {
             if (flag === "uncompleted") {
                 if (chart_stats_map.hasIn([timestamp_toString, key])) {
-                    // chart_stats_data = Map(chart_stats_map.get(timestamp_toString)).updateIn([key, "current"], (value) => {
-                    //     return List(value).update(this.priority_order[task_priority], (v) => v + 1)
-                    // })
-
                     update_data = List(chart_stats_map.getIn([timestamp_toString, key, "current"])).update(this.priority_order[task_priority], (v) => v + 1)
                 }
 
                 else {
                     let current = [0, 0, 0, 0]
                     current[this.priority_order[task_priority]] += 1
-
-                    // chart_stats_data[timestamp_toString] = {}
-                    // chart_stats_data[timestamp_toString][key] = current
-                    // chart_stats_data = fromJS(chart_stats_data)
-
                     update_data = fromJS(current)
                 }
             }
@@ -351,10 +340,6 @@ export default class TaskCard extends React.PureComponent {
             //flag completed - operation increase => will decrease the goal current value when the complete button is pressed
             else {
                 if (chart_stats_map.hasIn([timestamp_toString, key])) {
-                    // chart_stats_data = Map(chart_stats_map.get(timestamp)).toMap().updateIn([key.toString(), "current"], (value) => {
-                    //     return List(value).update(this.priority_order[task.priority.value], (v) => v - 1 < 0 ? 0 : v - 1)
-                    // })
-
                     update_data = List(chart_stats_map.getIn([timestamp_toString, key, "current"])).update(this.priority_order[task_priority], (v) => v - 1 < 0 ? 0 : v - 1)
                 }
             }
@@ -364,11 +349,6 @@ export default class TaskCard extends React.PureComponent {
         // operation decrease - flag uncompleted (only uncompleted task has operation increase and decrease, completed only has decrease)
         else {
             if (chart_stats_map.hasIn([timestamp_toString, key])) {
-
-                // chart_stats_data = Map(chart_stats_map.get(timestamp)).toMap().updateIn([key.toString(), "current"], (value) => {
-                //     return List(value).update(this.priority_order[task.priority.value], (v) => v - 1 < 0 ? 0 : v - 1)
-                // })
-
                 update_data = List(chart_stats_map.getIn([timestamp_toString, key, "current"])).update(this.priority_order[task_priority], (v) => v - 1 < 0 ? 0 : v - 1)
             }
         }
@@ -407,6 +387,14 @@ export default class TaskCard extends React.PureComponent {
     }
 
     render() {
+        let priorities_map = Map(this.props.priorities),
+            categories_map = Map(this.props.categories),
+            task_data_map = Map(this.props.task_data),
+            task_priority_value = task_data_map.getIn(["priority", "value"]),
+            task_priority_color = priorities_map.getIn([task_priority_value, "color"]),
+            task_category = task_data_map.get("category"),
+            task_category_color = categories_map.getIn([task_category, "color"])
+
         return (
             <View
                 style={styles.container}
@@ -424,7 +412,7 @@ export default class TaskCard extends React.PureComponent {
                         }}
                     >
                         <PriorityColorBar
-                            priority_color={this.state.priority_color}
+                            priority_color={task_priority_color}
                         />
 
                         <TouchableOpacity
@@ -491,7 +479,7 @@ export default class TaskCard extends React.PureComponent {
                         </TouchableOpacity>
 
                         <CategoryColorCircle
-                            category_color={this.state.category_color}
+                            category_color={task_category_color}
                         />
                     </View>
                     :

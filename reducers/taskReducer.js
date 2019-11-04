@@ -157,8 +157,7 @@ function getMonday(date) {
 function getSunday(date) {
     let monday = getMonday(new Date(date))
     let sunday = new Date(monday)
-    sunday.setDate(monday.setDate() + 6)
-
+    sunday.setDate(monday.getDate() + 6)
     return sunday
 }
 

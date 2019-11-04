@@ -18,7 +18,7 @@ import {
     faTrophy
 } from '@fortawesome/free-solid-svg-icons'
 
-import { Map } from 'immutable'
+import { Map, List } from 'immutable'
 
 export default class TagDataHolder extends React.PureComponent {
 
@@ -92,6 +92,8 @@ class DayTagDataList extends React.PureComponent {
 class DayTagDataElement extends React.PureComponent {
     daysInWeekText = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
+    short_daysInWeekText = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+
     monthNames = ["January", "Febuary", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     ]
@@ -106,9 +108,9 @@ class DayTagDataElement extends React.PureComponent {
         let { property } = this.props
 
         if (property === "schedule") {
-            let day = Map(this.props.data).get("day"),
-                month = Map(this.props.data).get("month"),
-                year = Map(this.props.data).get("year"),
+            let day = parseInt(Map(this.props.data).get("day")),
+                month = parseInt(Map(this.props.data).get("month")),
+                year = parseInt(Map(this.props.data).get("year")),
                 date = new Date(year, month, day)
 
             this.setState({
@@ -124,7 +126,7 @@ class DayTagDataElement extends React.PureComponent {
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
-                            {`${this.daysInWeekText[date.getDay()]} ${date.getDate()} ${this.monthNames[date.getMonth()]}`}
+                            {`${this.daysInWeekText[date.getDay()]} ${date.getDate()} ${this.monthNames[date.getMonth()]} ${year}`}
                         </Text>
                     </View>
             })
@@ -134,36 +136,66 @@ class DayTagDataElement extends React.PureComponent {
             let value = Map(this.props.data).getIn(["interval", "value"]),
                 type = Map(this.props.data).get("type")
 
-            this.setState({
-                render_component:
-                    <View
-                        style={styles.day_tag_container}
-                    >
-                        <FontAwesomeIcon
-                            icon={faRedoAlt}
-                            color="#BDBDBD"
-                            size={14}
-                        />
-                        <Text
-                            style={styles.day_tag_uncolorful_text}
+            if (type === "weekly") {
+                let days_in_week = List(Map(this.props.data).getIn(["interval", "daysInWeek"])).toArray(),
+                    string = ""
+
+                days_in_week.forEach((value, index) => {
+                    if (value) {
+                        let day_index = index + 1 === 7 ? 0 : index + 1
+
+                        string += this.short_daysInWeekText[day_index] + ", "
+                    }
+                })
+
+                if (string !== "" || string.length > 0) {
+                    string = "(" + string.substring(0, string.length - 2) + ")"
+                }
+
+                this.setState({
+                    render_component:
+                        <View
+                            style={styles.day_tag_container}
                         >
-                            {type === "daily" ?
-                                `every ${value} day(s)`
+                            <FontAwesomeIcon
+                                icon={faRedoAlt}
+                                color="#BDBDBD"
+                                size={14}
+                            />
+                            <Text
+                                style={styles.day_tag_uncolorful_text}
+                            >
+                                {`every ${value} week ${string}`}
+                            </Text>
+                        </View>
+                })
+            }
 
-                                :
+            else {
+                this.setState({
+                    render_component:
+                        <View
+                            style={styles.day_tag_container}
+                        >
+                            <FontAwesomeIcon
+                                icon={faRedoAlt}
+                                color="#BDBDBD"
+                                size={14}
+                            />
+                            <Text
+                                style={styles.day_tag_uncolorful_text}
+                            >
+                                {type === "daily" ?
+                                    `every ${value} day`
 
-                                <>
-                                    {type === "weekly" ?
-                                        `every ${value} week(s)`
-                                        :
+                                    :
 
-                                        `every ${value} month(s)`
-                                    }
-                                </>
-                            }
-                        </Text>
-                    </View>
-            })
+                                    `every ${value} month`
+                                }
+                            </Text>
+                        </View>
+                })
+            }
         }
 
         else if (property === "end") {
@@ -205,7 +237,7 @@ class DayTagDataElement extends React.PureComponent {
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
-                                {`${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]}`}
+                                {`${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]} ${end_date.getFullYear()}`}
                             </Text>
                         </View>
                 })
@@ -227,7 +259,7 @@ class DayTagDataElement extends React.PureComponent {
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
-                                {`${occurrences} occurrence(s)`}
+                                {`${occurrences} occurrence`}
                             </Text>
                         </View>
                 })
@@ -314,7 +346,7 @@ class DayTagDataElement extends React.PureComponent {
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
-                            {`${value} time(s) per day(s)`}
+                            {`${value} time per occurrence`}
                         </Text>
                     </View>
             })
@@ -380,7 +412,14 @@ class WeekTagDataElement extends React.PureComponent {
         let { property } = this.props
 
         if (property === "schedule") {
-            let week = Map(this.props.data).get("week")
+            let week = Map(this.props.data).get("week"),
+                monday = Map(this.props.data).get("monday"),
+                start_month = parseInt(Map(this.props.data).get("start_month")),
+                sunday = Map(this.props.data).get("sunday"),
+                end_month = parseInt(Map(this.props.data).get("end_month")),
+                start_year = Map(this.props.data).get("start_year"),
+                end_year = Map(this.props.data).get("end_year"),
+                string = `(${monday} ${this.month_names_in_short[start_month]} ${start_year} - ${sunday} ${this.month_names_in_short[end_month]} ${end_year})`
 
             this.setState({
                 render_component:
@@ -395,7 +434,7 @@ class WeekTagDataElement extends React.PureComponent {
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
-                            {`Week ${week}`}
+                            {`Week ${week} ${string}`}
                         </Text>
                     </View>
             })
@@ -403,46 +442,57 @@ class WeekTagDataElement extends React.PureComponent {
 
         else if (property === "repeat") {
             let value = parseInt(Map(this.props.data).getIn(["interval", "value"])),
-                type = Map(this.props.data).get("type"),
-                nth_week_array = ["First", "Second", "Third", "Last"],
-                nth_week_text = ""
+                type = Map(this.props.data).get("type")
 
-            if (type === "weekly-nth") {
-                if (value > 4) {
-                    value = 4
+            if (type === "weekly-m") {
+                let no_week_in_month = parseInt(Map(this.props.data).getIn(["interval", "noWeekInMonth"])),
+                    nth_week_array = ["1st", "2nd", "3rd", "4th"],
+                    string = ""
+
+                if (no_week_in_month > 4) {
+                    no_week_in_month = 4
                 }
-                nth_week_text = nth_week_array[value - 1] + " week every month"
+
+                string = `${nth_week_array[no_week_in_month - 1]} week every ${value} month`
+
+                this.setState({
+                    render_component:
+                        <View
+                            style={styles.day_tag_container}
+                        >
+                            <FontAwesomeIcon
+                                icon={faRedoAlt}
+                                color="#BDBDBD"
+                                size={14}
+                            />
+                            <Text
+                                style={styles.day_tag_uncolorful_text}
+                            >
+                                {string}
+                            </Text>
+                        </View>
+                })
             }
 
-            this.setState({
-                render_component:
-                    <View
-                        style={styles.day_tag_container}
-                    >
-                        <FontAwesomeIcon
-                            icon={faRedoAlt}
-                            color="#BDBDBD"
-                            size={14}
-                        />
-                        <Text
-                            style={styles.day_tag_uncolorful_text}
+            else {
+                this.setState({
+                    render_component:
+                        <View
+                            style={styles.day_tag_container}
                         >
-                            {type === "weekly-w" ?
-                                `every ${value} week(s)`
-
-                                :
-
-                                <>
-                                    {type === "weekly-nth" ?
-                                        `${nth_week_text}`
-                                        :
-                                        `every ${value} month(s)`
-                                    }
-                                </>
-                            }
-                        </Text>
-                    </View>
-            })
+                            <FontAwesomeIcon
+                                icon={faRedoAlt}
+                                color="#BDBDBD"
+                                size={14}
+                            />
+                            <Text
+                                style={styles.day_tag_uncolorful_text}
+                            >
+                                {`every ${value} week`}
+                            </Text>
+                        </View>
+                })
+            }
         }
 
         else if (property === "end") {
@@ -484,7 +534,7 @@ class WeekTagDataElement extends React.PureComponent {
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
-                                {`${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]}`}
+                                {`${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]} ${end_date.getFullYear()}`}
                             </Text>
                         </View>
                 })
@@ -506,7 +556,7 @@ class WeekTagDataElement extends React.PureComponent {
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
-                                {`${occurrences} occurrence(s)`}
+                                {`${occurrences} occurrence`}
                             </Text>
                         </View>
                 })
@@ -593,7 +643,7 @@ class WeekTagDataElement extends React.PureComponent {
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
-                            {`${value} time(s) per day(s)`}
+                            {`${value} time per occurrence`}
                         </Text>
                     </View>
             })
@@ -646,7 +696,8 @@ class MonthTagDataElement extends React.PureComponent {
         let { property } = this.props
 
         if (property === "schedule") {
-            let month = Map(this.props.data).get("month")
+            let month = Map(this.props.data).get("month"),
+                year = Map(this.props.data).get("year")
 
             this.setState({
                 render_component:
@@ -661,7 +712,7 @@ class MonthTagDataElement extends React.PureComponent {
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
-                            {`${this.monthNames[month]}`}
+                            {`${this.monthNames[month]} ${year}`}
                         </Text>
                     </View>
             })
@@ -683,7 +734,7 @@ class MonthTagDataElement extends React.PureComponent {
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
-                            every {value} month(s)
+                            every {value} month
                         </Text>
                     </View>
             })
@@ -728,7 +779,7 @@ class MonthTagDataElement extends React.PureComponent {
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
-                                {`${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]}`}
+                                {`${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]} ${end_date.getFullYear()}`}
                             </Text>
                         </View>
                 })
@@ -750,7 +801,7 @@ class MonthTagDataElement extends React.PureComponent {
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
-                                {`${occurrences} occurrence(s)`}
+                                {`${occurrences} occurrence`}
                             </Text>
                         </View>
                 })
@@ -837,7 +888,7 @@ class MonthTagDataElement extends React.PureComponent {
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
-                            {`${value} time(s) per day(s)`}
+                            {`${value} time per occurrence`}
                         </Text>
                     </View>
             })

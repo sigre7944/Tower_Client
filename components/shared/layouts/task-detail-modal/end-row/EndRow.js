@@ -12,14 +12,14 @@ import {
 } from 'react-native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
-    faCalendarAlt
+    faHourglassEnd
 } from '@fortawesome/free-solid-svg-icons'
 import { Map, List } from 'immutable'
 import { styles } from './styles/styles';
 
 const window_width = Dimensions.get("window").width
 
-export default class ScheduleRow extends Component {
+export default class EndRow extends Component {
     render() {
         return (
             <View
@@ -39,7 +39,7 @@ export default class ScheduleRow extends Component {
                     }}
                 >
                     <FontAwesomeIcon
-                        icon={faCalendarAlt}
+                        icon={faHourglassEnd}
                         size={14}
                         color="#2C2C2C"
                     />
@@ -54,7 +54,7 @@ export default class ScheduleRow extends Component {
                     <Text
                         style={styles.text}
                     >
-                        {this.props.schedule_text}
+                        {this.props.end_text}
                     </Text>
                 </View>
             </View>

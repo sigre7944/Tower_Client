@@ -12,14 +12,14 @@ import {
 } from 'react-native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
-    faCalendarAlt
+    faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons'
 import { Map, List } from 'immutable'
 import { styles } from './styles/styles';
 
 const window_width = Dimensions.get("window").width
 
-export default class ScheduleRow extends Component {
+export default class PriorityRow extends Component {
     render() {
         return (
             <View
@@ -39,9 +39,9 @@ export default class ScheduleRow extends Component {
                     }}
                 >
                     <FontAwesomeIcon
-                        icon={faCalendarAlt}
+                        icon={faExclamationTriangle}
                         size={14}
-                        color="#2C2C2C"
+                        color={this.props.priority_color}
                     />
                 </View>
 
@@ -52,9 +52,9 @@ export default class ScheduleRow extends Component {
                     }}
                 >
                     <Text
-                        style={styles.text}
+                        style={{ ...styles.text, ...{ color: this.props.priority_color } }}
                     >
-                        {this.props.schedule_text}
+                        {this.props.priority_name}
                     </Text>
                 </View>
             </View>
