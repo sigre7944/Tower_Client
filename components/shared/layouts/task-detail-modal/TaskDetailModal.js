@@ -26,6 +26,8 @@ import EndRow from './end-row/EndRow'
 import RewardRow from './reward-row/RewardRow'
 import GoalRow from './goal-row/GoalRow'
 
+import TaskDetailEditModal from './task-detail-edit-modal/TaskDetailEditModal.Container'
+
 const window_width = Dimensions.get("window").width
 
 export default class TaskDetailModal extends Component {
@@ -54,17 +56,9 @@ export default class TaskDetailModal extends Component {
 
     state = {
         isOpened: false,
-        isEditing: false,
-        day_in_week_text: "",
-        date_number: "",
-        month_text: "",
-        category: "",
-        priority: "",
-        repeat: "",
-        goal: "",
-        calendar_text: "",
         should_update: 0,
         toggle_delete: false,
+        is_edit_selected: false,
     }
 
     getWeek = (date) => {
@@ -85,80 +79,13 @@ export default class TaskDetailModal extends Component {
         return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
     }
 
-    toggleEdit = (visible) => {
-        this.setState(() => ({ isEditing: visible }));
+    _openEdit = () => {
+        this.setState(() => ({ is_edit_selected: true }))
     }
 
-    _handleTaskUpdate = () => {
-        let edit_task = this.edit_task,
-            date = new Date(edit_task.startTime),
-            category = edit_task.category ? Map(this.props.categories).get(edit_task.category).name : "",
-            priority = edit_task.priority ? this.props.priorities[edit_task.priority.value].name : "",
-            goal = edit_task.goal ? `${edit_task.goal.max} times` : "",
-            calendar_text, repeat
-
-
-        if (this.props.type === "day") {
-
-            if (date) {
-                calendar_text = `${this.daysInWeekText[date.getDay()]} ${date.getDate()} ${this.monthNames[date.getMonth()]} ${date.getFullYear()}`
-            }
-
-
-            if (edit_task.repeat) {
-                if (edit_task.repeat.type === "daily") {
-                    repeat = `Every ${edit_task.repeat.interval.value} day(s)`
-                }
-
-                else if (edit_task.repeat.type === "weekly") {
-                    repeat = `Every ${edit_task.repeat.interval.value} week(s)`
-                }
-
-                else {
-                    repeat = `Every ${edit_task.repeat.interval.value} month(s)`
-                }
-            }
-
-        }
-
-        else if (this.props.type === "week") {
-
-            if (date && edit_task.schedule) {
-                calendar_text = `Week ${edit_task.schedule.week} ${this.monthNames[date.getMonth()]} ${date.getFullYear()}`
-            }
-
-            if (edit_task.repeat) {
-                if (edit_task.repeat.type === "weekly-w") {
-                    repeat = `Every ${edit_task.repeat.interval.value} week(s)`
-                }
-
-                else {
-                    repeat = `Every ${edit_task.repeat.interval.value} month(s)`
-                }
-            }
-
-        }
-
-        else {
-            if (edit_task.schedule) {
-                calendar_text = `${this.monthNames[edit_task.schedule.month]} ${edit_task.schedule.year}`
-            }
-
-            if (edit_task.repeat) {
-                repeat = `Every ${edit_task.repeat.interval.value} month(s)`
-            }
-        }
-
-        this.setState({
-            category,
-            priority,
-            repeat,
-            goal,
-            calendar_text
-        })
+    _closeEdit = () => {
+        this.setState(() => ({ is_edit_selected: false }))
     }
-
-
 
     _dismissModal = () => {
         this.props.closeModal()
@@ -410,16 +337,9 @@ export default class TaskDetailModal extends Component {
     }
 
     componentDidMount() {
-        // this._handleTaskUpdate()
     }
 
     componentDidUpdate = (prevProps, prevState) => {
-        if (this.props.task_data !== prevProps.task_data) {
-            // this.edit_task = this.props.task_data
-
-            // this._handleTaskUpdate()
-        }
-
         if (this.state.toggle_delete !== prevProps.toggleDelete && this.yes_delete_clicked) {
             this.props.closeModal()
         }
@@ -559,74 +479,87 @@ export default class TaskDetailModal extends Component {
 
                     </TouchableOpacity>
 
-                    <View
-                        style={{
-                            position: "absolute",
-                            top: 60,
-                            borderTopRightRadius: 20,
-                            borderTopLeftRadius: 20,
-                            width: Dimensions.get("window").width,
-                            backgroundColor: "white",
-                            bottom: 0,
-                        }}
-                    >
-                        {/* minus sign - close modal */}
-                        <TouchableOpacity
+                    {this.state.is_edit_selected ?
+                        <TaskDetailEditModal
+                            task_data={this.props.task_data}
+                            _closeEdit={this._closeEdit}
+                            _dismissModal={this._dismissModal}
+                            type={this.props.type}
+                        />
+                        :
+
+                        <View
                             style={{
-                                flexDirection: "row",
-                                justifyContent: "center",
-                                marginTop: 5,
+                                position: "absolute",
+                                top: 60,
+                                borderTopRightRadius: 20,
+                                borderTopLeftRadius: 20,
+                                width: Dimensions.get("window").width,
+                                backgroundColor: "white",
+                                bottom: 0,
                             }}
                         >
-                            <View
-                                style={styles.minus}
+                            {/* minus sign - close modal */}
+                            <TouchableOpacity
+                                style={{
+                                    flexDirection: "row",
+                                    justifyContent: "center",
+                                    marginTop: 5,
+                                }}
+
+                                onPress={this._dismissModal}
                             >
+                                <View
+                                    style={styles.minus}
+                                >
 
-                            </View>
-                        </TouchableOpacity>
+                                </View>
+                            </TouchableOpacity>
 
 
-                        <EditDeleteRow
-                        />
-
-                        <ScrollView>
-                            <TitleDescriptionRow
-                                title={task_title}
-                                description={task_description}
+                            <EditDeleteRow
+                                _openEdit={this._openEdit}
+                                _closeEdit={this._closeEdit}
                             />
 
-                            <ScheduleRow
-                                schedule_text={task_schedule_text}
-                            />
+                            <ScrollView>
+                                <TitleDescriptionRow
+                                    title={task_title}
+                                    description={task_description}
+                                />
 
-                            <CategoryRow
-                                category_name={task_category_name}
-                                category_color={task_category_color}
-                            />
+                                <ScheduleRow
+                                    schedule_text={task_schedule_text}
+                                />
 
-                            <PriorityRow
-                                priority_color={task_priority_color}
-                                priority_name={task_priority_name}
-                            />
+                                <CategoryRow
+                                    category_name={task_category_name}
+                                    category_color={task_category_color}
+                                />
 
-                            <RepeatRow
-                                repeat_text={task_repeat_text}
-                            />
+                                <PriorityRow
+                                    priority_color={task_priority_color}
+                                    priority_name={task_priority_name}
+                                />
 
-                            <EndRow
-                                end_text={task_end_text}
-                            />
+                                <RepeatRow
+                                    repeat_text={task_repeat_text}
+                                />
 
-                            <RewardRow
-                                reward_text={task_reward_text}
-                            />
+                                <EndRow
+                                    end_text={task_end_text}
+                                />
 
-                            <GoalRow
-                                goal_text={task_goal_text}
-                            />
-                        </ScrollView>
-                    </View>
+                                <RewardRow
+                                    reward_text={task_reward_text}
+                                />
 
+                                <GoalRow
+                                    goal_text={task_goal_text}
+                                />
+                            </ScrollView>
+                        </View>
+                    }
                 </View>
             </Modal>
         )

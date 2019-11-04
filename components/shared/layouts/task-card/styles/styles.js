@@ -20,7 +20,7 @@ export const styles = StyleSheet.create({
         backgroundColor: "white",
         alignItems: "center",
         justifyContent: "space-between",
-        marginVertical: 6,
+        marginVertical: 3,
     },
 
 

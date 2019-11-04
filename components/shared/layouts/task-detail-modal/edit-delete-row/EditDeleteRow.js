@@ -37,6 +37,8 @@ export default class EditDeleteRow extends Component {
                         justifyContent: "center",
                         alignItems: "center"
                     }}
+
+                    onPress={this.props._openEdit}
                 >
                     <FontAwesomeIcon
                         icon={faEdit}
@@ -51,6 +53,8 @@ export default class EditDeleteRow extends Component {
                         alignItems: "center",
                         marginHorizontal: 28,
                     }}
+
+                    onPress={this.props._closeEdit}
                 >
                     <FontAwesomeIcon
                         icon={faTrashAlt}
