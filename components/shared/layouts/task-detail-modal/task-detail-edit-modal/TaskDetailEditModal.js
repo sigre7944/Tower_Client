@@ -28,6 +28,8 @@ import { styles } from './styles/styles';
 
 import SaveButton from './save-button/SaveButton.Container'
 
+import Calendar from '../../../../main/screens/Journal/components/share/calendar/Calendar'
+
 const window_width = Dimensions.get("window").width
 
 export default class TaskDetailEditModal extends Component {
@@ -44,7 +46,23 @@ export default class TaskDetailEditModal extends Component {
     state = {
         task_data_map: Map(this.props.task_data).toMap(),
         task_title: "",
-        task_description: ""
+        task_description: "",
+        should_display_editting_panel: false,
+        editting_field: "none"
+    }
+
+    _chooseEdittingField = (field) => {
+        this.setState({
+            should_display_editting_panel: true,
+            editting_field: field
+        })
+    }
+
+    _closeEdittingField = () => {
+        this.setState({
+            should_display_editting_panel: false,
+            editting_field: "none"
+        })
     }
 
     _editFieldData = (keyPath, notSetValue, updater) => {
@@ -227,32 +245,39 @@ export default class TaskDetailEditModal extends Component {
 
                     <ScheduleRow
                         task_schedule_text={task_schedule_text}
+                        _chooseEdittingField={this._chooseEdittingField}
                     />
 
                     <CategoryRow
                         task_category_color={task_category_color}
                         task_category_name={task_category_name}
+                        _chooseEdittingField={this._chooseEdittingField}
                     />
 
                     <PriorityRow
                         task_priority_name={task_priority_name}
                         task_priority_color={task_priority_color}
+                        _chooseEdittingField={this._chooseEdittingField}
                     />
 
                     <RepeatRow
                         task_repeat_text={task_repeat_text}
+                        _chooseEdittingField={this._chooseEdittingField}
                     />
 
                     <EndRow
                         task_end_text={task_end_text}
+                        _chooseEdittingField={this._chooseEdittingField}
                     />
 
                     <RewardRow
                         task_reward_text={task_reward_text}
+                        _chooseEdittingField={this._chooseEdittingField}
                     />
 
                     <GoalRow
                         task_goal_text={task_goal_text}
+                        _chooseEdittingField={this._chooseEdittingField}
                     />
 
                     <SaveButton />
@@ -260,7 +285,64 @@ export default class TaskDetailEditModal extends Component {
                     <CancelButton />
                 </ScrollView>
 
+                <EdittingModal
+                    should_display_editting_panel={this.state.should_display_editting_panel}
+                    _closeEdittingField={this._closeEdittingField}
+                    editting_field={this.state.editting_field}
+                    task_data_map={this.state.task_data_map}
+                    type={this.props.type}
+                    _editFieldData={this._editFieldData}
+                />
             </View>
+        )
+    }
+}
+
+class EdittingModal extends React.PureComponent {
+    render() {
+        return (
+            <Modal
+                transparent={true}
+                visible={this.props.should_display_editting_panel}
+            >
+                <View
+                    style={{
+                        flex: 1,
+                        position: "relative",
+                        justifyContent: "center",
+                        alignItems: "center"
+                    }}
+                >
+                    <TouchableOpacity
+                        style={{
+                            flex: 1,
+                            width: window_width,
+                            backgroundColor: "black",
+                            opacity: 0.2
+                        }}
+
+                        onPress={this.props._closeEdittingField}
+                    >
+
+                    </TouchableOpacity>
+
+                    {
+                        this.props.editting_field === "schedule" ?
+
+                            <Calendar
+                                hideAction={this.props._closeEdittingField}
+                                currentAnnotation={this.props.type}
+                                edit={true}
+                                edit_task_data={this.props.task_data_map}
+                                _editFieldData={this.props._editFieldData}
+                            />
+
+                            :
+
+                            null
+                    }
+                </View>
+            </Modal>
         )
     }
 }
@@ -321,6 +403,10 @@ class DescriptionField extends React.PureComponent {
 
 class ScheduleRow extends React.PureComponent {
 
+    _chooseEdittingField = () => {
+        this.props._chooseEdittingField("schedule")
+    }
+
     render() {
         return (
             <View
@@ -346,6 +432,8 @@ class ScheduleRow extends React.PureComponent {
                             flex: 1,
                             height: 64,
                         }}
+
+                        onPress={this._chooseEdittingField}
                     >
                         <FontAwesomeIcon
                             icon={faCalendarAlt}
@@ -383,6 +471,10 @@ class ScheduleRow extends React.PureComponent {
 
 class CategoryRow extends React.PureComponent {
 
+    _chooseEdittingField = () => {
+        this.props._chooseEdittingField("category")
+    }
+
     render() {
         return (
             <View
@@ -408,6 +500,8 @@ class CategoryRow extends React.PureComponent {
                             flex: 1,
                             height: 64,
                         }}
+
+                        onPress={this._chooseEdittingField}
                     >
                         <View
                             style={{
@@ -450,6 +544,10 @@ class CategoryRow extends React.PureComponent {
 
 class PriorityRow extends React.PureComponent {
 
+    _chooseEdittingField = () => {
+        this.props._chooseEdittingField("priority")
+    }
+
     render() {
         return (
             <View
@@ -475,6 +573,8 @@ class PriorityRow extends React.PureComponent {
                             flex: 1,
                             height: 64,
                         }}
+
+                        onPress={this._chooseEdittingField}
                     >
                         <FontAwesomeIcon
                             icon={faExclamationTriangle}
@@ -512,6 +612,10 @@ class PriorityRow extends React.PureComponent {
 
 class RepeatRow extends React.PureComponent {
 
+    _chooseEdittingField = () => {
+        this.props._chooseEdittingField("repeat")
+    }
+
     render() {
         return (
             <View
@@ -537,6 +641,8 @@ class RepeatRow extends React.PureComponent {
                             flex: 1,
                             height: 64,
                         }}
+
+                        onPress={this._chooseEdittingField}
                     >
                         <FontAwesomeIcon
                             icon={faRedoAlt}
@@ -574,6 +680,10 @@ class RepeatRow extends React.PureComponent {
 
 class EndRow extends React.PureComponent {
 
+    _chooseEdittingField = () => {
+        this.props._chooseEdittingField("end")
+    }
+
     render() {
         return (
             <View
@@ -599,6 +709,8 @@ class EndRow extends React.PureComponent {
                             flex: 1,
                             height: 64,
                         }}
+
+                        onPress={this._chooseEdittingField}
                     >
                         <FontAwesomeIcon
                             icon={faHourglassEnd}
@@ -636,6 +748,10 @@ class EndRow extends React.PureComponent {
 
 class RewardRow extends React.PureComponent {
 
+    _chooseEdittingField = () => {
+        this.props._chooseEdittingField("reward")
+    }
+
     render() {
         return (
             <View
@@ -661,6 +777,8 @@ class RewardRow extends React.PureComponent {
                             flex: 1,
                             height: 64,
                         }}
+
+                        onPress={this._chooseEdittingField}
                     >
                         <FontAwesomeIcon
                             icon={faTrophy}
@@ -698,6 +816,10 @@ class RewardRow extends React.PureComponent {
 
 class GoalRow extends React.PureComponent {
 
+    _chooseEdittingField = () => {
+        this.props._chooseEdittingField("goal")
+    }
+
     render() {
         return (
             <View
@@ -723,6 +845,8 @@ class GoalRow extends React.PureComponent {
                             flex: 1,
                             height: 64,
                         }}
+
+                        onPress={this._chooseEdittingField}
                     >
                         <FontAwesomeIcon
                             icon={faFlag}

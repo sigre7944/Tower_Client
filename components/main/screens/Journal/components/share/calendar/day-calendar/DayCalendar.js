@@ -9,7 +9,7 @@ import {
     Easing
 } from 'react-native'
 
-import { Map } from 'immutable'
+import { Map, fromJS } from 'immutable'
 
 import { styles } from './styles/styles'
 
@@ -36,7 +36,21 @@ export default class DayCalendar extends React.Component {
 
     save = () => {
         if (this.chosen_day > 0 && this.chosen_month >= 0 && this.chosen_year > 0) {
-            this._updateTask(this.chosen_day, this.chosen_month, this.chosen_year)
+            if (this.props.edit) {
+                let keyPath = ["schedule"],
+                    notSetValue = {},
+                    updater = (value) => fromJS({
+                        day: this.chosen_day,
+                        month: this.chosen_month,
+                        year: this.chosen_year
+                    })
+
+                this.props._editFieldData(keyPath, notSetValue, updater)
+            }
+
+            else {
+                this._updateTask(this.chosen_day, this.chosen_month, this.chosen_year)
+            }
         }
 
         this.props.hideAction()
@@ -108,6 +122,7 @@ export default class DayCalendar extends React.Component {
                         edit={this.props.edit}
                         setData={this.setData}
                         task_data={this.props.task_data}
+                        edit_task_data={this.props.edit_task_data}
                     />
 
                     <View
@@ -242,12 +257,14 @@ class Calendar extends React.Component {
         }
 
         if (this.props.edit) {
-            this.start_index = this.findStartIndexIfEdit()
+            this.start_index = this.findStartIndex(this.props.edit_task_data)
         }
 
         else {
-            this.start_index = this.findStartIndexIfNotEdit(this.props.task_data)
+            this.start_index = this.findStartIndex(this.props.task_data)
         }
+
+
     }
 
     _getItemLayout = (data, index) => ({
@@ -256,26 +273,29 @@ class Calendar extends React.Component {
         index
     })
 
-    findStartIndexIfNotEdit = (task_data) => {
-        let task_data_map = Map(task_data),
-            day = task_data_map.getIn(["schedule", "day"]),
-            month = task_data_map.getIn(["schedule", "month"]),
-            year = task_data_map.getIn(["schedule", "year"]),
-            month_index = this.findMonthIndex(month, year)
+    findStartIndex = (task_data) => {
+        if (task_data) {
+            let task_data_map = Map(task_data),
+                day = task_data_map.getIn(["schedule", "day"]),
+                month = task_data_map.getIn(["schedule", "month"]),
+                year = task_data_map.getIn(["schedule", "year"]),
+                month_index = this.findMonthIndex(month, year)
 
-        this.chooseDay(month_index, this.findDayIndex(day, month, year))
+            this.chooseDay(month_index, this.findDayIndex(day, month, year))
 
-        return month_index
+            return month_index
+        }
+
+        else {
+            let current_day = new Date().getDate(),
+                month_index = this.findMonthIndex(this.current_month, this.current_year)
+
+            this.chooseDay(month_index, this.findDayIndex(current_day, this.current_month, this.current_year))
+
+            return month_index
+        }
     }
 
-    findStartIndexIfEdit = () => {
-        let current_day = new Date().getDate(),
-            month_index = this.findMonthIndex(this.current_month, this.current_year)
-
-        this.chooseDay(month_index, this.findDayIndex(current_day, this.current_month, this.current_year))
-
-        return month_index
-    }
 
     findMonthIndex = (month, year) => {
         return (year - this.left_end_year) * 12 + month

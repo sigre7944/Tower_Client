@@ -455,7 +455,7 @@ export default class OverlayModal extends Component {
                                 {this.state.calendarChosen ?
                                     <Calendar
                                         currentAnnotation={this.state.currentAnnotation}
-                                        disableAllTabs={this.disableAllTabs}
+                                        hideAction={this.disableAllTabs}
                                         edit={false}
                                     />
 

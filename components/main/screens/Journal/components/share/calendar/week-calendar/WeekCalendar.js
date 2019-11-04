@@ -9,7 +9,7 @@ import {
     Easing
 } from 'react-native'
 
-import { Map } from 'immutable'
+import { Map, fromJS } from 'immutable'
 
 import { styles } from './styles/styles'
 
@@ -56,19 +56,41 @@ export default class WeekCalendar extends React.Component {
             && this.chosen_start_noWeekInMonth > 0
             && this.chosen_end_noWeekInMonth > 0) {
 
-            this._updateTask(
-                this.chosen_monday,
-                this.chosen_sunday,
-                this.chosen_week,
-                this.chosen_start_month,
-                this.chosen_end_month,
-                this.chosen_selected_month,
-                this.chosen_start_year,
-                this.chosen_end_year,
-                this.chosen_selected_year,
-                this.chosen_start_noWeekInMonth,
-                this.chosen_end_noWeekInMonth
-            )
+            if (this.props.edit) {
+                let keyPath = ["schedule"],
+                    notSetValue = {},
+                    updater = (value) => fromJS({
+                        monday: this.chosen_monday,
+                        sunday: this.chosen_sunday,
+                        week: this.chosen_week,
+                        start_month: this.chosen_start_month,
+                        end_month: this.chosen_end_month,
+                        chosen_month: this.chosen_selected_month,
+                        start_year: this.chosen_start_year,
+                        end_year: this.chosen_end_year,
+                        chosen_year: this.chosen_selected_year,
+                        start_noWeekInMonth: this.chosen_start_noWeekInMonth,
+                        end_noWeekInMonth: this.chosen_end_noWeekInMonth
+                    })
+
+                this.props._editFieldData(keyPath, notSetValue, updater)
+            }
+
+            else {
+                this._updateTask(
+                    this.chosen_monday,
+                    this.chosen_sunday,
+                    this.chosen_week,
+                    this.chosen_start_month,
+                    this.chosen_end_month,
+                    this.chosen_selected_month,
+                    this.chosen_start_year,
+                    this.chosen_end_year,
+                    this.chosen_selected_year,
+                    this.chosen_start_noWeekInMonth,
+                    this.chosen_end_noWeekInMonth
+                )
+            }
         }
 
 
@@ -147,6 +169,7 @@ export default class WeekCalendar extends React.Component {
                         edit={this.props.edit}
                         setData={this.setData}
                         task_data={this.props.task_data}
+                        edit_task_data={this.props.edit_task_data}
                     />
 
                     <View
@@ -229,7 +252,7 @@ class Calendar extends React.Component {
     getMonday = (date) => {
         let dayInWeek = new Date(date).getDay()
         let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
-        return new Date(new Date(date).getTime() - (diff * 86400 * 1000)).getDate()
+        return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
     }
 
     getNoWeekInMonth = (date) => {
@@ -300,12 +323,11 @@ class Calendar extends React.Component {
         }
 
         if (this.props.edit) {
-            this.start_index = this.findStartIndexIfEdit()
+            this.start_index = this.findStartIndex(this.props.edit_task_data)
         }
 
         else {
-            // console.log(this.props.task_data)
-            this.start_index = this.findStartIndexIfNotEdit(this.props.task_data)
+            this.start_index = this.findStartIndex(this.props.task_data)
         }
     }
 
@@ -315,37 +337,39 @@ class Calendar extends React.Component {
         index
     })
 
-    findStartIndexIfNotEdit = (task_data) => {
-        let task_data_map = Map(task_data),
-            chosen_month = task_data_map.getIn(["schedule", "chosen_month"]),
-            chosen_year = task_data_map.getIn(["schedule", "chosen_year"]),
-            start_month = task_data_map.getIn(["schedule", "start_month"]),
-            end_month = task_data_map.getIn(["schedule", "end_month"]),
-            start_year = task_data_map.getIn(["schedule", "start_year"]),
-            end_year = task_data_map.getIn(["schedule", "end_year"]),
-            week_index = task_data_map.getIn(["schedule", "start_noWeekInMonth"]),
-            month_index = this.findMonthIndex(chosen_month, chosen_year)
+    findStartIndex = (task_data) => {
+        if (task_data) {
+            let task_data_map = Map(task_data),
+                chosen_month = task_data_map.getIn(["schedule", "chosen_month"]),
+                chosen_year = task_data_map.getIn(["schedule", "chosen_year"]),
+                start_month = task_data_map.getIn(["schedule", "start_month"]),
+                end_month = task_data_map.getIn(["schedule", "end_month"]),
+                start_year = task_data_map.getIn(["schedule", "start_year"]),
+                end_year = task_data_map.getIn(["schedule", "end_year"]),
+                week_index = task_data_map.getIn(["schedule", "start_noWeekInMonth"]),
+                month_index = this.findMonthIndex(chosen_month, chosen_year)
 
-        if (chosen_month === start_month) {
-            week_index = task_data_map.getIn(["schedule", "start_noWeekInMonth"]) - 1
+            if (chosen_month === start_month) {
+                week_index = task_data_map.getIn(["schedule", "start_noWeekInMonth"]) - 1
+            }
+
+            else if (chosen_month === end_month) {
+                week_index = task_data_map.getIn(["schedule", "end_noWeekInMonth"]) - 1
+            }
+
+            this.chooseWeek(month_index, week_index)
+
+            return month_index
         }
 
-        else if (chosen_month === end_month) {
-            week_index = task_data_map.getIn(["schedule", "end_noWeekInMonth"]) - 1
+        else {
+            let week_index = this.getNoWeekInMonth(new Date()) - 1,
+                month_index = this.findMonthIndex(this.current_month, this.current_year)
+
+            this.chooseWeek(month_index, week_index)
+
+            return month_index
         }
-
-        this.chooseWeek(month_index, week_index)
-
-        return month_index
-    }
-
-    findStartIndexIfEdit = () => {
-        let week_index = this.getNoWeekInMonth(new Date()) - 1,
-            month_index = this.findMonthIndex(this.current_month, this.current_year)
-
-        this.chooseWeek(month_index, week_index)
-
-        return month_index
     }
 
     findMonthIndex = (month, year) => {
