@@ -20,7 +20,7 @@ import { styles } from './styles/styles';
 
 const window_width = Dimensions.get("window").width
 
-export default class EditDeleteRow extends Component {
+export default class EditDeleteRow extends React.PureComponent {
 
     render() {
         return (

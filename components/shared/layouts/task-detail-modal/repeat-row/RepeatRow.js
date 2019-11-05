@@ -19,7 +19,7 @@ import { styles } from './styles/styles';
 
 const window_width = Dimensions.get("window").width
 
-export default class RepeatRow extends Component {
+export default class RepeatRow extends React.PureComponent {
     render() {
         return (
             <View

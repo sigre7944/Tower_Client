@@ -1,6 +1,10 @@
+!!!! All properties are strings
+
+!!!! timestamps are using ISO 8601 date yyyy-mm-ddThh:mm:ss.mmmZ - new Date(year, month, day)
+
 - Map structures for stats to work:
     + Day: Map {
-        // 0:00:00 of the day (Number)
+        // 0:00:00 of the day (String)
         day_timestamp: Map {
             current: List [0, 0, 0, 0]
         }
@@ -22,7 +26,7 @@
 
 - Map structures for charts to work:
     + Week chart: Map {
-        // Monday of the week (Number)
+        // Monday of the week (String)
         week_timestamp:  Map {
             // sunday
             0: Map {
@@ -58,8 +62,19 @@
             
             //String
             completed_day_timestamp: Map {
+                // Total equals the sum of day_completed_array
                 current: 0,
-                priority_value: priority_value
+                // priority_value: priority_value,
+
+                prio_1 : {
+                    value: 0,
+                    isCurrent: true
+                },
+                prio_2: {
+                    value: 0,
+                    isCurrent: false
+                },
+                ...
             }
         }
     }
@@ -73,10 +88,36 @@
                 current: 0,
 
                 // Sunday - Saturday
-                day_completed_array: List [0, 0, 0, 0, 0, 0, 0]
+                // day_completed_array: List [0, 0, 0, 0, 0, 0, 0]
 
                 // Sunday - Saturday
-                priority_value_array: List [priority_value, priority_value, priority_value, priority_value, priority_value, priority_value, priority_value]
+                // priority_value_array: List [priority_value, priority_value, priority_value, priority_value, priority_value, priority_value, priority_value]
+                
+                // Sunday
+                0 : {
+                    prio_1 : {
+                        value: 0,
+                        isCurrent: true
+                    },
+                    prio_2: {
+                        value: 0,
+                        isCurrent: false
+                    },
+                    ...
+                },
+                
+                // Monday
+                1 : {
+                    prio_1 : {
+                        value: 0,
+                        isCurrent: true
+                    },
+                    prio_2: {
+                        value: 0,
+                        isCurrent: false
+                    },
+                    ...
+                },
             }
         }
     }
@@ -89,14 +130,37 @@
                 // Total equals the sum of day_completed_array
                 current: 0,
 
-                // Always the most updated value
-                priority_value: priority_value,
+                // 1 - the last day of month
+                // day_completed_array: [0, 0, 0, 0, 0, 0, 0, ...]
 
                 // 1 - the last day of month
-                day_completed_array: [0, 0, 0, 0, 0, 0, 0, ...]
+                // priority_value_array: [priority_value, priority_value, priority_value, priority_value, priority_value, priority_value, priority_value, ...]
 
-                // 1 - the last day of month
-                priority_value_array: [priority_value, priority_value, priority_value, priority_value, priority_value, priority_value, priority_value, ...]
+                // 1st day of month
+                1 : {
+                    prio_1 : {
+                        value: 0,
+                        isCurrent: true
+                    },
+                    prio_2: {
+                        value: 0,
+                        isCurrent: false
+                    },
+                    ...
+                },
+                
+                // 2nd day of month
+                2 : {
+                    prio_1 : {
+                        value: 0,
+                        isCurrent: true
+                    },
+                    prio_2: {
+                        value: 0,
+                        isCurrent: false
+                    },
+                    ...
+                },
             }
         }
     }

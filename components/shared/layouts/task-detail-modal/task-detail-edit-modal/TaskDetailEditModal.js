@@ -52,7 +52,7 @@ export default class TaskDetailEditModal extends Component {
         task_title: "",
         task_description: "",
         should_display_editting_panel: false,
-        editting_field: "none"
+        editting_field: "none",
     }
 
     _chooseEdittingField = (field) => {
@@ -303,9 +303,16 @@ export default class TaskDetailEditModal extends Component {
                         _editFieldData={this._editFieldData}
                     />
 
-                    <SaveButton />
+                    <SaveButton
+                        old_task_data_map={this.state.old_task_data_map}
+                        task_data_map={this.state.task_data_map}
+                        _dismissModal={this.props._dismissModal}
+                        type={this.props.type}
+                    />
 
-                    <CancelButton />
+                    <CancelButton
+                        _closeEdit={this.props._closeEdit}
+                    />
                 </ScrollView>
 
                 <EdittingModal
@@ -1059,6 +1066,8 @@ class CancelButton extends React.PureComponent {
                     alignItems: "center",
                     marginBottom: 30,
                 }}
+
+                onPress={this.props._closeEdit}
             >
                 <Text
                     style={styles.cancel_text}

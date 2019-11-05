@@ -19,7 +19,7 @@ import { styles } from './styles/styles';
 
 const window_width = Dimensions.get("window").width
 
-export default class PriorityRow extends Component {
+export default class PriorityRow extends React.PureComponent {
     render() {
         return (
             <View

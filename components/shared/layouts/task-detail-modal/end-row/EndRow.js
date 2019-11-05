@@ -19,7 +19,7 @@ import { styles } from './styles/styles';
 
 const window_width = Dimensions.get("window").width
 
-export default class EndRow extends Component {
+export default class EndRow extends React.PureComponent {
     render() {
         return (
             <View

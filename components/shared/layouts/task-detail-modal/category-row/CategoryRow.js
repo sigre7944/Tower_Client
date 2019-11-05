@@ -19,7 +19,7 @@ import { styles } from './styles/styles';
 
 const window_width = Dimensions.get("window").width
 
-export default class CategoryRow extends Component {
+export default class CategoryRow extends React.PureComponent {
     render() {
         return (
             <View
