@@ -189,6 +189,7 @@ export default class JournalTab extends React.PureComponent {
                     <ScrollView style={styles.scrollViewTasks}>
                         {/* Uncompleted to-do tasks */}
                         <UncompletedTaskCardHolder
+                            priorities={this.props.priorities}
                             tasks={this.props.tasks}
                             completed_tasks={this.props.completed_tasks}
                             type={this.props.type}
@@ -213,6 +214,7 @@ export default class JournalTab extends React.PureComponent {
                         </View>
                         {/* Completed to-do tasks */}
                         <CompletedTaskCardHolder
+                            priorities={this.props.priorities}
                             tasks={this.props.tasks}
                             completed_tasks={this.props.completed_tasks}
                             type={this.props.type}
@@ -247,7 +249,8 @@ export default class JournalTab extends React.PureComponent {
 class UncompletedTaskCardHolder extends React.PureComponent {
 
     state = {
-        should_flatlist_update: 0
+        should_flatlist_update: 0,
+        prioritized_tasks: []
     }
 
     _keyExtractor = (item, index) => `journal-${this.props.type}-uncompleted-task-${item[0]}`
@@ -265,18 +268,39 @@ class UncompletedTaskCardHolder extends React.PureComponent {
         />
     )
 
+    _prioritizeTasks = () => {
+        let tasks_map = Map(this.props.tasks),
+            priorities_map = Map(this.props.priorities),
+            prioritized_tasks = []
+
+        priorities_map.valueSeq().forEach((priority_data, index) => {
+            List(priority_data.get("tasks")).forEach((task_id, i) => {
+                prioritized_tasks.push([task_id, tasks_map.get(task_id)])
+            })
+        })
+
+        this.setState({
+            prioritized_tasks: [...prioritized_tasks]
+        })
+    }
+
     componentDidUpdate(prevProps, prevState) {
         if (this.props.completed_tasks !== prevProps.completed_tasks) {
             this.setState(prevState => ({
                 should_flatlist_update: !prevState.should_flatlist_update + 1
             }))
         }
+
+        if (this.props.tasks !== prevProps.tasks) {
+            this._prioritizeTasks()
+        }
     }
 
     render() {
         return (
             <FlatList
-                data={Map(this.props.tasks).toArray()}
+                // data={Map(this.props.tasks).toArray()}
+                data={this.state.prioritized_tasks}
                 extraData={this.state.should_flatlist_update}
                 showsVerticalScrollIndicator={false}
                 removeClippedSubviews={true}

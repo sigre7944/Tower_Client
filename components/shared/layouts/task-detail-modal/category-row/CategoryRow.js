@@ -21,6 +21,8 @@ const window_width = Dimensions.get("window").width
 
 export default class CategoryRow extends React.PureComponent {
     render() {
+        let category_text_style = this.props.category_color === "white" 
+        || this.props.category_color === "no color" ? styles.text : { ...styles.text, ...{ color: this.props.category_color } }
         return (
             <View
                 style={{
@@ -82,7 +84,7 @@ export default class CategoryRow extends React.PureComponent {
                     }}
                 >
                     <Text
-                        style={{ ...styles.text, ...{ color: this.props.category_color } }}
+                        style={category_text_style}
                     >
                         {this.props.category_name}
                     </Text>

@@ -206,17 +206,7 @@ export default class TaskDetailEditModal extends Component {
         }
 
         return (
-            <View
-                style={{
-                    position: "absolute",
-                    top: 60,
-                    borderTopRightRadius: 20,
-                    borderTopLeftRadius: 20,
-                    width: Dimensions.get("window").width,
-                    backgroundColor: "white",
-                    bottom: 0,
-                }}
-            >
+            <>
                 {/* minus sign - close modal */}
                 <TouchableOpacity
                     style={{
@@ -325,7 +315,7 @@ export default class TaskDetailEditModal extends Component {
                     type={this.props.type}
                     _editFieldData={this._editFieldData}
                 />
-            </View>
+            </>
         )
     }
 }

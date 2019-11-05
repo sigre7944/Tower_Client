@@ -6,7 +6,8 @@ let initialState = {
         importance: 1,
         urgency: 1,
         defaultValue: 5,
-        color: "#F78096"
+        color: "#F78096",
+        tasks: [] // item = task_id
     },
 
     pri_02: {
@@ -14,7 +15,8 @@ let initialState = {
         importance: 1,
         urgency: 0,
         defaultValue: 3.5,
-        color: "#EFDA6E"
+        color: "#EFDA6E",
+        tasks: []
     },
 
     pri_03: {
@@ -22,7 +24,8 @@ let initialState = {
         importance: 0,
         urgency: 1,
         defaultValue: 2,
-        color: "#6F73D9"
+        color: "#6F73D9",
+        tasks: []
     },
 
     pri_04: {
@@ -30,13 +33,17 @@ let initialState = {
         importance: 0,
         urgency: 0,
         defaultValue: 0.5,
-        color: "#CBC8C8"
+        color: "#CBC8C8",
+        tasks: []
     },
 
 }
 
 export const priorities = (state = Map(fromJS(initialState)), action) => {
     switch (action.type) {
+        case "UPDATE_PRIORITY":
+            console.log(state.updateIn(action.keyPath, action.notSetValue, action.updater))
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
         default:
             return state
     }

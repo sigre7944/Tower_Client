@@ -135,6 +135,8 @@ export default class SaveButton extends React.PureComponent {
 
         let old_category = Map(this.props.old_task_data_map).get("category"),
             new_category = task_data_map.get("category"),
+            old_priority_value = Map(this.props.old_task_data_map).getIn(["priority", "value"]),
+            new_priority_value = task_data_map.getIn(["priority", "value"]),
             type = this.props.type,
             sending_obj = {
                 edited_task_data: {
@@ -154,6 +156,18 @@ export default class SaveButton extends React.PureComponent {
                     keyPath: [new_category, "quantity"],
                     notSetValue: 0,
                     updater: (value) => value + 1
+                },
+
+                old_priority_data: {
+                    keyPath: [old_priority_value, "tasks"],
+                    notSetValue: [],
+                    updater: (tasks) => List(tasks).delete(List(tasks).findIndex((task_id, index, list) => task_data_map.get("id") === task_id))
+                },
+
+                new_priority_data: {
+                    keyPath: [new_priority_value, "tasks"],
+                    notSetValue: [],
+                    updater: (tasks) => List(tasks).push(task_data_map.get("id"))
                 }
             }
 

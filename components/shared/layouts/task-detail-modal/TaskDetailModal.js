@@ -9,7 +9,9 @@ import {
     Image,
     TextInput,
     Modal,
-    ScrollView
+    ScrollView,
+    Animated,
+    Easing
 } from 'react-native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 
@@ -29,8 +31,13 @@ import GoalRow from './goal-row/GoalRow'
 import TaskDetailEditModal from './task-detail-edit-modal/TaskDetailEditModal.Container'
 
 const window_width = Dimensions.get("window").width
+const window_height = Dimensions.get("window").height
+const easing = Easing.inOut(Easing.linear)
+const animation_duration = 250
 
 export default class TaskDetailModal extends Component {
+
+    anim_translate_y = new Animated.Value(window_height)
 
     daysInWeekText = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
@@ -59,6 +66,18 @@ export default class TaskDetailModal extends Component {
         should_update: 0,
         toggle_delete: false,
         is_edit_selected: false,
+    }
+
+    _appearAnim = () => {
+        Animated.timing(
+            this.anim_translate_y,
+            {
+                toValue: 0,
+                duration: animation_duration,
+                easing,
+                useNativeDriver: true
+            }
+        ).start()
     }
 
     getWeek = (date) => {
@@ -337,6 +356,7 @@ export default class TaskDetailModal extends Component {
     }
 
     componentDidMount() {
+        this._appearAnim()
     }
 
     componentDidUpdate = (prevProps, prevState) => {
@@ -479,87 +499,89 @@ export default class TaskDetailModal extends Component {
 
                     </TouchableOpacity>
 
-                    {this.state.is_edit_selected ?
-                        <TaskDetailEditModal
-                            task_data={this.props.task_data}
-                            _closeEdit={this._closeEdit}
-                            _dismissModal={this._dismissModal}
-                            type={this.props.type}
-                        />
-                        :
-
-                        <View
-                            style={{
-                                position: "absolute",
-                                top: 60,
-                                borderTopRightRadius: 20,
-                                borderTopLeftRadius: 20,
-                                width: Dimensions.get("window").width,
-                                backgroundColor: "white",
-                                bottom: 0,
-                            }}
-                        >
-                            {/* minus sign - close modal */}
-                            <TouchableOpacity
-                                style={{
-                                    flexDirection: "row",
-                                    justifyContent: "center",
-                                    marginTop: 5,
-                                }}
-
-                                onPress={this._dismissModal}
-                            >
-                                <View
-                                    style={styles.minus}
-                                >
-
-                                </View>
-                            </TouchableOpacity>
-
-
-                            <EditDeleteRow
-                                _openEdit={this._openEdit}
+                    <Animated.View
+                        style={{
+                            position: "absolute",
+                            top: 120,
+                            borderTopRightRadius: 20,
+                            borderTopLeftRadius: 20,
+                            width: Dimensions.get("window").width,
+                            backgroundColor: "white",
+                            bottom: 0,
+                            transform: [{ translateY: this.anim_translate_y}]
+                        }}
+                    >
+                        {this.state.is_edit_selected ?
+                            <TaskDetailEditModal
+                                task_data={this.props.task_data}
                                 _closeEdit={this._closeEdit}
+                                _dismissModal={this._dismissModal}
+                                type={this.props.type}
                             />
+                            :
+                            <>
+                                {/* minus sign - close modal */}
+                                <TouchableOpacity
+                                    style={{
+                                        flexDirection: "row",
+                                        justifyContent: "center",
+                                        marginTop: 5,
+                                    }}
 
-                            <ScrollView>
-                                <TitleDescriptionRow
-                                    title={task_title}
-                                    description={task_description}
+                                    onPress={this._dismissModal}
+                                >
+                                    <View
+                                        style={styles.minus}
+                                    >
+
+                                    </View>
+                                </TouchableOpacity>
+
+
+                                <EditDeleteRow
+                                    _openEdit={this._openEdit}
+                                    _closeEdit={this._closeEdit}
                                 />
 
-                                <ScheduleRow
-                                    schedule_text={task_schedule_text}
-                                />
+                                <ScrollView>
+                                    <TitleDescriptionRow
+                                        title={task_title}
+                                        description={task_description}
+                                    />
 
-                                <CategoryRow
-                                    category_name={task_category_name}
-                                    category_color={task_category_color}
-                                />
+                                    <ScheduleRow
+                                        schedule_text={task_schedule_text}
+                                    />
 
-                                <PriorityRow
-                                    priority_color={task_priority_color}
-                                    priority_name={task_priority_name}
-                                />
+                                    <CategoryRow
+                                        category_name={task_category_name}
+                                        category_color={task_category_color}
+                                    />
 
-                                <RepeatRow
-                                    repeat_text={task_repeat_text}
-                                />
+                                    <PriorityRow
+                                        priority_color={task_priority_color}
+                                        priority_name={task_priority_name}
+                                    />
 
-                                <EndRow
-                                    end_text={task_end_text}
-                                />
+                                    <RepeatRow
+                                        repeat_text={task_repeat_text}
+                                    />
 
-                                <RewardRow
-                                    reward_text={task_reward_text}
-                                />
+                                    <EndRow
+                                        end_text={task_end_text}
+                                    />
 
-                                <GoalRow
-                                    goal_text={task_goal_text}
-                                />
-                            </ScrollView>
-                        </View>
-                    }
+                                    <RewardRow
+                                        reward_text={task_reward_text}
+                                    />
+
+                                    <GoalRow
+                                        goal_text={task_goal_text}
+                                    />
+                                </ScrollView>
+                            </>
+                        }
+                    </Animated.View>
                 </View>
             </Modal>
         )
