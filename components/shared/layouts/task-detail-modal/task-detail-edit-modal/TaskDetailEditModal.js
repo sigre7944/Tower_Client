@@ -30,6 +30,9 @@ import SaveButton from './save-button/SaveButton.Container'
 
 import Calendar from '../../../../main/screens/Journal/components/share/calendar/Calendar'
 import Category from '../../../../main/screens/Journal/components/share/category/Category.Container'
+import Repeat from '../../../../main/screens/Journal/components/share/repeat/Repeat'
+import Priority from '../../../../main/screens/Journal/components/share/priority/Priority.Container'
+
 const window_width = Dimensions.get("window").width
 
 export default class TaskDetailEditModal extends Component {
@@ -45,6 +48,7 @@ export default class TaskDetailEditModal extends Component {
 
     state = {
         task_data_map: Map(this.props.task_data).toMap(),
+        old_task_data_map: Map(this.props.task_data).toMap(),
         task_title: "",
         task_description: "",
         should_display_editting_panel: false,
@@ -236,48 +240,67 @@ export default class TaskDetailEditModal extends Component {
                     <TitleField
                         task_title={task_title}
                         _onEditTitleChange={this._onEditTitleChange}
+                        old_task_data_map={this.state.old_task_data_map}
+                        _editFieldData={this._editFieldData}
                     />
 
                     <DescriptionField
                         task_description={task_description}
                         _onEditDescriptionChange={this._onEditDescriptionChange}
+                        old_task_data_map={this.state.old_task_data_map}
+                        _editFieldData={this._editFieldData}
                     />
 
                     <ScheduleRow
                         task_schedule_text={task_schedule_text}
                         _chooseEdittingField={this._chooseEdittingField}
+                        old_task_data_map={this.state.old_task_data_map}
+                        _editFieldData={this._editFieldData}
                     />
 
                     <CategoryRow
                         task_category_color={task_category_color}
                         task_category_name={task_category_name}
                         _chooseEdittingField={this._chooseEdittingField}
+                        old_task_data_map={this.state.old_task_data_map}
+                        _editFieldData={this._editFieldData}
                     />
 
                     <PriorityRow
                         task_priority_name={task_priority_name}
                         task_priority_color={task_priority_color}
                         _chooseEdittingField={this._chooseEdittingField}
-                    />
-
-                    <RepeatRow
-                        task_repeat_text={task_repeat_text}
-                        _chooseEdittingField={this._chooseEdittingField}
-                    />
-
-                    <EndRow
-                        task_end_text={task_end_text}
-                        _chooseEdittingField={this._chooseEdittingField}
+                        old_task_data_map={this.state.old_task_data_map}
+                        _editFieldData={this._editFieldData}
                     />
 
                     <RewardRow
                         task_reward_text={task_reward_text}
                         _chooseEdittingField={this._chooseEdittingField}
+                        old_task_data_map={this.state.old_task_data_map}
+                        _editFieldData={this._editFieldData}
                     />
+
+                    <RepeatRow
+                        task_repeat_text={task_repeat_text}
+                        _chooseEdittingField={this._chooseEdittingField}
+                        old_task_data_map={this.state.old_task_data_map}
+                        _editFieldData={this._editFieldData}
+                    />
+
+                    <EndRow
+                        task_end_text={task_end_text}
+                        _chooseEdittingField={this._chooseEdittingField}
+                        old_task_data_map={this.state.old_task_data_map}
+                        _editFieldData={this._editFieldData}
+                    />
+
 
                     <GoalRow
                         task_goal_text={task_goal_text}
                         _chooseEdittingField={this._chooseEdittingField}
+                        old_task_data_map={this.state.old_task_data_map}
+                        _editFieldData={this._editFieldData}
                     />
 
                     <SaveButton />
@@ -351,7 +374,39 @@ class EdittingModal extends React.PureComponent {
 
                                     :
 
-                                    null
+                                    <>
+                                        {this.props.editting_field === "repeat"
+                                            || this.props.editting_field === "end"
+                                            || this.props.editting_field === "goal" ?
+
+                                            <Repeat
+                                                hideAction={this.props._closeEdittingField}
+                                                currentAnnotation={this.props.type}
+                                                edit={true}
+                                                edit_task_data={this.props.task_data_map}
+                                                _editFieldData={this.props._editFieldData}
+                                            />
+
+                                            :
+
+                                            <>
+                                                {this.props.editting_field === "priority"
+                                                    || this.props.editting_field === "reward" ?
+                                                    <Priority
+                                                        hideAction={this.props._closeEdittingField}
+                                                        currentAnnotation={this.props.type}
+                                                        edit={true}
+                                                        edit_task_data={this.props.task_data_map}
+                                                        _editFieldData={this.props._editFieldData}
+                                                    />
+
+                                                    :
+
+                                                    null
+                                                }
+                                            </>
+                                        }
+                                    </>
                                 }
                             </>
                     }
@@ -379,7 +434,7 @@ class TitleField extends React.PureComponent {
 
                 <TextInput
                     style={styles.text_input}
-                    placeholder="Add a title"
+                    placeholder={Map(this.props.old_task_data_map).get("title")}
                     value={this.props.task_title}
                     onChange={this.props._onEditTitleChange}
                 />
@@ -406,7 +461,7 @@ class DescriptionField extends React.PureComponent {
 
                 <TextInput
                     style={styles.text_input}
-                    placeholder="Add a description"
+                    placeholder={Map(this.props.old_task_data_map).get("description")}
                     value={this.props.task_description}
                     onChange={this.props._onEditDescriptionChange}
                 />
@@ -419,6 +474,14 @@ class ScheduleRow extends React.PureComponent {
 
     _chooseEdittingField = () => {
         this.props._chooseEdittingField("schedule")
+    }
+
+    _resetEditData = () => {
+        let keyPath = ["schedule"],
+            notSetValue = {},
+            updater = (value) => Map(this.props.old_task_data_map).get("schedule").toMap()
+
+        this.props._editFieldData(keyPath, notSetValue, updater)
     }
 
     render() {
@@ -470,6 +533,8 @@ class ScheduleRow extends React.PureComponent {
                             justifyContent: "flex-end",
                             flexDirection: "row",
                         }}
+
+                        onPress={this._resetEditData}
                     >
                         <FontAwesomeIcon
                             icon={faTimes}
@@ -489,7 +554,17 @@ class CategoryRow extends React.PureComponent {
         this.props._chooseEdittingField("category")
     }
 
+    _resetEditData = () => {
+        let keyPath = ["category"],
+            notSetValue = {},
+            updater = (value) => Map(this.props.old_task_data_map).get("category")
+
+        this.props._editFieldData(keyPath, notSetValue, updater)
+    }
+
     render() {
+        let category_text = this.props.task_category_color === "white"
+            || this.props.task_category_color === "no color" ? styles.normal_text : { ...styles.normal_text, ...{ color: this.props.task_category_color } }
         return (
             <View
                 style={{
@@ -517,19 +592,43 @@ class CategoryRow extends React.PureComponent {
 
                         onPress={this._chooseEdittingField}
                     >
-                        <View
-                            style={{
-                                width: 14,
-                                height: 14,
-                                borderRadius: 7,
-                                backgroundColor: this.props.task_category_color
-                            }}
-                        >
+                        {this.props.task_category_color === "white" || this.props.task_category_color === "no color" ?
+                            <View
+                                style={{
+                                    width: 14,
+                                    height: 14,
+                                    borderRadius: 7,
+                                    borderWidth: 1,
+                                    borderColor: "#2C2C2C",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <View
+                                    style={{
+                                        flex: 1,
+                                        width: 1,
+                                        backgroundColor: "#2C2C2C",
+                                        transform: [{ rotate: "45deg" }]
+                                    }}
+                                >
+                                </View>
+                            </View>
+                            :
 
-                        </View>
+                            <View
+                                style={{
+                                    width: 14,
+                                    height: 14,
+                                    borderRadius: 7,
+                                    backgroundColor: this.props.task_category_color
+                                }}
+                            >
 
+                            </View>
+                        }
                         <Text
-                            style={{ ...styles.normal_text, ...{ color: this.props.task_category_color } }}
+                            style={category_text}
                         >
                             {this.props.task_category_name}
                         </Text>
@@ -543,6 +642,8 @@ class CategoryRow extends React.PureComponent {
                             justifyContent: "flex-end",
                             flexDirection: "row",
                         }}
+
+                        onPress={this._resetEditData}
                     >
                         <FontAwesomeIcon
                             icon={faTimes}
@@ -560,6 +661,14 @@ class PriorityRow extends React.PureComponent {
 
     _chooseEdittingField = () => {
         this.props._chooseEdittingField("priority")
+    }
+
+    _resetEditData = () => {
+        let keyPath = ["priority"],
+            notSetValue = {},
+            updater = (value) => Map(this.props.old_task_data_map).get("priority").toMap()
+
+        this.props._editFieldData(keyPath, notSetValue, updater)
     }
 
     render() {
@@ -611,6 +720,8 @@ class PriorityRow extends React.PureComponent {
                             justifyContent: "flex-end",
                             flexDirection: "row",
                         }}
+
+                        onPress={this._resetEditData}
                     >
                         <FontAwesomeIcon
                             icon={faTimes}
@@ -628,6 +739,14 @@ class RepeatRow extends React.PureComponent {
 
     _chooseEdittingField = () => {
         this.props._chooseEdittingField("repeat")
+    }
+
+    _resetEditData = () => {
+        let keyPath = ["repeat"],
+            notSetValue = {},
+            updater = (value) => Map(this.props.old_task_data_map).get("repeat").toMap()
+
+        this.props._editFieldData(keyPath, notSetValue, updater)
     }
 
     render() {
@@ -679,6 +798,8 @@ class RepeatRow extends React.PureComponent {
                             justifyContent: "flex-end",
                             flexDirection: "row",
                         }}
+
+                        onPress={this._resetEditData}
                     >
                         <FontAwesomeIcon
                             icon={faTimes}
@@ -696,6 +817,14 @@ class EndRow extends React.PureComponent {
 
     _chooseEdittingField = () => {
         this.props._chooseEdittingField("end")
+    }
+
+    _resetEditData = () => {
+        let keyPath = ["end"],
+            notSetValue = {},
+            updater = (value) => Map(this.props.old_task_data_map).get("end").toMap()
+
+        this.props._editFieldData(keyPath, notSetValue, updater)
     }
 
     render() {
@@ -747,6 +876,8 @@ class EndRow extends React.PureComponent {
                             justifyContent: "flex-end",
                             flexDirection: "row",
                         }}
+
+                        onPress={this._resetEditData}
                     >
                         <FontAwesomeIcon
                             icon={faTimes}
@@ -764,6 +895,14 @@ class RewardRow extends React.PureComponent {
 
     _chooseEdittingField = () => {
         this.props._chooseEdittingField("reward")
+    }
+
+    _resetEditData = () => {
+        let keyPath = ["reward"],
+            notSetValue = {},
+            updater = (value) => Map(this.props.old_task_data_map).get("reward").toMap()
+
+        this.props._editFieldData(keyPath, notSetValue, updater)
     }
 
     render() {
@@ -815,6 +954,8 @@ class RewardRow extends React.PureComponent {
                             justifyContent: "flex-end",
                             flexDirection: "row",
                         }}
+
+                        onPress={this._resetEditData}
                     >
                         <FontAwesomeIcon
                             icon={faTimes}
@@ -832,6 +973,14 @@ class GoalRow extends React.PureComponent {
 
     _chooseEdittingField = () => {
         this.props._chooseEdittingField("goal")
+    }
+
+    _resetEditData = () => {
+        let keyPath = ["goal"],
+            notSetValue = {},
+            updater = (value) => Map(this.props.old_task_data_map).get("goal").toMap()
+
+        this.props._editFieldData(keyPath, notSetValue, updater)
     }
 
     render() {
@@ -883,6 +1032,8 @@ class GoalRow extends React.PureComponent {
                             justifyContent: "flex-end",
                             flexDirection: "row",
                         }}
+
+                        onPress={this._resetEditData}
                     >
                         <FontAwesomeIcon
                             icon={faTimes}

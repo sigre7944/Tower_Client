@@ -13,7 +13,7 @@ import Calendar from '../../../screens/Journal/components/share/calendar/Calenda
 import Category from '../../../screens/Journal/components/share/category/Category.Container'
 import Priority from '../../../screens/Journal/components/share/priority/Priority.Container'
 
-import Repeat from '../../../screens/Journal/components/share/repeat/Repeat.Container'
+import Repeat from '../../../screens/Journal/components/share/repeat/Repeat'
 
 import { Map, fromJS } from 'immutable'
 

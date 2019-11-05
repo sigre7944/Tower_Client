@@ -276,7 +276,14 @@ export default class Priority extends React.PureComponent {
             }
         }
 
-        this.props.updateTaskPriorityAndReward(sending_obj)
+        if(this.props.edit){
+            this.props._editFieldData(sending_obj.priority_data.keyPath, sending_obj.priority_data.notSetValue, sending_obj.priority_data.updater)
+            this.props._editFieldData(sending_obj.reward_data.keyPath, sending_obj.reward_data.notSetValue, sending_obj.reward_data.updater)
+        }
+        
+        else{
+            this.props.updateTaskPriorityAndReward(sending_obj)
+        }
 
         this.props.hideAction()
     }
@@ -347,6 +354,48 @@ export default class Priority extends React.PureComponent {
         })
     }
 
+    _initializePriorityData = (task_data) => {
+        let priority_id = Map(task_data).getIn(["priority", "value"]),
+            reward_value = Map(task_data).getIn(["reward", "value"]).toString()
+
+        let priority_value = Map(this.props.priorities).getIn([priority_id, "name"])
+
+        if (priority_value === "Do first") {
+            this.setState({
+                selected_priority_value: priority_value,
+                is_important: true,
+                is_urgent: true,
+                reward_value: reward_value
+            })
+        }
+
+        else if (priority_value === "Plan") {
+            this.setState({
+                selected_priority_value: priority_value,
+                is_important: true,
+                is_urgent: false,
+                reward_value: reward_value
+            })
+        }
+
+        else if (priority_value === "Delay") {
+            this.setState({
+                selected_priority_value: priority_value,
+                is_important: false,
+                is_urgent: true,
+                reward_value: reward_value
+            })
+        }
+
+        else {
+            this.setState({
+                selected_priority_value: priority_value,
+                is_important: false,
+                is_urgent: false,
+                reward_value: reward_value
+            })
+        }
+    }
 
     componentDidMount() {
         this._animate()
@@ -354,15 +403,12 @@ export default class Priority extends React.PureComponent {
         this.keyboardWillHideListener = Keyboard.addListener("keyboardWillHide", this._keyboardWillHideHandler)
         this.keyboardWillShowListener = Keyboard.addListener("keyboardWillShow", this._keyboardWillShowHandler)
 
-        let priority_id = Map(this.props.task_data).getIn(["priority", "value"]),
-            reward_value = Map(this.props.task_data).getIn(["reward", "value"]).toString()
-
-        let priority_value = Map(this.props.priorities).getIn([priority_id, "name"])
-
-        this.setState({
-            selected_priority_value: priority_value,
-            reward_value
-        })
+        if (this.props.edit) {
+            this._initializePriorityData(this.props.edit_task_data)
+        }
+        else {
+            this._initializePriorityData(this.props.task_data)
+        }
     }
 
     componentWillUnmount() {
@@ -400,6 +446,7 @@ export default class Priority extends React.PureComponent {
                     overflow: "hidden",
                     transform: [{ scale: this.scale_value }],
                     opacity: this.opacity_value,
+                    paddingVertical: 5,
                 }}
             >
                 <Animated.View

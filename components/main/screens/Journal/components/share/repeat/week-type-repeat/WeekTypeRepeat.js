@@ -276,7 +276,15 @@ export default class WeekTypeRepeat extends React.PureComponent {
             }
         }
 
-        this.props.updateThunk(sending_data)
+        if (this.props.edit) {
+            this.props._editFieldData(sending_data.repeat_data.keyPath, sending_data.repeat_data.notSetValue, sending_data.repeat_data.updater)
+            this.props._editFieldData(sending_data.goal_data.keyPath, sending_data.goal_data.notSetValue, sending_data.goal_data.updater)
+            this.props._editFieldData(sending_data.end_data.keyPath, sending_data.end_data.notSetValue, sending_data.end_data.updater)
+        }
+
+        else {
+            this.props.updateThunk(sending_data)
+        }
 
         this.props.hideAction()
     }
@@ -288,81 +296,87 @@ export default class WeekTypeRepeat extends React.PureComponent {
         return Math.floor((nearest_monday_timestamp - first_monday_of_month_timestamp) / (7 * 86400 * 1000)) + 1
     }
 
-    initializeData = () => {
-        let current_task_map = Map(this.props.currentTask),
-            repeat_type = current_task_map.getIn(["repeat", "type"]),
-            goal_value = current_task_map.getIn(["goal", "max"]).toString(),
-            end_type = current_task_map.getIn(["end", "type"]),
-            repeat_value = "1",
-            selected_repeat_type = "week",
-            end_current_index = 0,
-            end_at_chosen_day = this.date.getDate(),
-            end_at_chosen_month = this.date.getMonth(),
-            end_at_chosen_year = this.date.getFullYear(),
-            after_occurrence_value = "1",
-            is_week_nth_option_selected = false,
-            no_week_in_month = parseInt(current_task_map.getIn(["schedule", "start_noWeekInMonth"])),
-            chosen_month = parseInt(current_task_map.getIn(["schedule", "chosen_month"])),
-            start_month = parseInt(current_task_map.getIn(["schedule", "start_month"])),
-            end_month = parseInt(current_task_map.getIn(["schedule", "end_month"]))
+    initializeData = (task_data) => {
+        if (task_data) {
+            let current_task_map = Map(task_data),
+                repeat_type = current_task_map.getIn(["repeat", "type"]),
+                goal_value = current_task_map.getIn(["goal", "max"]).toString(),
+                end_type = current_task_map.getIn(["end", "type"]),
+                repeat_value = "1",
+                selected_repeat_type = "week",
+                end_current_index = 0,
+                end_at_chosen_day = this.date.getDate(),
+                end_at_chosen_month = this.date.getMonth(),
+                end_at_chosen_year = this.date.getFullYear(),
+                after_occurrence_value = "1",
+                is_week_nth_option_selected = false,
+                no_week_in_month = parseInt(current_task_map.getIn(["schedule", "start_noWeekInMonth"])),
+                chosen_month = parseInt(current_task_map.getIn(["schedule", "chosen_month"])),
+                start_month = parseInt(current_task_map.getIn(["schedule", "start_month"])),
+                end_month = parseInt(current_task_map.getIn(["schedule", "end_month"]))
 
-        if (chosen_month === start_month) {
-            no_week_in_month = parseInt(current_task_map.getIn(["schedule", "start_noWeekInMonth"]))
-        }
+            if (chosen_month === start_month) {
+                no_week_in_month = parseInt(current_task_map.getIn(["schedule", "start_noWeekInMonth"]))
+            }
 
-        else if (chosen_month === end_month) {
-            no_week_in_month = parseInt(current_task_map.getIn(["schedule", "end_noWeekInMonth"]))
-        }
+            else if (chosen_month === end_month) {
+                no_week_in_month = parseInt(current_task_map.getIn(["schedule", "end_noWeekInMonth"]))
+            }
 
-        if (no_week_in_month > 4) {
-            no_week_in_month = 4
-        }
+            if (no_week_in_month > 4) {
+                no_week_in_month = 4
+            }
 
-        if (repeat_type === "weekly-w") {
-            repeat_value = current_task_map.getIn(["repeat", "interval", "value"]).toString()
-            selected_repeat_type = "week"
+            if (repeat_type === "weekly-w") {
+                repeat_value = current_task_map.getIn(["repeat", "interval", "value"]).toString()
+                selected_repeat_type = "week"
+            }
+
+            else {
+                selected_repeat_type = "month"
+                is_week_nth_option_selected = true
+                repeat_value = current_task_map.getIn(["repeat", "interval", "value"]).toString()
+            }
+
+            if (end_type === "never") {
+                end_current_index = 0
+            }
+
+            else if (end_type === "on") {
+                let timestamp = current_task_map.getIn(["end", "endAt"]),
+                    date = new Date(timestamp)
+
+                end_at_chosen_day = date.getDate()
+                end_at_chosen_month = date.getMonth()
+                end_at_chosen_year = date.getFullYear()
+
+                end_current_index = 1
+            }
+
+            else {
+                after_occurrence_value = current_task_map.getIn(["end", "occurrence"]).toString()
+                end_current_index = 2
+            }
+
+            this.chooseEndOption(end_current_index)
+
+            this.setState({
+                selected_repeat_type,
+                repeat_input_value: repeat_value,
+                goal_value,
+                end_current_index,
+                end_at_chosen_day,
+                end_at_chosen_month,
+                end_at_chosen_year,
+                after_occurrence_value,
+                is_week_nth_option_selected,
+                no_week_in_month
+            })
         }
 
         else {
-            selected_repeat_type = "month"
-            is_week_nth_option_selected = true
-            repeat_value = current_task_map.getIn(["repeat", "interval", "value"]).toString()
+            return
         }
-
-        if (end_type === "never") {
-            end_current_index = 0
-        }
-
-        else if (end_type === "on") {
-            let timestamp = current_task_map.getIn(["end", "endAt"]),
-                date = new Date(timestamp)
-
-            end_at_chosen_day = date.getDate()
-            end_at_chosen_month = date.getMonth()
-            end_at_chosen_year = date.getFullYear()
-
-            end_current_index = 1
-        }
-
-        else {
-            after_occurrence_value = current_task_map.getIn(["end", "occurrence"]).toString()
-            end_current_index = 2
-        }
-
-        this.chooseEndOption(end_current_index)
-
-        this.setState({
-            selected_repeat_type,
-            repeat_input_value: repeat_value,
-            goal_value,
-            end_current_index,
-            end_at_chosen_day,
-            end_at_chosen_month,
-            end_at_chosen_year,
-            after_occurrence_value,
-            is_week_nth_option_selected,
-            no_week_in_month
-        })
     }
 
     componentDidMount() {
@@ -371,7 +385,13 @@ export default class WeekTypeRepeat extends React.PureComponent {
         this._keyboardWillHideListener = Keyboard.addListener("keyboardWillHide", this._keyboardWillHideHandler)
         this._keyboardWillShowListener = Keyboard.addListener("keyboardWillShow", this._keyboardWillShowHandler)
 
-        this.initializeData()
+        if (this.props.edit) {
+            this.initializeData(this.props.edit_task_data)
+        }
+
+        else {
+            this.initializeData(this.props.currentTask)
+        }
     }
 
     componentWillUnmount() {
@@ -389,7 +409,8 @@ export default class WeekTypeRepeat extends React.PureComponent {
                     backgroundColor: 'white',
                     borderRadius: 10,
                     opacity: this.repeat_opacity_value,
-                    overflow: "hidden"
+                    overflow: "hidden",
+                    paddingVertical: 5,
                 }}
             >
                 <Animated.View

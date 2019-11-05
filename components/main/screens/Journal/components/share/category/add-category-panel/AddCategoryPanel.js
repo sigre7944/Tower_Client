@@ -109,7 +109,7 @@ export default class AddCategoryPanel extends React.PureComponent {
     _checkIfCategoryNameExists = (name) => {
         let found = false
         Map(this.props.categories).valueSeq().every((value) => {
-            if (Map(value).get("name") === name) {
+            if (Map(value).get("name") === name.trim()) {
                 found = true
                 return false
             }
