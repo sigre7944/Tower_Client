@@ -65,16 +65,11 @@
                 // Total equals the sum of day_completed_array
                 current: 0,
                 // priority_value: priority_value,
+                
+                // latest priority (equals priority of the task in that timestamp)
+                current_priority_value: priority_value,
 
-                prio_1 : {
-                    value: 0,
-                    isCurrent: true
-                },
-                prio_2: {
-                    value: 0,
-                    isCurrent: false
-                },
-                ...
+                completed_priority_array: [0, 0, 0, 0]
             }
         }
     }
@@ -88,36 +83,10 @@
                 current: 0,
 
                 // Sunday - Saturday
-                // day_completed_array: List [0, 0, 0, 0, 0, 0, 0]
-
-                // Sunday - Saturday
-                // priority_value_array: List [priority_value, priority_value, priority_value, priority_value, priority_value, priority_value, priority_value]
+                // completed_priority_array: List [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
                 
-                // Sunday
-                0 : {
-                    prio_1 : {
-                        value: 0,
-                        isCurrent: true
-                    },
-                    prio_2: {
-                        value: 0,
-                        isCurrent: false
-                    },
-                    ...
-                },
-                
-                // Monday
-                1 : {
-                    prio_1 : {
-                        value: 0,
-                        isCurrent: true
-                    },
-                    prio_2: {
-                        value: 0,
-                        isCurrent: false
-                    },
-                    ...
-                },
+                // latest priority (equals priority of the task in that timestamp)
+                current_priority_value: priority_value,
             }
         }
     }
@@ -131,36 +100,10 @@
                 current: 0,
 
                 // 1 - the last day of month
-                // day_completed_array: [0, 0, 0, 0, 0, 0, 0, ...]
+                // completed_priority_array: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], ...]
 
-                // 1 - the last day of month
-                // priority_value_array: [priority_value, priority_value, priority_value, priority_value, priority_value, priority_value, priority_value, ...]
-
-                // 1st day of month
-                1 : {
-                    prio_1 : {
-                        value: 0,
-                        isCurrent: true
-                    },
-                    prio_2: {
-                        value: 0,
-                        isCurrent: false
-                    },
-                    ...
-                },
-                
-                // 2nd day of month
-                2 : {
-                    prio_1 : {
-                        value: 0,
-                        isCurrent: true
-                    },
-                    prio_2: {
-                        value: 0,
-                        isCurrent: false
-                    },
-                    ...
-                },
+                // latest priority (equals priority of the task in that timestamp)
+                current_priority_value: priority_value,
             }
         }
     }

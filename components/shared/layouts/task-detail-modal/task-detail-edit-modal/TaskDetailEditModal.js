@@ -306,8 +306,10 @@ export default class TaskDetailEditModal extends Component {
                     <SaveButton
                         old_task_data_map={this.state.old_task_data_map}
                         task_data_map={this.state.task_data_map}
-                        _dismissModal={this.props._dismissModal}
+                        _closeEdit={this.props._closeEdit}
                         type={this.props.type}
+                        task_title={this.state.task_title}
+                        task_description={this.state.task_description}
                     />
 
                     <CancelButton

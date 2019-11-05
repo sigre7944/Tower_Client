@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 
-import { } from './actions/updateThunk'
+import { updateEditedTask } from './actions/updateThunk'
 import SaveButton from './SaveButton'
 
 const mapStateToProps = (state, ownProps) => ({
@@ -19,8 +19,7 @@ const mapStateToProps = (state, ownProps) => ({
 
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    editThunk: (data) => dispatch(editThunk(ownProps.action_type, data)),
-    deleteTaskThunk: (data) => dispatch(deleteTaskThunk(data))
+    updateEditedTask: (data) => dispatch(updateEditedTask(data)),
 })
 
 export default connect(

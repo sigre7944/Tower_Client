@@ -127,14 +127,46 @@ export default class SaveButton extends React.PureComponent {
         return returning_month_stats_map
     }
 
-    _updateWhenDoAffectHistory = () => {
-        let old_task_data_map = Map(this.props.old_task_data_map),
-            task_data_map = Map(this.props.task_data_map)
-
-    }
-
     _save = () => {
+        let task_data_map = Map(this.props.task_data_map).asMutable()
 
+        task_data_map.update("title", (value) => this.props.task_title)
+        task_data_map.update("description", (value) => this.props.task_description)
+
+        let old_category = Map(this.props.old_task_data_map).get("category"),
+            new_category = task_data_map.get("category"),
+            type = this.props.type,
+            sending_obj = {
+                edited_task_data: {
+                    type: "UPDATE_DAY_TASK",
+                    keyPath: [task_data_map.get("id")],
+                    notSetValue: {},
+                    updater: (value) => task_data_map
+                },
+
+                old_category_data: {
+                    keyPath: [old_category, "quantity"],
+                    notSetValue: 0,
+                    updater: (value) => value - 1 < 0 ? 0 : value - 1
+                },
+
+                new_category_data: {
+                    keyPath: [new_category, "quantity"],
+                    notSetValue: 0,
+                    updater: (value) => value + 1
+                }
+            }
+
+        if (type === "week") {
+            sending_obj.edited_task_data.type = "UPDATE_WEEK_TASK"
+        }
+
+        else if (type === "month") {
+            sending_obj.edited_task_data.type = "UPDATE_MONTH_TASK"
+        }
+
+        this.props.updateEditedTask(sending_obj)
+        this.props._closeEdit()
     }
 
     render() {
@@ -150,47 +182,6 @@ export default class SaveButton extends React.PureComponent {
                     SAVE
                 </Text>
             </TouchableOpacity>
-        )
-    }
-}
-
-class ShouldAffectHistory extends React.PureComponent {
-    render() {
-        return (
-            <Modal>
-                <View
-                    style={{
-                        flex: 1,
-                        position: "relative",
-                        justifyContent: "center",
-                        alignItems: "center"
-                    }}
-                >
-                    <TouchableOpacity
-                        style={{
-                            flex: 1,
-                            width: window_width,
-                            backgroundColor: "black",
-                            opacity: 0.2,
-                        }}
-                    >
-
-                    </TouchableOpacity>
-
-                    <View
-                        style={{
-                            position: "absolute",
-                            width: 200,
-                            justifyContent: "center",
-                            alignItems: "center",
-                            borderRadius: 10,
-                            backgroundColor: "white"
-                        }}
-                    >
-
-                    </View>
-                </View>
-            </Modal>
         )
     }
 }
