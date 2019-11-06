@@ -1,4 +1,119 @@
-import { Map, fromJS } from 'immutable'
+import { Map, fromJS, List } from 'immutable'
+
+const uuidv1 = require('uuid')
+const shortid = require('shortid')
+
+let date = new Date(),
+    timestamp = date.getTime()
+
+let initial_currentMonthTask = fromJS({
+    schedule: {
+        month: date.getMonth(),
+        year: date.getFullYear()
+    },
+    category: "cate_0",
+    repeat: {
+        type: "monthly-m",
+        interval: {
+            value: 1
+        }
+    },
+    end: {
+        type: "never"
+    },
+
+    priority: {
+        value: "pri_01",
+    },
+
+    reward: {
+        value: 5,
+    },
+
+    goal: {
+        max: 1
+    }
+}),
+    initial_currentWeekTask = fromJS({
+        schedule: {
+            monday: getMonday(date).getDate(),
+            sunday: getSunday(date).getDate(),
+            week: getWeek(date),
+            start_month: getMonday(date).getMonth(),
+            end_month: getSunday(date).getMonth(),
+            chosen_month: date.getMonth(),
+            start_year: getMonday(date).getFullYear(),
+            end_year: getSunday(date).getFullYear(),
+            chosen_year: date.getFullYear(),
+            start_noWeekInMonth: getNoWeekInMonth(getMonday(date)),
+            end_noWeekInMonth: getNoWeekInMonth(getSunday(date)),
+        },
+        category: "cate_0",
+        repeat: {
+            type: "weekly-w",
+            interval: {
+                value: 1
+            }
+        },
+        end: {
+            type: "never"
+        },
+        priority: {
+            value: "pri_01",
+        },
+
+        reward: {
+            value: 5,
+        },
+
+        goal: {
+            max: 1
+        }
+    }),
+
+    initial_currentDayTask = fromJS({
+        schedule: {
+            day: date.getDate(),
+            month: date.getMonth(),
+            year: date.getFullYear()
+        },
+        category: "cate_0",
+        repeat: {
+            type: "daily",
+            interval: {
+                value: 1
+            }
+        },
+        end: {
+            type: "never"
+        },
+        priority: {
+            value: "pri_01",
+        },
+
+        reward: {
+            value: 5
+        },
+
+        goal: {
+            max: 1
+        }
+    })
+
+let testing_day_tasks = Map().asMutable()
+
+// for (let i = 0; i < 1000; i++) {
+//     let task_id = shortid.generate(),
+//         task_title = "title " + i,
+//         task_description = ""
+//     let new_task_data = Map(initial_currentDayTask).asMutable()
+//     new_task_data.update("title", (value) => task_title)
+//     new_task_data.update("id", (value) => task_id)
+//     new_task_data.update("description", (value) => task_description)
+
+//     testing_day_tasks.updateIn([task_id], {}, (value) => new_task_data)
+// }
+
 
 export const day_tasks = (state = Map(), action) => {
     switch (action.type) {
@@ -167,103 +282,6 @@ function getNoWeekInMonth(date) {
 
     return Math.floor((nearest_monday_timestamp - first_monday_of_month_timestamp) / (7 * 86400 * 1000)) + 1
 }
-
-let date = new Date(),
-    timestamp = date.getTime()
-
-let initial_currentMonthTask = fromJS({
-    schedule: {
-        month: date.getMonth(),
-        year: date.getFullYear()
-    },
-    category: "cate_0",
-    repeat: {
-        type: "monthly-m",
-        interval: {
-            value: 1
-        }
-    },
-    end: {
-        type: "never"
-    },
-
-    priority: {
-        value: "pri_01",
-    },
-
-    reward: {
-        value: 5,
-    },
-
-    goal: {
-        max: 1
-    }
-}),
-    initial_currentWeekTask = fromJS({
-        schedule: {
-            monday: getMonday(date).getDate(),
-            sunday: getSunday(date).getDate(),
-            week: getWeek(date),
-            start_month: getMonday(date).getMonth(),
-            end_month: getSunday(date).getMonth(),
-            chosen_month: date.getMonth(),
-            start_year: getMonday(date).getFullYear(),
-            end_year: getSunday(date).getFullYear(),
-            chosen_year: date.getFullYear(),
-            start_noWeekInMonth: getNoWeekInMonth(getMonday(date)),
-            end_noWeekInMonth: getNoWeekInMonth(getSunday(date)),
-        },
-        category: "cate_0",
-        repeat: {
-            type: "weekly-w",
-            interval: {
-                value: 1
-            }
-        },
-        end: {
-            type: "never"
-        },
-        priority: {
-            value: "pri_01",
-        },
-
-        reward: {
-            value: 5,
-        },
-
-        goal: {
-            max: 1
-        }
-    }),
-
-    initial_currentDayTask = fromJS({
-        schedule: {
-            day: date.getDate(),
-            month: date.getMonth(),
-            year: date.getFullYear()
-        },
-        category: "cate_0",
-        repeat: {
-            type: "daily",
-            interval: {
-                value: 1
-            }
-        },
-        end: {
-            type: "never"
-        },
-        priority: {
-            value: "pri_01",
-        },
-
-        reward: {
-            value: 5
-        },
-
-        goal: {
-            max: 1
-        }
-    })
 
 
 export const currentMonthTask = (state = initial_currentMonthTask, action) => {

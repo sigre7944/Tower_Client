@@ -447,7 +447,7 @@ export default class TaskCard extends React.PureComponent {
                             style={{
                                 justifyContent: "center",
                                 alignItems: "center",
-                                height: 72,
+                                height: 62,
                                 paddingHorizontal: 15,
                             }}
 
@@ -492,7 +492,7 @@ export default class TaskCard extends React.PureComponent {
                         <TouchableOpacity
                             style={{
                                 width: 58,
-                                height: 72,
+                                height: 62,
                                 justifyContent: "center",
                                 alignItems: "center",
                             }}
@@ -528,7 +528,7 @@ class PriorityColorBar extends React.PureComponent {
                     width: 9,
                     backgroundColor: this.props.priority_color,
                     borderRadius: 30,
-                    height: 72,
+                    height: 62,
                     marginLeft: 1,
                 }}
             >

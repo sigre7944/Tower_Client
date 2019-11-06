@@ -123,7 +123,7 @@ export default class App extends React.Component {
     ])
 
     this.setState({
-      store: createStore(rootReducer, this.initialState)
+      store: createStore(rootReducer)
     })
   }
 

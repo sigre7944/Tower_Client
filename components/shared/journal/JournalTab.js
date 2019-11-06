@@ -3,7 +3,8 @@ import {
     View,
     Text,
     ScrollView,
-    FlatList
+    FlatList,
+    Dimensions
 } from 'react-native';
 
 import TaskCard from '../layouts/task-card/TaskCard.Container'
@@ -16,6 +17,8 @@ import MonthFlatlist from './month-flatlist/MonthFlatlist.Container'
 import { styles } from './styles/styles'
 
 import { List, Map, hasIn, getIn } from 'immutable'
+
+const window_width = Dimensions.get("window").width
 
 export default class JournalTab extends React.PureComponent {
     static navigationOptions = {
@@ -156,7 +159,12 @@ export default class JournalTab extends React.PureComponent {
 
     render() {
         return (
-            <View style={styles.container}>
+            <View
+                style={{
+                    backgroundColor: "white",
+                    flex: 1
+                }}
+            >
                 {
                     this.props.type === "day" ?
 
@@ -181,48 +189,21 @@ export default class JournalTab extends React.PureComponent {
                         </>
                 }
 
-                <View style={{
-                    flex: 1,
-                    alignItems: "center",
-                    justifyContent: "center",
-                }}>
-                    <ScrollView style={styles.scrollViewTasks}>
-                        {/* Uncompleted to-do tasks */}
-                        <UncompletedTaskCardHolder
-                            priorities={this.props.priorities}
-                            tasks={this.props.tasks}
-                            completed_tasks={this.props.completed_tasks}
-                            type={this.props.type}
-                            chosen_date_data={this.state.chosen_date_data}
-                            openModal={this.openModal}
-                            current_chosen_category={this.props.current_chosen_category}
-                        />
-                        <View
-                            style={{
-                                marginVertical: 20,
-                                marginLeft: 20,
-                            }}
-                        >
-                            <Text
-                                style={{
-                                    color: "black",
-                                    fontWeight: "800",
-                                }}
-                            >
-                                Completed
-                            </Text>
-                        </View>
-                        {/* Completed to-do tasks */}
-                        <CompletedTaskCardHolder
-                            priorities={this.props.priorities}
-                            tasks={this.props.tasks}
-                            completed_tasks={this.props.completed_tasks}
-                            type={this.props.type}
-                            chosen_date_data={this.state.chosen_date_data}
-                            openModal={this.openModal}
-                            current_chosen_category={this.props.current_chosen_category}
-                        />
-                    </ScrollView>
+                <View
+                    style={{
+                        flex: 1,
+                        width: window_width,
+                    }}
+                >
+                    <FlatlistGroup
+                        priorities={this.props.priorities}
+                        tasks={this.props.tasks}
+                        completed_tasks={this.props.completed_tasks}
+                        type={this.props.type}
+                        chosen_date_data={this.state.chosen_date_data}
+                        openModal={this.openModal}
+                        current_chosen_category={this.props.current_chosen_category}
+                    />
                 </View>
 
                 {this.state.isModalOpened ?
@@ -246,6 +227,106 @@ export default class JournalTab extends React.PureComponent {
     }
 }
 
+class FlatlistGroup extends React.PureComponent {
+
+    state = {
+        should_flatlist_update: 0,
+        data: []
+    }
+
+    _keyExtractor = (item, index) => `journal-${item.id}`
+
+    _renderItem = ({ item, index }) => {
+        if (item.id === "uncompleted-flatlist-group") {
+            return (
+                <View>
+                    <UncompletedTaskCardHolder
+                        priorities={this.props.priorities}
+                        tasks={this.props.tasks}
+                        completed_tasks={this.props.completed_tasks}
+                        type={this.props.type}
+                        chosen_date_data={this.props.chosen_date_data}
+                        openModal={this.openModal}
+                        current_chosen_category={this.props.current_chosen_category}
+                    />
+                </View>
+            )
+        }
+
+        else if (item.id === "completed-flatlist-group") {
+            return (
+                <View>
+                    <CompletedTaskCardHolder
+                        priorities={this.props.priorities}
+                        tasks={this.props.tasks}
+                        completed_tasks={this.props.completed_tasks}
+                        type={this.props.type}
+                        chosen_date_data={this.props.chosen_date_data}
+                        openModal={this.openModal}
+                        current_chosen_category={this.props.current_chosen_category}
+                    />
+                </View>
+            )
+        }
+
+        else {
+            return (
+                <View
+                    style={styles.completed_container}
+                >
+                    <Text
+                        style={styles.completed_text}
+                    >
+                        Completed
+                    </Text>
+                </View>
+            )
+        }
+    }
+
+    _updateData = () => {
+        let data = []
+
+        data.push({
+            id: "uncompleted-flatlist-group",
+        })
+
+        data.push({
+            id: "completed-tag",
+        })
+
+        data.push({
+            id: "completed-flatlist-group",
+        })
+
+        this.setState(prevState => ({
+            should_flatlist_update: prevState.should_flatlist_update + 1,
+            data
+        }))
+    }
+
+    componentDidMount() {
+        this._updateData()
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.tasks !== prevProps.tasks || this.props.completed_tasks !== prevProps.completed_tasks) {
+            this._updateData()
+        }
+    }
+
+    render() {
+        return (
+            <FlatList
+                data={this.state.data}
+                extraData={this.state.should_flatlist_update}
+                keyExtractor={this._keyExtractor}
+                renderItem={this._renderItem}
+            />
+        )
+    }
+}
+
 class UncompletedTaskCardHolder extends React.PureComponent {
 
     state = {
@@ -255,18 +336,20 @@ class UncompletedTaskCardHolder extends React.PureComponent {
 
     _keyExtractor = (item, index) => `journal-${this.props.type}-uncompleted-task-${item[0]}`
 
-    _renderItem = ({ item, index }) => (
-        <UncompletedTaskCard
-            index={index}
-            task_id={item[0]}
-            task_data={item[1]}
-            current_chosen_category={this.props.current_chosen_category}
-            completed_task={Map(this.props.completed_tasks).get(Map(item[1]).get("id"))}
-            type={this.props.type}
-            chosen_date_data={this.props.chosen_date_data}
-            openModal={this.props.openModal}
-        />
-    )
+    _renderItem = ({ item, index }) => {
+        return (
+            <UncompletedTaskCard
+                index={index}
+                task_id={item[0]}
+                task_data={item[1]}
+                current_chosen_category={this.props.current_chosen_category}
+                completed_task={Map(this.props.completed_tasks).get(Map(item[1]).get("id"))}
+                type={this.props.type}
+                chosen_date_data={this.props.chosen_date_data}
+                openModal={this.props.openModal}
+            />
+        )
+    }
 
     _prioritizeTasks = () => {
         let tasks_map = Map(this.props.tasks),
@@ -279,16 +362,19 @@ class UncompletedTaskCardHolder extends React.PureComponent {
             })
         })
 
-        this.setState({
-            prioritized_tasks: [...prioritized_tasks]
-        })
+        this.setState(prevState => ({
+            prioritized_tasks: prioritized_tasks,
+            should_flatlist_update: prevState.should_flatlist_update + 1
+        }))
+    }
+
+    componentDidMount() {
+        this._prioritizeTasks()
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (this.props.completed_tasks !== prevProps.completed_tasks) {
-            this.setState(prevState => ({
-                should_flatlist_update: !prevState.should_flatlist_update + 1
-            }))
+            this._prioritizeTasks()
         }
 
         if (this.props.tasks !== prevProps.tasks) {
@@ -299,14 +385,19 @@ class UncompletedTaskCardHolder extends React.PureComponent {
     render() {
         return (
             <FlatList
-                // data={Map(this.props.tasks).toArray()}
-                data={this.state.prioritized_tasks}
+                data={Map(this.props.tasks).toArray()}
+                // data={this.state.prioritized_tasks}
                 extraData={this.state.should_flatlist_update}
                 showsVerticalScrollIndicator={false}
                 removeClippedSubviews={true}
 
                 renderItem={this._renderItem}
                 keyExtractor={this._keyExtractor}
+                // scrollEnabled={false}
+
+                windowSize={3}
+                maxToRenderPerBatch={3}
+                initialNumToRender={3}
             />
         )
     }
@@ -995,11 +1086,7 @@ class UncompletedTaskCard extends React.PureComponent {
         )
 
         return (
-            <View
-                style={{
-                    marginTop: 20,
-                }}
-            >
+            <View>
                 {this.update_obj.should_render ?
                     <TaskCard
                         action_type={this.update_obj.action_type}
@@ -1028,10 +1115,11 @@ class UncompletedTaskCard extends React.PureComponent {
 class CompletedTaskCardHolder extends React.PureComponent {
 
     state = {
-        should_flatlist_update: 0
+        should_flatlist_update: 0,
+        prioritized_tasks: []
     }
 
-    _keyExtractor = (item, index) => `journal-completed-task-${item[0]}`
+    _keyExtractor = (item, index) => `journal-${this.props.type}-completed-task-${item[0]}`
 
     _renderItem = ({ item, index }) => (
         <CompletedTaskCard
@@ -1046,24 +1134,48 @@ class CompletedTaskCardHolder extends React.PureComponent {
         />
     )
 
+    _prioritizeTasks = () => {
+        let completed_tasks_map = Map(this.props.completed_tasks),
+            tasks_map = Map(this.props.tasks),
+            priorities_map = Map(this.props.priorities),
+            prioritized_tasks = []
+
+        priorities_map.valueSeq().forEach((priority_data, index) => {
+            List(priority_data.get("tasks")).forEach((task_id, i) => {
+                if (completed_tasks_map.has(task_id)) {
+                    prioritized_tasks.push([task_id, completed_tasks_map.get(task_id)])
+                }
+            })
+        })
+
+        this.setState(prevState => ({
+            prioritized_tasks: prioritized_tasks,
+            should_flatlist_update: prevState.should_flatlist_update + 1
+        }))
+    }
+
     componentDidUpdate(prevProps, prevState) {
         if (this.props.completed_tasks !== prevProps.completed_tasks) {
-            this.setState(prevState => ({
-                should_flatlist_update: !prevState.should_flatlist_update + 1
-            }))
+            this._prioritizeTasks()
         }
     }
 
     render() {
         return (
             <FlatList
-                data={Map(this.props.completed_tasks).toArray()}
+                // data={Map(this.props.completed_tasks).toArray()}
+                data={this.state.prioritized_tasks}
                 extraData={this.state.should_flatlist_update}
                 showsVerticalScrollIndicator={false}
                 removeClippedSubviews={true}
 
                 renderItem={this._renderItem}
                 keyExtractor={this._keyExtractor}
+                // scrollEnabled={false}
+
+                windowSize={3}
+                maxToRenderPerBatch={3}
+                initialNumToRender={3}
             />
         )
     }

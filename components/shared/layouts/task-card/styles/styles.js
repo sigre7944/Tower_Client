@@ -3,13 +3,12 @@ import {
 
 } from 'react-native'
 
-
 import * as CommonStyles from '../../../styles/style'
 
 export const styles = StyleSheet.create({
     container: {
         flexDirection: "row",
-        height: 72,
+        height: 62,
         shadowColor: "rgba(0, 0, 0, 0.08)",
         shadowOffset: {
             width: 0,
@@ -20,9 +19,8 @@ export const styles = StyleSheet.create({
         backgroundColor: "white",
         alignItems: "center",
         justifyContent: "space-between",
-        marginVertical: 3,
+        marginVertical: 5,
     },
-
 
     complete_box_container: {
         width: 28,

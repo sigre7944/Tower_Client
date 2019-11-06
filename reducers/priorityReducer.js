@@ -42,7 +42,6 @@ let initialState = {
 export const priorities = (state = Map(fromJS(initialState)), action) => {
     switch (action.type) {
         case "UPDATE_PRIORITY":
-            console.log(state.updateIn(action.keyPath, action.notSetValue, action.updater))
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
         default:
             return state
