@@ -1,6 +1,10 @@
+!!!! All properties are strings
+
+!!!! timestamps are using ISO 8601 date yyyy-mm-ddThh:mm:ss.mmmZ - new Date(year, month, day)
+
 - Map structures for stats to work:
     + Day: Map {
-        // 0:00:00 of the day (Number)
+        // 0:00:00 of the day (String)
         day_timestamp: Map {
             current: List [0, 0, 0, 0]
         }
@@ -22,7 +26,7 @@
 
 - Map structures for charts to work:
     + Week chart: Map {
-        // Monday of the week (Number)
+        // Monday of the week (String)
         week_timestamp:  Map {
             // sunday
             0: Map {
@@ -55,13 +59,17 @@
     + Day type: Map {
         task_id: Map {
             id: task_id,
-            category: category_id,
-            priority_value: priority_value,
             
             //String
             completed_day_timestamp: Map {
+                // Total equals the sum of day_completed_array
                 current: 0,
-                priority_value: priority_value
+                // priority_value: priority_value,
+                
+                // latest priority (equals priority of the task in that timestamp)
+                current_priority_value: priority_value,
+
+                completed_priority_array: [0, 0, 0, 0]
             }
         }
     }
@@ -69,20 +77,16 @@
     + Week type: {
         task_id: Map {
             id: task_id,
-            category: category_id,
 
-            // Always the most updated value
-            priority_value: priority_value,
-            
             completed_week_timestamp: Map {
                 // Total equals the sum of day_completed_array
                 current: 0,
 
                 // Sunday - Saturday
-                day_completed_array: List [0, 0, 0, 0, 0, 0, 0]
-
-                // Sunday - Saturday
-                priority_value_array: List [priority_value, priority_value, priority_value, priority_value, priority_value, priority_value, priority_value]
+                // completed_priority_array: List [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+                
+                // latest priority (equals priority of the task in that timestamp)
+                current_priority_value: priority_value,
             }
         }
     }
@@ -90,20 +94,16 @@
     + Month type: {
         task_id: {
             id: task_id,
-            category: category_id,
 
             completed_month_timestamp: {
                 // Total equals the sum of day_completed_array
                 current: 0,
 
-                // Always the most updated value
-                priority_value: priority_value,
-
                 // 1 - the last day of month
-                day_completed_array: [0, 0, 0, 0, 0, 0, 0, ...]
+                // completed_priority_array: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], ...]
 
-                // 1 - the last day of month
-                priority_value_array: [priority_value, priority_value, priority_value, priority_value, priority_value, priority_value, priority_value, ...]
+                // latest priority (equals priority of the task in that timestamp)
+                current_priority_value: priority_value,
             }
         }
     }

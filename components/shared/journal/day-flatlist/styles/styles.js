@@ -3,9 +3,7 @@ import {
 
 } from 'react-native'
 
-
-export const sf_ui_display_light_font = "sf-ui-display-light"
-export const sf_ui_display_medium_font = "sf-ui-display-medium"
+import * as CommonStyles from '../../../styles/style'
 
 export const styles = StyleSheet.create({
     not_chosen_day: {
@@ -24,12 +22,12 @@ export const styles = StyleSheet.create({
         borderRadius: 15,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#E5F5F3"
+        backgroundColor: CommonStyles.primary_colors.prim_3
     },
 
     not_chosen_text: {
-        color: "#252A31",
-        fontFamily: sf_ui_display_light_font,
+        color: CommonStyles.text_icon_colors.ti_2,
+        fontFamily: CommonStyles.sf_ui_display_light_font,
         fontSize: 12,
         lineHeight: 14,
         letterSpacing: -0.02,
@@ -37,27 +35,27 @@ export const styles = StyleSheet.create({
     },
 
     chosen_text: {
-        color: "#54BAAC",
-        fontFamily: sf_ui_display_light_font,
+        color: CommonStyles.primary_colors.prim_1,
+        fontFamily: CommonStyles.sf_ui_display_light_font,
         fontSize: 12,
         lineHeight: 14,
         letterSpacing: -0.02
     },
 
     chosen_day_text: {
-        fontFamily: sf_ui_display_light_font,
+        fontFamily: CommonStyles.sf_ui_display_light_font,
         fontSize: 12,
         lineHeight: 14,
         letterSpacing: -0.02,
-        color: "#54BAAC",
+        color: CommonStyles.primary_colors.prim_1,
     },
 
     not_chosen_day_text: {
-        fontFamily: sf_ui_display_light_font,
+        fontFamily: CommonStyles.sf_ui_display_light_font,
         fontSize: 12,
         lineHeight: 14,
         letterSpacing: -0.02,
-        color: "#252A31",
+        color: CommonStyles.text_icon_colors.ti_2,
         opacity: 0.3
     }
 })

@@ -1,9 +1,9 @@
 {
-  "expoServerPort": 19000,
-  "expoServerNgrokUrl": "https://ns-z2x.minhchinh97h.tower-client.exp.direct",
-  "packagerNgrokUrl": "https://packager.ns-z2x.minhchinh97h.tower-client.exp.direct",
-  "ngrokPid": 4640,
-  "devToolsPort": 19002,
   "packagerPort": 19001,
-  "packagerPid": 10612
+  "packagerPid": 3992,
+  "expoServerNgrokUrl": "https://f7-4u3.anonymous.tower-client.exp.direct",
+  "packagerNgrokUrl": "https://packager.f7-4u3.anonymous.tower-client.exp.direct",
+  "ngrokPid": 5592,
+  "devToolsPort": 19002,
+  "expoServerPort": 19000
 }

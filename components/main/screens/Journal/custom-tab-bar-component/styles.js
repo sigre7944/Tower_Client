@@ -30,6 +30,6 @@ export const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "white",
         flex: 1,
-        height: 68
+        height: 38
     }
 })

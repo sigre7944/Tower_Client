@@ -1,25 +1,8 @@
 import { stringify } from "querystring";
 
 const task = {
-    id: uuid(), // for mnosql db, firebase
     title: 'Task 1', // should be global variable
     description: "description",
-    createdAt: 11111111, // timestamp
-    userId: uuid(),
-    changesHistory: [
-        {
-            key: 'title',
-            oldVal: 'Task 0',
-            newVal: 'Task 1',
-            timestamp: 11211110
-        }
-    ],
-    startTime: 1111111, //timestamp used to return the original starting date
-    endTime: 2222222,
-    trackingTime: 3333333, // used to track the current time with of the task and compare it with the defined repeated time
-    type: 'day', // 'week', 'month'
-    total: 30,
-    value: 100,
     category: 'inbox_123', //using category id
 
     // repeat object will hold 1 combination.
@@ -50,6 +33,12 @@ const task = {
         type: "weekly-w",
         interval: {
             value: 2
+        },
+
+        type: "weekly-m",
+        interval: {
+            value: 2,
+            noWeekInMonth: 3 // 4 is max
         },
 
         // these properties are used for 'Month' type task
@@ -93,8 +82,11 @@ const task = {
 
     priority: {
         value: "pri_01", //use priority id
-        reward: 50
     },
+
+    reward: {
+        value: 50
+    }
 }
 
 const category = {
@@ -122,10 +114,6 @@ const day_tasks = {
         id: task_id, //use uuid()
         title: 'Task 1',
         description: "description",
-        createdAt: 11111111,
-        startTime: 1111111,
-        trackingTime: 3333333, // currently not used (*)
-        type: 'day',
         category: 'cate_0', //using category id
         repeat: {
             type: "daily",
@@ -174,8 +162,11 @@ const day_tasks = {
 
         priority: {
             value: "pri_01", //use priority id
-            reward: 50
         },
+
+        reward: {
+            value: 50
+        }
     }
 }
 

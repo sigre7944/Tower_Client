@@ -24,3 +24,7 @@ export const returnNewCompletedTask = (type, data) => ({
     type,
     data
 })
+
+export const resetNewTask = (type) => ({
+    type
+})

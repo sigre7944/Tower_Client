@@ -73,7 +73,7 @@ export default class CustomTabBarComponent extends React.PureComponent {
         return (
             <View
                 style={{
-                    height: 71,
+                    height: 41,
                     justifyContent: "center",
                 }}
             >
@@ -103,7 +103,7 @@ export default class CustomTabBarComponent extends React.PureComponent {
                     style={{
                         flexDirection: "row",
                         alignItems: "center",
-                        flex: 1
+                        flex: 1,
                     }}
                 >
                     <TouchableOpacity

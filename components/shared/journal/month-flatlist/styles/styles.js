@@ -3,9 +3,7 @@ import {
 
 } from 'react-native'
 
-
-export const sf_ui_display_light_font = "sf-ui-display-light"
-export const sf_ui_display_medium_font = "sf-ui-display-medium"
+import * as CommonStyles from '../../../styles/style'
 
 export const styles = StyleSheet.create({
     not_chosen_month: {
@@ -22,12 +20,12 @@ export const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 20,
-        backgroundColor: "#E5F5F3"
+        backgroundColor: CommonStyles.primary_colors.prim_3
     },
 
     not_chosen_month_text: {
-        color: "#6E6E6E",
-        fontFamily: sf_ui_display_light_font,
+        color: CommonStyles.text_icon_colors.ti_2,
+        fontFamily: CommonStyles.sf_ui_display_light_font,
         fontSize: 15,
         lineHeight: 18,
         letterSpacing: -0.02
@@ -35,14 +33,14 @@ export const styles = StyleSheet.create({
     },
 
     chosen_month_text: {
-        color: "#54BAAC",
-        fontFamily: sf_ui_display_light_font,
+        color: CommonStyles.primary_colors.prim_1,
+        fontFamily: CommonStyles.sf_ui_display_light_font,
         fontSize: 15,
         lineHeight: 18,
         letterSpacing: -0.02
     },
 
-    not_chosen_inform_text_container:{
+    not_chosen_inform_text_container: {
         justifyContent: "center",
         alignItems: "center",
         height: 20,
@@ -55,16 +53,16 @@ export const styles = StyleSheet.create({
     },
 
     not_chosen_inform_text: {
-        color: "#BDBDBD",
-        fontFamily: sf_ui_display_light_font,
+        color: CommonStyles.text_icon_colors.ti_3,
+        fontFamily: CommonStyles.sf_ui_display_light_font,
         fontSize: 12,
         lineHeight: 14,
         letterSpacing: -0.02
     },
 
-    chosen_inform_text:{
-        color: "#54BAAC",
-        fontFamily: sf_ui_display_light_font,
+    chosen_inform_text: {
+        color: CommonStyles.primary_colors.prim_1,
+        fontFamily: CommonStyles.sf_ui_display_light_font,
         fontSize: 12,
         lineHeight: 14,
         letterSpacing: -0.02
