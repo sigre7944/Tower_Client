@@ -124,7 +124,7 @@ export default class Category extends React.PureComponent {
         }
     }
 
-    _keyExtractor = (item, index) => `category-row-${item[0]}`
+    _keyExtractor = (item, index) => `category-row-${item[0]}-${index}`
 
     _renderItem = ({ item, index }) => {
         return (

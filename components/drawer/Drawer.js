@@ -158,7 +158,7 @@ class CategoryFlatlist extends React.PureComponent {
         }))
     }
 
-    _keyExtractor = (item, index) => `drawer-category-${item[0]}`
+    _keyExtractor = (item, index) => `drawer-category-${item[0]}-${index}`
 
     _renderItem = ({ item, index }) => {
         if (Map(item[1]).get("name") === "Inbox") {
