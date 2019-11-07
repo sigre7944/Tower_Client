@@ -489,7 +489,7 @@ class ColorPanel extends React.PureComponent {
                             }}
                         >
                             <ColorButton
-                                color="#3D868B"
+                                color="#E89005"
                                 {...this.props}
                             />
                             <ColorButton
@@ -518,7 +518,7 @@ class ColorPanel extends React.PureComponent {
                                 {...this.props}
                             />
                             <ColorButton
-                                color="#003F5C"
+                                color="#3B5998"
                                 {...this.props}
                             />
                         </View>

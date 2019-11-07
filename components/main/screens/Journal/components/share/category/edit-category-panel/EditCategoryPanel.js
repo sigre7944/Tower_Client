@@ -87,7 +87,7 @@ export default class AddCategoryPanel extends React.PureComponent {
     }
 
     _save = () => {
-        if (this.state.category_title.length > 0 && !this._checkIfCategoryNameExists(this.state.category_title)) {
+        if (this.state.category_title.length > 0 && !this._checkIfCategoryNameExists(Map(this.props.category_data).get("name").trim(), this.state.category_title.trim())) {
             let id = Map(this.props.category_data).get("id"),
                 quantity = Map(this.props.category_data).get("quantity"),
                 category_obj = fromJS({
@@ -108,10 +108,15 @@ export default class AddCategoryPanel extends React.PureComponent {
         }
     }
 
-    _checkIfCategoryNameExists = (name) => {
+    _checkIfCategoryNameExists = (old_name, new_name) => {
         let found = false
+
+        if (new_name === old_name) {
+            return false
+        }
+
         Map(this.props.categories).valueSeq().every((value) => {
-            if (Map(value).get("name") === name.trim()) {
+            if (Map(value).get("name") === new_name.trim()) {
                 found = true
                 return false
             }
@@ -497,7 +502,7 @@ class ColorPanel extends React.PureComponent {
                             }}
                         >
                             <ColorButton
-                                color="#3D868B"
+                                color="#E89005"
                                 {...this.props}
                             />
                             <ColorButton
@@ -526,7 +531,7 @@ class ColorPanel extends React.PureComponent {
                                 {...this.props}
                             />
                             <ColorButton
-                                color="#003F5C"
+                                color="#3B5998"
                                 {...this.props}
                             />
                         </View>

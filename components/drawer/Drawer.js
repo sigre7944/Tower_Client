@@ -45,6 +45,7 @@ export default class Drawer extends React.PureComponent {
         add_new_category_bool: false,
 
         edit_category_bool: false,
+
     }
 
 
@@ -81,7 +82,6 @@ export default class Drawer extends React.PureComponent {
             edit_category_bool: !prevState.edit_category_bool,
         }))
     }
-
 
     render() {
         return (
@@ -144,6 +144,20 @@ export default class Drawer extends React.PureComponent {
 
 class CategoryFlatlist extends React.PureComponent {
 
+    state = {
+        current_category_index: 0,
+        last_category_index: -1,
+        should_flatlist_update: 0,
+    }
+
+    _chooseCategoryIndex = (index) => {
+        this.setState(prevState => ({
+            current_category_index: index,
+            last_category_index: prevState.current_category_index,
+            should_flatlist_update: prevState.should_flatlist_update + 1
+        }))
+    }
+
     _keyExtractor = (item, index) => `drawer-category-${item[0]}`
 
     _renderItem = ({ item, index }) => {
@@ -151,6 +165,10 @@ class CategoryFlatlist extends React.PureComponent {
             return (
                 <InboxRow
                     data={item[1]}
+                    index={index}
+                    current_category_index={this.state.current_category_index}
+                    last_category_index={this.state.last_category_index}
+                    _chooseCategoryIndex={this._chooseCategoryIndex}
                 />
             )
         }
@@ -159,8 +177,20 @@ class CategoryFlatlist extends React.PureComponent {
                 data={item[1]}
                 _toggleEditCategory={this.props._toggleEditCategory}
                 _setEditCategoryData={this.props._setEditCategoryData}
+                index={index}
+                current_category_index={this.state.current_category_index}
+                last_category_index={this.state.last_category_index}
+                _chooseCategoryIndex={this._chooseCategoryIndex}
             />
         )
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        // if (this.props.categories !== prevProps.categories) {
+        //     this.setState(prevState => ({
+        //         should_flatlist_update: prevState.should_flatlist_update + 1
+        //     }))
+        // }
     }
 
     render() {
@@ -173,6 +203,7 @@ class CategoryFlatlist extends React.PureComponent {
             >
                 <FlatList
                     data={Map(this.props.categories).toArray()}
+                    extraData={this.state.should_flatlist_update}
                     keyExtractor={this._keyExtractor}
                     renderItem={this._renderItem}
                 />
@@ -181,12 +212,32 @@ class CategoryFlatlist extends React.PureComponent {
     }
 }
 
-class InboxRow extends React.PureComponent {
+class InboxRow extends React.Component {
+
+    _chooseCategory = () => {
+        this.props._chooseCategoryIndex(this.props.index)
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return (this.props.index === nextProps.current_category_index && this.props.current_category_index !== nextProps.current_category_index)
+            || (this.props.index === nextProps.last_category_index && this.props.last_category_index !== nextProps.last_category_index)
+            || (this.props.data !== nextProps.data)
+    }
 
     render() {
-        let category_color = Map(this.props.data).get("color") === "white" || Map(this.props.data).get("color") === "no color" ? "#05838B" : Map(this.props.data).get("color"),
+        let category_color = Map(this.props.data).get("color") === "white" || Map(this.props.data).get("color") === "no color" ? "transparent" : Map(this.props.data).get("color"),
             category_name = Map(this.props.data).get("name"),
-            category_quantity = Map(this.props.data).get("quantity")
+            category_quantity = Map(this.props.data).get("quantity"),
+            row_color = category_color,
+            alpha_hex = "CC"
+
+        if (this.props.index === this.props.current_category_index) {
+            row_color = row_color + alpha_hex
+        }
+
+        else {
+            row_color = "transparent"
+        }
 
         return (
             <TouchableOpacity
@@ -194,7 +245,10 @@ class InboxRow extends React.PureComponent {
                     marginTop: 20,
                     height: category_row_height,
                     flexDirection: "row",
+                    backgroundColor: row_color
                 }}
+
+                onPress={this._chooseCategory}
             >
                 <View
                     style={{
@@ -254,6 +308,16 @@ class CategoryRow extends React.PureComponent {
     translate_x = new Animated.Value(0)
     old_translate_x = 0
 
+    _chooseCategory = () => {
+        this.props._chooseCategoryIndex(this.props.index)
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return (this.props.index === nextProps.current_category_index && this.props.current_category_index !== nextProps.current_category_index)
+            || (this.props.index === nextProps.last_category_index && this.props.last_category_index !== nextProps.last_category_index)
+            || (this.props.data !== nextProps.data)
+    }
+
     _editCategory = () => {
         this.props._setEditCategoryData(this.props.data)
         this.props._toggleEditCategory()
@@ -297,9 +361,24 @@ class CategoryRow extends React.PureComponent {
     }
 
     render() {
-        let category_color = Map(this.props.data).get("color") === "white" || Map(this.props.data).get("color") === "no color" ? "#05838B" : Map(this.props.data).get("color"),
+        let category_color = Map(this.props.data).get("color") === "white" || Map(this.props.data).get("color") === "no color" ? "transparent" : Map(this.props.data).get("color"),
             category_name = Map(this.props.data).get("name"),
-            category_quantity = Map(this.props.data).get("quantity")
+            category_quantity = Map(this.props.data).get("quantity"),
+            row_color = category_color,
+            alpha_hex = "CC"
+
+        if (this.props.index === this.props.current_category_index) {
+            if (row_color === "transparent") {
+                row_color = "#BDBDBDCC"
+            }
+            else {
+                row_color = row_color + alpha_hex
+            }
+        }
+
+        else {
+            row_color = "transparent"
+        }
 
         return (
             <Swipeable
@@ -315,7 +394,10 @@ class CategoryRow extends React.PureComponent {
                         marginTop: 20,
                         height: category_row_height,
                         flexDirection: "row",
+                        backgroundColor: row_color
                     }}
+
+                    onPress={this._chooseCategory}
                 >
                     <View
                         style={{

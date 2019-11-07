@@ -27,7 +27,7 @@ const animation_duration = 250
 const easing = Easing.inOut(Easing.linear)
 const category_height = 45 // row's height = 25 + margin top = 20
 
-const list_max_height = 4 * category_height
+const list_max_height = 8 * category_height
 
 
 export default class Category extends React.PureComponent {
