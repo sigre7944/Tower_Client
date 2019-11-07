@@ -1,9 +1,9 @@
 {
   "packagerPort": 19001,
-  "packagerPid": 10360,
+  "packagerPid": 6336,
   "expoServerNgrokUrl": "https://mp-fbn.anonymous.tower-client.exp.direct",
   "packagerNgrokUrl": "https://packager.mp-fbn.anonymous.tower-client.exp.direct",
-  "ngrokPid": 14436,
+  "ngrokPid": 14684,
   "devToolsPort": 19002,
   "expoServerPort": 19000
 }

@@ -280,15 +280,20 @@ export default class DeleteModal extends Component {
                     notSetValue: [],
                     updater: (tasks) => List(tasks).delete(List(tasks).findIndex((id) => task_id === id))
                 },
+                delete_completed_task_data: {
+                    type: "DELETE_COMPLETED_DAY_TASK",
+                    id: task_id
+                },
             }
-
 
         if (type === "week") {
             sending_data.delete_task_data.type = "DELETE_WEEK_TASK"
+            sending_data.delete_completed_task_data.type = "DELETE_COMPLETED_WEEK_TASK"
         }
 
         else if (type === "month") {
             sending_data.delete_task_data.type = "DELETE_MONTH_TASK"
+            sending_data.delete_completed_task_data.type = "DELETE_COMPLETED_MONTH_TASK"
         }
 
         this.props.deleteOnlyTaskThunk(sending_data)

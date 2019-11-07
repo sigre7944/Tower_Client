@@ -88,12 +88,13 @@ export default class AddCategoryPanel extends React.PureComponent {
 
     _save = () => {
         if (this.state.category_title.length > 0 && !this._checkIfCategoryNameExists(this.state.category_title)) {
-            let id = `category-${short_id.generate()}`,
+            let id = Map(this.props.category_data).get("id"),
+                quantity = Map(this.props.category_data).get("quantity"),
                 category_obj = fromJS({
                     id,
                     name: this.state.category_title,
                     color: this.state.color,
-                    quantity: 0
+                    quantity
                 }),
 
                 sending_data = {
@@ -103,11 +104,7 @@ export default class AddCategoryPanel extends React.PureComponent {
                 }
 
             this.props.updateCategory(sending_data)
-
-            if(this.props.at_drawer){
-                this.props._closeAddCategoryPanel()
-
-            }
+            this.props._closeAddCategoryPanel()
         }
     }
 
@@ -147,8 +144,19 @@ export default class AddCategoryPanel extends React.PureComponent {
         })
     }
 
+    _initializeCategoryData = () => {
+        let category_data_map = Map(this.props.category_data)
+
+        this.setState({
+            category_title: category_data_map.get("name"),
+            color: category_data_map.get("color")
+        })
+    }
+
     componentDidMount() {
         this._appearAnim()
+
+        this._initializeCategoryData()
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -246,7 +254,7 @@ export default class AddCategoryPanel extends React.PureComponent {
                                     >
                                         <TextInput
                                             style={styles.text_input}
-                                            placeholder="Work"
+                                            placeholder={Map(this.props.category_data).get("name")}
                                             value={this.state.category_title}
                                             onChange={this._onCategoryTitleChange}
                                         />

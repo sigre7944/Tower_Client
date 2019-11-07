@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { chooseCategory } from '../shared/actions/categoryAction'
 import { deleteAndAffectThePast } from './actions/deleteActionThunk'
-import Drawer from './DrawerVer2'
+import Drawer from './Drawer'
 
 const mapStateToProps = (state, ownProps) => {
     return ({
