@@ -246,7 +246,7 @@ class FlatlistGroup extends React.PureComponent {
                         completed_tasks={this.props.completed_tasks}
                         type={this.props.type}
                         chosen_date_data={this.props.chosen_date_data}
-                        openModal={this.openModal}
+                        openModal={this.props.openModal}
                         current_chosen_category={this.props.current_chosen_category}
                     />
                 </View>
@@ -262,7 +262,7 @@ class FlatlistGroup extends React.PureComponent {
                         completed_tasks={this.props.completed_tasks}
                         type={this.props.type}
                         chosen_date_data={this.props.chosen_date_data}
-                        openModal={this.openModal}
+                        openModal={this.props.openModal}
                         current_chosen_category={this.props.current_chosen_category}
                     />
                 </View>
@@ -385,15 +385,15 @@ class UncompletedTaskCardHolder extends React.PureComponent {
     render() {
         return (
             <FlatList
-                data={Map(this.props.tasks).toArray()}
-                // data={this.state.prioritized_tasks}
+                // data={Map(this.props.tasks).toArray()}
+                data={this.state.prioritized_tasks}
                 extraData={this.state.should_flatlist_update}
                 showsVerticalScrollIndicator={false}
                 removeClippedSubviews={true}
 
                 renderItem={this._renderItem}
                 keyExtractor={this._keyExtractor}
-                // scrollEnabled={false}
+                scrollEnabled={false}
 
                 windowSize={3}
                 maxToRenderPerBatch={3}
@@ -1171,7 +1171,7 @@ class CompletedTaskCardHolder extends React.PureComponent {
 
                 renderItem={this._renderItem}
                 keyExtractor={this._keyExtractor}
-                // scrollEnabled={false}
+                scrollEnabled={false}
 
                 windowSize={3}
                 maxToRenderPerBatch={3}

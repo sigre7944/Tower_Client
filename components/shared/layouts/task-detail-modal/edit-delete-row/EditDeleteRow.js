@@ -54,7 +54,7 @@ export default class EditDeleteRow extends React.PureComponent {
                         marginHorizontal: 28,
                     }}
 
-                    onPress={this.props._closeEdit}
+                    onPress={this.props._toggleDelete}
                 >
                     <FontAwesomeIcon
                         icon={faTrashAlt}

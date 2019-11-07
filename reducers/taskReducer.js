@@ -117,15 +117,6 @@ let testing_day_tasks = Map().asMutable()
 
 export const day_tasks = (state = Map(), action) => {
     switch (action.type) {
-        case 'ADD_NEW_DAY_TASK':
-            return state.set(action.data.id, action.data)
-
-        case 'ADD_EDIT_DAY_TASK':
-            return state.update(action.data.id, (value) => action.data)
-
-        case 'EDIT_DAY_TASK':
-            return state.updateIn(action.keyPath, (value) => action.data)
-
         case 'UPDATE_DAY_TASK':
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
@@ -133,7 +124,7 @@ export const day_tasks = (state = Map(), action) => {
             return state.delete(action.id)
 
         case 'DELETE_ALL_DAY_TASKS_WITH_CATEGORY':
-            return state.filterNot((task) => task.category === action.id)
+            return state.filterNot((task) => Map(task).get("category") === action.id)
 
         default:
             return state
@@ -142,15 +133,6 @@ export const day_tasks = (state = Map(), action) => {
 
 export const week_tasks = (state = Map(), action) => {
     switch (action.type) {
-        case 'ADD_NEW_WEEK_TASK':
-            return state.set(action.data.id, action.data)
-
-        case 'ADD_EDIT_WEEK_TASK':
-            return state.update(action.data.id, (value) => action.data)
-
-        case 'EDIT_WEEK_TASK':
-            return state.updateIn(action.keyPath, (value) => action.data)
-
         case 'UPDATE_WEEK_TASK':
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
@@ -158,7 +140,7 @@ export const week_tasks = (state = Map(), action) => {
             return state.delete(action.id)
 
         case 'DELETE_ALL_WEEK_TASKS_WITH_CATEGORY':
-            return state.filterNot((task) => task.category === action.id)
+            return state.filterNot((task) => Map(task).get("category") === action.id)
 
         default:
             return state
@@ -167,15 +149,6 @@ export const week_tasks = (state = Map(), action) => {
 
 export const month_tasks = (state = Map(), action) => {
     switch (action.type) {
-        case 'ADD_NEW_MONTH_TASK':
-            return state.set(action.data.id, action.data)
-
-        case 'ADD_EDIT_MONTH_TASK':
-            return state.update(action.data.id, (value) => action.data)
-
-        case 'EDIT_MONTH_TASK':
-            return state.updateIn(action.keyPath, (value) => action.data)
-
         case 'UPDATE_MONTH_TASK':
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
@@ -183,7 +156,7 @@ export const month_tasks = (state = Map(), action) => {
             return state.delete(action.id)
 
         case 'DELETE_ALL_MONTH_TASKS_WITH_CATEGORY':
-            return state.filterNot((task) => task.category === action.id)
+            return state.filterNot((task) => Map(task).get("category") === action.id)
 
         default:
             return state

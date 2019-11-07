@@ -5,21 +5,20 @@ import {
 
 // import * as Font from 'expo-font'
 
-export const sf_ui_display_light_font = "sf-ui-display-light"
-export const sf_ui_display_medium_font = "sf-ui-display-medium"
+import * as CommonStyles from '../../../../shared/styles/style'
 
 export const styles = StyleSheet.create({
     annotation_text: {
-        color: "#6E6E6E",
-        fontFamily: sf_ui_display_light_font,
+        color: CommonStyles.text_icon_colors.ti_2,
+        fontFamily: CommonStyles.sf_ui_display_light_font,
         fontSize: 20,
         lineHeight: 24,
         letterSpacing: -0.02
     },
 
     chosen_annotation_text: {
-        color: "#54BAAC",
-        fontFamily: sf_ui_display_light_font,
+        color: CommonStyles.primary_colors.prim_1,
+        fontFamily: CommonStyles.sf_ui_display_light_font,
         fontSize: 20,
         lineHeight: 24,
         letterSpacing: -0.02

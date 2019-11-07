@@ -90,7 +90,7 @@ export default class CustomTabBarComponent extends React.PureComponent {
                         style={{
                             height: 3,
                             width: 52,
-                            backgroundColor: "#54BAAC",
+                            backgroundColor: "#05838B",
                             borderRadius: 30,
                             transform: [{ translateX: this.translate_x }],
                         }}

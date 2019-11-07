@@ -87,7 +87,7 @@ export default class TaskCard extends React.PureComponent {
                         let day_in_week = current_date.getDay()
 
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
-                        data.updateIn([timestamp_toString, "current"], (value) => v + 1)
+                        data.updateIn([timestamp_toString, "current"], (value) => value + 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
                         data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
                             return List(completed_priority_array).updateIn([day_in_week, this.priority_order[task_priority]], (value) => value + 1)
@@ -98,7 +98,7 @@ export default class TaskCard extends React.PureComponent {
                         let day_in_month = current_date.getDate()
 
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
-                        data.updateIn([timestamp_toString, "current"], (value) => v + 1)
+                        data.updateIn([timestamp_toString, "current"], (value) => value + 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
                         data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
                             return List(completed_priority_array).updateIn([day_in_month - 1, this.priority_order[task_priority]], (value) => value + 1)
@@ -303,17 +303,9 @@ export default class TaskCard extends React.PureComponent {
     }
 
     doUpdateOnChartStats = (flag, operation) => {
-        let task_map = Map(this.props.task_data),
-            current_date = new Date(),
-            week_chart_stats_map = Map(this.props.week_chart_stats),
-            month_chart_stats_map = Map(this.props.month_chart_stats),
-            year_chart_stats_map = Map(this.props.year_chart_stats),
+        let current_date = new Date()
 
-            week_chart_stats_data = {},
-            month_chart_stats_data = {},
-            year_chart_stats_data = {},
-
-            week_timestamp_toString = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime().toString(),
+        week_timestamp_toString = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime().toString(),
             month_timestamp_toString = new Date(current_date.getFullYear(), current_date.getMonth()).getTime().toString(),
             year_timestamp_toString = current_date.getFullYear().toString(),
 
@@ -346,8 +338,7 @@ export default class TaskCard extends React.PureComponent {
     }
 
     doCompareAndUpdateOnChartStatsData = (task_data, chart_stats, timestamp_toString, key, flag, operation) => {
-        let chart_stats_data = {},
-            task_data_map = Map(task_data),
+        let task_data_map = Map(task_data),
             task_priority = task_data_map.getIn(["priority", "value"]),
             chart_stats_map = Map(chart_stats),
             update_data = {}
@@ -482,13 +473,14 @@ export default class TaskCard extends React.PureComponent {
 
 
 
-                {this.props.flag === "uncompleted" ?
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                        }}
-                    >
+                <View
+                    style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                    }}
+                >
+                    {this.props.flag === "uncompleted" ?
+
                         <TouchableOpacity
                             style={{
                                 width: 58,
@@ -506,13 +498,13 @@ export default class TaskCard extends React.PureComponent {
                             />
                         </TouchableOpacity>
 
-                        <CategoryColorCircle
-                            category_color={task_category_color}
-                        />
-                    </View>
-                    :
-                    null
-                }
+                        :
+                        null
+                    }
+                    <CategoryColorCircle
+                        category_color={task_category_color}
+                    />
+                </View>
 
             </View>
         )

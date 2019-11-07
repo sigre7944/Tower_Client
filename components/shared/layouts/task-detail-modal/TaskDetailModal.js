@@ -28,6 +28,8 @@ import EndRow from './end-row/EndRow'
 import RewardRow from './reward-row/RewardRow'
 import GoalRow from './goal-row/GoalRow'
 
+import DeleteModal from './delete-modal/DeleteModal.Container'
+
 import TaskDetailEditModal from './task-detail-edit-modal/TaskDetailEditModal.Container'
 
 const window_width = Dimensions.get("window").width
@@ -64,7 +66,7 @@ export default class TaskDetailModal extends Component {
     state = {
         isOpened: false,
         should_update: 0,
-        toggle_delete: false,
+        is_delete_selected: false,
         is_edit_selected: false,
     }
 
@@ -80,24 +82,6 @@ export default class TaskDetailModal extends Component {
         ).start()
     }
 
-    getWeek = (date) => {
-        let target = new Date(date);
-        let dayNr = (date.getDay() + 6) % 7;
-        target.setDate(target.getDate() - dayNr + 3);
-        let firstThursday = target.valueOf();
-        target.setMonth(0, 1);
-        if (target.getDay() != 4) {
-            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
-        }
-        return 1 + Math.ceil((firstThursday - target) / 604800000);
-    }
-
-    getMonday = (date) => {
-        let dayInWeek = new Date(date).getDay()
-        let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
-        return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
-    }
-
     _openEdit = () => {
         this.setState(() => ({ is_edit_selected: true }))
     }
@@ -110,10 +94,14 @@ export default class TaskDetailModal extends Component {
         this.props.closeModal()
     }
 
-    toggleDelete = () => {
+    _toggleDelete = () => {
         this.setState(prevState => ({
-            toggle_delete: !prevState.toggle_delete
+            is_delete_selected: !prevState.is_delete_selected
         }))
+    }
+
+    _agreeDelete = () => {
+        this.yes_delete_clicked = true
     }
 
     updateTaskDeletionOnStatsAllTime = (task_id, type) => {
@@ -351,7 +339,7 @@ export default class TaskDetailModal extends Component {
         this.props.deleteTaskThunk(sending_obj)
 
         this.props.resetTaskData()
-        this.toggleDelete()
+        this._toggleDelete()
         this.yes_delete_clicked = true
     }
 
@@ -360,7 +348,7 @@ export default class TaskDetailModal extends Component {
     }
 
     componentDidUpdate = (prevProps, prevState) => {
-        if (this.state.toggle_delete !== prevProps.toggleDelete && this.yes_delete_clicked) {
+        if (this.state.is_delete_selected !== prevProps.is_delete_selected && this.yes_delete_clicked) {
             this.props.closeModal()
         }
     }
@@ -508,7 +496,7 @@ export default class TaskDetailModal extends Component {
                             width: Dimensions.get("window").width,
                             backgroundColor: "white",
                             bottom: 0,
-                            transform: [{ translateY: this.anim_translate_y}]
+                            transform: [{ translateY: this.anim_translate_y }]
                         }}
                     >
                         {this.state.is_edit_selected ?
@@ -520,8 +508,20 @@ export default class TaskDetailModal extends Component {
                             />
                             :
                             <>
+                                {this.state.is_delete_selected ?
+                                    <DeleteModal
+                                        _toggleDelete={this._toggleDelete}
+                                        task_data={this.props.task_data}
+                                        type={this.props.type}
+                                        _agreeDelete={this._agreeDelete}
+                                    />
+
+                                    :
+                                    null
+                                }
+
                                 {/* minus sign - close modal */}
-                                <TouchableOpacity
+                                < TouchableOpacity
                                     style={{
                                         flexDirection: "row",
                                         justifyContent: "center",
@@ -537,10 +537,9 @@ export default class TaskDetailModal extends Component {
                                     </View>
                                 </TouchableOpacity>
 
-
                                 <EditDeleteRow
                                     _openEdit={this._openEdit}
-                                    _closeEdit={this._closeEdit}
+                                    _toggleDelete={this._toggleDelete}
                                 />
 
                                 <ScrollView>
@@ -583,7 +582,7 @@ export default class TaskDetailModal extends Component {
                         }
                     </Animated.View>
                 </View>
-            </Modal>
+            </Modal >
         )
     }
 }

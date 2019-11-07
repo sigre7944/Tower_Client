@@ -83,7 +83,7 @@
                 current: 0,
 
                 // Sunday - Saturday
-                // completed_priority_array: List [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+                completed_priority_array: List [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
                 
                 // latest priority (equals priority of the task in that timestamp)
                 current_priority_value: priority_value,
@@ -100,7 +100,7 @@
                 current: 0,
 
                 // 1 - the last day of month
-                // completed_priority_array: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], ...]
+                completed_priority_array: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], ...]
 
                 // latest priority (equals priority of the task in that timestamp)
                 current_priority_value: priority_value,
