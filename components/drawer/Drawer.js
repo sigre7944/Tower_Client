@@ -13,7 +13,7 @@ import {
 
 import AddCategoryPanel from '../main/screens/Journal/components/share/category/add-category-panel/AddCategoryPanel.Container'
 import EditCategoryPanel from '../main/screens/Journal/components/share/category/edit-category-panel/EditCategoryPanel.Container'
-import { Map, List } from 'immutable'
+import { Map, List, OrderedMap } from 'immutable'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
     faUser,
@@ -151,14 +151,16 @@ class CategoryFlatlist extends React.PureComponent {
     }
 
     _chooseCategoryIndex = (index) => {
-        this.setState(prevState => ({
-            current_category_index: index,
-            last_category_index: prevState.current_category_index,
-            should_flatlist_update: prevState.should_flatlist_update + 1
-        }))
+        if(this.state.current_category_index !== index){
+            this.setState(prevState => ({
+                current_category_index: index,
+                last_category_index: prevState.current_category_index,
+                should_flatlist_update: prevState.should_flatlist_update + 1
+            }))
+        }
     }
 
-    _keyExtractor = (item, index) => `drawer-category-${item[0]}-${index}`
+    _keyExtractor = (item, index) => `drawer-category-${item[0]}`
 
     _renderItem = ({ item, index }) => {
         if (Map(item[1]).get("name") === "Inbox") {
@@ -186,11 +188,11 @@ class CategoryFlatlist extends React.PureComponent {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        // if (this.props.categories !== prevProps.categories) {
-        //     this.setState(prevState => ({
-        //         should_flatlist_update: prevState.should_flatlist_update + 1
-        //     }))
-        // }
+        if (this.props.categories !== prevProps.categories) {
+            this.setState(prevState => ({
+                should_flatlist_update: prevState.should_flatlist_update + 1
+            }))
+        }
     }
 
     render() {
@@ -202,7 +204,7 @@ class CategoryFlatlist extends React.PureComponent {
                 }}
             >
                 <FlatList
-                    data={Map(this.props.categories).toArray()}
+                    data={OrderedMap(this.props.categories).toArray()}
                     extraData={this.state.should_flatlist_update}
                     keyExtractor={this._keyExtractor}
                     renderItem={this._renderItem}
@@ -461,6 +463,7 @@ class AddNewCategory extends React.PureComponent {
                 style={{
                     marginBottom: 42,
                     marginHorizontal: 22,
+                    marginTop: 20,
                     flexDirection: "row",
                     alignItems: "center"
                 }}

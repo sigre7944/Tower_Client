@@ -1,17 +1,22 @@
-import { Map, fromJS } from "immutable"
-
+import { Map, fromJS, OrderedMap, isKeyed } from "immutable"
 let initialState = fromJS({
-    cate_0: {
-        id: "cate_0",
-        name: "Inbox",
-        color: "#F78096",
-        quantity: 0
-    }
+    id: `cate_0`,
+    name: "Inbox",
+    color: "#F78096",
+    quantity: 0
 })
 
-export const categories = (state = Map(initialState), action) => {
+let category_orderedMap = OrderedMap().asMutable()
+
+category_orderedMap.set(Map(initialState).get("id"), initialState)
+
+// let initiaState_orderedMap = fromJS(initialState, (key, value, path) => {
+//     return isKeyed(value) ? value.toOrderedMap() : value.toList()
+// })
+
+export const categories = (state = category_orderedMap.toOrderedMap(), action) => {
     switch (action.type) {
-        
+
         case 'UPDATE_CATEGORY':
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 

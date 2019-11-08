@@ -23,7 +23,7 @@ import {
 
 import { styles } from './styles/styles'
 
-import { Map, fromJS } from 'immutable'
+import { Map, fromJS, OrderedMap } from 'immutable'
 
 const window_height = Dimensions.get("window").height
 const window_width = Dimensions.get("window").width
@@ -115,8 +115,8 @@ export default class AddCategoryPanel extends React.PureComponent {
             return false
         }
 
-        Map(this.props.categories).valueSeq().every((value) => {
-            if (Map(value).get("name") === new_name.trim()) {
+        OrderedMap(this.props.categories).valueSeq().every((value) => {
+            if (Map(value).get("name") === new_name) {
                 found = true
                 return false
             }
@@ -162,12 +162,6 @@ export default class AddCategoryPanel extends React.PureComponent {
         this._appearAnim()
 
         this._initializeCategoryData()
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (this.props.can_close_add_category_panel !== prevProps.can_close_add_category_panel && this.props.can_close_add_category_panel) {
-            this.props._closeAddCategoryPanel()
-        }
     }
 
     render() {

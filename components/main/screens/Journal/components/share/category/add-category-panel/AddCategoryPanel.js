@@ -23,7 +23,7 @@ import {
 
 import { styles } from './styles/styles'
 
-import { Map, fromJS } from 'immutable'
+import { Map, fromJS, OrderedMap } from 'immutable'
 
 const window_height = Dimensions.get("window").height
 const window_width = Dimensions.get("window").width
@@ -87,7 +87,7 @@ export default class AddCategoryPanel extends React.PureComponent {
     }
 
     _save = () => {
-        if (this.state.category_title.length > 0 && !this._checkIfCategoryNameExists(this.state.category_title)) {
+        if (this.state.category_title.length > 0 && !this._checkIfCategoryNameExists(this.state.category_title.trim())) {
             let id = `category-${short_id.generate()}`,
                 category_obj = fromJS({
                     id,
@@ -104,17 +104,17 @@ export default class AddCategoryPanel extends React.PureComponent {
 
             this.props.updateCategory(sending_data)
 
-            if(this.props.at_drawer){
+            if (this.props.at_drawer) {
                 this.props._closeAddCategoryPanel()
-
             }
         }
     }
 
     _checkIfCategoryNameExists = (name) => {
         let found = false
-        Map(this.props.categories).valueSeq().every((value) => {
-            if (Map(value).get("name") === name.trim()) {
+        
+        OrderedMap(this.props.categories).valueSeq().every((value) => {
+            if (Map(value).get("name") === name) {
                 found = true
                 return false
             }

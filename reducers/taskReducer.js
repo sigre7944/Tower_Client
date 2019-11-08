@@ -1,4 +1,4 @@
-import { Map, fromJS, List } from 'immutable'
+import { Map, fromJS, OrderedMap } from 'immutable'
 
 const uuidv1 = require('uuid')
 const shortid = require('shortid')
@@ -115,7 +115,7 @@ let testing_day_tasks = Map().asMutable()
 // }
 
 
-export const day_tasks = (state = Map(), action) => {
+export const day_tasks = (state = OrderedMap(), action) => {
     switch (action.type) {
         case 'UPDATE_DAY_TASK':
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
@@ -124,14 +124,14 @@ export const day_tasks = (state = Map(), action) => {
             return state.delete(action.id)
 
         case 'DELETE_ALL_DAY_TASKS_WITH_CATEGORY':
-            return state.filterNot((task) => Map(task).get("category") === action.id)
+            return state.filterNot((task) => OrderedMap(task).get("category") === action.id)
 
         default:
             return state
     }
 }
 
-export const week_tasks = (state = Map(), action) => {
+export const week_tasks = (state = OrderedMap(), action) => {
     switch (action.type) {
         case 'UPDATE_WEEK_TASK':
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
@@ -140,14 +140,14 @@ export const week_tasks = (state = Map(), action) => {
             return state.delete(action.id)
 
         case 'DELETE_ALL_WEEK_TASKS_WITH_CATEGORY':
-            return state.filterNot((task) => Map(task).get("category") === action.id)
+            return state.filterNot((task) => OrderedMap(task).get("category") === action.id)
 
         default:
             return state
     }
 }
 
-export const month_tasks = (state = Map(), action) => {
+export const month_tasks = (state = OrderedMap(), action) => {
     switch (action.type) {
         case 'UPDATE_MONTH_TASK':
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
@@ -156,7 +156,7 @@ export const month_tasks = (state = Map(), action) => {
             return state.delete(action.id)
 
         case 'DELETE_ALL_MONTH_TASKS_WITH_CATEGORY':
-            return state.filterNot((task) => Map(task).get("category") === action.id)
+            return state.filterNot((task) => OrderedMap(task).get("category") === action.id)
 
         default:
             return state

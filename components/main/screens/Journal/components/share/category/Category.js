@@ -3,11 +3,12 @@ import React from 'react'
 import {
     View,
     Text,
-    FlatList,
     TouchableOpacity,
     Animated,
-    Easing
+    Easing,
 } from 'react-native'
+
+import { FlatList } from 'react-native-gesture-handler'
 
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
@@ -18,7 +19,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 import { styles } from './styles/styles'
-import { Map, fromJS } from "immutable"
+import { OrderedMap, Map, fromJS } from "immutable"
 
 import AddCategoryPanel from './add-category-panel/AddCategoryPanel.Container'
 
@@ -84,7 +85,7 @@ export default class Category extends React.PureComponent {
 
     _scrollToEnd = () => {
         if (this._flatlist_ref) {
-            this._flatlist_ref.scrollToEnd({ animated: false })
+            this._flatlist_ref.scrollToEnd({ animated: true })
         }
     }
 
@@ -101,7 +102,7 @@ export default class Category extends React.PureComponent {
             let category_id = Map(task_data).get("category"),
                 counter = 0
 
-            Map(this.props.categories).keySeq().every((key) => {
+            OrderedMap(this.props.categories).keySeq().every((key) => {
                 if (key === category_id) {
                     return false
                 }
@@ -116,7 +117,7 @@ export default class Category extends React.PureComponent {
         }
 
         else {
-            let category_id = Map(this.props.categories).keySeq().get(0)
+            let category_id = OrderedMap(this.props.categories).keySeq().get(0)
             this.start_index = 0
 
             this._chooseCategoryRow(this.start_index, category_id)
@@ -124,7 +125,9 @@ export default class Category extends React.PureComponent {
         }
     }
 
-    _keyExtractor = (item, index) => `category-row-${item[0]}-${index}`
+    _keyExtractor = (item, index) => {
+        return `category-row-${item[0]}`
+    }
 
     _renderItem = ({ item, index }) => {
         return (
@@ -189,23 +192,23 @@ export default class Category extends React.PureComponent {
     }
 
     _chooseNewCreatedCategory = () => {
-        let latest_index = Map(this.props.categories).toArray().length - 1
+        let latest_index = OrderedMap(this.props.categories).size - 1
 
-        this.chosen_category_id = Map(Map(this.props.categories).toArray()[latest_index][1]).get("id")
+        this.chosen_category_id = Map(OrderedMap(this.props.categories).toArray()[latest_index][1]).get("id")
 
         this.setState(prevState => ({
             current_category_index: latest_index,
             last_category_index: prevState.current_category_index,
-            should_flatlist_update: prevState.should_flatlist_update + 1
+            should_flatlist_update: prevState.should_flatlist_update + 1,
         }), () => {
             this.setState({
                 can_close_add_category_panel: true
+            }, () => {
+                setTimeout(() => {
+                    this._scrollToEnd()
+                }, 50)
             })
         })
-    }
-
-    _onContentSizeChange = (width, height) => {
-        this._scrollToEnd()
     }
 
     componentDidMount() {
@@ -268,7 +271,8 @@ export default class Category extends React.PureComponent {
                     }}
                 >
                     <FlatList
-                        data={Map(this.props.categories).toArray()}
+                        data={OrderedMap(this.props.categories).toArray()}
+
                         extraData={this.state.should_flatlist_update}
 
                         keyExtractor={this._keyExtractor}
@@ -277,10 +281,8 @@ export default class Category extends React.PureComponent {
                         showsVerticalScrollIndicator={false}
                         ref={this._setRef}
                         getItemLayout={this._getItemLayout}
-                        // initialScrollIndex={this.start_index}
-                        windowSize={5}
-
-                        onContentSizeChange={this._onContentSizeChange}
+                        initialScrollIndex={this.start_index}
+                        windowSize={9}
                     />
                 </View>
 
