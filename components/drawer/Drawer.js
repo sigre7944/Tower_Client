@@ -838,11 +838,11 @@ class DeleteWarning extends React.PureComponent {
                             alignItems: "center",
                         }}
                     >
-                        <Text
+                        {/* <Text
                             style={styles.text}
                         >
                             Are you sure you want to delete this task?
-                        </Text>
+                        </Text> */}
 
                         <TouchableOpacity
                             style={{
@@ -853,7 +853,6 @@ class DeleteWarning extends React.PureComponent {
                                 justifyContent: "center",
                                 alignItems: "center",
                                 backgroundColor: "#ff3006",
-                                marginTop: 20,
                             }}
 
                             onPress={this.props._deleteCategoryAffectingTasksAndHistory}

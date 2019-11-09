@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
     TouchableOpacity,
+    TouchableWithoutFeedback,
     Text,
     View,
     StyleSheet,
@@ -235,18 +236,21 @@ export default class TaskDetailModal extends Component {
                     }}
                 >
 
-                    <TouchableOpacity
-                        style={{
-                            flex: 1,
-                            width: window_width,
-                            backgroundColor: "black",
-                            opacity: 0.2,
-                        }}
-
+                    <TouchableWithoutFeedback
                         onPress={this._dismissModal}
                     >
 
-                    </TouchableOpacity>
+                        <View
+                            style={{
+                                flex: 1,
+                                width: window_width,
+                                backgroundColor: "black",
+                                opacity: 0.2,
+                            }}
+                        >
+
+                        </View>
+                    </TouchableWithoutFeedback>
 
                     <Animated.View
                         style={{

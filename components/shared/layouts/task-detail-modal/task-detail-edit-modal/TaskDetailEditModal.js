@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
     TouchableOpacity,
+    TouchableWithoutFeedback,
     Text,
     View,
     StyleSheet,
@@ -335,18 +336,20 @@ class EdittingModal extends React.PureComponent {
                         alignItems: "center"
                     }}
                 >
-                    <TouchableOpacity
-                        style={{
-                            flex: 1,
-                            width: window_width,
-                            backgroundColor: "black",
-                            opacity: 0.2
-                        }}
-
+                    <TouchableWithoutFeedback
                         onPress={this.props._closeEdittingField}
                     >
+                        <View
+                            style={{
+                                flex: 1,
+                                width: window_width,
+                                backgroundColor: "black",
+                                opacity: 0.2
+                            }}
+                        >
 
-                    </TouchableOpacity>
+                        </View>
+                    </TouchableWithoutFeedback>
 
                     {
                         this.props.editting_field === "schedule" ?

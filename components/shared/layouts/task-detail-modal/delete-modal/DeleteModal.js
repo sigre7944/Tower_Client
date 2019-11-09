@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
     TouchableOpacity,
+    TouchableWithoutFeedback,
     Text,
     View,
     StyleSheet,
@@ -314,18 +315,20 @@ export default class DeleteModal extends Component {
                         alignItems: "center"
                     }}
                 >
-                    <TouchableOpacity
-                        style={{
-                            flex: 1,
-                            width: window_width,
-                            backgroundColor: "black",
-                            opacity: 0.2
-                        }}
-
+                    <TouchableWithoutFeedback
                         onPress={this.props._toggleDelete}
                     >
+                        <View
+                            style={{
+                                flex: 1,
+                                width: window_width,
+                                backgroundColor: "black",
+                                opacity: 0.2
+                            }}
+                        >
 
-                    </TouchableOpacity>
+                        </View>
+                    </TouchableWithoutFeedback>
 
                     <View
                         style={{
