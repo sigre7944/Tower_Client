@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import { chooseCategory } from '../shared/actions/categoryAction'
-import { deleteAndAffectThePast } from './actions/deleteActionThunk'
+import { deleteTasksAndHistory, deleteOnlyTasks } from './actions/deleteActionThunk'
 import Drawer from './Drawer'
 
 const mapStateToProps = (state, ownProps) => {
@@ -22,13 +22,16 @@ const mapStateToProps = (state, ownProps) => {
 
         month_chart_stats: state.get("month_chart_stats"),
         week_chart_stats: state.get("week_chart_stats"),
-        year_chart_stats: state.get("year_chart_stats")
+        year_chart_stats: state.get("year_chart_stats"),
+
+        current_chosen_category: state.get("currentChosenCategory"),
     })
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
     chooseCategory: (category) => dispatch(chooseCategory(category)),
-    deleteAndAffectThePast: (data) => dispatch(deleteAndAffectThePast(data))
+    deleteTasksAndHistory: (data) => dispatch(deleteTasksAndHistory(data)),
+    deleteOnlyTasks: (data) => dispatch(deleteOnlyTasks(data))
 })
 
 export default connect(

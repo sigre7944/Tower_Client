@@ -5,3 +5,8 @@ export const updatePriority = (keyPath, notSetValue, updater) => ({
     notSetValue,
     updater
 })
+
+export const returnNewPriorities = (data) => ({
+    type: "RETURN_NEW_PRIORITIES",
+    data
+})

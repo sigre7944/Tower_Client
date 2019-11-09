@@ -7,7 +7,7 @@ let initialState = {
         urgency: 1,
         defaultValue: 5,
         color: "#F78096",
-        tasks: [] // item = task_id
+        tasks: [] // item = {id: task_id, category: task_category}
     },
 
     pri_02: {
@@ -43,6 +43,10 @@ export const priorities = (state = Map(fromJS(initialState)), action) => {
     switch (action.type) {
         case "UPDATE_PRIORITY":
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
+
+        case "RETURN_NEW_PRIORITIES":
+            return action.data.toMap()
+
         default:
             return state
     }

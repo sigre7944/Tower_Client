@@ -115,7 +115,7 @@ let testing_day_tasks = Map().asMutable()
 // }
 
 
-export const day_tasks = (state = OrderedMap(), action) => {
+export const day_tasks = (state = Map(), action) => {
     switch (action.type) {
         case 'UPDATE_DAY_TASK':
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
@@ -124,14 +124,14 @@ export const day_tasks = (state = OrderedMap(), action) => {
             return state.delete(action.id)
 
         case 'DELETE_ALL_DAY_TASKS_WITH_CATEGORY':
-            return state.filterNot((task) => OrderedMap(task).get("category") === action.id)
+            return state.filterNot((task) => Map(task).get("category") === action.id)
 
         default:
             return state
     }
 }
 
-export const week_tasks = (state = OrderedMap(), action) => {
+export const week_tasks = (state = Map(), action) => {
     switch (action.type) {
         case 'UPDATE_WEEK_TASK':
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
@@ -140,14 +140,14 @@ export const week_tasks = (state = OrderedMap(), action) => {
             return state.delete(action.id)
 
         case 'DELETE_ALL_WEEK_TASKS_WITH_CATEGORY':
-            return state.filterNot((task) => OrderedMap(task).get("category") === action.id)
+            return state.filterNot((task) => Map(task).get("category") === action.id)
 
         default:
             return state
     }
 }
 
-export const month_tasks = (state = OrderedMap(), action) => {
+export const month_tasks = (state = Map(), action) => {
     switch (action.type) {
         case 'UPDATE_MONTH_TASK':
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
@@ -156,7 +156,7 @@ export const month_tasks = (state = OrderedMap(), action) => {
             return state.delete(action.id)
 
         case 'DELETE_ALL_MONTH_TASKS_WITH_CATEGORY':
-            return state.filterNot((task) => OrderedMap(task).get("category") === action.id)
+            return state.filterNot((task) => Map(task).get("category") === action.id)
 
         default:
             return state

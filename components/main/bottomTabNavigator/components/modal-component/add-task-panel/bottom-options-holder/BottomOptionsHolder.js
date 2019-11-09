@@ -25,7 +25,7 @@ import { primary_color } from "../../../../../../shared/styles/style";
 
 import { styles } from "./styles/styles";
 
-import { Map, List } from 'immutable'
+import { Map, List, fromJS } from 'immutable'
 
 const uuidv1 = require('uuid')
 
@@ -139,7 +139,11 @@ class BottomConfirmElement extends React.PureComponent {
             new_task_with_id.update("title", (value) => this.props.title_value)
             new_task_with_id.update("description", (value) => this.props.description_value)
 
-            let priority_value = Map(this.props.task_data).getIn(["priority", "value"])
+            let priority_value = Map(this.props.task_data).getIn(["priority", "value"]),
+                priority_data = fromJS({
+                    id: task_id,
+                    category: category_id
+                })
 
             let sending_obj = {
                 add_task_data: {
@@ -160,7 +164,7 @@ class BottomConfirmElement extends React.PureComponent {
                 priority_data: {
                     keyPath: [priority_value, "tasks"],
                     notSetValue: [],
-                    updater: (tasks) => List(tasks).push(task_id)
+                    updater: (tasks) => List(tasks).push(priority_data)
                 }
             }
 

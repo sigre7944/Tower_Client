@@ -59,7 +59,7 @@ export default class DeleteModal extends Component {
             type = this.props.type
 
         Map(completed_tasks_map.get(task_id)).keySeq((key, index) => {
-            if (key !== "id" && key !== "current_priority_value") {
+            if (key !== "id" && key !== "category") {
                 let completed_priority_array = List(completed_tasks_map.getIn([task_id, key, "completed_priority_array"]))
 
                 if (returning_stats_map.hasIn([key, "current"])) {
@@ -73,7 +73,7 @@ export default class DeleteModal extends Component {
                 if (type === "day") {
                     let day_in_week_toString = new Date(timestamp).getDay().toString(),
                         day_in_month_toString = new Date(timestamp).getDate().toString(),
-                        month = new Date(timestamp).getMonth().toString(),
+                        month = new Date(timestamp).getMonth(),
                         month_toString = month.toString(),
                         year = new Date(timestamp).getFullYear(),
                         year_toString = year.toString(),
@@ -217,7 +217,7 @@ export default class DeleteModal extends Component {
                 update_priority_data: {
                     keyPath: [task_priority_value, "tasks"],
                     notSetValue: [],
-                    updater: (tasks) => List(tasks).delete(List(tasks).findIndex((id) => task_id === id))
+                    updater: (tasks) => List(tasks).delete(List(tasks).findIndex((task_data) => Map(task_data).get("id") === id))
                 },
                 delete_completed_task_data: {
                     type: "DELETE_COMPLETED_DAY_TASK",

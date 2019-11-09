@@ -51,6 +51,7 @@ export default class TaskCard extends React.PureComponent {
     doUpdateOnCompletedTask = (flag, type, operation) => {
         let task_map = Map(this.props.task_data),
             task_id = task_map.get("id"),
+            task_category = task_map.get("category"),
             task_priority = task_map.getIn(["priority", "value"]),
             current_date = new Date(),
             data = Map(),
@@ -75,7 +76,7 @@ export default class TaskCard extends React.PureComponent {
                 if (completed_tasks_map.hasIn([task_id, timestamp_toString])) {
                     if (type === "day") {
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
-
+                        data.updateIn(["category"], (value) => task_category)
                         data.updateIn([timestamp_toString, "current"], (value) => value + 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
                         data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
@@ -87,6 +88,7 @@ export default class TaskCard extends React.PureComponent {
                         let day_in_week = current_date.getDay()
 
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
+                        data.updateIn(["category"], (value) => task_category)
                         data.updateIn([timestamp_toString, "current"], (value) => value + 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
                         data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
@@ -98,6 +100,7 @@ export default class TaskCard extends React.PureComponent {
                         let day_in_month = current_date.getDate()
 
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
+                        data.updateIn(["category"], (value) => task_category)
                         data.updateIn([timestamp_toString, "current"], (value) => value + 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
                         data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
@@ -109,6 +112,7 @@ export default class TaskCard extends React.PureComponent {
                 else {
                     let pre_convert_obj = {
                         id: task_id,
+                        category: task_category
                     }
                     let pre_convert_completed_data = {
                         current: 1
@@ -157,6 +161,7 @@ export default class TaskCard extends React.PureComponent {
                 if (completed_tasks_map.hasIn([task_id, timestamp_toString])) {
                     if (type === "day") {
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
+                        data.updateIn(["category"], (value) => task_category)
                         data.updateIn([timestamp_toString, "current"], (value) => value - 1 < 0 ? 0 : value - 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
                         data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
@@ -168,6 +173,7 @@ export default class TaskCard extends React.PureComponent {
                         let day_in_week = current_date.getDay()
 
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
+                        data.updateIn(["category"], (value) => task_category)
                         data.updateIn([timestamp_toString, "current"], (value) => value - 1 < 0 ? 0 : value - 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
                         data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
@@ -179,6 +185,7 @@ export default class TaskCard extends React.PureComponent {
                         let day_in_month = current_date.getDate()
 
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
+                        data.updateIn(["category"], (value) => task_category)
                         data.updateIn([timestamp_toString, "current"], (value) => value - 1 < 0 ? 0 : value - 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
                         data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
@@ -194,6 +201,7 @@ export default class TaskCard extends React.PureComponent {
                 if (completed_tasks_map.hasIn([task_id, timestamp_toString])) {
                     if (type === "day") {
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
+                        data.updateIn(["category"], (value) => task_category)
                         data.updateIn([timestamp_toString, "current"], (value) => value - 1 < 0 ? 0 : value - 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
                         data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
@@ -205,6 +213,7 @@ export default class TaskCard extends React.PureComponent {
                         let day_in_week = current_date.getDay()
 
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
+                        data.updateIn(["category"], (value) => task_category)
                         data.updateIn([timestamp_toString, "current"], (value) => value - 1 < 0 ? 0 : value - 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
                         data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
@@ -216,6 +225,7 @@ export default class TaskCard extends React.PureComponent {
                         let day_in_month = current_date.getDate()
 
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
+                        data.updateIn(["category"], (value) => task_category)
                         data.updateIn([timestamp_toString, "current"], (value) => value - 1 < 0 ? 0 : value - 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
                         data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {

@@ -310,7 +310,9 @@ class FlatlistGroup extends React.PureComponent {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.props.tasks !== prevProps.tasks || this.props.completed_tasks !== prevProps.completed_tasks) {
+        if (this.props.tasks !== prevProps.tasks
+            || this.props.completed_tasks !== prevProps.completed_tasks
+            || this.props.current_chosen_category !== prevProps.current_chosen_category) {
             this._updateData()
         }
     }
@@ -357,7 +359,8 @@ class UncompletedTaskCardHolder extends React.PureComponent {
             prioritized_tasks = []
 
         priorities_map.valueSeq().forEach((priority_data, index) => {
-            List(priority_data.get("tasks")).forEach((task_id, i) => {
+            List(priority_data.get("tasks")).forEach((task_data, i) => {
+                let task_id = Map(task_data).get("id")
                 prioritized_tasks.push([task_id, tasks_map.get(task_id)])
             })
         })
@@ -373,11 +376,9 @@ class UncompletedTaskCardHolder extends React.PureComponent {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.props.completed_tasks !== prevProps.completed_tasks) {
-            this._prioritizeTasks()
-        }
-
-        if (this.props.tasks !== prevProps.tasks) {
+        if (this.props.completed_tasks !== prevProps.completed_tasks
+            || this.props.tasks !== prevProps.tasks
+            || this.props.current_chosen_category !== prevProps.current_chosen_category) {
             this._prioritizeTasks()
         }
     }
@@ -1141,7 +1142,8 @@ class CompletedTaskCardHolder extends React.PureComponent {
             prioritized_tasks = []
 
         priorities_map.valueSeq().forEach((priority_data, index) => {
-            List(priority_data.get("tasks")).forEach((task_id, i) => {
+            List(priority_data.get("tasks")).forEach((task_data, i) => {
+                let task_id = Map(task_data).get("id")
                 if (completed_tasks_map.has(task_id)) {
                     prioritized_tasks.push([task_id, completed_tasks_map.get(task_id)])
                 }
@@ -1155,7 +1157,8 @@ class CompletedTaskCardHolder extends React.PureComponent {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.props.completed_tasks !== prevProps.completed_tasks) {
+        if (this.props.completed_tasks !== prevProps.completed_tasks
+            || this.props.current_chosen_category !== prevProps.current_chosen_category) {
             this._prioritizeTasks()
         }
     }

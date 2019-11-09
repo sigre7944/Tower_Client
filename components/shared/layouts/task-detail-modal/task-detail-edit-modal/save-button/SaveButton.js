@@ -161,22 +161,38 @@ export default class SaveButton extends React.PureComponent {
                 old_priority_data: {
                     keyPath: [old_priority_value, "tasks"],
                     notSetValue: [],
-                    updater: (tasks) => List(tasks).delete(List(tasks).findIndex((task_id, index, list) => task_data_map.get("id") === task_id))
+                    updater: (tasks) => {
+                        return List(tasks).delete(List(tasks).findIndex((task_data, index, list) => task_data_map.get("id") === Map(task_data).get("id")))
+                    }
                 },
 
                 new_priority_data: {
                     keyPath: [new_priority_value, "tasks"],
                     notSetValue: [],
-                    updater: (tasks) => List(tasks).push(task_data_map.get("id"))
+                    updater: (tasks) => {
+                        return List(tasks).push(fromJS({
+                            id: task_data_map.get("id"),
+                            category: new_category,
+                        }))
+                    }
+                },
+
+                new_completed_task_data: {
+                    type: "UPDATE_COMPLETED_DAY_TASK",
+                    keyPath: [task_data_map.get("id"), "category"],
+                    notSetValue: "",
+                    updater: (value) => new_category
                 }
             }
 
         if (type === "week") {
             sending_obj.edited_task_data.type = "UPDATE_WEEK_TASK"
+            sending_obj.new_completed_task_data = "UPDATE_COMPLETED_WEEK_TASK"
         }
 
         else if (type === "month") {
             sending_obj.edited_task_data.type = "UPDATE_MONTH_TASK"
+            sending_obj.new_completed_task_data = "UPDATE_COMPLETED_MONTH_TASK"
         }
 
         this.props.updateEditedTask(sending_obj)
