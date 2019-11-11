@@ -3,9 +3,7 @@ import {
 
 } from 'react-native'
 
-
-export const sf_ui_display_light_font = "sf-ui-display-light"
-export const sf_ui_display_medium_font = "sf-ui-display-medium"
+import * as CommonStyles from '../../../shared/styles/style'
 
 export const styles = StyleSheet.create({
     container: {
@@ -17,7 +15,7 @@ export const styles = StyleSheet.create({
         color: "#2C2C2C",
         lineHeight: 31,
         letterSpacing: -0.02,
-        fontFamily: sf_ui_display_medium_font,
+        fontFamily: CommonStyles.sf_ui_display_medium_font,
         fontSize: 26,
     },
 

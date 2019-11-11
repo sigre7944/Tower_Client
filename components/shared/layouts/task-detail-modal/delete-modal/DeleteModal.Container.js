@@ -5,21 +5,17 @@ import { deleteTaskAndHistoryThunk, deleteOnlyTaskThunk } from './actions/delete
 import DeleteModal from './DeleteModal'
 
 const mapStateToProps = (state, ownProps) => {
-    let stats = {},
-        completed_tasks = {}
+    let completed_tasks = {}
 
     if (ownProps.type === "day") {
-        stats = state.get("day_stats")
         completed_tasks = state.get("completed_day_tasks")
     }
 
     else if (ownProps.type === "week") {
-        stats = state.get("week_stats")
         completed_tasks = state.get("completed_week_tasks")
     }
 
     else {
-        stats = state.get("month_stats")
         completed_tasks = state.get("completed_month_tasks")
     }
 
@@ -27,8 +23,8 @@ const mapStateToProps = (state, ownProps) => {
         {
             categories: state.get("categories"),
             priorities: state.get("priorities"),
-            stats,
             completed_tasks,
+            day_chart_stats: state.get("day_chart_stats"),
             week_chart_stats: state.get("week_chart_stats"),
             month_chart_stats: state.get("month_chart_stats"),
             year_chart_stats: state.get("year_chart_stats"),

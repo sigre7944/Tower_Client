@@ -30,12 +30,7 @@ import {
 } from './otherReducer'
 
 import {
-    day_stats,
-    month_stats,
-    week_stats
-} from './statsReducer'
-
-import {
+    day_chart_stats,
     month_chart_stats,
     week_chart_stats,
     year_chart_stats
@@ -73,10 +68,7 @@ const rootReducer = combineReducers({
     addTaskTitle,
     currentChosenCategory,
 
-    day_stats,
-    month_stats,
-    week_stats,
-
+    day_chart_stats,
     month_chart_stats,
     week_chart_stats,
     year_chart_stats,

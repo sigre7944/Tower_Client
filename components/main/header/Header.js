@@ -224,31 +224,43 @@ class JournalHeader extends React.PureComponent {
 class ProgressHeader extends React.PureComponent {
     render() {
         return (
-            <View style={{
-                paddingTop: 20,
-                paddingHorizontal: 10,
-                height: 80,
-                flexDirection: "row",
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                backgroundColor: 'gray'
-            }}>
-                <View></View>
+            <View style={styles.container}>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                    }}
+                >
+                    <TouchableOpacity
+                        style={styles.end_icon_container}
+                        onPress={this._openDrawer}
+                    >
+                        <FontAwesome
+                            name="bars"
+                            size={20}
+                            color={"#BDBDBD"}
+                        />
+                    </TouchableOpacity>
 
-                <Text>
-                    Progress
-                </Text>
+                    <View>
+                        <Text
+                            style={styles.middle_text_style}
+                        >
+                            Progress
+                        </Text>
+                    </View>
 
-                <TouchableOpacity onPress={this._openEditModal}>
-                    <Image
-                        source={require('./dots.png')}
-                        style={{
-                            width: 36,
-                            height: 36,
-                            tintColor: 'white'
-                        }}
-                    />
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.end_icon_container}
+                    >
+                        <FontAwesome
+                            name={"ellipsis-v"}
+                            size={20}
+                            color={"#BDBDBD"}
+                        />
+                    </TouchableOpacity>
+                </View>
             </View>
         )
     }

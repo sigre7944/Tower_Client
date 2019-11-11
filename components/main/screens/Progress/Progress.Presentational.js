@@ -12,6 +12,8 @@ import WeekChart from './components/week-chart/WeekChart.Container'
 import MonthChart from './components/month-chart/MonthChart.Container'
 import YearChart from './components/year-chart/YearChart.Container'
 
+import {styles} from './styles/styles'
+
 export default class Progress extends React.PureComponent {
 
   state = {
@@ -554,28 +556,28 @@ class ChartTypeAnnotation extends React.Component {
 }
 
 
-const styles = StyleSheet.create({
-  unchosen_container: {
-    justifyContent: "center",
-    alignItems: "center",
-    flex: 1,
-    borderRadius: 30,
-    backgroundColor: "white"
-  },
+// const styles = StyleSheet.create({
+//   unchosen_container: {
+//     justifyContent: "center",
+//     alignItems: "center",
+//     flex: 1,
+//     borderRadius: 30,
+//     backgroundColor: "white"
+//   },
 
-  chosen_container: {
-    justifyContent: "center",
-    alignItems: "center",
-    flex: 1,
-    borderRadius: 30,
-    backgroundColor: "black"
-  },
+//   chosen_container: {
+//     justifyContent: "center",
+//     alignItems: "center",
+//     flex: 1,
+//     borderRadius: 30,
+//     backgroundColor: "black"
+//   },
 
-  unchosen_text: {
-    color: "gainsboro"
-  },
+//   unchosen_text: {
+//     color: "gainsboro"
+//   },
 
-  chosen_text: {
-    color: "white"
-  }
-})
+//   chosen_text: {
+//     color: "white"
+//   }
+// })

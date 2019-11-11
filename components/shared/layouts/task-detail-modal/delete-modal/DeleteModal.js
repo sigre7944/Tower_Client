@@ -51,56 +51,79 @@ export default class DeleteModal extends Component {
     }
 
     _updateNewData = () => {
-        let returning_stats_map = Map(this.props.stats).asMutable(),
-            completed_tasks_map = Map(this.props.completed_tasks),
+        let completed_tasks_map = Map(this.props.completed_tasks),
             task_id = Map(this.props.task_data).get("id"),
+            returning_day_chart_stats_map = Map(this.props.day_chart_stats).asMutable(),
             returning_week_chart_stats_map = Map(this.props.week_chart_stats).asMutable(),
             returning_month_chart_stats_map = Map(this.props.month_chart_stats).asMutable(),
             returning_year_chart_stats_map = Map(this.props.year_chart_stats).asMutable(),
             type = this.props.type
 
-        Map(completed_tasks_map.get(task_id)).keySeq((key, index) => {
+
+        Map(completed_tasks_map.get(task_id)).keySeq().forEach((key, index) => {
             if (key !== "id" && key !== "category") {
                 let completed_priority_array = List(completed_tasks_map.getIn([task_id, key, "completed_priority_array"]))
-
-                if (returning_stats_map.hasIn([key, "current"])) {
-                    completed_priority_array.forEach((completed_value, priority_index) => {
-                        returning_stats_map.updateIn([key, "current"], (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value))
-                    })
-                }
 
                 let timestamp = parseInt(key)
 
                 if (type === "day") {
-                    let day_in_week_toString = new Date(timestamp).getDay().toString(),
-                        day_in_month_toString = new Date(timestamp).getDate().toString(),
-                        month = new Date(timestamp).getMonth(),
-                        month_toString = month.toString(),
+                    let day_in_week = new Date(timestamp).getDay(),
+                        day_in_month = new Date(timestamp).getDate(),
+                        month_in_year = new Date(timestamp).getMonth(),
                         year = new Date(timestamp).getFullYear(),
                         year_toString = year.toString(),
                         monday = this.getMonday(new Date(timestamp)),
                         week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
-                        month_timestamp_toString = new Date(year, month).getTime().toString()
+                        month_timestamp_toString = new Date(year, month_in_year).getTime().toString(),
+                        day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString()
 
                     completed_priority_array.forEach((completed_value, priority_index) => {
-                        if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, day_in_week_toString, "current"])) {
+                        if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "current", priority_index])) {
+                            returning_day_chart_stats_map.updateIn(
+                                [day_timestamp_toString, "current", priority_index],
+                                (value) => value - completed_value < 0 ? 0 : value - completed_value
+                            )
+                        }
+
+                        if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "current", priority_index])) {
                             returning_week_chart_stats_map.updateIn(
-                                [week_timestamp_toString, day_in_week_toString, "current"],
-                                (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                [week_timestamp_toString, "current", priority_index],
+                                (value) => value - completed_value < 0 ? 0 : value - completed_value
                             )
                         }
 
-                        if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, day_in_month_toString, "current"])) {
+                        if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "completed_priority_array", day_in_week, priority_index])) {
+                            returning_week_chart_stats_map.updateIn(
+                                [week_timestamp_toString, "completed_priority_array", day_in_week, priority_index],
+                                (value) => value - completed_value < 0 ? 0 : value - completed_value
+                            )
+                        }
+
+                        if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "current", priority_index])) {
                             returning_month_chart_stats_map.updateIn(
-                                [month_timestamp_toString, day_in_month_toString, "current"],
-                                (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                [month_timestamp_toString, "current", priority_index],
+                                (value) => value - completed_value < 0 ? 0 : value - completed_value
                             )
                         }
 
-                        if (returning_year_chart_stats_map.hasIn([year_toString, month_toString, "current"])) {
+                        if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "completed_priority_array", day_in_month - 1, priority_index])) {
+                            returning_month_chart_stats_map.updateIn(
+                                [month_timestamp_toString, "completed_priority_array", day_in_month - 1, priority_index],
+                                (value) => value - completed_value < 0 ? 0 : value - completed_value
+                            )
+                        }
+
+                        if (returning_year_chart_stats_map.hasIn([year_toString, "current", priority_index])) {
                             returning_year_chart_stats_map.updateIn(
-                                [year_toString, month_toString, "current"],
-                                (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                [year_toString, "current", priority_index],
+                                (value) => value - completed_value < 0 ? 0 : value - completed_value
+                            )
+                        }
+
+                        if (returning_year_chart_stats_map.hasIn([year_toString, "completed_priority_array", month_in_year, priority_index])) {
+                            returning_year_chart_stats_map.updateIn(
+                                [year_toString, "completed_priority_array", month_in_year, priority_index],
+                                (value) => value - completed_value < 0 ? 0 : value - completed_value
                             )
                         }
                     })
@@ -192,10 +215,10 @@ export default class DeleteModal extends Component {
         })
 
         return ({
-            returning_stats_map: returning_stats_map,
-            returning_week_chart_stats_map: returning_week_chart_stats_map,
-            returning_month_chart_stats_map: returning_month_chart_stats_map,
-            returning_year_chart_stats_map: returning_year_chart_stats_map
+            returning_day_chart_stats_map,
+            returning_week_chart_stats_map,
+            returning_month_chart_stats_map,
+            returning_year_chart_stats_map
         })
     }
 
@@ -218,28 +241,30 @@ export default class DeleteModal extends Component {
                 update_priority_data: {
                     keyPath: [task_priority_value, "tasks"],
                     notSetValue: [],
-                    updater: (tasks) => List(tasks).delete(List(tasks).findIndex((task_data) => Map(task_data).get("id") === id))
+                    updater: (tasks) => List(tasks).delete(List(tasks).findIndex((task_data) => Map(task_data).get("id") === task_id))
                 },
                 delete_completed_task_data: {
                     type: "DELETE_COMPLETED_DAY_TASK",
                     id: task_id
                 },
 
-                return_new_stats_data: {
-                    type: "RETURN_NEW_DAY_STATS",
-                    data: new_data.returning_stats_map
+                return_new_day_chart_stats_data: {
+                    type: "RETURN_NEW_DAY_CHART_STATS",
+                    data: new_data.returning_day_chart_stats_map
                 },
 
                 return_new_week_chart_stats_data: {
                     type: "RETURN_NEW_WEEK_CHART_STATS",
                     data: new_data.returning_week_chart_stats_map
                 },
+
                 return_new_month_chart_stats_data: {
-                    type: "RETURN_NEW_WEEK_CHART_STATS",
+                    type: "RETURN_NEW_MONTH_CHART_STATS",
                     data: new_data.returning_month_chart_stats_map
                 },
+
                 return_new_year_chart_stats_data: {
-                    type: "RETURN_NEW_WEEK_CHART_STATS",
+                    type: "RETURN_NEW_YEAR_CHART_STATS",
                     data: new_data.returning_year_chart_stats_map
                 },
             }
@@ -247,13 +272,11 @@ export default class DeleteModal extends Component {
         if (type === "week") {
             sending_data.delete_task_data.type = "DELETE_WEEK_TASK"
             sending_data.delete_completed_task_data.type = "DELETE_COMPLETED_WEEK_TASK"
-            sending_data.return_new_stats_data.type = "RETURN_NEW_WEEK_STATS"
         }
 
         else if (type === "month") {
             sending_data.delete_task_data.type = "DELETE_MONTH_TASK"
             sending_data.delete_completed_task_data.type = "DELETE_COMPLETED_MONTH_TASK"
-            sending_data.return_new_stats_data.type = "RETURN_NEW_MONTH_STATS"
         }
 
         this.props.deleteTaskAndHistoryThunk(sending_data)
@@ -279,7 +302,7 @@ export default class DeleteModal extends Component {
                 update_priority_data: {
                     keyPath: [task_priority_value, "tasks"],
                     notSetValue: [],
-                    updater: (tasks) => List(tasks).delete(List(tasks).findIndex((id) => task_id === id))
+                    updater: (tasks) => List(tasks).delete(List(tasks).findIndex((task_data) => Map(task_data).get("id") === task_id))
                 },
                 delete_completed_task_data: {
                     type: "DELETE_COMPLETED_DAY_TASK",

@@ -400,7 +400,7 @@ class Calendar extends React.Component {
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
                         decelerationRate={0}
-                        snapToInterval={338}
+                        snapToInterval={panel_width}
                         snapToAlignment="start"
                         getItemLayout={this._getItemLayout}
                         initialScrollIndex={this.start_index}

@@ -1,3 +1,5 @@
+/// WILL BE DELETED
+
 import { Map, is } from 'immutable'
 
 export const day_stats = (state = Map(), action) => {

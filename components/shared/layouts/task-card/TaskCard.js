@@ -48,7 +48,7 @@ export default class TaskCard extends React.PureComponent {
         return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
     }
 
-    doUpdateOnCompletedTask = (flag, type, operation) => {
+    _doUpdateOnCompletedTask = (flag, type, operation) => {
         let task_map = Map(this.props.task_data),
             task_id = task_map.get("id"),
             task_category = task_map.get("category"),
@@ -244,155 +244,282 @@ export default class TaskCard extends React.PureComponent {
         })
     }
 
-    doUpdateOnStats = (flag, type, operation) => {
-        let task_map = Map(this.props.task_data),
-            task_priority = task_map.getIn(["priority", "value"]),
-            current_date = new Date(),
-            stats = Map(this.props.stats),
-            stats_data = {},
-            stats_timestamp_toString = "",
-            stats_action_type = "UPDATE_DAY_STATS"
-
-        if (type === "day") {
-            stats_timestamp_toString = new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate()).getTime().toString()
-            stats_action_type = "UPDATE_DAY_STATS"
-        }
-
-        else if (type === "week") {
-            stats_timestamp_toString = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime().toString()
-            stats_action_type = "UPDATE_WEEK_STATS"
-        }
-
-        else {
-            stats_timestamp_toString = new Date(current_date.getFullYear(), current_date.getMonth()).getTime().toString()
-            stats_action_type = "UPDATE_MONTH_STATS"
-        }
-
-        if (operation === "inc") {
-            if (flag === "uncompleted") {
-                if (stats.has(stats_timestamp_toString)) {
-                    stats_data = Map(stats.get(stats_timestamp_toString)).update("current", (value) => {
-                        return List(value).update(this.priority_order[task_priority], (v) => v += 1)
-                    })
-                }
-
-                else {
-                    let current = [0, 0, 0, 0]
-                    current[this.priority_order[task_priority]] += 1
-                    stats_data.current = current
-
-                    stats_data = fromJS(stats_data)
-                }
-            }
-
-            else {
-                if (stats.has(stats_timestamp_toString)) {
-                    stats_data = Map(stats.get(stats_timestamp_toString)).update("current", (value) => {
-                        return List(value).update(this.priority_order[task_priority], (v) => v - 1 < 0 ? 0 : v - 1)
-                    })
-                }
-            }
-        }
-
-        else {
-            if (flag === "uncompleted") {
-                if (stats.has(stats_timestamp_toString)) {
-                    stats_data = Map(stats.get(stats_timestamp_toString)).update("current", (value) => {
-                        return List(value).update(this.priority_order[task_priority], (v) => v - 1 < 0 ? 0 : v - 1)
-                    })
-                }
-            }
-        }
-
-        return ({
-            type: stats_action_type,
-            keyPath: [stats_timestamp_toString],
-            notSetValue: {},
-            updater: (value) => stats_data
-        })
-    }
-
-    doUpdateOnChartStats = (flag, operation) => {
-        let current_date = new Date()
-
-        week_timestamp_toString = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime().toString(),
+    _doUpdateOnChartStats = (flag, operation) => {
+        let current_date = new Date(),
+            day_in_week = current_date.getDay(),
+            day_in_month = current_date.getDate(),
+            month_in_year = current_date.getMonth(),
+            year = current_date.getFullYear(),
+            last_day_in_month = new Date(year, month_in_year + 1, 0).getDate(),
+            day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
+            week_timestamp_toString = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime().toString(),
             month_timestamp_toString = new Date(current_date.getFullYear(), current_date.getMonth()).getTime().toString(),
             year_timestamp_toString = current_date.getFullYear().toString(),
+            task_priority = Map(this.props.task_data).getIn(["priority", "value"])
 
-            week_chart_key = current_date.getDay().toString(),
-            month_chart_key = current_date.getDate().toString(),
-            year_chart_key = current_date.getMonth().toString()
 
-        let week_chart_stats_update = this.doCompareAndUpdateOnChartStatsData(this.props.task_data, this.props.week_chart_stats, week_timestamp_toString, week_chart_key, flag, operation)
+        let day_chart_stats_update = this._updateDayChartStats(task_priority, day_timestamp_toString, flag, operation)
 
-        let month_chart_stats_update = this.doCompareAndUpdateOnChartStatsData(this.props.task_data, this.props.month_chart_stats, month_timestamp_toString, month_chart_key, flag, operation)
+        let week_chart_stats_update = this._updateWeekChartStats(task_priority, day_in_week, week_timestamp_toString, flag, operation)
 
-        let year_chart_stats_update = this.doCompareAndUpdateOnChartStatsData(this.props.task_data, this.props.year_chart_stats, year_timestamp_toString, year_chart_key, flag, operation)
+        let month_chart_stats_update = this._updateMonthChartStats(task_priority, day_in_month, last_day_in_month, month_timestamp_toString, flag, operation)
+
+        let year_chart_stats_update = this._updateYearChartStats(task_priority, month_in_year, year_timestamp_toString, flag, operation)
 
         return ({
+            day_action_type: "UPDATE_DAY_CHART_STATS",
+            day_chart_keyPath: [day_timestamp_toString],
+            day_chart_notSetValue: {},
+            day_chart_updater: (value) => day_chart_stats_update,
+
             week_action_type: "UPDATE_WEEK_CHART_STATS",
-            week_chart_keyPath: [week_timestamp_toString, week_chart_key, "current"],
+            week_chart_keyPath: [week_timestamp_toString],
             week_chart_notSetValue: {},
             week_chart_updater: (value) => week_chart_stats_update,
 
             month_action_type: "UPDATE_MONTH_CHART_STATS",
-            month_chart_keyPath: [month_timestamp_toString, month_chart_key, "current"],
+            month_chart_keyPath: [month_timestamp_toString],
             month_chart_notSetValue: {},
             month_chart_updater: (value) => month_chart_stats_update,
 
             year_action_type: "UPDATE_YEAR_CHART_STATS",
-            year_chart_keyPath: [year_timestamp_toString, year_chart_key, "current"],
+            year_chart_keyPath: [year_timestamp_toString],
             year_chart_notSetValue: {},
             year_chart_updater: (value) => year_chart_stats_update,
         })
     }
 
-    doCompareAndUpdateOnChartStatsData = (task_data, chart_stats, timestamp_toString, key, flag, operation) => {
-        let task_data_map = Map(task_data),
-            task_priority = task_data_map.getIn(["priority", "value"]),
-            chart_stats_map = Map(chart_stats),
-            update_data = {}
+    _updateDayChartStats = (task_priority, timestamp_toString, flag, operation) => {
+        let day_chart_stats_map = Map(this.props.day_chart_stats),
+            returning_data = Map()
+
 
         if (operation === "inc") {
             if (flag === "uncompleted") {
-                if (chart_stats_map.hasIn([timestamp_toString, key])) {
-                    update_data = List(chart_stats_map.getIn([timestamp_toString, key, "current"])).update(this.priority_order[task_priority], (v) => v + 1)
+                if (day_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])) {
+                    returning_data = Map(day_chart_stats_map.get(timestamp_toString)).asMutable()
+                    returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v + 1)
                 }
 
                 else {
+                    let prev_converted_timestamp_data = {}
                     let current = [0, 0, 0, 0]
                     current[this.priority_order[task_priority]] += 1
-                    update_data = fromJS(current)
+
+                    prev_converted_timestamp_data = {
+                        current
+                    }
+
+                    returning_data = fromJS(prev_converted_timestamp_data)
                 }
             }
 
             //flag completed - operation increase => will decrease the goal current value when the complete button is pressed
             else {
-                if (chart_stats_map.hasIn([timestamp_toString, key])) {
-                    update_data = List(chart_stats_map.getIn([timestamp_toString, key, "current"])).update(this.priority_order[task_priority], (v) => v - 1 < 0 ? 0 : v - 1)
+                if (day_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])) {
+                    returning_data = Map(day_chart_stats_map.get(timestamp_toString)).asMutable()
+
+                    returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => {
+                        return v - 1 < 0 ? 0 : v - 1
+                    })
                 }
             }
-
         }
 
         // operation decrease - flag uncompleted (only uncompleted task has operation increase and decrease, completed only has decrease)
         else {
-            if (chart_stats_map.hasIn([timestamp_toString, key])) {
-                update_data = List(chart_stats_map.getIn([timestamp_toString, key, "current"])).update(this.priority_order[task_priority], (v) => v - 1 < 0 ? 0 : v - 1)
+            if (day_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])) {
+                returning_data = Map(day_chart_stats_map.get(timestamp_toString)).asMutable()
+                returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
             }
         }
 
-        return update_data
+        return returning_data.toMap()
+    }
+
+    _updateWeekChartStats = (task_priority, day_in_week, timestamp_toString, flag, operation) => {
+        let week_chart_stats_map = Map(this.props.week_chart_stats),
+            returning_data = Map()
+
+        if (operation === "inc") {
+            if (flag === "uncompleted") {
+
+                if (week_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
+                    && week_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", day_in_week, this.priority_order[task_priority]])) {
+                    returning_data = Map(week_chart_stats_map.get(timestamp_toString)).asMutable()
+                    returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v + 1)
+                    returning_data.updateIn(["completed_priority_array", day_in_week, this.priority_order[task_priority]], (v) => v + 1)
+                }
+
+                else {
+                    let prev_converted_timestamp_data = {}
+                    let current = [0, 0, 0, 0]
+                    current[this.priority_order[task_priority]] += 1
+
+                    let completed_priority_array = []
+                    for (let i = 0; i < 7; i++) {
+                        completed_priority_array.push([0, 0, 0, 0])
+                    }
+                    completed_priority_array[day_in_week][this.priority_order[task_priority]] += 1
+
+                    prev_converted_timestamp_data = {
+                        current,
+                        completed_priority_array
+                    }
+
+                    returning_data = fromJS(prev_converted_timestamp_data)
+                }
+            }
+
+            //flag completed - operation increase => will decrease the goal current value when the complete button is pressed
+            else {
+                if (week_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
+                    && week_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", day_in_week, this.priority_order[task_priority]])) {
+                    returning_data = Map(week_chart_stats_map.get(timestamp_toString)).asMutable()
+                    returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+                    returning_data.updateIn(["completed_priority_array", day_in_week, this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+                }
+            }
+        }
+
+        // operation decrease - flag uncompleted (only uncompleted task has operation increase and decrease, completed only has decrease)
+        else {
+            if (week_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
+                && week_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", day_in_week, this.priority_order[task_priority]])) {
+                returning_data = Map(week_chart_stats_map.get(timestamp_toString)).asMutable()
+                returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+                returning_data.updateIn(["completed_priority_array", day_in_week, this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+            }
+        }
+
+        return returning_data.toMap()
+    }
+
+    _updateMonthChartStats = (task_priority, day_in_month, last_day_in_month, timestamp_toString, flag, operation) => {
+        let month_chart_stats_map = Map(this.props.month_chart_stats),
+            returning_data = Map()
+
+        if (operation === "inc") {
+            if (flag === "uncompleted") {
+                if (month_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
+                    && week_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", (day_in_month - 1), this.priority_order[task_priority]])) {
+                    returning_data = Map(month_chart_stats_map.get(timestamp_toString)).asMutable()
+                    returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v + 1)
+                    returning_data.updateIn(["completed_priority_array", (day_in_month - 1), this.priority_order[task_priority]], (v) => v + 1)
+                }
+
+                else {
+                    let prev_converted_timestamp_data = {}
+                    let current = [0, 0, 0, 0]
+                    current[this.priority_order[task_priority]] += 1
+
+                    let completed_priority_array = []
+
+                    for (let i = 0; i < last_day_in_month; i++) {
+                        completed_priority_array.push([0, 0, 0, 0])
+                    }
+
+                    completed_priority_array[(day_in_month - 1)][this.priority_order[task_priority]] += 1
+
+                    prev_converted_timestamp_data = {
+                        current,
+                        completed_priority_array
+                    }
+
+                    returning_data = fromJS(prev_converted_timestamp_data)
+                }
+            }
+
+            //flag completed - operation increase => will decrease the goal current value when the complete button is pressed
+            else {
+                if (month_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
+                    && week_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", (day_in_month - 1), this.priority_order[task_priority]])) {
+                    returning_data = Map(month_chart_stats_map.get(timestamp_toString)).asMutable()
+                    returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+                    returning_data.updateIn(["completed_priority_array", (day_in_month - 1), this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+                }
+            }
+        }
+
+        // operation decrease - flag uncompleted (only uncompleted task has operation increase and decrease, completed only has decrease)
+        else {
+            if (month_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
+                && week_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", (day_in_month - 1), this.priority_order[task_priority]])) {
+                returning_data = Map(month_chart_stats_map.get(timestamp_toString)).asMutable()
+                returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+                returning_data.updateIn(["completed_priority_array", (day_in_month - 1), this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+            }
+        }
+
+        return returning_data.toMap()
+    }
+
+    _updateYearChartStats = (task_priority, month_in_year, timestamp_toString, flag, operation) => {
+        let year_chart_stats_map = Map(this.props.year_chart_stats),
+            returning_data = Map()
+
+        if (operation === "inc") {
+            if (flag === "uncompleted") {
+                if (year_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
+                    && week_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", month_in_year, this.priority_order[task_priority]])) {
+                    returning_data = Map(year_chart_stats_map.get(timestamp_toString)).asMutable()
+                    returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v + 1)
+                    returning_data.updateIn(["completed_priority_array", month_in_year, this.priority_order[task_priority]], (v) => v + 1)
+                }
+
+                else {
+                    let prev_converted_timestamp_data = {}
+                    let current = [0, 0, 0, 0]
+                    current[this.priority_order[task_priority]] += 1
+
+                    let completed_priority_array = []
+
+                    for (let i = 0; i < 12; i++) {
+                        completed_priority_array.push([0, 0, 0, 0])
+                    }
+
+                    completed_priority_array[month_in_year][this.priority_order[task_priority]] += 1
+
+                    prev_converted_timestamp_data = {
+                        current,
+                        completed_priority_array
+                    }
+
+                    returning_data = fromJS(prev_converted_timestamp_data)
+                }
+            }
+
+            //flag completed - operation increase => will decrease the goal current value when the complete button is pressed
+            else {
+                if (year_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
+                    && week_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", month_in_year, this.priority_order[task_priority]])) {
+                    returning_data = Map(year_chart_stats_map.get(timestamp_toString)).asMutable()
+                    returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+                    returning_data.updateIn(["completed_priority_array", month_in_year, this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+                }
+            }
+        }
+
+        // operation decrease - flag uncompleted (only uncompleted task has operation increase and decrease, completed only has decrease)
+        else {
+            if (year_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
+                && week_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", month_in_year, this.priority_order[task_priority]])) {
+                returning_data = Map(year_chart_stats_map.get(timestamp_toString)).asMutable()
+                returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+                returning_data.updateIn(["completed_priority_array", month_in_year, this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+            }
+        }
+
+        return returning_data.toMap()
     }
 
     _checkComplete = () => {
         if (this.props.is_chosen_date_today) {
             let sending_obj = {}
 
-            sending_obj.completed_task_data = this.doUpdateOnCompletedTask(this.props.flag, this.props.type, "inc")
-            sending_obj.stats_data = this.doUpdateOnStats(this.props.flag, this.props.type, "inc")
+            sending_obj.completed_task_data = this._doUpdateOnCompletedTask(this.props.flag, this.props.type, "inc")
 
-            sending_obj.chart_data = this.doUpdateOnChartStats(this.props.flag, "inc")
+            sending_obj.chart_data = this._doUpdateOnChartStats(this.props.flag, "inc")
 
             this.props.updateBulkThunk(sending_obj)
 
@@ -407,9 +534,8 @@ export default class TaskCard extends React.PureComponent {
 
             let sending_obj = {}
 
-            sending_obj.completed_task_data = this.doUpdateOnCompletedTask(this.props.flag, this.props.type, "dec")
-            sending_obj.stats_data = this.doUpdateOnStats(this.props.flag, this.props.type, "dec")
-            sending_obj.chart_data = this.doUpdateOnChartStats(this.props.flag, "dec")
+            sending_obj.completed_task_data = this._doUpdateOnCompletedTask(this.props.flag, this.props.type, "dec")
+            sending_obj.chart_data = this._doUpdateOnChartStats(this.props.flag, "dec")
 
             this.props.updateBulkThunk(sending_obj)
         }

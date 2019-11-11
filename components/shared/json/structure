@@ -25,33 +25,44 @@
     }
 
 - Map structures for charts to work:
+    + Day chart: Map {
+        // String
+        day_timestamp: Map {
+            // total completions in week
+            current: [0, 0, 0, 0]
+        }
+    }
+
     + Week chart: Map {
         // Monday of the week (String)
         week_timestamp:  Map {
-            // sunday
-            0: Map {
-                current: List [0, 0, 0, 0]
-            }
+            // total completions in week
+            current: [0, 0, 0, 0]
+
+            // Sunday - Saturday
+            completed_priority_array: List [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
         }
     }
 
     + Month chart: {
         // Day 1 of the month
         month_timestamp: Map {
-            // First day of month
-            1: Map {
-                current: List [0, 0, 0, 0]
-            }
+            // total completions in month
+            current: [0, 0, 0, 0]
+
+            // 1 - the last day of month
+            completed_priority_array: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], ...]
         }
     }
 
     + Year chart: {
         // 2019
         year: {
-            // January
-            0: {
-                current: [0, 0, 0, 0]
-            }
+            // total completions in year
+            current: [0, 0, 0, 0]
+
+            // January - December
+            completed_priority_array: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], ...]
         }
     }
 

@@ -3,7 +3,6 @@ import {
     deleteTask,
     returnNewCompletedTask
 } from '../../../../actions/taskAction'
-import { updateStats, returnNewStats } from '../../../../actions/statsAction'
 import { updateChartStats, returnNewChartStats } from '../../../../actions/chartStatsAction'
 import { batchActions } from 'redux-batched-actions'
 import { updateCategory } from '../../../../actions/categoryAction'
@@ -14,12 +13,12 @@ export const deleteTaskAndHistoryThunk = ({
     update_category_data,
     update_priority_data,
     delete_completed_task_data,
-    return_new_stats_data,
+    return_new_day_chart_stats_data,
     return_new_week_chart_stats_data,
     return_new_month_chart_stats_data,
     return_new_year_chart_stats_data,
 }) => (dispatch, getState) => {
-
+    
     let action_array = [
         deleteTask(delete_task_data.type, delete_task_data.id),
 
@@ -29,7 +28,7 @@ export const deleteTaskAndHistoryThunk = ({
 
         deleteTask(delete_completed_task_data.type, delete_completed_task_data.id),
 
-        returnNewStats(return_new_stats_data.type, return_new_stats_data.data),
+        returnNewChartStats(return_new_day_chart_stats_data.type, return_new_day_chart_stats_data.data),
 
         returnNewChartStats(return_new_week_chart_stats_data.type, return_new_week_chart_stats_data.data),
 

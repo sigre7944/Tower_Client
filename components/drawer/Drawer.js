@@ -92,9 +92,7 @@ export default class Drawer extends React.PureComponent {
     }
 
     _updateNewData = () => {
-        let new_day_stats = Map(this.props.day_stats).asMutable(),
-            new_week_stats = Map(this.props.week_stats).asMutable(),
-            new_month_stats = Map(this.props.day_stats).asMutable(),
+        let new_day_chart_stats = Map(this.props.day_chart_stats).asMutable(),
             new_week_chart_stats = Map(this.props.week_chart_stats).asMutable(),
             new_month_chart_stats = Map(this.props.month_chart_stats).asMutable(),
             new_year_chart_stats = Map(this.props.year_chart_stats).asMutable(),
@@ -114,43 +112,66 @@ export default class Drawer extends React.PureComponent {
                     if (key !== "id" && key !== "category") {
                         let completed_priority_array = List(data.get("completed_priority_array")),
                             timestamp = key,
-                            day_in_week_toString = new Date(timestamp).getDay().toString(),
-                            day_in_month_toString = new Date(timestamp).getDate().toString(),
-                            month = new Date(timestamp).getMonth(),
-                            month_toString = month.toString(),
+                            day_in_week = new Date(timestamp).getDay(),
+                            day_in_month = new Date(timestamp).getDate(),
+                            month_in_year = new Date(timestamp).getMonth(),
                             year = new Date(timestamp).getFullYear(),
                             year_toString = year.toString(),
                             monday = this.getMonday(new Date(timestamp)),
+                            day_timestamp_toString = new Date(year, month_in_year, day_in_month),
                             week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
-                            month_timestamp_toString = new Date(year, month).getTime().toString()
+                            month_timestamp_toString = new Date(year, month_in_year).getTime().toString()
 
                         completed_priority_array.forEach((completed_value, priority_index) => {
-                            if (new_day_stats.hasIn([timestamp, "current"])) {
-                                new_day_stats.updateIn([timestamp, "current"], (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value))
+                            if (new_day_chart_stats.hasIn([day_timestamp_toString, "current", priority_index])) {
+                                new_day_chart_stats.updateIn(
+                                    [day_timestamp_toString, "current", priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
                             }
 
-                            if (new_week_chart_stats.hasIn([week_timestamp_toString, day_in_week_toString, "current"])) {
+                            if (new_week_chart_stats.hasIn([week_timestamp_toString, "current", priority_index])) {
                                 new_week_chart_stats.updateIn(
-                                    [week_timestamp_toString, day_in_week_toString, "current"],
-                                    (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                    [week_timestamp_toString, "current", priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
                                 )
                             }
 
-                            if (new_month_chart_stats.hasIn([month_timestamp_toString, day_in_month_toString, "current"])) {
+                            if (new_week_chart_stats.hasIn([week_timestamp_toString, "completed_priority_array", day_in_week, priority_index])) {
+                                new_week_chart_stats.updateIn(
+                                    [week_timestamp_toString, "completed_priority_array", day_in_week, priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
+                            if (new_month_chart_stats.hasIn([month_timestamp_toString, "current", priority_index])) {
                                 new_month_chart_stats.updateIn(
-                                    [month_timestamp_toString, day_in_month_toString, "current"],
-                                    (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                    [month_timestamp_toString, "current", priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
                                 )
                             }
 
-                            if (new_year_chart_stats.hasIn([year_toString, month_toString, "current"])) {
+                            if (new_month_chart_stats.hasIn([month_timestamp_toString, "completed_priority_array", day_in_month, priority_index])) {
+                                new_month_chart_stats.updateIn(
+                                    [month_timestamp_toString, "completed_priority_array", day_in_month, priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
+                            if (new_year_chart_stats.hasIn([year_toString, "current", priority_index])) {
                                 new_year_chart_stats.updateIn(
-                                    [year_toString, month_toString, "current"],
-                                    (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                    [year_toString, "current", priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
+                            if (new_year_chart_stats.hasIn([year_toString, "completed_priority_array", month_in_year, priority_index])) {
+                                new_year_chart_stats.updateIn(
+                                    [year_toString, "completed_priority_array", month_in_year, priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
                                 )
                             }
                         })
-
                     }
                 })
             }
@@ -169,42 +190,67 @@ export default class Drawer extends React.PureComponent {
                             week_timestamp_toString = key
 
                         completed_priority_array.forEach((completed_value_array, day_in_week_index) => {
-                            if (day_in_week_index === 0) {
-                                day_in_week_index = 7
-                            }
-
-                            let day_in_week_toString = (parseInt(day_in_week_index) % 7).toString(),
-                                date = new Date(timestamp + (day_in_week_index - 1) * 86400 * 1000),
-                                day_in_month_toString = date.getDate().toString(),
-                                month = date.getMonth(),
-                                month_toString = month.toString(),
+                            let date = new Date(timestamp + (day_in_week_index - 1) * 86400 * 1000),
+                                day_in_month = date.getDate(),
+                                month_in_year = date.getMonth(),
                                 year = date.getFullYear(),
                                 year_toString = year.toString(),
-                                month_timestamp_toString = new Date(year, month).getTime()
+                                month_timestamp_toString = new Date(year, month_in_year).getTime(),
+                                day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime()
 
                             List(completed_value_array).forEach((completed_value, priority_index) => {
-                                if (new_week_stats.hasIn([week_timestamp_toString, "current"])) {
-                                    new_week_stats.updateIn([week_timestamp_toString, "current"], (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value))
+                                if (new_day_chart_stats.hasIn([day_timestamp_toString, "current", priority_index])) {
+                                    new_day_chart_stats.updateIn(
+                                        [day_timestamp_toString, "current", priority_index],
+                                        (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                    )
                                 }
 
-                                if (new_week_chart_stats.hasIn([week_timestamp_toString, day_in_week_toString, "current"])) {
+                                if (new_week_chart_stats.hasIn([week_timestamp_toString, "completed_priority_array", day_in_week_index, priority_index])) {
                                     new_week_chart_stats.updateIn(
-                                        [week_timestamp_toString, day_in_week_toString, "current"],
-                                        (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                        [week_timestamp_toString, "completed_priority_array", day_in_week_index, priority_index],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
                                     )
                                 }
 
-                                if (new_month_chart_stats.hasIn([month_timestamp_toString, day_in_month_toString, "current"])) {
+                                if (new_week_chart_stats.hasIn([week_timestamp_toString, "current", priority_index])) {
+                                    new_week_chart_stats.updateIn(
+                                        [week_timestamp_toString, "current", priority_index],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                }
+
+                                if (new_week_chart_stats.hasIn([week_timestamp_toString, "completed_priority_array", day_in_week_index, priority_index])) {
+                                    new_week_chart_stats.updateIn(
+                                        [week_timestamp_toString, "completed_priority_array", day_in_week_index, priority_index],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                    )
+                                }
+
+                                if (new_month_chart_stats.hasIn([month_timestamp_toString, "current", priority_index])) {
                                     new_month_chart_stats.updateIn(
-                                        [month_timestamp_toString, day_in_month_toString, "current"],
-                                        (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                        [month_timestamp_toString, "current", priority_index],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                }
+
+
+                                if (new_month_chart_stats.hasIn([month_timestamp_toString, "completed_priority_array", day_in_month - 1, priority_index])) {
+                                    new_month_chart_stats.updateIn(
+                                        [month_timestamp_toString, "completed_priority_array", day_in_month - 1, priority_index],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
                                     )
                                 }
 
-                                if (new_year_chart_stats.hasIn([year_toString, month_toString, "current"])) {
+                                if (new_year_chart_stats.hasIn([year_toString, "current", priority_index])) {
                                     new_year_chart_stats.updateIn(
-                                        [year_toString, month_toString, "current"],
-                                        (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                        [year_toString, "current", priority_index],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                    )
+                                }
+
+                                if (new_year_chart_stats.hasIn([year_toString, "completed_priority_array", month_in_year, priority_index])) {
+                                    new_year_chart_stats.updateIn(
+                                        [year_toString, "completed_priority_array", month_in_year, priority_index],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
                                     )
                                 }
                             })
@@ -229,39 +275,62 @@ export default class Drawer extends React.PureComponent {
                         completed_priority_array.forEach((completed_value_array, day_in_month_index) => {
 
                             let day_in_month = parseInt(day_in_month_index) + 1,
-                                day_in_month_toString = day_in_month.toString(),
                                 date = new Date(month_timestamp_toString),
-                                day_in_week_toString = date.getDay().toString(),
-                                month = date.getMonth(),
-                                month_toString = date.getMonth().toString(),
+                                day_in_week = date.getDay(),
+                                month_in_year = date.getMonth(),
                                 year = date.getFullYear(),
                                 year_toString = date.getFullYear().toString(),
-                                monday = this.getMonday(new Date(year, month, day_in_month)),
-                                week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime()
+                                monday = this.getMonday(new Date(year, month_in_year, day_in_month)),
+                                week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime(),
+                                day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime()
 
                             List(completed_value_array).forEach((completed_value, priority_index) => {
-                                if (new_month_stats.hasIn([month_timestamp_toString, "current"])) {
-                                    new_month_stats.updateIn([month_timestamp_toString, "current"], (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value))
+                                if (new_day_chart_stats.hasIn([day_timestamp_toString, "current", priority_index])) {
+                                    new_day_chart_stats.updateIn(
+                                        [day_timestamp_toString, "current", priority_index],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                    )
                                 }
 
-                                if (new_week_chart_stats.hasIn([week_timestamp_toString, day_in_week_toString, "current"])) {
+                                if (new_week_chart_stats.hasIn([week_timestamp_toString, "current", priority_index])) {
                                     new_week_chart_stats.updateIn(
-                                        [week_timestamp_toString, day_in_week_toString, "current"],
-                                        (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                        [week_timestamp_toString, "current", priority_index],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
                                     )
                                 }
 
-                                if (new_month_chart_stats.hasIn([month_timestamp_toString, day_in_month_toString, "current"])) {
+                                if (new_week_chart_stats.hasIn([week_timestamp_toString, "completed_priority_array", day_in_week, priority_index])) {
+                                    new_week_chart_stats.updateIn(
+                                        [week_timestamp_toString, "completed_priority_array", day_in_week, priority_index],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                    )
+                                }
+
+                                if (new_month_chart_stats.hasIn([month_timestamp_toString, "current", priority_index])) {
                                     new_month_chart_stats.updateIn(
-                                        [month_timestamp_toString, day_in_month_toString, "current"],
-                                        (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                        [month_timestamp_toString, "current", priority_index],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
                                     )
                                 }
 
-                                if (new_year_chart_stats.hasIn([year_toString, month_toString, "current"])) {
+                                if (new_month_chart_stats.hasIn([month_timestamp_toString, "completed_priority_array", day_in_month_index, priority_index])) {
+                                    new_month_chart_stats.updateIn(
+                                        [month_timestamp_toString, "completed_priority_array", day_in_month_index, priority_index],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                    )
+                                }
+
+                                if (new_year_chart_stats.hasIn([year_toString, "current", priority_index])) {
                                     new_year_chart_stats.updateIn(
-                                        [year_toString, month_toString, "current"],
-                                        (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                        [year_toString, "current", priority_index],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                    )
+                                }
+
+                                if (new_year_chart_stats.hasIn([year_toString, "completed_priority_array", month_in_year, priority_index])) {
+                                    new_year_chart_stats.updateIn(
+                                        [year_toString, "completed_priority_array", month_in_year, priority_index],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
                                     )
                                 }
                             })
@@ -272,9 +341,7 @@ export default class Drawer extends React.PureComponent {
         })
 
         return ({
-            new_day_stats,
-            new_week_stats,
-            new_month_stats,
+            new_day_chart_stats,
             new_week_chart_stats,
             new_month_chart_stats,
             new_year_chart_stats,
@@ -308,9 +375,7 @@ export default class Drawer extends React.PureComponent {
         let sending_obj = {
             category_id: category_data.get("id"),
             new_priorities: this._updateNewPriorities(),
-            new_day_stats: new_data.new_day_stats,
-            new_week_stats: new_data.new_week_stats,
-            new_month_stats: new_data.new_month_stats,
+            new_day_chart_stats: new_data.new_day_chart_stats,
             new_week_chart_stats: new_data.new_week_chart_stats,
             new_month_chart_stats: new_data.new_month_chart_stats,
             new_year_chart_stats: new_data.new_year_chart_stats,
