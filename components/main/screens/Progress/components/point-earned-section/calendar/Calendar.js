@@ -10,7 +10,7 @@ import {
     Dimensions
 } from 'react-native'
 
-import { Map, fromJS } from 'immutable'
+import { Map, fromJS, List } from 'immutable'
 
 import { styles } from './styles/styles'
 
@@ -64,9 +64,9 @@ export default class Calendar extends React.Component {
                 scrollToMonth={this.scrollToMonth}
                 present_month_index={this.present_month_index}
 
-                day_stats={this.props.day_stats}
-                week_stats={this.props.week_stats}
-                month_stats={this.props.month_stats}
+                day_chart_stats={this.props.day_chart_stats}
+                week_chart_stats={this.props.week_chart_stats}
+                month_chart_stats={this.props.month_chart_stats}
             />
         )
     }
@@ -84,6 +84,7 @@ export default class Calendar extends React.Component {
             for (let month = 0; month < 12; month++) {
                 if (month === this.current_month && year === this.current_year) {
                     this.present_month_index = counter
+                    this.start_index = counter
                 }
 
                 this.month_data.push({
@@ -94,7 +95,12 @@ export default class Calendar extends React.Component {
                 counter += 1
             }
         }
+
+        this.setState(prevState => ({
+            should_flatlist_update: prevState.should_flatlist_update + 1
+        }))
     }
+
 
     _getItemLayout = (data, index) => ({
         length: panel_width,
@@ -104,6 +110,16 @@ export default class Calendar extends React.Component {
 
     componentDidMount() {
         this.initMonthData()
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.day_chart_stats !== prevProps.day_chart_stats
+            || this.props.week_chart_stats !== prevProps.week_chart_stats
+            || this.props.month_chart_stats !== prevProps.month_chart_stats) {
+            this.setState(prevState => ({
+                should_flatlist_update: prevState.should_flatlist_update + 1
+            }))
+        }
     }
 
     render() {
@@ -202,6 +218,8 @@ class MonthHolder extends React.Component {
             <WeekRowHolder
                 week_data={item}
                 week_index={index}
+                day_chart_stats={this.props.day_chart_stats}
+                week_chart_stats={this.props.week_chart_stats}
             />
         )
     }
@@ -211,11 +229,15 @@ class MonthHolder extends React.Component {
     }
 
     _calculateTotalPointsInMonth = () => {
-        let day_stats_map = Map(this.props.day_stats),
-            week_stats_map = Map(this.props.week_stats),
-            month_stats_map = Map(this.props.month_stats)
+        let month_timestamp_toString = new Date(this.props.data.year, this.props.data.month).getTime().toString()
+        let month_chart_stats_map = Map(this.props.month_chart_stats)
 
+        return List(month_chart_stats_map.getIn([month_timestamp_toString, "current"])).reduce((total, value) => total + value)
+    }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        let month_timestamp_toString = new Date(this.props.data.year, this.props.data.month).getTime().toString()
+        return Map(this.props.month_chart_stats).get(month_timestamp_toString) !== Map(nextProps.month_chart_stats).get(month_timestamp_toString)
     }
 
     componentDidMount() {
@@ -243,6 +265,7 @@ class MonthHolder extends React.Component {
             let data = []
 
             data.push({
+                is_week_holder: true,
                 week: this.getWeek(new Date(monday)),
                 day: new Date(monday).getDate(),
                 month,
@@ -251,12 +274,14 @@ class MonthHolder extends React.Component {
             })
 
             for (let i = 0; i < 7; i++) {
-                let date = new Date(i * 86400 * 1000 + monday)
+                let date = new Date(i * 86400 * 1000 + monday),
+                    week = this.getWeek(date)
 
                 if (date.getMonth() !== month) {
                     data.push({
                         unchosen: true,
                         day: date.getDate(),
+                        week,
                         month: date.getMonth(),
                         year: date.getFullYear(),
                         noWeekInMonth: this.getNoWeekInMonth(date),
@@ -266,6 +291,7 @@ class MonthHolder extends React.Component {
                 else {
                     data.push({
                         day: date.getDate(),
+                        week,
                         month: date.getMonth(),
                         year: date.getFullYear(),
                         noWeekInMonth: this.getNoWeekInMonth(date),
@@ -288,7 +314,20 @@ class MonthHolder extends React.Component {
         }))
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.week_chart_stats !== prevProps.week_chart_stats
+            || this.props.day_chart_stats !== prevProps.day_chart_stats) {
+            this.setState(prevState => ({
+                should_flatlist_update: prevState.should_flatlist_update + 1
+            }))
+        }
+    }
+
     render() {
+        let total_points = this._calculateTotalPointsInMonth()
+        if (!total_points) {
+            total_points = 0
+        }
 
         return (
             <View
@@ -313,7 +352,7 @@ class MonthHolder extends React.Component {
                     <Text
                         style={styles.points_text}
                     >
-
+                        {total_points}
                     </Text>
                 </View>
                 <TouchableOpacity
@@ -363,13 +402,16 @@ class WeekRowHolder extends React.PureComponent {
         should_flatlist_update: 0,
     }
 
-    _keyExtractor = (item, index) => `progress-calendar-week-row-${item.week}-${item.day}-${item.month}-${item.year}`
+    _keyExtractor = (item, index) => {
+        return `progress-calendar-week-row-${item.week}-${item.day}-${item.month}-${item.year}`
+    }
 
     _renderItem = ({ item, index }) => {
-        if (item.week) {
+        if (item.is_week_holder) {
             return (
                 <WeekHolder
                     week_row_data={item}
+                    week_chart_stats={this.props.week_chart_stats}
                 />
             )
         }
@@ -379,6 +421,7 @@ class WeekRowHolder extends React.PureComponent {
                 return (
                     <UnchosenDayHolder
                         week_row_data={item}
+                        day_chart_stats={this.props.day_chart_stats}
                     />
                 )
             }
@@ -387,9 +430,19 @@ class WeekRowHolder extends React.PureComponent {
                 return (
                     <DayHolder
                         week_row_data={item}
+                        day_chart_stats={this.props.day_chart_stats}
                     />
                 )
             }
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.week_chart_stats !== prevProps.week_chart_stats
+            || this.props.day_chart_stats !== prevProps.day_chart_stats) {
+            this.setState(prevState => ({
+                should_flatlist_update: prevState.should_flatlist_update + 1
+            }))
         }
     }
 
@@ -416,34 +469,113 @@ class WeekRowHolder extends React.PureComponent {
 
 class WeekHolder extends React.Component {
 
+    year = this.props.week_row_data.year
+    month = this.props.week_row_data.month
+    day = this.props.week_row_data.day
+    week_timestamp_toString = new Date(this.year, this.month, this.day).getTime().toString()
+
     shouldComponentUpdate(nextProps, nextState) {
-        return false
+        return Map(this.props.week_chart_stats).get(this.week_timestamp_toString) !== Map(nextProps.week_chart_stats).get(this.week_timestamp_toString)
+    }
+
+    _calculateTotalPointsWeek = () => {
+        let week_chart_stats_map = Map(this.props.week_chart_stats)
+
+        return List(week_chart_stats_map.getIn([this.week_timestamp_toString, "current"])).reduce((total, value) => total + value)
     }
 
     render() {
+        let total_points = this._calculateTotalPointsWeek(),
+            should_render_point_banner = false
+
+        if (!total_points) {
+            total_points = 0
+            should_render_point_banner = false
+        }
+
+        else {
+            should_render_point_banner = true
+        }
+
         return (
             <View
                 style={{
                     flex: 1,
-                    height: 32,
-                    justifyContent: "center",
                     alignItems: "center",
                 }}
             >
-                <Text
-                    style={styles.week_text}
-                >
-                    {this.props.week_row_data.week}
-                </Text>
+                {should_render_point_banner ?
+                    <View
+                        style={styles.point_banner}
+                    >
+                        <View
+                            style={styles.time_informer_container}
+                        >
+                            <Text
+                                style={styles.week_text}
+                            >
+                                {this.props.week_row_data.week}
+                            </Text>
+                        </View>
+
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                flexWrap: "wrap",
+                                marginHorizontal: 3,
+                                justifyContent: "center",
+                                marginBottom: 5,
+                            }}
+                        >
+                            <Text
+                                style={styles.point_text_white}
+                            >
+                                {total_points}
+                            </Text>
+
+                            <Text
+                                style={styles.point_text_white}
+                            >
+                                pt
+                            </Text>
+                        </View>
+                    </View>
+
+                    :
+
+                    <View
+                        style={styles.time_informer_container}
+                    >
+                        <Text
+                            style={styles.week_text}
+                        >
+                            {this.props.week_row_data.week}
+                        </Text>
+                    </View>
+                }
             </View>
         )
     }
 }
 
-class DayHolder extends React.PureComponent {
+class DayHolder extends React.Component {
+    year = this.props.week_row_data.year
+    month = this.props.week_row_data.month
+    day = this.props.week_row_data.day
+    day_timestamp_toString = new Date(this.year, this.month, this.day).getTime().toString()
 
     state = {
         round_day_container_style: styles.not_chosen_round_day_container,
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return Map(this.props.day_chart_stats).get(this.day_timestamp_toString) !== Map(nextProps.day_chart_stats).get(this.day_timestamp_toString)
+    }
+
+    _calculateTotalPointsDay = () => {
+        let day_chart_stats_map = Map(this.props.day_chart_stats)
+
+        return List(day_chart_stats_map.getIn([this.day_timestamp_toString, "current"])).reduce((total, value) => total + value)
     }
 
     render() {
@@ -458,19 +590,75 @@ class DayHolder extends React.PureComponent {
             day_text_style = styles.chosen_day_text
         }
 
+        let total_points = this._calculateTotalPointsDay(),
+            should_render_point_banner = false
+
+        if (!total_points) {
+            total_points = 0
+            should_render_point_banner = false
+        }
+
+        else {
+            should_render_point_banner = true
+        }
+
+
         return (
             <View
-                style={styles.day_holder_container}
+                style={{
+                    flex: 1,
+                    alignItems: "center",
+                }}
             >
-                <View
-                    style={this.state.round_day_container_style}
-                >
-                    <Text
-                        style={day_text_style}
+                {should_render_point_banner ?
+                    <View
+                        style={styles.point_banner}
                     >
-                        {this.props.week_row_data.day}
-                    </Text>
-                </View>
+                        <View
+                            style={styles.time_informer_container}
+                        >
+                            <Text
+                                style={styles.day_text_style}
+                            >
+                                {this.props.week_row_data.day}
+                            </Text>
+                        </View>
+
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                flexWrap: "wrap",
+                                marginHorizontal: 3,
+                                justifyContent: "center",
+                                marginBottom: 5,
+                            }}
+                        >
+                            <Text
+                                style={styles.point_text_white}
+                            >
+                                {total_points}
+                            </Text>
+
+                            <Text
+                                style={styles.point_text_white}
+                            >
+                                pt
+                            </Text>
+                        </View>
+                    </View>
+
+                    :
+
+                    <View
+                        style={styles.time_informer_container}
+                    >
+                        <Text
+                            style={styles.day_text_style}
+                        >
+                            {this.props.week_row_data.day}
+                        </Text>
+                    </View>
+                }
             </View>
         )
     }

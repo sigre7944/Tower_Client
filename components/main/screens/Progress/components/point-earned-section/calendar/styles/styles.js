@@ -35,6 +35,15 @@ export const styles = StyleSheet.create({
         color: CommonStyle.primary_colors.prim_1
     },
 
+    points_text: {
+        fontFamily: CommonStyle.sf_ui_display_medium_font,
+        fontSize: 16,
+        lineHeight: 19,
+        letterSpacing: -0.02,
+        color: CommonStyle.text_icon_colors.ti_1,
+        marginLeft: 5,
+    },
+
     day_text_absolute: {
         fontFamily: CommonStyle.sf_ui_display_light_font,
         fontStyle: "normal",
@@ -113,4 +122,31 @@ export const styles = StyleSheet.create({
         marginHorizontal: 15,
         backgroundColor: CommonStyle.text_icon_colors.ti_4
     },
+
+    point_banner: {
+        width: 42,
+        height: 87,
+        borderRadius: 21,
+        backgroundColor: CommonStyle.primary_colors.prim_1,
+        alignItems: "center",
+        justifyContent: "space-between",
+    },
+
+    time_informer_container: {
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        backgroundColor: "white",
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 5,
+    },
+
+    point_text_white: {
+        fontFamily: CommonStyle.sf_ui_display_light_font,
+        fontSize: 14,
+        lineHeight: 17,
+        letterSpacing: -0.02,
+        color: "white"
+    }
 })

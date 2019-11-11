@@ -522,6 +522,7 @@ class MonthHolder extends React.Component {
             let data = []
 
             data.push({
+                is_week_holder: true,
                 week: this.getWeek(new Date(monday)),
                 day: new Date(monday).getDate(),
                 month,
@@ -530,12 +531,14 @@ class MonthHolder extends React.Component {
             })
 
             for (let i = 0; i < 7; i++) {
-                let date = new Date(i * 86400 * 1000 + monday)
+                let date = new Date(i * 86400 * 1000 + monday),
+                    week = this.getWeek(date)
 
                 if (date.getMonth() !== month) {
                     data.push({
                         unchosen: true,
                         day: date.getDate(),
+                        week,
                         month: date.getMonth(),
                         year: date.getFullYear(),
                         noWeekInMonth: this.getNoWeekInMonth(date),
@@ -545,6 +548,7 @@ class MonthHolder extends React.Component {
                 else {
                     data.push({
                         day: date.getDate(),
+                        week,
                         month: date.getMonth(),
                         year: date.getFullYear(),
                         noWeekInMonth: this.getNoWeekInMonth(date),
@@ -702,7 +706,7 @@ class WeekRowHolder extends React.Component {
     _keyExtractor = (item, index) => `week-type-calendar-week-row-${item.week}-${item.day}-${item.month}-${item.year}`
 
     _renderItem = ({ item, index }) => {
-        if (item.week) {
+        if (item.is_week_holder) {
             return (
                 <WeekHolder
                     week_row_data={item}
