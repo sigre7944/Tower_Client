@@ -38,6 +38,12 @@ export default class Drawer extends React.PureComponent {
         pri_04: 3
     }
 
+    task_type_order = {
+        day: 0,
+        week: 1,
+        month: 2
+    }
+
     category_data = Map()
 
     state = {
@@ -139,6 +145,13 @@ export default class Drawer extends React.PureComponent {
                                 )
                             }
 
+                            if (new_day_chart_stats.hasIn([day_timestamp_toString, "task_type_completions", this.task_type_order["day"]])) {
+                                new_day_chart_stats.updateIn(
+                                    [day_timestamp_toString, "task_type_completions", this.task_type_order["day"]],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
                             if (new_week_chart_stats.hasIn([week_timestamp_toString, "current", priority_index])) {
                                 new_week_chart_stats.updateIn(
                                     [week_timestamp_toString, "current", priority_index],
@@ -159,6 +172,15 @@ export default class Drawer extends React.PureComponent {
                                     (value) => value - total_points < 0 ? 0 : value - total_points
                                 )
                             }
+
+
+                            if (new_week_chart_stats.hasIn([week_timestamp_toString, "task_type_completions", this.task_type_order["day"]])) {
+                                new_week_chart_stats.updateIn(
+                                    [week_timestamp_toString, "task_type_completions", this.task_type_order["day"]],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
 
                             if (new_month_chart_stats.hasIn([month_timestamp_toString, "current", priority_index])) {
                                 new_month_chart_stats.updateIn(
@@ -181,6 +203,13 @@ export default class Drawer extends React.PureComponent {
                                 )
                             }
 
+                            if (new_month_chart_stats.hasIn([month_timestamp_toString, "task_type_completions", this.task_type_order["day"]])) {
+                                new_month_chart_stats.updateIn(
+                                    [month_timestamp_toString, "task_type_completions", this.task_type_order["day"]],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
                             if (new_year_chart_stats.hasIn([year_toString, "current", priority_index])) {
                                 new_year_chart_stats.updateIn(
                                     [year_toString, "current", priority_index],
@@ -199,6 +228,13 @@ export default class Drawer extends React.PureComponent {
                                 new_year_chart_stats.updateIn(
                                     [year_toString, "totalPoints"],
                                     (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
+                            if (new_year_chart_stats.hasIn([year_toString, "task_type_completions", this.task_type_order["day"]])) {
+                                new_year_chart_stats.updateIn(
+                                    [year_toString, "task_type_completions", this.task_type_order["day"]],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
                                 )
                             }
                         })
@@ -247,6 +283,13 @@ export default class Drawer extends React.PureComponent {
                                     )
                                 }
 
+                                if (new_day_chart_stats.hasIn([day_timestamp_toString, "task_type_completions", this.task_type_order["week"]])) {
+                                    new_day_chart_stats.updateIn(
+                                        [day_timestamp_toString, "task_type_completions", this.task_type_order["week"]],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                    )
+                                }
+
                                 if (new_week_chart_stats.hasIn([week_timestamp_toString, "current", priority_index])) {
                                     new_week_chart_stats.updateIn(
                                         [week_timestamp_toString, "current", priority_index],
@@ -264,6 +307,13 @@ export default class Drawer extends React.PureComponent {
                                     new_week_chart_stats.updateIn(
                                         [week_timestamp_toString, "totalPoints"],
                                         (value) => value - total_points < 0 ? 0 : value - total_points
+                                    )
+                                }
+
+                                if (new_week_chart_stats.hasIn([week_timestamp_toString, "task_type_completions", this.task_type_order["week"]])) {
+                                    new_week_chart_stats.updateIn(
+                                        [week_timestamp_toString, "task_type_completions", this.task_type_order["week"]],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
                                     )
                                 }
 
@@ -288,6 +338,13 @@ export default class Drawer extends React.PureComponent {
                                     )
                                 }
 
+                                if (new_month_chart_stats.hasIn([month_timestamp_toString, "task_type_completions", this.task_type_order["week"]])) {
+                                    new_month_chart_stats.updateIn(
+                                        [month_timestamp_toString, "task_type_completions", this.task_type_order["week"]],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                    )
+                                }
+
                                 if (new_year_chart_stats.hasIn([year_toString, "current", priority_index])) {
                                     new_year_chart_stats.updateIn(
                                         [year_toString, "current", priority_index],
@@ -306,6 +363,13 @@ export default class Drawer extends React.PureComponent {
                                     new_year_chart_stats.updateIn(
                                         [year_toString, "totalPoints"],
                                         (value) => value - total_points < 0 ? 0 : value - total_points
+                                    )
+                                }
+
+                                if (new_year_chart_stats.hasIn([year_toString, "task_type_completions", this.task_type_order["week"]])) {
+                                    new_year_chart_stats.updateIn(
+                                        [year_toString, "task_type_completions", this.task_type_order["week"]],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
                                     )
                                 }
                             })
@@ -357,6 +421,13 @@ export default class Drawer extends React.PureComponent {
                                     )
                                 }
 
+                                if (new_day_chart_stats.hasIn([day_timestamp_toString, "task_type_completions", this.task_type_order["month"]])) {
+                                    new_day_chart_stats.updateIn(
+                                        [day_timestamp_toString, "task_type_completions", this.task_type_order["month"]],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                    )
+                                }
+
                                 if (new_week_chart_stats.hasIn([week_timestamp_toString, "current", priority_index])) {
                                     new_week_chart_stats.updateIn(
                                         [week_timestamp_toString, "current", priority_index],
@@ -375,6 +446,13 @@ export default class Drawer extends React.PureComponent {
                                     new_week_chart_stats.updateIn(
                                         [week_timestamp_toString, "totalPoints"],
                                         (value) => value - total_points < 0 ? 0 : value - total_points
+                                    )
+                                }
+
+                                if (new_week_chart_stats.hasIn([week_timestamp_toString, "task_type_completions", this.task_type_order["month"]])) {
+                                    new_week_chart_stats.updateIn(
+                                        [week_timestamp_toString, "task_type_completions", this.task_type_order["month"]],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
                                     )
                                 }
 
@@ -399,6 +477,13 @@ export default class Drawer extends React.PureComponent {
                                     )
                                 }
 
+                                if (new_month_chart_stats.hasIn([month_timestamp_toString, "task_type_completions", this.task_type_order["month"]])) {
+                                    new_month_chart_stats.updateIn(
+                                        [month_timestamp_toString, "task_type_completions", this.task_type_order["month"]],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                    )
+                                }
+
                                 if (new_year_chart_stats.hasIn([year_toString, "current", priority_index])) {
                                     new_year_chart_stats.updateIn(
                                         [year_toString, "current", priority_index],
@@ -417,6 +502,13 @@ export default class Drawer extends React.PureComponent {
                                     new_year_chart_stats.updateIn(
                                         [year_toString, "totalPoints"],
                                         (value) => value - total_points < 0 ? 0 : value - total_points
+                                    )
+                                }
+
+                                if (new_year_chart_stats.hasIn([year_toString, "task_type_completions", this.task_type_order["month"]])) {
+                                    new_year_chart_stats.updateIn(
+                                        [year_toString, "task_type_completions", this.task_type_order["month"]],
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
                                     )
                                 }
                             })

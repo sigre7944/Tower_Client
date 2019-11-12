@@ -138,6 +138,7 @@ class BottomConfirmElement extends React.PureComponent {
             new_task_with_id.update("id", (value) => task_id)
             new_task_with_id.update("title", (value) => this.props.title_value)
             new_task_with_id.update("description", (value) => this.props.description_value)
+            new_task_with_id.update("type", (value) => this.props.currentAnnotation)
 
             let priority_value = Map(this.props.task_data).getIn(["priority", "value"]),
                 priority_data = fromJS({

@@ -10,7 +10,9 @@
             totalPoints: 0
 
             // total completions in week
-            current: [0, 0, 0, 0]
+            current: [0, 0, 0, 0],
+
+            task_type_completions: [0, 0, 0] // day - week- month
         }
     }
 
@@ -25,6 +27,8 @@
 
             // Sunday - Saturday
             completed_priority_array: List [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
+
+            task_type_completions: [0, 0, 0] // day - week- month
         }
     }
 
@@ -38,7 +42,9 @@
             current: [0, 0, 0, 0]
 
             // 1 - the last day of month
-            completed_priority_array: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], ...]
+            completed_priority_array: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], ...],
+
+            task_type_completions: [0, 0, 0] // day - week- month
         }
     }
 
@@ -52,7 +58,9 @@
             current: [0, 0, 0, 0]
 
             // January - December
-            completed_priority_array: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], ...]
+            completed_priority_array: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], ...],
+
+            task_type_completions: [0, 0, 0] // day - week- month
         }
     }
 

@@ -105,6 +105,16 @@ export default class Calendar extends React.Component {
         index
     })
 
+    _onMomentumScrollEnd = ({ nativeEvent }) => {
+        let number_of_months = Math.floor(nativeEvent.contentOffset.x / panel_width)
+
+        let month = number_of_months % 12,
+            year = Math.floor(number_of_months / 12)
+
+        this.props._setChosenMonthFromCalendar(month)
+        this.props._setChosenYearFromCalendar(year)
+    }
+
     componentDidMount() {
         this.initMonthData()
     }
@@ -148,6 +158,8 @@ export default class Calendar extends React.Component {
                         day_stats={this.props.day_stats}
                         week_stats={this.props.week_stats}
                         week_stats={this.props.week_stats}
+
+                        onMomentumScrollEnd={this._onMomentumScrollEnd}
                     />
                 </View>
                 <View
@@ -228,7 +240,7 @@ class MonthHolder extends React.Component {
         let month_timestamp_toString = new Date(this.props.data.year, this.props.data.month).getTime().toString()
         let month_chart_stats_map = Map(this.props.month_chart_stats)
 
-        return List(month_chart_stats_map.getIn([month_timestamp_toString, "current"])).reduce((total, value) => total + value)
+        return parseInt(month_chart_stats_map.getIn([month_timestamp_toString, "totalPoints"]))
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -477,7 +489,7 @@ class WeekHolder extends React.Component {
     _calculateTotalPointsWeek = () => {
         let week_chart_stats_map = Map(this.props.week_chart_stats)
 
-        return List(week_chart_stats_map.getIn([this.week_timestamp_toString, "current"])).reduce((total, value) => total + value)
+        return parseInt(week_chart_stats_map.getIn([this.week_timestamp_toString, "totalPoints"]))
     }
 
     render() {
@@ -571,7 +583,7 @@ class DayHolder extends React.Component {
     _calculateTotalPointsDay = () => {
         let day_chart_stats_map = Map(this.props.day_chart_stats)
 
-        return List(day_chart_stats_map.getIn([this.day_timestamp_toString, "current"])).reduce((total, value) => total + value)
+        return parseInt(day_chart_stats_map.getIn([this.day_timestamp_toString, "totalPoints"]))
     }
 
     render() {
@@ -673,7 +685,7 @@ class UnchosenDayHolder extends React.Component {
     _calculateTotalPointsDay = () => {
         let day_chart_stats_map = Map(this.props.day_chart_stats)
 
-        return List(day_chart_stats_map.getIn([this.day_timestamp_toString, "current"])).reduce((total, value) => total + value)
+        return parseInt(day_chart_stats_map.getIn([this.day_timestamp_toString, "totalPoints"]))
     }
 
     render() {

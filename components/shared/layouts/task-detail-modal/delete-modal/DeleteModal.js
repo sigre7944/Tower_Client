@@ -32,6 +32,12 @@ export default class DeleteModal extends Component {
         pri_04: 3
     }
 
+    task_type_order = {
+        day: 0,
+        week: 1,
+        month: 2
+    }
+
     getWeek = (date) => {
         let target = new Date(date);
         let dayNr = (date.getDay() + 6) % 7;
@@ -57,7 +63,8 @@ export default class DeleteModal extends Component {
             returning_week_chart_stats_map = Map(this.props.week_chart_stats).asMutable(),
             returning_month_chart_stats_map = Map(this.props.month_chart_stats).asMutable(),
             returning_year_chart_stats_map = Map(this.props.year_chart_stats).asMutable(),
-            type = this.props.type
+            type = this.props.type,
+            task_type = Map(this.props.task_data).get("type")
 
 
         Map(completed_tasks_map.get(task_id)).keySeq().forEach((key, index) => {
@@ -93,6 +100,13 @@ export default class DeleteModal extends Component {
                             )
                         }
 
+                        if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "task_type_completions", this.task_type_order["day"]])) {
+                            returning_day_chart_stats_map.updateIn(
+                                [day_timestamp_toString, "task_type_completions", this.task_type_order["day"]],
+                                (value) => value - completed_value < 0 ? 0 : value - completed_value
+                            )
+                        }
+
                         if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "current", priority_index])) {
                             returning_week_chart_stats_map.updateIn(
                                 [week_timestamp_toString, "current", priority_index],
@@ -111,6 +125,13 @@ export default class DeleteModal extends Component {
                             returning_week_chart_stats_map.updateIn(
                                 [week_timestamp_toString, "totalPoints"],
                                 (value) => value - total_points < 0 ? 0 : value - total_points
+                            )
+                        }
+
+                        if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "task_type_completions", this.task_type_order["day"]])) {
+                            returning_week_chart_stats_map.updateIn(
+                                [week_timestamp_toString, "task_type_completions", this.task_type_order["day"]],
+                                (value) => value - completed_value < 0 ? 0 : value - completed_value
                             )
                         }
 
@@ -135,6 +156,13 @@ export default class DeleteModal extends Component {
                             )
                         }
 
+                        if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "task_type_completions", this.task_type_order["day"]])) {
+                            returning_month_chart_stats_map.updateIn(
+                                [month_timestamp_toString, "task_type_completions", this.task_type_order["day"]],
+                                (value) => value - completed_value < 0 ? 0 : value - completed_value
+                            )
+                        }
+
                         if (returning_year_chart_stats_map.hasIn([year_toString, "current", priority_index])) {
                             returning_year_chart_stats_map.updateIn(
                                 [year_toString, "current", priority_index],
@@ -153,6 +181,13 @@ export default class DeleteModal extends Component {
                             returning_year_chart_stats_map.updateIn(
                                 [year_toString, "totalPoints"],
                                 (value) => value - total_points < 0 ? 0 : value - total_points
+                            )
+                        }
+
+                        if (returning_year_chart_stats_map.hasIn([year_toString, "task_type_completions", this.task_type_order["day"]])) {
+                            returning_year_chart_stats_map.updateIn(
+                                [year_toString, "task_type_completions", this.task_type_order["day"]],
+                                (value) => value - completed_value < 0 ? 0 : value - completed_value
                             )
                         }
                     })
@@ -189,6 +224,13 @@ export default class DeleteModal extends Component {
                                 )
                             }
 
+                            if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "task_type_completions", this.task_type_order["week"]])) {
+                                returning_day_chart_stats_map.updateIn(
+                                    [day_timestamp_toString, "task_type_completions", this.task_type_order["week"]],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
                             if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "current", priority_index])) {
                                 returning_week_chart_stats_map.updateIn(
                                     [week_timestamp_toString, "current", priority_index],
@@ -207,6 +249,13 @@ export default class DeleteModal extends Component {
                                 returning_week_chart_stats_map.updateIn(
                                     [week_timestamp_toString, "totalPoints"],
                                     (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
+                            if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "task_type_completions", this.task_type_order["week"]])) {
+                                returning_week_chart_stats_map.updateIn(
+                                    [week_timestamp_toString, "task_type_completions", this.task_type_order["week"]],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
                                 )
                             }
 
@@ -231,6 +280,13 @@ export default class DeleteModal extends Component {
                                 )
                             }
 
+                            if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "task_type_completions", this.task_type_order["week"]])) {
+                                returning_month_chart_stats_map.updateIn(
+                                    [month_timestamp_toString, "task_type_completions", this.task_type_order["week"]],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
                             if (returning_year_chart_stats_map.hasIn([year_toString, "current", priority_index])) {
                                 returning_year_chart_stats_map.updateIn(
                                     [year_toString, "current", priority_index],
@@ -249,6 +305,13 @@ export default class DeleteModal extends Component {
                                 returning_year_chart_stats_map.updateIn(
                                     [year_toString, "totalPoints"],
                                     (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
+                            if (returning_year_chart_stats_map.hasIn([year_toString, "task_type_completions", this.task_type_order["week"]])) {
+                                returning_year_chart_stats_map.updateIn(
+                                    [year_toString, "task_type_completions", this.task_type_order["week"]],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
                                 )
                             }
                         })
@@ -286,6 +349,13 @@ export default class DeleteModal extends Component {
                                 )
                             }
 
+                            if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "task_type_completions", this.task_type_order["month"]])) {
+                                returning_day_chart_stats_map.updateIn(
+                                    [day_timestamp_toString, "task_type_completions", this.task_type_order["month"]],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
                             if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "current", priority_index])) {
                                 returning_week_chart_stats_map.updateIn(
                                     [week_timestamp_toString, "current", priority_index],
@@ -304,6 +374,13 @@ export default class DeleteModal extends Component {
                                 returning_week_chart_stats_map.updateIn(
                                     [week_timestamp_toString, "totalPoints"],
                                     (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
+                            if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "task_type_completions", this.task_type_order["month"]])) {
+                                returning_week_chart_stats_map.updateIn(
+                                    [week_timestamp_toString, "task_type_completions", this.task_type_order["month"]],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
                                 )
                             }
 
@@ -328,6 +405,13 @@ export default class DeleteModal extends Component {
                                 )
                             }
 
+                            if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "task_type_completions", this.task_type_order["month"]])) {
+                                returning_month_chart_stats_map.updateIn(
+                                    [month_timestamp_toString, "task_type_completions", this.task_type_order["month"]],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
                             if (returning_year_chart_stats_map.hasIn([year_toString, "current", priority_index])) {
                                 returning_year_chart_stats_map.updateIn(
                                     [year_toString, "current", priority_index],
@@ -346,6 +430,13 @@ export default class DeleteModal extends Component {
                                 returning_year_chart_stats_map.updateIn(
                                     [year_toString, "totalPoints"],
                                     (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
+                            if (returning_year_chart_stats_map.hasIn([year_toString, "task_type_completions", this.task_type_order["month"]])) {
+                                returning_year_chart_stats_map.updateIn(
+                                    [year_toString, "task_type_completions", this.task_type_order["month"]],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
                                 )
                             }
                         })

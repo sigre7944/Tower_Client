@@ -7,21 +7,37 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Map, List } from 'immutable'
-import PointEarnedSection from './components/point-earned-section/PointEarnedSection'
 import WeekChart from './components/week-chart/WeekChart.Container'
 import MonthChart from './components/month-chart/MonthChart.Container'
 import YearChart from './components/year-chart/YearChart.Container'
 
-import {styles} from './styles/styles'
+import Calendar from './components/calendar/Calendar.Container'
+import SummaryHolder from './components/summary-holder/SummaryHolder.Container'
+import { styles } from './styles/styles'
 
 export default class Progress extends React.PureComponent {
+  current_date = new Date()
 
   state = {
     choose_month_bool: false,
-    month: new Date().getMonth(),
-    year: new Date().getFullYear(),
+    month: this.current_date.getMonth(),
+    year: this.current_date.getFullYear(),
+
+    chosen_month: this.current_date.getMonth(),
+    chosen_year: this.current_date.getFullYear(),
   }
 
+  _setChosenMonthFromCalendar = (month) => {
+    this.setState({
+      chosen_month: month
+    })
+  }
+
+  _setChosenYearFromCalendar = (year) => {
+    this.setState({
+      chosen_year: year
+    })
+  }
 
   componentDidMount() {
     const didFocusScreen = this.props.navigation.addListener(
@@ -32,7 +48,7 @@ export default class Progress extends React.PureComponent {
     )
   }
 
-  componentDidUpdate(prevProps, prevState){
+  componentDidUpdate(prevProps, prevState) {
     // if(this.props.day_stats !== prevProps.day_stats){
     //   console.log("\n day_stats",this.props.day_stats)
     // }
@@ -50,16 +66,14 @@ export default class Progress extends React.PureComponent {
     return (
       <>
         <ScrollView>
-          <PointEarnedSection
-            {...this.props}
+          <Calendar
+            _setChosenMonthFromCalendar={this._setChosenMonthFromCalendar}
+            _setChosenYearFromCalendar={this._setChosenYearFromCalendar}
           />
 
           <SummaryHolder
-            day_stats={this.props.day_stats}
-            week_stats={this.props.week_stats}
-            month_stats={this.props.month_stats}
-            month={this.state.month}
-            year={this.state.year}
+            chosen_month={this.state.chosen_month}
+            chosen_year={this.state.chosen_year}
           />
 
           <ChartSection />
@@ -71,213 +85,6 @@ export default class Progress extends React.PureComponent {
 
 
 
-class SummaryHolder extends React.PureComponent {
-
-  state = {
-    day_total_completions: 0,
-    week_total_completions: 0,
-    month_total_completions: 0
-  }
-
-  getWeek = (date) => {
-    let target = new Date(date);
-    let dayNr = (date.getDay() + 6) % 7;
-    target.setDate(target.getDate() - dayNr + 3);
-    let firstThursday = target.valueOf();
-    target.setMonth(0, 1);
-    if (target.getDay() != 4) {
-      target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
-    }
-    return 1 + Math.ceil((firstThursday - target) / 604800000);
-  }
-
-  getMonday = (date) => {
-    let dayInWeek = new Date(date).getDay()
-    let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
-    return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
-  }
-
-  getNoWeekInMonth = (date) => {
-    let nearest_monday = this.getMonday(date)
-    let first_moday_of_month = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 7))
-
-    return Math.floor((nearest_monday - first_moday_of_month) / 7) + 1
-  }
-
-  updateDayTaskCompletions = (month, year, day_stats_map) => {
-    let day_total_completions = 0,
-      first_day_of_month = new Date(year, month, 1),
-      last_day_of_month = new Date(year, month + 1, 0),
-      total_sum = 0
-
-    for (let i = first_day_of_month.getDate(); i <= last_day_of_month.getDate(); i++) {
-      let day_timestamp = new Date(year, month, i).getTime()
-
-      if (day_stats_map.has(day_timestamp)) {
-        let data = Map(day_stats_map.get(day_timestamp)),
-          total_sum = List(data.get("current")).reduce(((total, amount) => total + amount), 0)
-
-        day_total_completions += total_sum
-      }
-    }
-
-    this.setState({
-      day_total_completions
-    })
-  }
-
-  updateWeekTaskCompletions = (month, year, week_stats_map) => {
-    let first_day_of_month = new Date(year, month, 1),
-      last_day_of_month = new Date(year, month + 1, 0),
-      first_monday = this.getMonday(first_day_of_month),
-      last_monday = this.getMonday(last_day_of_month),
-      first_week_of_month = this.getWeek(first_monday),
-      last_week_of_month = this.getWeek(last_monday),
-      week_total_completions = 0,
-      total_sum = 0
-
-    for (let i = 0; i <= (last_week_of_month - first_week_of_month); i++) {
-      let week_timestamp = first_monday.getTime() + 86400 * 1000 * 7 * i
-      if (week_stats_map.has(week_timestamp)) {
-        let data = Map(week_stats_map.get(week_timestamp)),
-          total_sum = List(data.get("current")).reduce(((total, amount) => total + amount), 0)
-
-        week_total_completions += total_sum
-      }
-    }
-
-    this.setState({
-      week_total_completions
-    })
-  }
-
-  updateMonthTaskCompletions = (month, year, month_stats_map) => {
-    let month_timestamp = new Date(year, month),
-      month_total_completions = 0,
-      total_sum = 0
-
-    if (month_stats_map.has(month_timestamp)) {
-      let data = Map(month_stats_map.get(month_timestamp)),
-        total_sum = List(data.get("current")).reduce(((total, amount) => total + amount), 0)
-
-      month_total_completions += total_sum
-    }
-
-    this.setState({
-      month_total_completions
-    })
-  }
-
-  componentDidMount() {
-    this.updateDayTaskCompletions(this.props.month, this.props.year, Map(this.props.day_stats))
-    this.updateWeekTaskCompletions(this.props.month, this.props.year, Map(this.props.week_stats))
-    this.updateMonthTaskCompletions(this.props.month, this.props.year, Map(this.props.month_stats))
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props.day_stats !== prevProps.day_stats) {
-      this.updateDayTaskCompletions(this.props.month, this.props.year, Map(this.props.day_stats))
-
-      // console.log("day_stats", this.props.day_stats)
-    }
-
-    if (this.props.week_stats !== prevProps.week_stats) {
-      this.updateWeekTaskCompletions(this.props.month, this.props.year, Map(this.props.week_stats))
-
-      // console.log("week_stats", this.props.week_stats)
-    }
-
-    if (this.props.month_stats !== prevProps.month_stats) {
-      this.updateMonthTaskCompletions(this.props.month, this.props.year, Map(this.props.month_stats))
-
-      // console.log("month_stats", this.props.month_stats)
-    }
-
-    if (this.props.month !== prevProps.month || this.props.year !== prevProps.year) {
-      this.updateDayTaskCompletions(this.props.month, this.props.year, Map(this.props.day_stats))
-      this.updateWeekTaskCompletions(this.props.month, this.props.year, Map(this.props.week_stats))
-      this.updateMonthTaskCompletions(this.props.month, this.props.year, Map(this.props.month_stats))
-    }
-  }
-
-  render() {
-    return (
-      <View
-        style={{
-          height: 165,
-          flex: 1,
-          borderTopWidth: 1,
-          borderBottomWidth: 1,
-          marginTop: 66,
-          borderColor: "black",
-        }}
-      >
-        <View
-          style={{
-            width: 79,
-            height: 20,
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 24,
-            marginLeft: 16,
-          }}
-        >
-          <Text
-            style={{
-            }}
-          >
-            Summary:
-            </Text>
-        </View>
-
-
-        <View
-          style={{
-            height: 81,
-            marginTop: 16,
-            flexDirection: "row",
-          }}
-        >
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text>{this.state.day_total_completions}</Text>
-            <Text>Daily completed</Text>
-          </View>
-
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              borderLeftWidth: 1,
-              borderRightWidth: 1,
-              borderColor: "black"
-            }}
-          >
-            <Text>{this.state.week_total_completions}</Text>
-            <Text>Weekly completed</Text>
-          </View>
-
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text>{this.state.month_total_completions}</Text>
-            <Text>Monthly completed</Text>
-          </View>
-        </View>
-      </View>
-    )
-  }
-}
 
 class ChartSection extends React.PureComponent {
 
