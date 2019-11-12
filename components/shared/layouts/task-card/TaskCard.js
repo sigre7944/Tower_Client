@@ -53,7 +53,9 @@ export default class TaskCard extends React.PureComponent {
             task_id = task_map.get("id"),
             task_category = task_map.get("category"),
             task_priority = task_map.getIn(["priority", "value"]),
+            task_reward = parseInt(task_map.getIn(["reward", "value"])),
             current_date = new Date(),
+            monday = this.getMonday(current_date),
             data = Map(),
             completed_tasks_map = Map(this.props.completed_tasks),
             timestamp_toString = 0
@@ -63,7 +65,7 @@ export default class TaskCard extends React.PureComponent {
         }
 
         else if (type === "week") {
-            timestamp_toString = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime().toString()
+            timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString()
         }
 
         else {
@@ -77,11 +79,10 @@ export default class TaskCard extends React.PureComponent {
                     if (type === "day") {
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
                         data.updateIn(["category"], (value) => task_category)
+                        data.updateIn([timestamp_toString, "totalPoints"], (value) => value + task_reward)
                         data.updateIn([timestamp_toString, "current"], (value) => value + 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
-                        data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
-                            return List(completed_priority_array).update(this.priority_order[task_priority], (value) => value + 1)
-                        })
+                        data.updateIn([timestamp_toString, "completed_priority_array", this.priority_order[task_priority]], (value) => value + 1)
                     }
 
                     else if (type === "week") {
@@ -89,11 +90,11 @@ export default class TaskCard extends React.PureComponent {
 
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
                         data.updateIn(["category"], (value) => task_category)
+                        data.updateIn([timestamp_toString, "totalPoints"], (value) => value + task_reward)
+                        data.updateIn([timestamp_toString, "total_points_array", day_in_week], (value) => value + task_reward)
                         data.updateIn([timestamp_toString, "current"], (value) => value + 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
-                        data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
-                            return List(completed_priority_array).updateIn([day_in_week, this.priority_order[task_priority]], (value) => value + 1)
-                        })
+                        data.updateIn([timestamp_toString, "completed_priority_array", day_in_week, this.priority_order[task_priority]], (value) => value + 1)
                     }
 
                     else {
@@ -101,11 +102,11 @@ export default class TaskCard extends React.PureComponent {
 
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
                         data.updateIn(["category"], (value) => task_category)
+                        data.updateIn([timestamp_toString, "totalPoints"], (value) => value + task_reward)
+                        data.updateIn([timestamp_toString, "total_points_array", day_in_month - 1], (value) => value + task_reward)
                         data.updateIn([timestamp_toString, "current"], (value) => value + 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
-                        data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
-                            return List(completed_priority_array).updateIn([day_in_month - 1, this.priority_order[task_priority]], (value) => value + 1)
-                        })
+                        data.updateIn([timestamp_toString, "completed_priority_array", day_in_month - 1, this.priority_order[task_priority]], (value) => value + 1)
                     }
                 }
 
@@ -115,7 +116,8 @@ export default class TaskCard extends React.PureComponent {
                         category: task_category
                     }
                     let pre_convert_completed_data = {
-                        current: 1
+                        current: 1,
+                        totalPoints: task_reward
                     }
 
                     if (type === "day") {
@@ -127,25 +129,37 @@ export default class TaskCard extends React.PureComponent {
                     else if (type === "week") {
                         let day_in_week = current_date.getDay()
 
+                        let completed_priority_array = [],
+                            total_points_array = []
+
+                        for (let i = 0; i < 7; i++) {
+                            completed_priority_array.push([0, 0, 0, 0])
+                            total_points_array.push(0)
+                        }
+
+                        completed_priority_array[day_in_week][this.priority_order[task_priority]] += 1
+                        total_points_array[day_in_week] += task_reward
+
+                        pre_convert_completed_data.total_points_array = total_points_array
                         pre_convert_completed_data.current_priority_value = task_priority
-                        pre_convert_completed_data.completed_priority_array = [
-                            new Array(4).fill(0),
-                            new Array(4).fill(0),
-                            new Array(4).fill(0),
-                            new Array(4).fill(0),
-                            new Array(4).fill(0),
-                            new Array(4).fill(0),
-                            new Array(4).fill(0)
-                        ]
-                        pre_convert_completed_data.completed_priority_array[day_in_week][this.priority_order[task_priority]] += 1
+                        pre_convert_completed_data.completed_priority_array = completed_priority_array
                     }
 
                     else {
                         let day_in_month = current_date.getDate(),
                             last_day_in_month = new Date(current_date.getFullYear(), current_date.getMonth() + 1, 0).getDate(),
-                            completed_priority_array = new Array(last_day_in_month).fill(new Array(4).fill(0))
+                            completed_priority_array = [],
+                            total_points_array = []
+
+                        for (let i = 0; i < last_day_in_month; i++) {
+                            completed_priority_array.push([0, 0, 0, 0])
+                            total_points_array.push(0)
+                        }
 
                         completed_priority_array[day_in_month - 1][this.priority_order[task_priority]] += 1
+                        total_points_array[day_in_month - 1] += task_reward
+
+                        pre_convert_completed_data.total_points_array = total_points_array
                         pre_convert_completed_data.current_priority_value = task_priority
                         pre_convert_completed_data.completed_priority_array = completed_priority_array
                     }
@@ -162,6 +176,7 @@ export default class TaskCard extends React.PureComponent {
                     if (type === "day") {
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
                         data.updateIn(["category"], (value) => task_category)
+                        data.updateIn([timestamp_toString, "totalPoints"], (value) => value - task_reward < 0 ? 0 : value - task_reward)
                         data.updateIn([timestamp_toString, "current"], (value) => value - 1 < 0 ? 0 : value - 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
                         data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
@@ -174,6 +189,8 @@ export default class TaskCard extends React.PureComponent {
 
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
                         data.updateIn(["category"], (value) => task_category)
+                        data.updateIn([timestamp_toString, "totalPoints"], (value) => value - task_reward < 0 ? 0 : value - task_reward)
+                        data.updateIn([timestamp_toString, "total_points_array", day_in_week], (value) => value - task_reward < 0 ? 0 : value - task_reward)
                         data.updateIn([timestamp_toString, "current"], (value) => value - 1 < 0 ? 0 : value - 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
                         data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
@@ -186,6 +203,8 @@ export default class TaskCard extends React.PureComponent {
 
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
                         data.updateIn(["category"], (value) => task_category)
+                        data.updateIn([timestamp_toString, "totalPoints"], (value) => value - task_reward < 0 ? 0 : value - task_reward)
+                        data.updateIn([timestamp_toString, "total_points_array", day_in_month - 1], (value) => value - task_reward < 0 ? 0 : value - task_reward)
                         data.updateIn([timestamp_toString, "current"], (value) => value - 1 < 0 ? 0 : value - 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
                         data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
@@ -202,6 +221,7 @@ export default class TaskCard extends React.PureComponent {
                     if (type === "day") {
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
                         data.updateIn(["category"], (value) => task_category)
+                        data.updateIn([timestamp_toString, "totalPoints"], (value) => value - task_reward < 0 ? 0 : value - task_reward)
                         data.updateIn([timestamp_toString, "current"], (value) => value - 1 < 0 ? 0 : value - 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
                         data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
@@ -214,6 +234,8 @@ export default class TaskCard extends React.PureComponent {
 
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
                         data.updateIn(["category"], (value) => task_category)
+                        data.updateIn([timestamp_toString, "totalPoints"], (value) => value - task_reward < 0 ? 0 : value - task_reward)
+                        data.updateIn([timestamp_toString, "total_points_array", day_in_week], (value) => value - task_reward < 0 ? 0 : value - task_reward)
                         data.updateIn([timestamp_toString, "current"], (value) => value - 1 < 0 ? 0 : value - 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
                         data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
@@ -226,6 +248,8 @@ export default class TaskCard extends React.PureComponent {
 
                         data = Map(completed_tasks_map.get(task_id)).asMutable()
                         data.updateIn(["category"], (value) => task_category)
+                        data.updateIn([timestamp_toString, "totalPoints"], (value) => value - task_reward < 0 ? 0 : value - task_reward)
+                        data.updateIn([timestamp_toString, "total_points_array", day_in_month - 1], (value) => value - task_reward < 0 ? 0 : value - task_reward)
                         data.updateIn([timestamp_toString, "current"], (value) => value - 1 < 0 ? 0 : value - 1)
                         data.updateIn([timestamp_toString, "current_priority_value"], (value) => task_priority)
                         data.updateIn([timestamp_toString, "completed_priority_array"], (completed_priority_array) => {
@@ -251,20 +275,22 @@ export default class TaskCard extends React.PureComponent {
             month_in_year = current_date.getMonth(),
             year = current_date.getFullYear(),
             last_day_in_month = new Date(year, month_in_year + 1, 0).getDate(),
+            monday = this.getMonday(current_date),
             day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
-            week_timestamp_toString = new Date(this.getMonday(current_date).getFullYear(), this.getMonday(current_date).getMonth(), this.getMonday(current_date).getDate()).getTime().toString(),
+            week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
             month_timestamp_toString = new Date(current_date.getFullYear(), current_date.getMonth()).getTime().toString(),
             year_timestamp_toString = current_date.getFullYear().toString(),
-            task_priority = Map(this.props.task_data).getIn(["priority", "value"])
+            task_priority = Map(this.props.task_data).getIn(["priority", "value"]),
+            task_reward = parseInt(Map(this.props.task_data).getIn(["reward", "value"]))
 
 
-        let day_chart_stats_update = this._updateDayChartStats(task_priority, day_timestamp_toString, flag, operation)
+        let day_chart_stats_update = this._updateDayChartStats(task_reward, task_priority, day_timestamp_toString, flag, operation)
 
-        let week_chart_stats_update = this._updateWeekChartStats(task_priority, day_in_week, week_timestamp_toString, flag, operation)
+        let week_chart_stats_update = this._updateWeekChartStats(task_reward, task_priority, day_in_week, week_timestamp_toString, flag, operation)
 
-        let month_chart_stats_update = this._updateMonthChartStats(task_priority, day_in_month, last_day_in_month, month_timestamp_toString, flag, operation)
+        let month_chart_stats_update = this._updateMonthChartStats(task_reward, task_priority, day_in_month, last_day_in_month, month_timestamp_toString, flag, operation)
 
-        let year_chart_stats_update = this._updateYearChartStats(task_priority, month_in_year, year_timestamp_toString, flag, operation)
+        let year_chart_stats_update = this._updateYearChartStats(task_reward, task_priority, month_in_year, year_timestamp_toString, flag, operation)
 
         return ({
             day_action_type: "UPDATE_DAY_CHART_STATS",
@@ -289,16 +315,18 @@ export default class TaskCard extends React.PureComponent {
         })
     }
 
-    _updateDayChartStats = (task_priority, timestamp_toString, flag, operation) => {
+    _updateDayChartStats = (task_reward, task_priority, timestamp_toString, flag, operation) => {
         let day_chart_stats_map = Map(this.props.day_chart_stats),
             returning_data = Map()
 
 
         if (operation === "inc") {
             if (flag === "uncompleted") {
-                if (day_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])) {
+                if (day_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
+                    && day_chart_stats_map.hasIn([timestamp_toString, "totalPoints"])) {
                     returning_data = Map(day_chart_stats_map.get(timestamp_toString)).asMutable()
                     returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v + 1)
+                    returning_data.updateIn(["totalPoints"], (value) => value + task_reward)
                 }
 
                 else {
@@ -307,7 +335,8 @@ export default class TaskCard extends React.PureComponent {
                     current[this.priority_order[task_priority]] += 1
 
                     prev_converted_timestamp_data = {
-                        current
+                        current,
+                        totalPoints: task_reward
                     }
 
                     returning_data = fromJS(prev_converted_timestamp_data)
@@ -316,28 +345,29 @@ export default class TaskCard extends React.PureComponent {
 
             //flag completed - operation increase => will decrease the goal current value when the complete button is pressed
             else {
-                if (day_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])) {
+                if (day_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
+                    && day_chart_stats_map.hasIn([timestamp_toString, "totalPoints"])) {
                     returning_data = Map(day_chart_stats_map.get(timestamp_toString)).asMutable()
-
-                    returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => {
-                        return v - 1 < 0 ? 0 : v - 1
-                    })
+                    returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+                    returning_data.updateIn(["totalPoints"], (value) => value - task_reward < 0 ? 0 : value - task_reward)
                 }
             }
         }
 
         // operation decrease - flag uncompleted (only uncompleted task has operation increase and decrease, completed only has decrease)
         else {
-            if (day_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])) {
+            if (day_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
+                && day_chart_stats_map.hasIn([timestamp_toString, "totalPoints"])) {
                 returning_data = Map(day_chart_stats_map.get(timestamp_toString)).asMutable()
                 returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+                returning_data.updateIn(["totalPoints"], (value) => value - task_reward < 0 ? 0 : value - task_reward)
             }
         }
 
         return returning_data.toMap()
     }
 
-    _updateWeekChartStats = (task_priority, day_in_week, timestamp_toString, flag, operation) => {
+    _updateWeekChartStats = (task_reward, task_priority, day_in_week, timestamp_toString, flag, operation) => {
         let week_chart_stats_map = Map(this.props.week_chart_stats),
             returning_data = Map()
 
@@ -345,10 +375,12 @@ export default class TaskCard extends React.PureComponent {
             if (flag === "uncompleted") {
 
                 if (week_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
-                    && week_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", day_in_week, this.priority_order[task_priority]])) {
+                    && week_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", day_in_week, this.priority_order[task_priority]])
+                    && week_chart_stats_map.hasIn([timestamp_toString, "totalPoints"])) {
                     returning_data = Map(week_chart_stats_map.get(timestamp_toString)).asMutable()
                     returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v + 1)
                     returning_data.updateIn(["completed_priority_array", day_in_week, this.priority_order[task_priority]], (v) => v + 1)
+                    returning_data.updateIn(["totalPoints"], (value) => value + task_reward)
                 }
 
                 else {
@@ -364,7 +396,8 @@ export default class TaskCard extends React.PureComponent {
 
                     prev_converted_timestamp_data = {
                         current,
-                        completed_priority_array
+                        completed_priority_array,
+                        totalPoints: task_reward
                     }
 
                     returning_data = fromJS(prev_converted_timestamp_data)
@@ -374,10 +407,12 @@ export default class TaskCard extends React.PureComponent {
             //flag completed - operation increase => will decrease the goal current value when the complete button is pressed
             else {
                 if (week_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
-                    && week_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", day_in_week, this.priority_order[task_priority]])) {
+                    && week_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", day_in_week, this.priority_order[task_priority]])
+                    && week_chart_stats_map.hasIn([timestamp_toString, "totalPoints"])) {
                     returning_data = Map(week_chart_stats_map.get(timestamp_toString)).asMutable()
                     returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
                     returning_data.updateIn(["completed_priority_array", day_in_week, this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+                    returning_data.updateIn(["totalPoints"], (value) => value - task_reward < 0 ? 0 : value - task_reward)
                 }
             }
         }
@@ -385,27 +420,31 @@ export default class TaskCard extends React.PureComponent {
         // operation decrease - flag uncompleted (only uncompleted task has operation increase and decrease, completed only has decrease)
         else {
             if (week_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
-                && week_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", day_in_week, this.priority_order[task_priority]])) {
+                && week_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", day_in_week, this.priority_order[task_priority]])
+                && week_chart_stats_map.hasIn([timestamp_toString, "totalPoints"])) {
                 returning_data = Map(week_chart_stats_map.get(timestamp_toString)).asMutable()
                 returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
                 returning_data.updateIn(["completed_priority_array", day_in_week, this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+                returning_data.updateIn(["totalPoints"], (value) => value - task_reward < 0 ? 0 : value - task_reward)
             }
         }
 
         return returning_data.toMap()
     }
 
-    _updateMonthChartStats = (task_priority, day_in_month, last_day_in_month, timestamp_toString, flag, operation) => {
+    _updateMonthChartStats = (task_reward, task_priority, day_in_month, last_day_in_month, timestamp_toString, flag, operation) => {
         let month_chart_stats_map = Map(this.props.month_chart_stats),
             returning_data = Map()
 
         if (operation === "inc") {
             if (flag === "uncompleted") {
                 if (month_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
-                    && month_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", (day_in_month - 1), this.priority_order[task_priority]])) {
+                    && month_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", (day_in_month - 1), this.priority_order[task_priority]])
+                    && month_chart_stats_map.hasIn([timestamp_toString, "totalPoints"])) {
                     returning_data = Map(month_chart_stats_map.get(timestamp_toString)).asMutable()
                     returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v + 1)
                     returning_data.updateIn(["completed_priority_array", (day_in_month - 1), this.priority_order[task_priority]], (v) => v + 1)
+                    returning_data.updateIn(["totalPoints"], (value) => value + task_reward)
                 }
 
                 else {
@@ -423,7 +462,8 @@ export default class TaskCard extends React.PureComponent {
 
                     prev_converted_timestamp_data = {
                         current,
-                        completed_priority_array
+                        completed_priority_array,
+                        totalPoints: task_reward
                     }
 
                     returning_data = fromJS(prev_converted_timestamp_data)
@@ -433,10 +473,12 @@ export default class TaskCard extends React.PureComponent {
             //flag completed - operation increase => will decrease the goal current value when the complete button is pressed
             else {
                 if (month_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
-                    && month_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", (day_in_month - 1), this.priority_order[task_priority]])) {
+                    && month_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", (day_in_month - 1), this.priority_order[task_priority]])
+                    && month_chart_stats_map.hasIn([timestamp_toString, "totalPoints"])) {
                     returning_data = Map(month_chart_stats_map.get(timestamp_toString)).asMutable()
                     returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
                     returning_data.updateIn(["completed_priority_array", (day_in_month - 1), this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+                    returning_data.updateIn(["totalPoints"], (value) => value - task_reward < 0 ? 0 : value - task_reward)
                 }
             }
         }
@@ -444,10 +486,12 @@ export default class TaskCard extends React.PureComponent {
         // operation decrease - flag uncompleted (only uncompleted task has operation increase and decrease, completed only has decrease)
         else {
             if (month_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
-                && month_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", (day_in_month - 1), this.priority_order[task_priority]])) {
+                && month_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", (day_in_month - 1), this.priority_order[task_priority]])
+                && month_chart_stats_map.hasIn([timestamp_toString, "totalPoints"])) {
                 returning_data = Map(month_chart_stats_map.get(timestamp_toString)).asMutable()
                 returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
                 returning_data.updateIn(["completed_priority_array", (day_in_month - 1), this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+                returning_data.updateIn(["totalPoints"], (value) => value - task_reward < 0 ? 0 : value - task_reward)
             }
         }
 
@@ -461,10 +505,12 @@ export default class TaskCard extends React.PureComponent {
         if (operation === "inc") {
             if (flag === "uncompleted") {
                 if (year_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
-                    && year_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", month_in_year, this.priority_order[task_priority]])) {
+                    && year_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", month_in_year, this.priority_order[task_priority]])
+                    && year_chart_stats_map.hasIn([timestamp_toString, "totalPoints"])) {
                     returning_data = Map(year_chart_stats_map.get(timestamp_toString)).asMutable()
                     returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v + 1)
                     returning_data.updateIn(["completed_priority_array", month_in_year, this.priority_order[task_priority]], (v) => v + 1)
+                    returning_data.updateIn(["totalPoints"], (value) => value + task_reward)
                 }
 
                 else {
@@ -482,7 +528,8 @@ export default class TaskCard extends React.PureComponent {
 
                     prev_converted_timestamp_data = {
                         current,
-                        completed_priority_array
+                        completed_priority_array,
+                        totalPoints: task_reward
                     }
 
                     returning_data = fromJS(prev_converted_timestamp_data)
@@ -492,10 +539,12 @@ export default class TaskCard extends React.PureComponent {
             //flag completed - operation increase => will decrease the goal current value when the complete button is pressed
             else {
                 if (year_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
-                    && year_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", month_in_year, this.priority_order[task_priority]])) {
+                    && year_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", month_in_year, this.priority_order[task_priority]])
+                    && year_chart_stats_map.hasIn([timestamp_toString, "totalPoints"])) {
                     returning_data = Map(year_chart_stats_map.get(timestamp_toString)).asMutable()
                     returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
                     returning_data.updateIn(["completed_priority_array", month_in_year, this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+                    returning_data.updateIn(["totalPoints"], (value) => value - task_reward < 0 ? 0 : value - task_reward)
                 }
             }
         }
@@ -503,10 +552,12 @@ export default class TaskCard extends React.PureComponent {
         // operation decrease - flag uncompleted (only uncompleted task has operation increase and decrease, completed only has decrease)
         else {
             if (year_chart_stats_map.hasIn([timestamp_toString, "current", this.priority_order[task_priority]])
-                && year_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", month_in_year, this.priority_order[task_priority]])) {
+                && year_chart_stats_map.hasIn([timestamp_toString, "completed_priority_array", month_in_year, this.priority_order[task_priority]])
+                && year_chart_stats_map.hasIn([timestamp_toString, "totalPoints"])) {
                 returning_data = Map(year_chart_stats_map.get(timestamp_toString)).asMutable()
                 returning_data.updateIn(["current", this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
                 returning_data.updateIn(["completed_priority_array", month_in_year, this.priority_order[task_priority]], (v) => v - 1 < 0 ? 0 : v - 1)
+                returning_data.updateIn(["totalPoints"], (value) => value - task_reward < 0 ? 0 : value - task_reward)
             }
         }
 

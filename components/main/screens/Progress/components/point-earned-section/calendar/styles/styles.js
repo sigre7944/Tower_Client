@@ -68,13 +68,6 @@ export const styles = StyleSheet.create({
         letterSpacing: -0.02,
     },
 
-    day_holder_container: {
-        flex: 1,
-        height: 32,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-
     cannot_choose_day_text: {
         fontFamily: CommonStyle.sf_ui_display_light_font,
         fontSize: 15,

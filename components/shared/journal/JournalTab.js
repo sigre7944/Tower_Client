@@ -79,12 +79,12 @@ export default class JournalTab extends React.PureComponent {
                 end_month = sunday.getMonth(),
                 start_year = monday.getFullYear(),
                 end_year = sunday.getFullYear(),
-                start_noWeekInMonth = this.getNoWeekInMonth(monday)
-            end_noWeekInMonth = this.getNoWeekInMonth(sunday)
+                start_noWeekInMonth = this.getNoWeekInMonth(monday),
+                end_noWeekInMonth = this.getNoWeekInMonth(sunday)
 
             return ({
-                monday,
-                sunday,
+                monday: monday.getDate(),
+                sunday: sunday.getDate(),
                 week,
                 start_month,
                 end_month,
@@ -92,12 +92,6 @@ export default class JournalTab extends React.PureComponent {
                 end_year,
                 start_noWeekInMonth,
                 end_noWeekInMonth,
-
-                month: this.current_date.getMonth(),
-                day: this.current_date.getDate(),
-                year: this.current_date.getFullYear(),
-                noWeekInMonth: this.getNoWeekInMonth(this.current_date),
-                monday: this.getMonday(this.current_date)
             })
         }
 
@@ -312,7 +306,8 @@ class FlatlistGroup extends React.PureComponent {
     componentDidUpdate(prevProps, prevState) {
         if (this.props.tasks !== prevProps.tasks
             || this.props.completed_tasks !== prevProps.completed_tasks
-            || this.props.current_chosen_category !== prevProps.current_chosen_category) {
+            || this.props.current_chosen_category !== prevProps.current_chosen_category
+            || this.props.chosen_date_data !== prevProps.chosen_date_data) {
             this._updateData()
         }
     }
@@ -378,7 +373,8 @@ class UncompletedTaskCardHolder extends React.PureComponent {
     componentDidUpdate(prevProps, prevState) {
         if (this.props.completed_tasks !== prevProps.completed_tasks
             || this.props.tasks !== prevProps.tasks
-            || this.props.current_chosen_category !== prevProps.current_chosen_category) {
+            || this.props.current_chosen_category !== prevProps.current_chosen_category
+            || this.props.chosen_date_data !== prevProps.chosen_date_data) {
             this._prioritizeTasks()
         }
     }
@@ -1031,6 +1027,18 @@ class UncompletedTaskCard extends React.PureComponent {
         }
     }
 
+    getWeek = (date) => {
+        let target = new Date(date);
+        let dayNr = (date.getDay() + 6) % 7;
+        target.setDate(target.getDate() - dayNr + 3);
+        let firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() != 4) {
+            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+        }
+        return 1 + Math.ceil((firstThursday - target) / 604800000);
+    }
+
     checkIfChosenDateIsToday = (chosen_date_data, type) => {
         let current = new Date(),
             is_chosen_date_today = false
@@ -1049,9 +1057,9 @@ class UncompletedTaskCard extends React.PureComponent {
         }
 
         else if (type === "week") {
-            let { week, year } = chosen_date_data
+            let { week, start_year } = chosen_date_data
 
-            if (week === this.getWeek(current) && year === current.getFullYear()) {
+            if (week === this.getWeek(current) && start_year === current.getFullYear()) {
                 is_chosen_date_today = true
             }
 
@@ -1158,7 +1166,8 @@ class CompletedTaskCardHolder extends React.PureComponent {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.props.completed_tasks !== prevProps.completed_tasks
-            || this.props.current_chosen_category !== prevProps.current_chosen_category) {
+            || this.props.current_chosen_category !== prevProps.current_chosen_category
+            || this.props.chosen_date_data !== prevProps.chosen_date_data) {
             this._prioritizeTasks()
         }
     }
@@ -1232,6 +1241,7 @@ class CompletedTaskCard extends React.PureComponent {
                         parseInt(getIn(completed_task, [chosen_week_timestamp_to_string, "current"], 0)) >= parseInt(goal_value)) {
                         current_goal_value = getIn(completed_task, [chosen_week_timestamp_to_string, "current"], 0)
 
+
                         this.update_obj = {
                             action_type: "UPDATE_COMPLETED_WEEK_TASK",
                             current_goal_value,
@@ -1282,6 +1292,18 @@ class CompletedTaskCard extends React.PureComponent {
         }
     }
 
+    getWeek = (date) => {
+        let target = new Date(date);
+        let dayNr = (date.getDay() + 6) % 7;
+        target.setDate(target.getDate() - dayNr + 3);
+        let firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() != 4) {
+            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+        }
+        return 1 + Math.ceil((firstThursday - target) / 604800000);
+    }
+
     checkIfChosenDateIsToday = (chosen_date_data, type) => {
         let current = new Date(),
             is_chosen_date_today = false
@@ -1300,9 +1322,9 @@ class CompletedTaskCard extends React.PureComponent {
         }
 
         else if (type === "week") {
-            let { week, year } = chosen_date_data
+            let { week, start_year } = chosen_date_data
 
-            if (week === this.getWeek(current) && year === current.getFullYear()) {
+            if (week === this.getWeek(current) && start_year === current.getFullYear()) {
                 is_chosen_date_today = true
             }
 
@@ -1329,8 +1351,8 @@ class CompletedTaskCard extends React.PureComponent {
     render() {
         this.handleUpdate(this.props.task, this.props.completed_task, this.props.type, this.props.current_chosen_category, this.props.chosen_date_data)
 
-        let is_chosen_date_today = this.checkIfChosenDateIsToday(this.props.chosen_date_data, this.props.type)
 
+        let is_chosen_date_today = this.checkIfChosenDateIsToday(this.props.chosen_date_data, this.props.type)
         return (
             <>
                 {this.update_obj.should_render ?

@@ -107,26 +107,35 @@ export default class Drawer extends React.PureComponent {
             if (completed_day_task_map.get("category") === category_id) {
                 completed_day_task_map.entrySeq().forEach((tuple, tuple_index) => {
                     let key = tuple[0],
-                        data = typle[1]
+                        data = tuple[1]
 
                     if (key !== "id" && key !== "category") {
                         let completed_priority_array = List(data.get("completed_priority_array")),
-                            timestamp = key,
+                            timestamp = parseInt(key),
                             day_in_week = new Date(timestamp).getDay(),
                             day_in_month = new Date(timestamp).getDate(),
                             month_in_year = new Date(timestamp).getMonth(),
                             year = new Date(timestamp).getFullYear(),
                             year_toString = year.toString(),
                             monday = this.getMonday(new Date(timestamp)),
-                            day_timestamp_toString = new Date(year, month_in_year, day_in_month),
+                            day_timestamp_toString = key,
                             week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
-                            month_timestamp_toString = new Date(year, month_in_year).getTime().toString()
+                            month_timestamp_toString = new Date(year, month_in_year).getTime().toString(),
+
+                            total_points = parseInt(data.get("totalPoints"))
 
                         completed_priority_array.forEach((completed_value, priority_index) => {
                             if (new_day_chart_stats.hasIn([day_timestamp_toString, "current", priority_index])) {
                                 new_day_chart_stats.updateIn(
                                     [day_timestamp_toString, "current", priority_index],
                                     (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
+                            if (new_day_chart_stats.hasIn([day_timestamp_toString, "totalPoints"])) {
+                                new_day_chart_stats.updateIn(
+                                    [day_timestamp_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
                                 )
                             }
 
@@ -144,6 +153,13 @@ export default class Drawer extends React.PureComponent {
                                 )
                             }
 
+                            if (new_week_chart_stats.hasIn([week_timestamp_toString, "totalPoints"])) {
+                                new_week_chart_stats.updateIn(
+                                    [week_timestamp_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
                             if (new_month_chart_stats.hasIn([month_timestamp_toString, "current", priority_index])) {
                                 new_month_chart_stats.updateIn(
                                     [month_timestamp_toString, "current", priority_index],
@@ -155,6 +171,13 @@ export default class Drawer extends React.PureComponent {
                                 new_month_chart_stats.updateIn(
                                     [month_timestamp_toString, "completed_priority_array", day_in_month, priority_index],
                                     (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
+                            if (new_month_chart_stats.hasIn([month_timestamp_toString, "totalPoints"])) {
+                                new_month_chart_stats.updateIn(
+                                    [month_timestamp_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
                                 )
                             }
 
@@ -171,6 +194,13 @@ export default class Drawer extends React.PureComponent {
                                     (value) => value - completed_value < 0 ? 0 : value - completed_value
                                 )
                             }
+
+                            if (new_year_chart_stats.hasIn([year_toString, "totalPoints"])) {
+                                new_year_chart_stats.updateIn(
+                                    [year_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
                         })
                     }
                 })
@@ -183,33 +213,37 @@ export default class Drawer extends React.PureComponent {
             if (completed_week_task_map.get("category") === category_id) {
                 completed_week_task_map.entrySeq().forEach((tuple, tuple_index) => {
                     let key = tuple[0],
-                        data = typle[1]
+                        data = tuple[1]
 
                     if (key !== "id" && key !== "category") {
                         let completed_priority_array = List(data.get("completed_priority_array")),
-                            week_timestamp_toString = key
+                            week_timestamp_toString = key,
+                            timestamp = parseInt(key),
+                            total_points_array = List(data.get("total_points_array"))
 
                         completed_priority_array.forEach((completed_value_array, day_in_week_index) => {
-                            let date = new Date(timestamp + (day_in_week_index - 1) * 86400 * 1000),
+                            let day_in_week = day_in_week_index === 0 ? 7 : day_in_week_index
+                            let date = new Date(timestamp + (day_in_week - 1) * 86400 * 1000),
                                 day_in_month = date.getDate(),
                                 month_in_year = date.getMonth(),
                                 year = date.getFullYear(),
                                 year_toString = year.toString(),
-                                month_timestamp_toString = new Date(year, month_in_year).getTime(),
-                                day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime()
+                                month_timestamp_toString = new Date(year, month_in_year).getTime().toString(),
+                                day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
+                                total_points = total_points_array.get(day_in_week_index)
 
                             List(completed_value_array).forEach((completed_value, priority_index) => {
                                 if (new_day_chart_stats.hasIn([day_timestamp_toString, "current", priority_index])) {
                                     new_day_chart_stats.updateIn(
                                         [day_timestamp_toString, "current", priority_index],
-                                        (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
                                     )
                                 }
 
-                                if (new_week_chart_stats.hasIn([week_timestamp_toString, "completed_priority_array", day_in_week_index, priority_index])) {
-                                    new_week_chart_stats.updateIn(
-                                        [week_timestamp_toString, "completed_priority_array", day_in_week_index, priority_index],
-                                        (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                if (new_day_chart_stats.hasIn([day_timestamp_toString, "totalPoints"])) {
+                                    new_day_chart_stats.updateIn(
+                                        [day_timestamp_toString, "totalPoints"],
+                                        (value) => value - total_points < 0 ? 0 : value - total_points
                                     )
                                 }
 
@@ -223,6 +257,13 @@ export default class Drawer extends React.PureComponent {
                                     new_week_chart_stats.updateIn(
                                         [week_timestamp_toString, "completed_priority_array", day_in_week_index, priority_index],
                                         (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                    )
+                                }
+
+                                if (new_week_chart_stats.hasIn([week_timestamp_toString, "totalPoints"])) {
+                                    new_week_chart_stats.updateIn(
+                                        [week_timestamp_toString, "totalPoints"],
+                                        (value) => value - total_points < 0 ? 0 : value - total_points
                                     )
                                 }
 
@@ -240,6 +281,13 @@ export default class Drawer extends React.PureComponent {
                                     )
                                 }
 
+                                if (new_month_chart_stats.hasIn([month_timestamp_toString, "totalPoints"])) {
+                                    new_month_chart_stats.updateIn(
+                                        [month_timestamp_toString, "totalPoints"],
+                                        (value) => value - total_points < 0 ? 0 : value - total_points
+                                    )
+                                }
+
                                 if (new_year_chart_stats.hasIn([year_toString, "current", priority_index])) {
                                     new_year_chart_stats.updateIn(
                                         [year_toString, "current", priority_index],
@@ -251,6 +299,13 @@ export default class Drawer extends React.PureComponent {
                                     new_year_chart_stats.updateIn(
                                         [year_toString, "completed_priority_array", month_in_year, priority_index],
                                         (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                    )
+                                }
+
+                                if (new_year_chart_stats.hasIn([year_toString, "totalPoints"])) {
+                                    new_year_chart_stats.updateIn(
+                                        [year_toString, "totalPoints"],
+                                        (value) => value - total_points < 0 ? 0 : value - total_points
                                     )
                                 }
                             })
@@ -266,29 +321,39 @@ export default class Drawer extends React.PureComponent {
             if (completed_month_task_map.get("category") === category_id) {
                 completed_month_task_map.entrySeq().forEach((tuple, tuple_index) => {
                     let key = tuple[0],
-                        data = typle[1]
+                        data = tuple[1]
 
                     if (key !== "id" && key !== "category") {
                         let completed_priority_array = List(data.get("completed_priority_array")),
-                            month_timestamp_toString = key
+                            month_timestamp_toString = key,
+                            timestamp = parseInt(key),
+                            total_points_array = List(data.get("total_points_array"))
 
                         completed_priority_array.forEach((completed_value_array, day_in_month_index) => {
 
                             let day_in_month = parseInt(day_in_month_index) + 1,
-                                date = new Date(month_timestamp_toString),
+                                date = new Date(timestamp),
                                 day_in_week = date.getDay(),
                                 month_in_year = date.getMonth(),
                                 year = date.getFullYear(),
                                 year_toString = date.getFullYear().toString(),
                                 monday = this.getMonday(new Date(year, month_in_year, day_in_month)),
-                                week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime(),
-                                day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime()
+                                week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
+                                day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
+                                total_points = total_points_array.get(day_in_month_index)
 
                             List(completed_value_array).forEach((completed_value, priority_index) => {
                                 if (new_day_chart_stats.hasIn([day_timestamp_toString, "current", priority_index])) {
                                     new_day_chart_stats.updateIn(
                                         [day_timestamp_toString, "current", priority_index],
                                         (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                    )
+                                }
+
+                                if (new_day_chart_stats.hasIn([day_timestamp_toString, "totalPoints"])) {
+                                    new_day_chart_stats.updateIn(
+                                        [day_timestamp_toString, "totalPoints"],
+                                        (value) => value - total_points < 0 ? 0 : value - total_points
                                     )
                                 }
 
@@ -306,6 +371,13 @@ export default class Drawer extends React.PureComponent {
                                     )
                                 }
 
+                                if (new_week_chart_stats.hasIn([week_timestamp_toString, "totalPoints"])) {
+                                    new_week_chart_stats.updateIn(
+                                        [week_timestamp_toString, "totalPoints"],
+                                        (value) => value - total_points < 0 ? 0 : value - total_points
+                                    )
+                                }
+
                                 if (new_month_chart_stats.hasIn([month_timestamp_toString, "current", priority_index])) {
                                     new_month_chart_stats.updateIn(
                                         [month_timestamp_toString, "current", priority_index],
@@ -320,6 +392,13 @@ export default class Drawer extends React.PureComponent {
                                     )
                                 }
 
+                                if (new_month_chart_stats.hasIn([month_timestamp_toString, "totalPoints"])) {
+                                    new_month_chart_stats.updateIn(
+                                        [month_timestamp_toString, "totalPoints"],
+                                        (value) => value - total_points < 0 ? 0 : value - total_points
+                                    )
+                                }
+
                                 if (new_year_chart_stats.hasIn([year_toString, "current", priority_index])) {
                                     new_year_chart_stats.updateIn(
                                         [year_toString, "current", priority_index],
@@ -331,6 +410,13 @@ export default class Drawer extends React.PureComponent {
                                     new_year_chart_stats.updateIn(
                                         [year_toString, "completed_priority_array", month_in_year, priority_index],
                                         (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                    )
+                                }
+
+                                if (new_year_chart_stats.hasIn([year_toString, "totalPoints"])) {
+                                    new_year_chart_stats.updateIn(
+                                        [year_toString, "totalPoints"],
+                                        (value) => value - total_points < 0 ? 0 : value - total_points
                                     )
                                 }
                             })

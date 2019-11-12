@@ -165,9 +165,6 @@ export const month_tasks = (state = Map(), action) => {
 
 export const completed_day_tasks = (state = Map(), action) => {
     switch (action.type) {
-        // case 'UPDATE_COMPLETED_DAY_TASK':
-        //     return state.set(action.data.get("id"), action.data)
-
         case 'UPDATE_COMPLETED_DAY_TASK':
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
@@ -188,7 +185,7 @@ export const completed_day_tasks = (state = Map(), action) => {
 export const completed_week_tasks = (state = Map(), action) => {
     switch (action.type) {
         case 'UPDATE_COMPLETED_WEEK_TASK':
-            return state.set(action.data.get("id"), action.data)
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
         case 'DELETE_COMPLETED_WEEK_TASK':
             return state.delete(action.id)
@@ -208,7 +205,7 @@ export const completed_week_tasks = (state = Map(), action) => {
 export const completed_month_tasks = (state = Map(), action) => {
     switch (action.type) {
         case 'UPDATE_COMPLETED_MONTH_TASK':
-            return state.set(action.data.get("id"), action.data)
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
         case 'DELETE_COMPLETED_MONTH_TASK':
             return state.delete(action.id)
@@ -289,8 +286,6 @@ export const currentWeekTask = (state = initial_currentWeekTask, action) => {
     switch (action.type) {
 
         case 'UPDATE_NEW_WEEK_TASK':
-            // let new_state = state.updateIn(action.keyPath, action.notSetValue, action.updater)
-            // console.log(new_state)
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
         case 'RESET_NEW_WEEK_TASK':

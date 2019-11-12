@@ -2,32 +2,13 @@
 
 !!!! timestamps are using ISO 8601 date yyyy-mm-ddThh:mm:ss.mmmZ - new Date(year, month, day)
 
-- Map structures for stats to work:
-    + Day: Map {
-        // 0:00:00 of the day (String)
-        day_timestamp: Map {
-            current: List [0, 0, 0, 0]
-        }
-    }
-
-    + Week: {
-        // Monday of the week
-        week_timestamp: {
-            current: [0, 0, 0, 0]
-        }
-    }
-
-    + Month: {
-        // Day 1 of the month
-        month_timestamp: {
-            current: [0, 0, 0, 0]
-        }
-    }
-
 - Map structures for charts to work:
     + Day chart: Map {
         // String
         day_timestamp: Map {
+            // total points - sum of completions * priority value
+            totalPoints: 0
+
             // total completions in week
             current: [0, 0, 0, 0]
         }
@@ -36,6 +17,9 @@
     + Week chart: Map {
         // Monday of the week (String)
         week_timestamp:  Map {
+            // total points - sum of completions * priority value
+            totalPoints: 0
+
             // total completions in week
             current: [0, 0, 0, 0]
 
@@ -47,6 +31,9 @@
     + Month chart: {
         // Day 1 of the month
         month_timestamp: Map {
+            // total points - sum of completions * priority value
+            totalPoints: 0
+
             // total completions in month
             current: [0, 0, 0, 0]
 
@@ -58,6 +45,9 @@
     + Year chart: {
         // 2019
         year: {
+            // total points - sum of completions * priority value
+            totalPoints: 0
+
             // total completions in year
             current: [0, 0, 0, 0]
 
@@ -73,9 +63,11 @@
             category: task_category // when delete a category, to avoid iteration (N*M) of categories of tasks in deleted category (current category of task)
             //String
             completed_day_timestamp: Map {
+                // total points - sum of completions * priority value
+                totalPoints: 0
+
                 // Total equals the sum of day_completed_array
                 current: 0,
-                // priority_value: priority_value,
                 
                 // latest priority (equals priority of the task in that timestamp)
                 current_priority_value: priority_value,
@@ -90,12 +82,17 @@
             id: task_id,
             category: task_category // when delete a category, to avoid iteration (N*M) of categories of tasks in deleted category (current category of task)
             completed_week_timestamp: Map {
+                // total points - sum of completions * priority value
+                totalPoints: 0
+
+                // total points in each day of the week
+                total_points_array: List [0, 0, 0, 0, 0, 0, 0],
+
                 // Total equals the sum of day_completed_array
                 current: 0,
 
                 // Sunday - Saturday
                 completed_priority_array: List [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
-                
                 // latest priority (equals priority of the task in that timestamp)
                 current_priority_value: priority_value,
             }
@@ -107,6 +104,12 @@
             id: task_id,
             category: task_category // when delete a category, to avoid iteration (N*M) of categories of tasks in deleted category (current category of task)
             completed_month_timestamp: {
+                // total points - sum of completions * priority value
+                totalPoints: 0
+
+                // total points in each day of the month
+                total_points_array: List [0, 0, 0, 0, 0, 0, 0, ...],
+
                 // Total equals the sum of day_completed_array
                 current: 0,
 
@@ -115,6 +118,26 @@
 
                 // latest priority (equals priority of the task in that timestamp)
                 current_priority_value: priority_value,
+            }
+        }
+    }
+
+    + gen: {
+        task_id: {
+            id: task_id,
+            category: task_category,
+
+            completed_month_timestamp: {
+                completed_week_timestamp: {
+                    totalPoints: 0,
+
+                    completed_day_timestamp: {
+                        totalPoints: 0,
+                        current: 0,
+                        completed_priority_array: [0, 0, 0, 0],
+                        current_priority_value: task_priority
+                    }
+                }
             }
         }
     }

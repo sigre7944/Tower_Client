@@ -23,9 +23,6 @@ import {
 const panel_width = Dimensions.get("window").width
 const margin_top_for_calendar_row = 20
 const margin_top_for_month_year_text = 30
-const calendar_total_height = margin_top_for_calendar_row * 6 + 32 * 6
-const animation_duration = 250
-const easing = Easing.inOut(Easing.linear)
 
 export default class Calendar extends React.Component {
     year_in_between = 4
@@ -159,8 +156,7 @@ export default class Calendar extends React.Component {
                         top: margin_top_for_month_year_text + 21 + margin_top_for_calendar_row + (19 + 20),
                         flexDirection: "row",
                         alignItems: "center",
-                        left: 5,
-                        right: 5,
+                        width: panel_width,
                     }}
                 >
                     <WeekText text="Week" />
@@ -380,7 +376,7 @@ class MonthHolder extends React.Component {
                 <View
                     style={{
                         marginTop: margin_top_for_calendar_row + 32,
-                        height: calendar_total_height,
+                        // height: calendar_total_height,
                     }}
                 >
                     <FlatList
@@ -618,7 +614,7 @@ class DayHolder extends React.Component {
                             style={styles.time_informer_container}
                         >
                             <Text
-                                style={styles.day_text_style}
+                                style={day_text_style}
                             >
                                 {this.props.week_row_data.day}
                             </Text>
@@ -653,7 +649,7 @@ class DayHolder extends React.Component {
                         style={styles.time_informer_container}
                     >
                         <Text
-                            style={styles.day_text_style}
+                            style={day_text_style}
                         >
                             {this.props.week_row_data.day}
                         </Text>
@@ -665,21 +661,90 @@ class DayHolder extends React.Component {
 }
 
 class UnchosenDayHolder extends React.Component {
+    year = this.props.week_row_data.year
+    month = this.props.week_row_data.month
+    day = this.props.week_row_data.day
+    day_timestamp_toString = new Date(this.year, this.month, this.day).getTime().toString()
 
     shouldComponentUpdate(nextProps, nextState) {
-        return false
+        return Map(this.props.day_chart_stats).get(this.day_timestamp_toString) !== Map(nextProps.day_chart_stats).get(this.day_timestamp_toString)
+    }
+
+    _calculateTotalPointsDay = () => {
+        let day_chart_stats_map = Map(this.props.day_chart_stats)
+
+        return List(day_chart_stats_map.getIn([this.day_timestamp_toString, "current"])).reduce((total, value) => total + value)
     }
 
     render() {
+        let total_points = this._calculateTotalPointsDay(),
+            should_render_point_banner = false
+
+        if (!total_points) {
+            total_points = 0
+            should_render_point_banner = false
+        }
+
+        else {
+            should_render_point_banner = true
+        }
+
         return (
             <View
-                style={styles.day_holder_container}
+                style={{
+                    flex: 1,
+                    alignItems: "center",
+                }}
             >
-                <Text
-                    style={styles.cannot_choose_day_text}
-                >
-                    {this.props.week_row_data.day}
-                </Text>
+                {should_render_point_banner ?
+                    <View
+                        style={styles.point_banner}
+                    >
+                        <View
+                            style={styles.time_informer_container}
+                        >
+                            <Text
+                                style={styles.cannot_choose_day_text}
+                            >
+                                {this.props.week_row_data.day}
+                            </Text>
+                        </View>
+
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                flexWrap: "wrap",
+                                marginHorizontal: 3,
+                                justifyContent: "center",
+                                marginBottom: 5,
+                            }}
+                        >
+                            <Text
+                                style={styles.point_text_white}
+                            >
+                                {total_points}
+                            </Text>
+
+                            <Text
+                                style={styles.point_text_white}
+                            >
+                                pt
+                            </Text>
+                        </View>
+                    </View>
+
+                    :
+
+                    <View
+                        style={styles.time_informer_container}
+                    >
+                        <Text
+                            style={styles.cannot_choose_day_text}
+                        >
+                            {this.props.week_row_data.day}
+                        </Text>
+                    </View>
+                }
             </View>
         )
     }

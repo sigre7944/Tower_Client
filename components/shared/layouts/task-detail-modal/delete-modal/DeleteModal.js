@@ -75,13 +75,21 @@ export default class DeleteModal extends Component {
                         monday = this.getMonday(new Date(timestamp)),
                         week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
                         month_timestamp_toString = new Date(year, month_in_year).getTime().toString(),
-                        day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString()
+                        day_timestamp_toString = key,
+                        total_points = completed_tasks_map.getIn([task_id, key, "totalPoints"])
 
                     completed_priority_array.forEach((completed_value, priority_index) => {
                         if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "current", priority_index])) {
                             returning_day_chart_stats_map.updateIn(
                                 [day_timestamp_toString, "current", priority_index],
                                 (value) => value - completed_value < 0 ? 0 : value - completed_value
+                            )
+                        }
+
+                        if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
+                            returning_day_chart_stats_map.updateIn(
+                                [day_timestamp_toString, "totalPoints"],
+                                (value) => value - total_points < 0 ? 0 : value - total_points
                             )
                         }
 
@@ -99,6 +107,13 @@ export default class DeleteModal extends Component {
                             )
                         }
 
+                        if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "totalPoints"])) {
+                            returning_week_chart_stats_map.updateIn(
+                                [week_timestamp_toString, "totalPoints"],
+                                (value) => value - total_points < 0 ? 0 : value - total_points
+                            )
+                        }
+
                         if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "current", priority_index])) {
                             returning_month_chart_stats_map.updateIn(
                                 [month_timestamp_toString, "current", priority_index],
@@ -110,6 +125,13 @@ export default class DeleteModal extends Component {
                             returning_month_chart_stats_map.updateIn(
                                 [month_timestamp_toString, "completed_priority_array", day_in_month - 1, priority_index],
                                 (value) => value - completed_value < 0 ? 0 : value - completed_value
+                            )
+                        }
+
+                        if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "totalPoints"])) {
+                            returning_month_chart_stats_map.updateIn(
+                                [month_timestamp_toString, "totalPoints"],
+                                (value) => value - total_points < 0 ? 0 : value - total_points
                             )
                         }
 
@@ -126,46 +148,107 @@ export default class DeleteModal extends Component {
                                 (value) => value - completed_value < 0 ? 0 : value - completed_value
                             )
                         }
+
+                        if (returning_year_chart_stats_map.hasIn([year_toString, "totalPoints"])) {
+                            returning_year_chart_stats_map.updateIn(
+                                [year_toString, "totalPoints"],
+                                (value) => value - total_points < 0 ? 0 : value - total_points
+                            )
+                        }
                     })
 
                 }
 
                 else if (type === "week") {
-                    let week_timestamp_toString = key
+                    let week_timestamp_toString = key,
+                        total_points_array = List(completed_tasks_map.getIn([task_id, key, "total_points_array"]))
 
                     completed_priority_array.forEach((completed_value_array, day_in_week_index) => {
-                        if (day_in_week_index === 0) {
-                            day_in_week_index = 7
-                        }
-
-                        let day_in_week_toString = (parseInt(day_in_week_index) % 7).toString(),
-                            date = new Date(timestamp + (day_in_week_index - 1) * 86400 * 1000),
-                            day_in_month_toString = date.getDate().toString(),
-                            month = date.getMonth(),
-                            month_toString = month.toString(),
+                        let day_in_week = day_in_week_index === 0 ? 7 : day_in_week_index
+                        let date = new Date(timestamp + (day_in_week - 1) * 86400 * 1000),
+                            day_in_month = date.getDate(),
+                            month_in_year = date.getMonth(),
                             year = date.getFullYear(),
                             year_toString = year.toString(),
-                            month_timestamp_toString = new Date(year, month).getTime()
+                            month_timestamp_toString = new Date(year, month_in_year).getTime().toString(),
+                            day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
+                            total_points = parseInt(total_points_array.get(day_in_week_index))
 
                         List(completed_value_array).forEach((completed_value, priority_index) => {
-                            if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, day_in_week_toString, "current"])) {
+                            if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "current", priority_index])) {
+                                returning_day_chart_stats_map.updateIn(
+                                    [day_timestamp_toString, "current", priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
+                            if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
+                                returning_day_chart_stats_map.updateIn(
+                                    [day_timestamp_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
+                            if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "current", priority_index])) {
                                 returning_week_chart_stats_map.updateIn(
-                                    [week_timestamp_toString, day_in_week_toString, "current"],
-                                    (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                    [week_timestamp_toString, "current", priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
                                 )
                             }
 
-                            if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, day_in_month_toString, "current"])) {
+                            if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "completed_priority_array", day_in_week_index, priority_index])) {
+                                returning_week_chart_stats_map.updateIn(
+                                    [week_timestamp_toString, "completed_priority_array", day_in_week_index, priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
+                            if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "totalPoints"])) {
+                                returning_week_chart_stats_map.updateIn(
+                                    [week_timestamp_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
+                            if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "current", priority_index])) {
                                 returning_month_chart_stats_map.updateIn(
-                                    [month_timestamp_toString, day_in_month_toString, "current"],
-                                    (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                    [month_timestamp_toString, "current", priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
                                 )
                             }
 
-                            if (returning_year_chart_stats_map.hasIn([year_toString, month_toString, "current"])) {
+                            if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "completed_priority_array", day_in_month - 1, priority_index])) {
+                                returning_month_chart_stats_map.updateIn(
+                                    [month_timestamp_toString, "completed_priority_array", day_in_month - 1, priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
+                            if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "totalPoints"])) {
+                                returning_month_chart_stats_map.updateIn(
+                                    [month_timestamp_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
+                            if (returning_year_chart_stats_map.hasIn([year_toString, "current", priority_index])) {
                                 returning_year_chart_stats_map.updateIn(
-                                    [year_toString, month_toString, "current"],
-                                    (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                    [year_toString, "current", priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
+                            if (returning_year_chart_stats_map.hasIn([year_toString, "completed_priority_array", month_in_year, priority_index])) {
+                                returning_year_chart_stats_map.updateIn(
+                                    [year_toString, "completed_priority_array", month_in_year, priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
+                            if (returning_year_chart_stats_map.hasIn([year_toString, "totalPoints"])) {
+                                returning_year_chart_stats_map.updateIn(
+                                    [year_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
                                 )
                             }
                         })
@@ -173,39 +256,96 @@ export default class DeleteModal extends Component {
                 }
 
                 else {
-                    let month_timestamp_toString = key
+                    let month_timestamp_toString = key,
+                        total_points_array = List(completed_tasks_map.getIn([task_id, key, "total_points_array"]))
 
                     completed_priority_array.forEach((completed_value_array, day_in_month_index) => {
                         let day_in_month = parseInt(day_in_month_index) + 1,
-                            day_in_month_toString = day_in_month.toString(),
-                            date = new Date(month_timestamp_toString),
-                            day_in_week_toString = date.getDay().toString(),
-                            month = date.getMonth(),
-                            month_toString = date.getMonth().toString(),
+                            date = new Date(timestamp),
+                            day_in_week = date.getDay(),
+                            month_in_year = date.getMonth(),
                             year = date.getFullYear(),
                             year_toString = date.getFullYear().toString(),
-                            monday = this.getMonday(new Date(year, month, day_in_month)),
-                            week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime()
+                            monday = this.getMonday(new Date(year, month_in_year, day_in_month)),
+                            day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
+                            week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
+                            total_points = parseInt(total_points_array.get(day_in_month_index))
 
                         List(completed_value_array).forEach((completed_value, priority_index) => {
-                            if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, day_in_week_toString, "current"])) {
+                            if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "current", priority_index])) {
+                                returning_day_chart_stats_map.updateIn(
+                                    [day_timestamp_toString, "current", priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
+                            if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
+                                returning_day_chart_stats_map.updateIn(
+                                    [day_timestamp_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
+                            if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "current", priority_index])) {
                                 returning_week_chart_stats_map.updateIn(
-                                    [week_timestamp_toString, day_in_week_toString, "current"],
-                                    (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                    [week_timestamp_toString, "current", priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
                                 )
                             }
 
-                            if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, day_in_month_toString, "current"])) {
+                            if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "completed_priority_array", day_in_week, priority_index])) {
+                                returning_week_chart_stats_map.updateIn(
+                                    [week_timestamp_toString, "completed_priority_array", day_in_week, priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
+                            if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "totalPoints"])) {
+                                returning_week_chart_stats_map.updateIn(
+                                    [week_timestamp_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
+                            if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "current", priority_index])) {
                                 returning_month_chart_stats_map.updateIn(
-                                    [month_timestamp_toString, day_in_month_toString, "current"],
-                                    (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                    [month_timestamp_toString, "current", priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
                                 )
                             }
 
-                            if (returning_year_chart_stats_map.hasIn([year_toString, month_toString, "current"])) {
+                            if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "completed_priority_array", day_in_month_index, priority_index])) {
+                                returning_month_chart_stats_map.updateIn(
+                                    [month_timestamp_toString, "completed_priority_array", day_in_month_index, priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
+                            if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "totalPoints"])) {
+                                returning_month_chart_stats_map.updateIn(
+                                    [month_timestamp_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
+                            if (returning_year_chart_stats_map.hasIn([year_toString, "current", priority_index])) {
                                 returning_year_chart_stats_map.updateIn(
-                                    [year_toString, month_toString, "current"],
-                                    (current) => List(current).update(priority_index, (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                                    [year_toString, "current", priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
+                            if (returning_year_chart_stats_map.hasIn([year_toString, "completed_priority_array", month_in_year, priority_index])) {
+                                returning_year_chart_stats_map.updateIn(
+                                    [year_toString, "completed_priority_array", month_in_year, priority_index],
+                                    (value) => value - completed_value < 0 ? 0 : value - completed_value
+                                )
+                            }
+
+                            if (returning_year_chart_stats_map.hasIn([year_toString, "totalPoints"])) {
+                                returning_year_chart_stats_map.updateIn(
+                                    [year_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
                                 )
                             }
                         })

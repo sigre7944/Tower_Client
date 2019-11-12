@@ -89,12 +89,12 @@ export default class SaveButton extends React.PureComponent {
 
         if (type === "week") {
             sending_obj.edited_task_data.type = "UPDATE_WEEK_TASK"
-            sending_obj.new_completed_task_data = "UPDATE_COMPLETED_WEEK_TASK"
+            sending_obj.new_completed_task_data.type = "UPDATE_COMPLETED_WEEK_TASK"
         }
 
         else if (type === "month") {
             sending_obj.edited_task_data.type = "UPDATE_MONTH_TASK"
-            sending_obj.new_completed_task_data = "UPDATE_COMPLETED_MONTH_TASK"
+            sending_obj.new_completed_task_data.type = "UPDATE_COMPLETED_MONTH_TASK"
         }
 
         this.props.updateEditedTask(sending_obj)
