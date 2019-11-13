@@ -11,12 +11,6 @@ import { styles } from './styles/styles'
 
 export default class SummaryHolder extends React.Component {
 
-    state = {
-        day_task_completions: 0,
-        week_task_completions: 0,
-        month_task_completions: 0,
-    }
-
     shouldComponentUpdate(nextProps, nextState) {
 
         let chosen_month = this.props.chosen_month,
@@ -25,27 +19,38 @@ export default class SummaryHolder extends React.Component {
 
         return this.props.chosen_month !== nextProps.chosen_month
             || this.props.chosen_year !== nextProps.chosen_year
-            || Map(this.props.month_chart_stats).get(month_timestamp_toString) !== Map(nextProps.month_chart_stats).get(month_timestamp_toString)
+            || Map(this.props.month_chart_stats).getIn([month_timestamp_toString, "task_type_completions"]) !== Map(nextProps.month_chart_stats).getIn([month_timestamp_toString, "task_type_completions"])
     }
 
-    _calculateDayTaskCompletions = () => {
-        
-    }
+    _calculateTaskCompletions = () => {
+        let month_chart_stats_map = Map(this.props.month_chart_stats),
+            chosen_month = this.props.chosen_month,
+            chosen_year = this.props.chosen_year,
+            month_timestamp_toString = new Date(chosen_year, chosen_month).getTime().toString(),
+            task_type_completions = List(month_chart_stats_map.getIn([month_timestamp_toString, "task_type_completions"]))
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.props.chosen_month !== prevProps.chosen_month
-            || this.props.chosen_year !== prevProps.chosen_year) {
-
-        }
-
-        else {
-            let chosen_month = this.props.chosen_month,
-                chosen_year = this.props.chosen_year,
-                month_timestamp_toString = new Date(chosen_year, chosen_month).getTime().toString()
-        }
+        return ({
+            day_task_completions: task_type_completions.get(0),
+            week_task_completions: task_type_completions.get(1),
+            month_task_completions: task_type_completions.get(2)
+        })
     }
 
     render() {
+        let { day_task_completions, week_task_completions, month_task_completions } = this._calculateTaskCompletions()
+
+        if (!day_task_completions) {
+            day_task_completions = 0
+        }
+
+        if (!week_task_completions) {
+            week_task_completions = 0
+        }
+
+        if (!month_task_completions) {
+            month_task_completions = 0
+        }
+
         return (
             <View
                 style={{
@@ -76,7 +81,7 @@ export default class SummaryHolder extends React.Component {
                         <Text
                             style={styles.big_completions_text}
                         >
-                            20
+                            {day_task_completions}
                         </Text>
 
                         <Text
@@ -105,7 +110,7 @@ export default class SummaryHolder extends React.Component {
                         <Text
                             style={styles.big_completions_text}
                         >
-                            50
+                            {week_task_completions}
                         </Text>
 
                         <Text
@@ -131,7 +136,7 @@ export default class SummaryHolder extends React.Component {
                         <Text
                             style={styles.big_completions_text}
                         >
-                            30
+                            {month_task_completions}
                         </Text>
 
                         <Text

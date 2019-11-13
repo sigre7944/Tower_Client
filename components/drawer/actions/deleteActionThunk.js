@@ -42,5 +42,9 @@ export const deleteOnlyTasks = ({
         deleteAllTasksInCategory("DELETE_ALL_DAY_TASKS_WITH_CATEGORY", category_id),
         deleteAllTasksInCategory("DELETE_ALL_WEEK_TASKS_WITH_CATEGORY", category_id),
         deleteAllTasksInCategory("DELETE_ALL_MONTH_TASKS_WITH_CATEGORY", category_id),
+
+        deleteAllTasksInCategory("DELETE_ALL_COMPLETED_DAY_TASKS_WITH_CATEGORY", category_id),
+        deleteAllTasksInCategory("DELETE_ALL_COMPLETED_WEEK_TASKS_WITH_CATEGORY", category_id),
+        deleteAllTasksInCategory("DELETE_ALL_COMPLETED_MONTH_TASKS_WITH_CATEGORY", category_id),
     ]))
 }

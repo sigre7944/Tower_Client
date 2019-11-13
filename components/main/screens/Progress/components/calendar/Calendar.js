@@ -109,7 +109,7 @@ export default class Calendar extends React.Component {
         let number_of_months = Math.floor(nativeEvent.contentOffset.x / panel_width)
 
         let month = number_of_months % 12,
-            year = Math.floor(number_of_months / 12)
+            year = Math.floor(number_of_months / 12) + this.left_end_year
 
         this.props._setChosenMonthFromCalendar(month)
         this.props._setChosenYearFromCalendar(year)
