@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import ChartsHolder from './ChartsHolder'
+import WeekChartHolder from './WeekChartHolder'
 
 const mapStateToProps = (state) => ({
     day_chart_stats: state.get("day_chart_stats"),
@@ -11,4 +11,4 @@ const mapStateToProps = (state) => ({
 export default connect(
     mapStateToProps,
     null
-)(ChartsHolder)
+)(WeekChartHolder)

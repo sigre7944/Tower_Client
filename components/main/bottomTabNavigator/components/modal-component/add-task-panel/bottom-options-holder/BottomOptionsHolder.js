@@ -21,7 +21,7 @@ import {
     faRedoAlt
 } from '@fortawesome/free-solid-svg-icons'
 
-import { primary_color } from "../../../../../../shared/styles/style";
+import { primary_colors } from "../../../../../../shared/styles/style";
 
 import { styles } from "./styles/styles";
 
@@ -103,7 +103,7 @@ class BottomOptionElement extends React.PureComponent {
             >
                 <FontAwesomeIcon
                     icon={this.props.icon}
-                    color={primary_color}
+                    color={primary_colors.prim_1}
                     size={16}
                 />
             </TouchableOpacity>

@@ -7,11 +7,11 @@ import * as CommonStyle from '../../../shared/styles/style'
 
 export const styles = StyleSheet.create({
     chosen_screen_component_icon: {
-        color: CommonStyle.primary_color
+        color: CommonStyle.primary_colors.prim_1
     },
 
     not_chosen_screen_component_icon: {
-        color: CommonStyle.unchosen_secondary_color
+        color: CommonStyle.text_icon_colors.ti_3
     },
 
     chosen_screen_component_text: {
@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
         fontSize: 12,
         lineHeight: 14,
         letterSpacing: -0.02,
-        color: CommonStyle.primary_color
+        color: CommonStyle.primary_colors.prim_1
     },
     
     not_chosen_screen_component_text: {
@@ -27,6 +27,6 @@ export const styles = StyleSheet.create({
         fontSize: 12,
         lineHeight: 14,
         letterSpacing: -0.02,
-        color: CommonStyle.unchosen_secondary_color
+        color: CommonStyle.text_icon_colors.ti_3
     }
 })

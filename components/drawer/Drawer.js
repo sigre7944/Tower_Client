@@ -661,17 +661,27 @@ class CategoryFlatlist extends React.PureComponent {
     }
 
     _chooseCategoryIndex = (index, category_data) => {
-        this.setState(prevState => ({
-            current_category_index: index,
-            last_category_index: prevState.current_category_index,
-            should_flatlist_update: prevState.should_flatlist_update + 1
-        }), () => {
+        if (this.state.current_category_index !== index) {
+            this.setState(prevState => ({
+                current_category_index: index,
+                last_category_index: prevState.current_category_index,
+                should_flatlist_update: prevState.should_flatlist_update + 1
+            }), () => {
+                this._scrollToRow()
+                this.props._setEditCategoryData(category_data)
+                this.props.chooseCategory(Map(category_data).get("id"))
+
+                this.props.navigation.dispatch(DrawerActions.closeDrawer())
+            })
+        }
+
+        else {
             this._scrollToRow()
             this.props._setEditCategoryData(category_data)
             this.props.chooseCategory(Map(category_data).get("id"))
 
             this.props.navigation.dispatch(DrawerActions.closeDrawer())
-        })
+        }
     }
 
     _setRef = (r) => this._flatlist_ref = r
@@ -773,8 +783,8 @@ class InboxRow extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        return (this.props.index === nextProps.current_category_index && this.props.current_category_index !== nextProps.current_category_index)
-            || (this.props.index === nextProps.last_category_index && this.props.last_category_index !== nextProps.last_category_index)
+        return (this.props.index === nextProps.current_category_index)
+            || (this.props.index === nextProps.last_category_index)
             || (this.props.data !== nextProps.data)
     }
 

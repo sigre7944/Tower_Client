@@ -5,6 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  FlatList
 } from 'react-native';
 import { Map, List } from 'immutable'
 import WeekChart from './components/week-chart/WeekChart.Container'
@@ -13,6 +14,7 @@ import YearChart from './components/year-chart/YearChart.Container'
 
 import Calendar from './components/calendar/Calendar.Container'
 import SummaryHolder from './components/summary-holder/SummaryHolder.Container'
+import ChartsHolder from "./components/charts-holder/ChartsHolder.Container";
 import { styles } from './styles/styles'
 
 export default class Progress extends React.PureComponent {
@@ -25,6 +27,8 @@ export default class Progress extends React.PureComponent {
 
     chosen_month: this.current_date.getMonth(),
     chosen_year: this.current_date.getFullYear(),
+
+    data: []
   }
 
   _setChosenMonthFromCalendar = (month) => {
@@ -39,6 +43,32 @@ export default class Progress extends React.PureComponent {
     })
   }
 
+  _keyExtractor = (item, index) => `progress-${item.id}-component`
+
+  _renderItem = ({ item, index }) => {
+    if (item.id === "calendar") {
+      return (
+        <Calendar
+          _setChosenMonthFromCalendar={this._setChosenMonthFromCalendar}
+          _setChosenYearFromCalendar={this._setChosenYearFromCalendar}
+        />
+      )
+    }
+
+    else if (item.id === "summary-holder") {
+      return (
+        <SummaryHolder
+          chosen_month={this.state.chosen_month}
+          chosen_year={this.state.chosen_year}
+        />
+      )
+    }
+
+    return (
+      <ChartsHolder />
+    )
+  }
+
   componentDidMount() {
     const didFocusScreen = this.props.navigation.addListener(
       'didFocus',
@@ -46,39 +76,37 @@ export default class Progress extends React.PureComponent {
         this.props.changeRouteAction(payload.state.routeName)
       }
     )
-  }
 
-  componentDidUpdate(prevProps, prevState) {
-    // if(this.props.day_stats !== prevProps.day_stats){
-    //   console.log("\n day_stats",this.props.day_stats)
-    // }
+    let data = []
 
-    // if(this.props.week_stats !== prevProps.week_stats){
-    //   console.log("\n week_stats",this.props.week_stats)
-    // }
-
-    // if(this.props.month_stats !== prevProps.month_stats){
-    //   console.log("\n month_stats",this.props.month_stats)
-    // }
+    data.push({
+      id: "calendar"
+    })
+    data.push({
+      id: "summary-holder"
+    })
+    data.push({
+      id: "charts-holder"
+    })
+    this.setState({
+      data
+    })
   }
 
   render() {
     return (
-      <>
-        <ScrollView>
-          <Calendar
-            _setChosenMonthFromCalendar={this._setChosenMonthFromCalendar}
-            _setChosenYearFromCalendar={this._setChosenYearFromCalendar}
-          />
-
-          <SummaryHolder
-            chosen_month={this.state.chosen_month}
-            chosen_year={this.state.chosen_year}
-          />
-
-          <ChartSection />
-        </ScrollView >
-      </>
+      <View
+        style={{
+          backgroundColor: "white"
+        }}
+      >
+        <FlatList
+          data={this.state.data}
+          extraData={this.state.should_flatlist_update}
+          keyExtractor={this._keyExtractor}
+          renderItem={this._renderItem}
+        />
+      </View>
     );
   }
 }

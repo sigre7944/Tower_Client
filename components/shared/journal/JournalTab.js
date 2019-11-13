@@ -436,11 +436,13 @@ class UncompletedTaskCard extends React.PureComponent {
             repeat_type = Map(repeat).get("type"),
             task_day = parseInt(Map(schedule).get("day")),
             task_month = parseInt(Map(schedule).get("month")),
-            task_year = parseInt(Map(schedule).get("year"))
+            task_year = parseInt(Map(schedule).get("year")),
+            task_start_timestamp = new Date(task_year, task_month, task_day).getTime(),
+            current_date_start_timestamp = new Date(year, month, day).getTime()
 
-        if (repeat_type === "daily") {
-            let start_date_time = new Date(new Date(new Date(new Date().setDate(task_day)).setMonth(task_month)).setFullYear(task_year)).getTime(),
-                current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime(),
+        if (repeat_type === "daily" && current_date_start_timestamp >= task_start_timestamp) {
+            let start_date_time = new Date(task_year, task_month, task_day).getTime(),
+                current_date_time = new Date(year, month, day).getTime(),
                 diff_day = Math.floor((current_date_time - start_date_time) / (86400 * 1000))
 
             if (diff_day > 0 && diff_day % repeat_value === 0) {
@@ -489,10 +491,13 @@ class UncompletedTaskCard extends React.PureComponent {
             task_month = parseInt(Map(schedule).get("month")),
             task_year = parseInt(Map(schedule).get("year")),
             repeat_type = Map(repeat).get("type"),
-            repeat_days_in_week = Map(repeat).getIn(["interval", "daysInWeek"])
+            repeat_days_in_week = Map(repeat).getIn(["interval", "daysInWeek"]),
+            task_start_timestamp = new Date(task_year, task_month, task_day).getTime(),
+            current_date_start_timestamp = new Date(year, month, day).getTime()
 
 
-        if (repeat_type === "weekly") {
+        if (repeat_type === "weekly" && current_date_start_timestamp >= task_start_timestamp) {
+
             let is_days_in_week_chosen = false
 
             repeat_days_in_week.every((value) => {
@@ -506,56 +511,54 @@ class UncompletedTaskCard extends React.PureComponent {
             })
 
             if (is_days_in_week_chosen) {
-                let start_date_week = this.getWeek(new Date(new Date(new Date(new Date().setDate(task_day)).setMonth(task_month)).setFullYear(task_year))),
-                    current_date_week = this.getWeek(new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year))),
-                    current_date_day_in_week = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getDay() === 0 ? 6 : new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getDay() - 1
+                let start_date_week = this.getWeek(new Date(new Date(task_year, task_month, task_day))),
+                    current_date_week = this.getWeek(new Date(new Date(year, month, day))),
+                    current_date_day_in_week = new Date(year, month, day).getDay() === 0 ? 6 : new Date(year, month, day).getDay() - 1
 
-                if (year >= task_year) {
-                    let diff = Math.abs(current_date_week - start_date_week)
+                let diff = Math.abs(current_date_week - start_date_week)
 
-                    if (diff >= 0 && diff % repeat_value === 0) {
+                if (diff >= 0 && diff % repeat_value === 0) {
 
-                        if (List(repeat_days_in_week).get(current_date_day_in_week)) {
+                    if (List(repeat_days_in_week).get(current_date_day_in_week)) {
 
-                            let end_type = Map(end).get("type")
+                        let end_type = Map(end).get("type")
 
-                            if (end_type === "never") {
+                        if (end_type === "never") {
+                            return true
+                        }
+
+                        else if (end_type === "on") {
+                            let end_at = parseInt(Map(end).get("endAt")),
+                                end_at_day = new Date(end_at).getDate(),
+                                end_at_month = new Date(end_at).getMonth(),
+                                end_at_year = new Date(end_at).getFullYear()
+
+                            if (year < end_at_year) {
                                 return true
                             }
 
-                            else if (end_type === "on") {
-                                let end_at = parseInt(Map(end).get("endAt")),
-                                    end_at_day = new Date(end_at).getDate(),
-                                    end_at_month = new Date(end_at).getMonth(),
-                                    end_at_year = new Date(end_at).getFullYear()
-
-                                if (year < end_at_year) {
+                            else if (year === end_at_year) {
+                                if (month < end_at_month) {
                                     return true
                                 }
 
-                                else if (year === end_at_year) {
-                                    if (month < end_at_month) {
-                                        return true
-                                    }
-
-                                    else if (month === end_at_month) {
-                                        return day <= end_at_day
-                                    }
+                                else if (month === end_at_month) {
+                                    return day <= end_at_day
                                 }
                             }
+                        }
 
-                            else {
-                                let end_after_value = parseInt(Map(end).get("occurrence"))
-                                return diff / repeat_value <= (end_after_value - 1)
-                            }
+                        else {
+                            let end_after_value = parseInt(Map(end).get("occurrence"))
+                            return diff / repeat_value <= (end_after_value - 1)
                         }
                     }
                 }
             }
 
             else {
-                let start_date_time = new Date(new Date(new Date(new Date().setDate(task_day)).setMonth(task_month)).setFullYear(task_year)).getTime(),
-                    current_date_time = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)).getTime(),
+                let start_date_time = new Date(new Date(task_year, task_month, task_day)).getTime(),
+                    current_date_time = new Date(new Date(year, month, day)).getTime(),
                     diff = (current_date_time - start_date_time) / (86400 * 1000 * 7)
 
                 if (diff > 0 && diff % repeat_value === 0) {
@@ -603,16 +606,24 @@ class UncompletedTaskCard extends React.PureComponent {
             task_day = parseInt(Map(schedule).get("day")),
             task_month = parseInt(Map(schedule).get("month")),
             task_year = parseInt(Map(schedule).get("year")),
-            repeat_type = Map(repeat).get("type")
+            repeat_type = Map(repeat).get("type"),
+            task_start_timestamp = new Date(task_year, task_month, task_day).getTime(),
+            current_date_start_timestamp = new Date(year, month, day).getTime()
 
-        if (repeat_type === "monthly") {
-            let start_date = new Date(new Date(new Date(new Date().setDate(task_day)).setMonth(task_month)).setFullYear(task_year)),
-                current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)),
+        if (repeat_type === "monthly" && current_date_start_timestamp >= task_start_timestamp) {
+            // let start_date = new Date(new Date(new Date(new Date().setDate(task_day)).setMonth(task_month)).setFullYear(task_year)),
+            //     current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)),
+            //     diff_year = current_date.getFullYear() - start_date.getFullYear(),
+            //     diff_month = (current_date.getMonth() + diff_year * 12) - start_date.getMonth()
+
+
+            let start_date = new Date(task_year, task_month, task_day),
+                current_date = new Date(year, month, day),
                 diff_year = current_date.getFullYear() - start_date.getFullYear(),
                 diff_month = (current_date.getMonth() + diff_year * 12) - start_date.getMonth()
 
-
             if (diff_month > 0 && diff_month % repeat_value === 0) {
+                // If chosen date equals the start date, meaning schedule's date is between 1 - 28/29/30
                 if (current_date.getDate() === start_date.getDate()) {
 
                     let end_type = Map(end).get("type")
@@ -644,11 +655,13 @@ class UncompletedTaskCard extends React.PureComponent {
 
                     else {
                         let end_after_value = parseInt(Map(end).get("occurrence"))
-                        return diff / repeat_value <= (end_after_value - 1)
+                        return diff_month / repeat_value <= (end_after_value - 1)
                     }
                 }
+
+                // If there is no common date between 1 - 28/29/30, meaning schedule's date is the last day of month
                 else {
-                    if (current_date.getDate() === new Date(current_date.getFullYear(), current_date.getMonth() + 1, 0).getDate()) {
+                    if (current_date.getDate() === new Date(year, month + 1, 0).getDate()) {
 
                         let end_type = Map(end).get("type")
 
@@ -679,7 +692,7 @@ class UncompletedTaskCard extends React.PureComponent {
 
                         else {
                             let end_after_value = parseInt(Map(end).get("occurrence"))
-                            return diff / repeat_value <= (end_after_value - 1)
+                            return diff_month / repeat_value <= (end_after_value - 1)
                         }
 
                         return true
@@ -702,42 +715,45 @@ class UncompletedTaskCard extends React.PureComponent {
             task_chosen_year = parseInt(Map(schedule).get("chosen_year")),
             task_week = parseInt(Map(schedule).get("week")),
             repeat_type = Map(repeat).get("type"),
-            repeat_value = parseInt(Map(repeat).getIn(["interval", "value"]))
+            repeat_value = parseInt(Map(repeat).getIn(["interval", "value"])),
+            current_date_start_timestamp = new Date(start_year, start_month, monday).getTime(),
+            task_start_timestamp = new Date(task_start_year, task_start_month, task_monday).getTime()
 
-        if (repeat_type === "weekly-w") {
-            if (start_year >= task_chosen_year) {
-                let diff = Math.abs(week - task_week)
+        if (repeat_type === "weekly-w" && current_date_start_timestamp >= task_start_timestamp) {
+            let diff = Math.abs(week - task_week)
+            if (diff >= 0 && diff % repeat_value === 0) {
+                let end_type = Map(end).get("type")
 
-                if (diff >= 0 && diff % repeat_value === 0) {
-                    let end_type = Map(end).get("type")
+                if (end_type === "never") {
+                    return true
+                }
 
-                    if (end_type === "never") {
-                        return true
-                    }
+                else if (end_type === "on") {
+                    let end_at = parseInt(Map(end).get("endAt")),
+                        end_at_day = new Date(end_at).getDate(),
+                        end_at_month = new Date(end_at).getMonth(),
+                        end_at_year = new Date(end_at).getFullYear()
 
-                    else if (end_type === "on") {
-                        let end_at = parseInt(Map(end).get("endAt")),
-                            end_at_day = new Date(end_at).getDate(),
-                            end_at_month = new Date(end_at).getMonth(),
-                            end_at_year = new Date(end_at).getFullYear()
-
-                        if (end_at_year === start_year) {
-                            if (end_at_month >= start_month) {
-                                if (end_at_day >= monday) {
-                                    return true
-                                }
-                            }
-                        }
-
-                        else if (end_at_year > start_year) {
+                    if (end_at_year === start_year) {
+                        if (end_at_month > start_month) {
                             return true
                         }
+
+                        else if (end_at_month === start_month) {
+                            if (end_at_day >= monday) {
+                                return true
+                            }
+                        }
                     }
 
-                    else {
-                        let end_after_value = parseInt(Map(end).get("occurrence"))
-                        return diff / repeat_value <= (end_after_value - 1)
+                    else if (end_at_year > start_year) {
+                        return true
                     }
+                }
+
+                else {
+                    let end_after_value = parseInt(Map(end).get("occurrence"))
+                    return diff / repeat_value <= (end_after_value - 1)
                 }
             }
         }
@@ -747,16 +763,19 @@ class UncompletedTaskCard extends React.PureComponent {
 
     compareWeekTypeMonthly = (repeat, end, schedule, monday, week, start_month, end_month, start_year, end_year, start_noWeekInMonth, end_noWeekInMonth) => {
         let repeat_value = parseInt(Map(repeat).getIn(["interval", "value"])),
-            task_day = parseInt(Map(schedule).get("day")),
+            task_monday = parseInt(Map(schedule).get("monday")),
             task_chosen_month = parseInt(Map(schedule).get("chosen_month")),
             task_start_month = parseInt(Map(schedule).get("start_month")),
             task_end_month = parseInt(Map(schedule).get("end_month")),
+            task_start_year = parseInt(Map(schedule).get("start_year")),
             task_chosen_year = parseInt(Map(schedule).get("chosen_year")),
             task_week = parseInt(Map(schedule).get("week")),
             task_chosen_noWeekInMonth = parseInt(Map(schedule).get("start_noWeekInMonth")),
-            repeat_type = Map(repeat).get("type")
+            repeat_type = Map(repeat).get("type"),
+            current_date_start_timestamp = new Date(start_year, start_month, monday).getTime(),
+            task_start_timestamp = new Date(task_start_year, task_start_month, task_monday).getTime()
 
-        if (repeat_type === "weekly-m") {
+        if (repeat_type === "weekly-m" && current_date_start_timestamp >= task_start_timestamp) {
             if (task_chosen_month === task_start_month) {
                 let diff_year = start_year - task_chosen_year,
                     diff_month = (start_month + diff_year * 12) - task_chosen_month
@@ -786,7 +805,11 @@ class UncompletedTaskCard extends React.PureComponent {
                                 end_at_year = new Date(end_at).getFullYear()
 
                             if (end_at_year === start_year) {
-                                if (end_at_month >= start_month) {
+                                if (end_at_month > start_month) {
+                                    return true
+                                }
+
+                                else if (end_at_month === start_month) {
                                     if (end_at_day >= monday) {
                                         return true
                                     }
@@ -800,7 +823,7 @@ class UncompletedTaskCard extends React.PureComponent {
 
                         else {
                             let end_after_value = parseInt(Map(end).get("occurrence"))
-                            return diff / repeat_value <= (end_after_value - 1)
+                            return diff_month / repeat_value <= (end_after_value - 1)
                         }
                     }
                 }
@@ -836,7 +859,11 @@ class UncompletedTaskCard extends React.PureComponent {
                                 end_at_year = new Date(end_at).getFullYear()
 
                             if (end_at_year === start_year) {
-                                if (end_at_month >= start_month) {
+                                if (end_at_month > start_month) {
+                                    return true
+                                }
+
+                                else if (end_at_month === start_month) {
                                     if (end_at_day >= monday) {
                                         return true
                                     }
@@ -850,7 +877,7 @@ class UncompletedTaskCard extends React.PureComponent {
 
                         else {
                             let end_after_value = parseInt(Map(end).get("occurrence"))
-                            return diff / repeat_value <= (end_after_value - 1)
+                            return diff_month / repeat_value <= (end_after_value - 1)
                         }
                     }
                 }
@@ -958,7 +985,6 @@ class UncompletedTaskCard extends React.PureComponent {
                     task_week = parseInt(Map(schedule).get("week")),
                     task_year = parseInt(Map(schedule).get("chosen_year")),
                     goal_value = parseInt(Map(goal).get("max"))
-
 
                 if ((task_week === week && task_year === start_year)
                     || this.compareWeekTypeWeekly(repeat, end, schedule, monday, week, start_month, end_month, start_year, end_year, start_noWeekInMonth, end_noWeekInMonth)

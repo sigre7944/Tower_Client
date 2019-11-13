@@ -19,9 +19,6 @@ import TagDataHolder from './tag-data-holder/TagDataHolder.Container'
 
 import BottomOptionsHolder from "./bottom-options-holder/BottomOptionsHolder.Container"
 
-import { styles } from './styles/styles'
-
-
 
 export default class AddTaskPanel extends Component {
     taskTextInputRef = React.createRef()

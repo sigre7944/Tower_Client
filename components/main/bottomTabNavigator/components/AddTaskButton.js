@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import { primary_color } from '../../../shared/styles/style'
+import { primary_colors } from '../../../shared/styles/style'
 export default class AddTaskButton extends React.PureComponent {
     _onPress = () => {
         this.props.toggleAddTask()
@@ -20,7 +20,7 @@ export default class AddTaskButton extends React.PureComponent {
                     height: 56,
                     width: 56,
                     borderRadius: 56,
-                    backgroundColor: primary_color,
+                    backgroundColor: primary_colors.prim_1,
                     alignItems: 'center',
                     justifyContent: 'center',
                     position: 'absolute',
