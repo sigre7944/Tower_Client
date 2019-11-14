@@ -22,6 +22,7 @@ const MainNavigator = createBottomTabNavigator({
     tabBarComponent: props => (
         <BottomTabNavigator {...props} />
     ),
+    lazy: false
 })
 
 

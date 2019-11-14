@@ -71,7 +71,6 @@ export default class WeekCalendar extends React.Component {
             )
         }
 
-
         this.props.hideAction()
     }
 
@@ -139,6 +138,13 @@ export default class WeekCalendar extends React.Component {
                     {/* Main content of day calendar */}
                     <Calendar
                         setData={this.setData}
+
+                        chosen_month={this.props.chosen_month}
+                        start_month={this.props.start_month}
+                        end_month={this.props.end_month}
+                        year={this.props.year}
+                        start_noWeekInMonth={this.props.start_noWeekInMonth}
+                        end_noWeekInMonth={this.props.end_noWeekInMonth}
                     />
 
                     <View
@@ -291,13 +297,10 @@ class Calendar extends React.Component {
             }
         }
 
-        if (this.props.edit) {
-            this.start_index = this.findStartIndex(this.props.edit_task_data)
-        }
+        let { chosen_month, start_month, end_month, year, start_noWeekInMonth, end_noWeekInMonth } = this.props
 
-        else {
-            this.start_index = this.findStartIndex(this.props.task_data)
-        }
+        this.start_index = this.findStartIndex(chosen_month, start_month, end_month, year, start_noWeekInMonth, end_noWeekInMonth)
+
     }
 
     _getItemLayout = (data, index) => ({
@@ -306,39 +309,21 @@ class Calendar extends React.Component {
         index
     })
 
-    findStartIndex = (task_data) => {
-        if (task_data) {
-            let task_data_map = Map(task_data),
-                chosen_month = task_data_map.getIn(["schedule", "chosen_month"]),
-                chosen_year = task_data_map.getIn(["schedule", "chosen_year"]),
-                start_month = task_data_map.getIn(["schedule", "start_month"]),
-                end_month = task_data_map.getIn(["schedule", "end_month"]),
-                start_year = task_data_map.getIn(["schedule", "start_year"]),
-                end_year = task_data_map.getIn(["schedule", "end_year"]),
-                week_index = task_data_map.getIn(["schedule", "start_noWeekInMonth"]),
-                month_index = this.findMonthIndex(chosen_month, chosen_year)
+    findStartIndex = (chosen_month, start_month, end_month, year, start_noWeekInMonth, end_noWeekInMonth) => {
+        let week_index = 0,
+            month_index = this.findMonthIndex(chosen_month, year)
 
-            if (chosen_month === start_month) {
-                week_index = task_data_map.getIn(["schedule", "start_noWeekInMonth"]) - 1
-            }
-
-            else if (chosen_month === end_month) {
-                week_index = task_data_map.getIn(["schedule", "end_noWeekInMonth"]) - 1
-            }
-
-            this.chooseWeek(month_index, week_index)
-
-            return month_index
+        if (chosen_month === start_month) {
+            week_index = start_noWeekInMonth - 1
         }
 
-        else {
-            let week_index = this.getNoWeekInMonth(new Date()) - 1,
-                month_index = this.findMonthIndex(this.current_month, this.current_year)
-
-            this.chooseWeek(month_index, week_index)
-
-            return month_index
+        else if (chosen_month === end_month) {
+            week_index = end_noWeekInMonth - 1
         }
+
+        this.chooseWeek(month_index, week_index)
+
+        return month_index
     }
 
     findMonthIndex = (month, year) => {

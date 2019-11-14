@@ -10,7 +10,7 @@ import {
     Modal,
     Dimensions
 } from 'react-native';
-import { StackedBarChart, YAxis } from 'react-native-svg-charts'
+import { StackedBarChart, YAxis, Grid } from 'react-native-svg-charts'
 import { Map, List } from 'immutable'
 import { styles } from './styles/styles'
 
@@ -18,11 +18,55 @@ import WeekCalendar from "./week-calendar/WeekCalendar";
 
 const window_width = Dimensions.get("window").width
 
-export default class WeekChartHolder extends React.PureComponent {
+export default class WeekChartHolder extends React.Component {
+
+    month_names = ["January", "Febuary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    y_data = []
+    number_of_ticks = 0
+    y_max = 0
+
+    colors = ['#CBC8C8', '#6F73D9', '#EFDA6E', '#F78096']
+    keys = ['pri_04', 'pri_03', 'pri_02', 'pri_01']
 
     state = {
         chart_data: [],
-        should_active_calendar: false
+        should_active_calendar: false,
+        monday: 0,
+        sunday: 0,
+        week: 0,
+        start_month: 0,
+        end_month: 0,
+        month: 0,
+        start_year: 0,
+        end_year: 0,
+        year: 0,
+        start_noWeekInMonth: 0,
+        end_noWeekInMonth: 0
+    }
+
+    getWeek = (date) => {
+        let target = new Date(date);
+        let dayNr = (date.getDay() + 6) % 7;
+        target.setDate(target.getDate() - dayNr + 3);
+        let firstThursday = target.valueOf();
+        target.setMonth(0, 1);
+        if (target.getDay() != 4) {
+            target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+        }
+        return 1 + Math.ceil((firstThursday - target) / 604800000);
+    }
+
+    getMonday = (date) => {
+        let dayInWeek = new Date(date).getDay()
+        let diff = dayInWeek === 0 ? 6 : dayInWeek - 1
+        return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
+    }
+
+    getNoWeekInMonth = (date) => {
+        let nearest_monday_timestamp = this.getMonday(date).getTime()
+        let first_monday_of_month_timestamp = this.getMonday(new Date(date.getFullYear(), date.getMonth(), 1)).getTime()
+
+        return Math.floor((nearest_monday_timestamp - first_monday_of_month_timestamp) / (7 * 86400 * 1000)) + 1
     }
 
     _toggleCalendar = () => {
@@ -32,19 +76,144 @@ export default class WeekChartHolder extends React.PureComponent {
     }
 
     _setCalendarData = (monday, sunday, week, start_month, end_month, month, start_year, end_year, year, start_noWeekInMonth, end_noWeekInMonth) => {
-
+        this.setState({
+            monday, sunday, week, start_month, end_month, month, start_year, end_year, year, start_noWeekInMonth, end_noWeekInMonth
+        }, () => {
+            setTimeout(this._updateWeekChartData, 10)
+        })
     }
+
+    _initChartData = () => {
+        let chart_data = []
+
+        for (let i = 0; i < 7; i++) {
+            chart_data.push({
+                pri_04: 0,
+                pri_03: 0,
+                pri_02: 0,
+                pri_01: 0,
+            })
+        }
+
+        return chart_data
+    }
+
+    _updateYDataAndChartData = () => {
+        // let closet_max = 0,
+        //     diff_with_ten = this.y_max % 10
+
+        // closet_max = this.y_max + (10 - diff_with_ten)
+
+
+        if (this.y_max <= 5) {
+            this.number_of_ticks = this.y_max
+        }
+
+        else {
+            this.number_of_ticks = 4
+        }
+
+        this.y_data = [0, this.y_max]
+    }
+
+    _updateWeekChartData = () => {
+        let { monday, start_month, start_year } = this.state,
+            week_timestamp_toString = new Date(start_year, start_month, monday).getTime().toString(),
+            chart_data = this._initChartData(),
+            week_chart_stats_map = Map(this.props.week_chart_stats)
+
+        if (week_chart_stats_map.hasIn([week_timestamp_toString, "current"])) {
+            let current = List(week_chart_stats_map.getIn([week_timestamp_toString, "current"]))
+
+            this.y_max = current.reduce((total, value) => total + value)
+        }
+
+        if (week_chart_stats_map.hasIn([week_timestamp_toString, "completed_priority_array"])) {
+            let completed_priority_array = List(week_chart_stats_map.getIn([week_timestamp_toString, "completed_priority_array"]))
+
+            completed_priority_array.forEach((day_completed_array, day_index) => {
+                let index = day_index - 1
+                if (day_index === 0) {
+                    index = 6
+                }
+
+                chart_data[index] = {
+                    pri_04: List(day_completed_array).get(3),
+                    pri_03: List(day_completed_array).get(2),
+                    pri_02: List(day_completed_array).get(1),
+                    pri_01: List(day_completed_array).get(0),
+                }
+            })
+        }
+
+        this._updateYDataAndChartData()
+
+        this.setState({
+            chart_data
+        })
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        let { monday, start_month, start_year } = this.state,
+            week_timestamp_toString = new Date(start_year, start_month, monday).getTime().toString()
+
+        return this.state !== nextState
+            || Map(this.props.week_chart_stats).get(week_timestamp_toString) !== Map(nextProps.week_chart_stats).get(week_timestamp_toString)
+    }
+
+    componentDidMount() {
+        let current_date = new Date(),
+            monday = this.getMonday(current_date),
+            sunday = new Date(monday),
+            chart_data = this._initChartData()
+
+        sunday.setDate(monday.getDate() + 6)
+
+        let week = this.getWeek(current_date),
+            start_month = monday.getMonth(),
+            end_month = sunday.getMonth(),
+            month = current_date.getMonth(),
+
+            start_year = monday.getFullYear(),
+            end_year = sunday.getFullYear(),
+            year = current_date.getFullYear(),
+
+            start_noWeekInMonth = this.getNoWeekInMonth(monday),
+            end_noWeekInMonth = this.getNoWeekInMonth(sunday)
+
+        this.setState({
+            monday: monday.getDate(),
+            sunday: sunday.getDate(),
+            week, start_month, end_month, month, start_year, end_year, year, start_noWeekInMonth, end_noWeekInMonth,
+            chart_data
+        }, () => {
+            setTimeout(this._updateWeekChartData, 10)
+        })
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.week_chart_stats !== prevProps.week_chart_stats) {
+            setTimeout(this._updateWeekChartData, 10)
+        }
+    }
+
 
     render() {
         return (
-            <View>
+            <View
+                style={{
+                    flex: 1,
+                    alignItems: "center",
+                    width: window_width
+                }}
+            >
                 <TouchableOpacity
                     onPress={this._toggleCalendar}
                 >
                     <Text
                         style={styles.chosen_week_text}
                     >
-                        May 5 - May 11
+                        {`${this.month_names[this.state.start_month]} ${this.state.monday} ${this.state.start_year} - ${this.month_names[this.state.end_month]} ${this.state.sunday} ${this.state.end_year}`}
                     </Text>
                 </TouchableOpacity>
 
@@ -78,6 +247,13 @@ export default class WeekChartHolder extends React.PureComponent {
                             <WeekCalendar
                                 hideAction={this._toggleCalendar}
                                 _setCalendarData={this._setCalendarData}
+
+                                chosen_month={this.state.month}
+                                start_month={this.state.start_month}
+                                end_month={this.state.end_month}
+                                year={this.state.year}
+                                start_noWeekInMonth={this.state.start_noWeekInMonth}
+                                end_noWeekInMonth={this.state.end_noWeekInMonth}
                             />
                         </View>
                     </Modal>
@@ -87,22 +263,23 @@ export default class WeekChartHolder extends React.PureComponent {
                     null
                 }
 
-                {/* <View
+                <View
                     style={{
                         marginTop: 30,
+                        width: window_width,
                     }}
                 >
                     <View
                         style={{
                             flexDirection: "row",
-                            height: 200,
+                            height: 320,
+                            flex: 1,
+                            marginHorizontal: 10,
                         }}
                     >
                         <YAxis
                             style={{
-                                width: 50,
-                                borderRightWidth: 1,
-                                borderColor: "black",
+                                width: 30,
                             }}
                             data={this.y_data}
                             numberOfTicks={this.number_of_ticks}
@@ -110,6 +287,7 @@ export default class WeekChartHolder extends React.PureComponent {
                                 top: 7,
                                 bottom: 5,
                             }}
+                            svg={styles.y_axis_text}
                         />
                         <StackedBarChart
                             style={{
@@ -125,10 +303,12 @@ export default class WeekChartHolder extends React.PureComponent {
                                 bottom: 0,
                             }}
                             spacingInner={0.05}
-                        />
+                        >
+                            <Grid />
+                        </StackedBarChart>
                     </View>
                     <XAxis />
-                </View> */}
+                </View>
             </View>
         )
     }
@@ -141,10 +321,11 @@ class XAxis extends React.PureComponent {
             <View
                 style={{
                     flexDirection: "row",
-                    marginLeft: 50,
+                    marginLeft: 40,
+                    marginRight: 10,
                     height: 50,
                     borderTopWidth: 1,
-                    borderColor: "black",
+                    borderColor: "#05838B",
                 }}
             >
                 <XAxisDayTextHolder
@@ -186,9 +367,7 @@ class XAxisDayTextHolder extends React.PureComponent {
                 }}
             >
                 <Text
-                    style={{
-                        fontSize: 11
-                    }}
+                    style={styles.day_text}
                 >
                     {this.props.day_text}
                 </Text>
