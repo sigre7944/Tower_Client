@@ -535,7 +535,7 @@ export default class TaskCard extends React.PureComponent {
         return returning_data.toMap()
     }
 
-    _updateYearChartStats = (task_type, task_priority, month_in_year, timestamp_toString, flag, operation) => {
+    _updateYearChartStats = (task_type, task_reward, task_priority, month_in_year, timestamp_toString, flag, operation) => {
         let year_chart_stats_map = Map(this.props.year_chart_stats),
             returning_data = Map()
 

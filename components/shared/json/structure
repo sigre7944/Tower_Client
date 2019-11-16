@@ -64,6 +64,16 @@
         }
     }
 
+- Structures for deleted tasks: 
+    + Day Deleted Tasks: Map {
+        + task_id: {
+            timestamp: {
+                category: task_category,
+                priority_value: task_priority_value
+            }
+        }
+    }
+
 - Map structures for completed tasks:
     + Day type: Map {
         task_id: Map {

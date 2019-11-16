@@ -15,6 +15,11 @@ export const deleteTask = (type, id) => ({
     id
 })
 
+export const deleteKeyPathTask = (type, keyPath) => ({
+    type,
+    keyPath
+})
+
 export const deleteAllTasksInCategory = (type, category_id) => ({
     type,
     id: category_id

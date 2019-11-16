@@ -1,5 +1,5 @@
-import {connect} from 'react-redux'
-import MonthChart from './MonthChart'
+import { connect } from 'react-redux'
+import MonthChartHolder from './MonthChartHolder'
 
 const mapStateToProps = (state) => ({
     month_chart_stats: state.get("month_chart_stats"),
@@ -8,4 +8,4 @@ const mapStateToProps = (state) => ({
 export default connect(
     mapStateToProps,
     null
-)(MonthChart)
+)(MonthChartHolder)

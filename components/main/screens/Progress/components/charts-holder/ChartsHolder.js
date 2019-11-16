@@ -5,12 +5,19 @@ import {
     ScrollView,
     TouchableOpacity,
     StyleSheet,
-    FlatList
+    FlatList,
+    Dimensions
 } from 'react-native';
 import { Map, List } from 'immutable'
 import { styles } from './styles/styles'
 
 import WeekChartHolder from "./week-chart-holder/WeekChartHolder.Container";
+import MonthChartHolder from "./month-chart-holder/MonthChartHolder.Container";
+import YearChartHolder from "./year-chart-holder/YearChartHolder.Container";
+
+const window_width = Dimensions.get("window").width
+const mark_total_width = 278
+const mark_container_width = 106
 
 export default class ChartsHolder extends React.PureComponent {
 
@@ -98,8 +105,117 @@ export default class ChartsHolder extends React.PureComponent {
 
                         :
 
-                        null
+                        <>
+                            {this.state.current_annotation_index === 1 ?
+                                <MonthChartHolder />
+
+                                :
+
+                                <YearChartHolder />
+                            }
+                        </>
                     }
+                </View>
+
+                <View
+                    style={{
+                        marginTop: 43,
+                        width: window_width,
+                    }}
+                >
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            marginLeft: 40,
+                        }}
+                    >
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                width: mark_container_width,
+                            }}
+                        >
+                            <View
+                                style={styles.do_first_mark_container}
+                            >
+                            </View>
+
+                            <Text
+                                style={styles.mark_text}
+                            >
+                                Do first
+                            </Text>
+                        </View>
+
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                width: mark_container_width,
+                                marginLeft: 80,
+                            }}
+                        >
+                            <View
+                                style={styles.delay_mark_container}
+                            >
+                            </View>
+
+                            <Text
+                                style={styles.mark_text}
+                            >
+                                Delay
+                            </Text>
+                        </View>
+
+                    </View>
+
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            marginTop: 20,
+                            marginLeft: 40,
+                        }}
+                    >
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                width: mark_container_width,
+                            }}
+                        >
+                            <View
+                                style={styles.plan_mark_container}
+                            >
+                            </View>
+
+                            <Text
+                                style={styles.mark_text}
+                            >
+                                Plan
+                            </Text>
+                        </View>
+
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                width: mark_container_width,
+                                marginLeft: 80
+                            }}
+                        >
+                            <View
+                                style={styles.delegate_mark_container}
+                            >
+                            </View>
+
+                            <Text
+                                style={styles.mark_text}
+                            >
+                                Delegate
+                                </Text>
+                        </View>
+                    </View>
                 </View>
             </View>
         )

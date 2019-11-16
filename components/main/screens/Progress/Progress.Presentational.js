@@ -99,6 +99,7 @@ export default class Progress extends React.PureComponent {
           extraData={this.state.should_flatlist_update}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
+          showsVerticalScrollIndicator={false}
         />
       </View>
     );

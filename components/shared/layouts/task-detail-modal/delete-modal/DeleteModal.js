@@ -552,11 +552,67 @@ export default class DeleteModal extends Component {
         }
 
         this.props.deleteOnlyTaskThunk(sending_data)
+
+        // this.props.stopDoingThisTaskThunk()
+
         this.props._agreeDelete()
         this.props._toggleDelete()
     }
 
     render() {
+        let task_data_map = Map(this.props.task_data),
+            task_end_type = task_data_map.getIn(["end", "type"]),
+            type = this.props.type,
+            is_task_an_one_time_type = false
+
+        if (task_end_type === "on") {
+            let task_end_at_timestamp = task_data_map.getIn(["end", "endAt"]),
+                task_schedule = Map(task_data_map.get("schedule"))
+
+            if (type === "day") {
+                let schedule_day = task_schedule.get("day"),
+                    schedule_month = task_schedule.get("month"),
+                    schedule_year = task_schedule.get("year"),
+                    schedule_timestamp = new Date(schedule_year, schedule_month, schedule_day).getTime()
+
+                if (Math.floor(task_end_at_timestamp - schedule_timestamp) === 0) {
+                    is_task_a_one_time_type = true
+                }
+            }
+
+            else if (type === "schedule") {
+                let schedule_monday = task_schedule.get("monday"),
+                    schedule_start_month = task_schedule.get("start_month"),
+                    schedule_start_year = task_schedule.get("start_year"),
+                    schedule_start_timestamp = new Date(schedule_start_year, schedule_start_month, schedule_monday).getTime(),
+                    schedule_sunday = task_schedule.get("sunday"),
+                    schedule_end_month = task_schedule.get("end_month"),
+                    schedule_end_year = task_schedule.get("end_year"),
+                    schedule_end_timestamp = new Date(schedule_end_year, schedule_end_month, schedule_sunday).getTime()
+
+                if ((task_end_at_timestamp >= schedule_start_timestamp) && (task_end_at_timestamp <= schedule_end_timestamp)) {
+                    is_task_an_one_time_type = true
+                }
+            }
+
+            else {
+                let schedule_month = task_schedule.get("month"),
+                    schedule_year = task_schedule.get("year")
+
+                if (new Date(task_end_at_timestamp).getMonth() === schedule_month && new Date(task_end_at_timestamp).getFullYear() === schedule_year) {
+                    is_task_an_one_time_type = true
+                }
+            }
+        }
+
+        else if (task_end_type === "after") {
+            let task_end_occurrence = task_data_map.getIn(["end", "occurrence"])
+
+            if (task_end_occurrence === 1) {
+                is_task_an_one_time_type = true
+            }
+        }
+
         return (
             <Modal
                 transparent={true}
@@ -639,7 +695,7 @@ export default class DeleteModal extends Component {
                             <Text
                                 style={{ ...styles.text, ...{ color: "white" } }}
                             >
-                                {"DELETE ONLY TASK"}
+                                {"Delete Record"}
                             </Text>
                         </TouchableOpacity>
 

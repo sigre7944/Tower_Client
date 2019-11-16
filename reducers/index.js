@@ -43,6 +43,12 @@ import {
     purchase_history
 } from './rewardReducer'
 
+import {
+    deleted_day_tasks,
+    deleted_week_tasks,
+    deleted_month_tasks
+} from "./deletedTasksReducer";
+
 const rootReducer = combineReducers({
     currentRoute,
     currentWeekInMonth,
@@ -76,7 +82,11 @@ const rootReducer = combineReducers({
     rewards,
     balance,
     main_reward,
-    purchase_history
+    purchase_history,
+
+    deleted_day_tasks,
+    deleted_week_tasks,
+    deleted_month_tasks
 })
 
 export default rootReducer

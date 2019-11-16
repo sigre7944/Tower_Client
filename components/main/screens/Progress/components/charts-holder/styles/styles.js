@@ -46,5 +46,38 @@ export const styles = StyleSheet.create({
         lineHeight: 15,
         letterSpacing: -0.02,
         color: "white"
+    },
+
+    do_first_mark_container: {
+        width: 36,
+        height: 16,
+        backgroundColor: CommonStyles.priority_colors.prio_1
+    },
+
+    delay_mark_container: {
+        width: 36,
+        height: 16,
+        backgroundColor: CommonStyles.priority_colors.prio_3
+    },
+
+    plan_mark_container: {
+        width: 36,
+        height: 16,
+        backgroundColor: CommonStyles.priority_colors.prio_2
+    },
+
+    delegate_mark_container: {
+        width: 36,
+        height: 16,
+        backgroundColor: CommonStyles.priority_colors.prio_4
+    },
+
+    mark_text: {
+        fontFamily: CommonStyles.sf_ui_display_light_font,
+        fontSize: 14,
+        lineHeight: 17,
+        letterSpacing: -0.02,
+        color: CommonStyles.text_icon_colors.ti_1,
+        marginLeft: 10,
     }
 })

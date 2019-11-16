@@ -279,6 +279,7 @@ export default class TaskDetailModal extends Component {
                                         task_data={this.props.task_data}
                                         type={this.props.type}
                                         _agreeDelete={this._agreeDelete}
+                                        chosen_date_data={this.props.chosen_date_data}
                                     />
 
                                     :

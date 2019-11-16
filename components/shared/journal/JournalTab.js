@@ -210,6 +210,7 @@ export default class JournalTab extends React.PureComponent {
                         action_type={this.props.action_type}
                         resetTaskData={this.resetTaskData}
                         type={this.props.type}
+                        chosen_date_data={this.state.chosen_date_data}
                     />
 
                     :
