@@ -11,7 +11,7 @@ export const updateBulkThunk = ({ completed_task_data, chart_data }) => (dispatc
         updateChartStats(chart_data.week_action_type, chart_data.week_chart_keyPath, chart_data.week_chart_notSetValue, chart_data.week_chart_updater),
 
         updateChartStats(chart_data.month_action_type, chart_data.month_chart_keyPath, chart_data.month_chart_notSetValue, chart_data.month_chart_updater),
-        
+
         updateChartStats(chart_data.year_action_type, chart_data.year_chart_keyPath, chart_data.year_chart_notSetValue, chart_data.year_chart_updater),
     ]))
 }

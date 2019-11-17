@@ -197,6 +197,7 @@ export default class JournalTab extends React.PureComponent {
                         chosen_date_data={this.state.chosen_date_data}
                         openModal={this.openModal}
                         current_chosen_category={this.props.current_chosen_category}
+                        deleted_tasks={this.props.deleted_tasks}
                     />
                 </View>
 
@@ -243,6 +244,7 @@ class FlatlistGroup extends React.PureComponent {
                         chosen_date_data={this.props.chosen_date_data}
                         openModal={this.props.openModal}
                         current_chosen_category={this.props.current_chosen_category}
+                        deleted_tasks={this.props.deleted_tasks}
                     />
                 </View>
             )
@@ -259,6 +261,7 @@ class FlatlistGroup extends React.PureComponent {
                         chosen_date_data={this.props.chosen_date_data}
                         openModal={this.props.openModal}
                         current_chosen_category={this.props.current_chosen_category}
+                    // deleted_tasks={this.props.deleted_tasks}
                     />
                 </View>
             )
@@ -308,6 +311,7 @@ class FlatlistGroup extends React.PureComponent {
         if (this.props.tasks !== prevProps.tasks
             || this.props.completed_tasks !== prevProps.completed_tasks
             || this.props.current_chosen_category !== prevProps.current_chosen_category
+            || this.props.deleted_tasks !== prevProps.deleted_tasks
             || this.props.chosen_date_data !== prevProps.chosen_date_data) {
             this._updateData()
         }
@@ -341,10 +345,11 @@ class UncompletedTaskCardHolder extends React.PureComponent {
                 task_id={item[0]}
                 task_data={item[1]}
                 current_chosen_category={this.props.current_chosen_category}
-                completed_task={Map(this.props.completed_tasks).get(Map(item[1]).get("id"))}
+                completed_task={Map(this.props.completed_tasks).get(item[0])}
                 type={this.props.type}
                 chosen_date_data={this.props.chosen_date_data}
                 openModal={this.props.openModal}
+                deleted_task_data={Map(this.props.deleted_tasks).get(item[0])}
             />
         )
     }
@@ -353,6 +358,7 @@ class UncompletedTaskCardHolder extends React.PureComponent {
         let tasks_map = Map(this.props.tasks),
             priorities_map = Map(this.props.priorities),
             prioritized_tasks = []
+
 
         priorities_map.valueSeq().forEach((priority_data, index) => {
             List(priority_data.get("tasks")).forEach((task_data, i) => {
@@ -375,6 +381,7 @@ class UncompletedTaskCardHolder extends React.PureComponent {
         if (this.props.completed_tasks !== prevProps.completed_tasks
             || this.props.tasks !== prevProps.tasks
             || this.props.current_chosen_category !== prevProps.current_chosen_category
+            || this.props.deleted_tasks !== prevProps.deleted_tasks
             || this.props.chosen_date_data !== prevProps.chosen_date_data) {
             this._prioritizeTasks()
         }
@@ -628,12 +635,6 @@ class UncompletedTaskCard extends React.PureComponent {
             current_date_start_timestamp = new Date(year, month, day).getTime()
 
         if (repeat_type === "monthly" && current_date_start_timestamp >= task_start_timestamp) {
-            // let start_date = new Date(new Date(new Date(new Date().setDate(task_day)).setMonth(task_month)).setFullYear(task_year)),
-            //     current_date = new Date(new Date(new Date(new Date().setDate(day)).setMonth(month)).setFullYear(year)),
-            //     diff_year = current_date.getFullYear() - start_date.getFullYear(),
-            //     diff_month = (current_date.getMonth() + diff_year * 12) - start_date.getMonth()
-
-
             let start_date = new Date(task_year, task_month, task_day),
                 current_date = new Date(year, month, day),
                 diff_year = current_date.getFullYear() - start_date.getFullYear(),
@@ -973,7 +974,7 @@ class UncompletedTaskCard extends React.PureComponent {
         return false
     }
 
-    handleUpdate = (completed_task, task, type, current_chosen_category, chosen_date_data) => {
+    handleUpdate = (deleted_task_data, completed_task, task, type, current_chosen_category, chosen_date_data) => {
         let task_map = Map(task),
             schedule = task_map.get("schedule"),
             repeat = task_map.get("repeat"),
@@ -1002,13 +1003,19 @@ class UncompletedTaskCard extends React.PureComponent {
                     current_goal_value = parseInt(getIn(completed_task, [chosen_day_timestamp_to_string, "current"], 0))
 
                     if (current_goal_value < goal_value) {
-                        this.update_obj = {
-                            should_render: true,
-                            current_goal_value,
-                            action_type: "UPDATE_COMPLETED_DAY_TASK",
-                            title,
-                            goal_value,
-                            task_data: task
+                        if (!Map(deleted_task_data).has(chosen_day_timestamp_to_string)) {
+                            this.update_obj = {
+                                should_render: true,
+                                current_goal_value,
+                                action_type: "UPDATE_COMPLETED_DAY_TASK",
+                                title,
+                                goal_value,
+                                task_data: task
+                            }
+                        }
+
+                        else {
+                            this.update_obj.should_render = false
                         }
                     }
 
@@ -1038,13 +1045,19 @@ class UncompletedTaskCard extends React.PureComponent {
                     current_goal_value = getIn(completed_task, [chosen_week_timestamp_to_string, "current"], 0)
 
                     if (current_goal_value < parseInt(goal_value)) {
-                        this.update_obj = {
-                            should_render: true,
-                            current_goal_value,
-                            action_type: "UPDATE_COMPLETED_WEEK_TASK",
-                            title,
-                            goal_value,
-                            task_data: task
+                        if (!Map(deleted_task_data).has(chosen_week_timestamp_to_string)) {
+                            this.update_obj = {
+                                should_render: true,
+                                current_goal_value,
+                                action_type: "UPDATE_COMPLETED_WEEK_TASK",
+                                title,
+                                goal_value,
+                                task_data: task
+                            }
+                        }
+
+                        else {
+                            this.update_obj.should_render = false
                         }
                     }
 
@@ -1072,13 +1085,19 @@ class UncompletedTaskCard extends React.PureComponent {
                 ) {
                     current_goal_value = getIn(completed_task, [chosen_month_timestamp_to_string, "current"], 0)
                     if (current_goal_value < parseInt(goal_value)) {
-                        this.update_obj = {
-                            should_render: true,
-                            current_goal_value,
-                            action_type: "UPDATE_COMPLETED_MONTH_TASK",
-                            title,
-                            goal_value,
-                            task_data: task
+                        if (!Map(deleted_task_data).has(chosen_month_timestamp_to_string)) {
+                            this.update_obj = {
+                                should_render: true,
+                                current_goal_value,
+                                action_type: "UPDATE_COMPLETED_MONTH_TASK",
+                                title,
+                                goal_value,
+                                task_data: task
+                            }
+                        }
+
+                        else {
+                            this.update_obj.should_render = false
                         }
                     }
 
@@ -1158,6 +1177,7 @@ class UncompletedTaskCard extends React.PureComponent {
         let is_chosen_date_today = this.checkIfChosenDateIsToday(this.props.chosen_date_data, this.props.type)
 
         this.handleUpdate(
+            this.props.deleted_task_data,
             this.props.completed_task,
             this.props.task_data,
             this.props.type,

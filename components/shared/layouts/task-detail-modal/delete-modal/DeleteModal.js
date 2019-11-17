@@ -501,16 +501,23 @@ export default class DeleteModal extends Component {
                     type: "RETURN_NEW_YEAR_CHART_STATS",
                     data: new_data.returning_year_chart_stats_map
                 },
+
+                deleted_task_data: {
+                    type: "DELETE_DELETED_KEYPATH_DAY_TASK",
+                    keyPath: [task_id]
+                }
             }
 
         if (type === "week") {
             sending_data.delete_task_data.type = "DELETE_WEEK_TASK"
             sending_data.delete_completed_task_data.type = "DELETE_COMPLETED_WEEK_TASK"
+            sending_data.deleted_task_data.type = "DELETE_DELETED_KEYPATH_WEEK_TASK"
         }
 
         else if (type === "month") {
             sending_data.delete_task_data.type = "DELETE_MONTH_TASK"
             sending_data.delete_completed_task_data.type = "DELETE_COMPLETED_MONTH_TASK"
+            sending_data.deleted_task_data.type = "DELETE_DELETED_KEYPATH_MONTH_TASK"
         }
 
         this.props.deleteTaskAndHistoryThunk(sending_data)
@@ -634,10 +641,10 @@ export default class DeleteModal extends Component {
                 sending_data.delete_timestamp_month_chart_stats_data.action_bool = true
 
                 sending_data.delete_timestamp_year_chart_stats_data.action_bool = true
-
-                sending_data.delete_timestamp_completed_task_data.keyPath = [task_id, timestamp_toString]
-                sending_data.deleted_task_data.keyPath = [task_id, timestamp_toString]
             }
+
+            sending_data.delete_timestamp_completed_task_data.keyPath = [task_id, timestamp_toString]
+            sending_data.deleted_task_data.keyPath = [task_id, timestamp_toString]
         }
 
         else if (type === "week") {
@@ -715,9 +722,10 @@ export default class DeleteModal extends Component {
 
                 sending_data.delete_timestamp_year_chart_stats_data.action_bool = true
 
-                sending_data.delete_timestamp_completed_task_data.keyPath = [task_id, timestamp_toString]
-                sending_data.deleted_task_data.keyPath = [task_id, timestamp_toString]
             }
+
+            sending_data.delete_timestamp_completed_task_data.keyPath = [task_id, timestamp_toString]
+            sending_data.deleted_task_data.keyPath = [task_id, timestamp_toString]
         }
 
         else {
@@ -731,7 +739,6 @@ export default class DeleteModal extends Component {
             if (completed_tasks_map.hasIn([task_id, timestamp_toString])) {
                 let total_points_array = completed_tasks_map.getIn([task_id, timestamp_toString, "total_points_array"]),
                     completed_priority_array = List(completed_tasks_map.getIn([task_id, timestamp_toString, "completed_priority_array"]))
-
 
                 completed_priority_array.forEach((completed_value_array, day_in_month_index) => {
                     let day_in_month = day_in_month_index + 1,
@@ -765,25 +772,25 @@ export default class DeleteModal extends Component {
                     completed_value_array.forEach((completed_value, priority_index) => {
                         if (returning_day_chart_stats_map.has(day_timestamp_toString)) {
                             returning_day_chart_stats_map.updateIn([day_timestamp_toString, "current", priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
-                            returning_day_chart_stats_map.updateIn([day_timestamp_toString, "task_type_completions", 1], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                            returning_day_chart_stats_map.updateIn([day_timestamp_toString, "task_type_completions", 2], (value) => value - completed_value < 0 ? 0 : value - completed_value)
                         }
 
                         if (returning_week_chart_stats_map.has(week_timestamp_toString)) {
                             returning_week_chart_stats_map.updateIn([week_timestamp_toString, "current", priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
                             returning_week_chart_stats_map.updateIn([week_timestamp_toString, "completed_priority_array", day_in_week, priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
-                            returning_week_chart_stats_map.updateIn([week_timestamp_toString, "task_type_completions", 1], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                            returning_week_chart_stats_map.updateIn([week_timestamp_toString, "task_type_completions", 2], (value) => value - completed_value < 0 ? 0 : value - completed_value)
                         }
 
                         if (returning_month_chart_stats_map.has(timestamp_toString)) {
                             returning_month_chart_stats_map.updateIn([timestamp_toString, "current", priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
                             returning_month_chart_stats_map.updateIn([timestamp_toString, "completed_priority_array", day_in_month_index, priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
-                            returning_month_chart_stats_map.updateIn([timestamp_toString, "task_type_completions", 1], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                            returning_month_chart_stats_map.updateIn([timestamp_toString, "task_type_completions", 2], (value) => value - completed_value < 0 ? 0 : value - completed_value)
                         }
 
                         if (returning_year_chart_stats_map.has(year_toString)) {
                             returning_year_chart_stats_map.updateIn([year_toString, "current", priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
                             returning_year_chart_stats_map.updateIn([year_toString, "completed_priority_array", month_in_year, priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
-                            returning_year_chart_stats_map.updateIn([year_toString, "task_type_completions", 1], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                            returning_year_chart_stats_map.updateIn([year_toString, "task_type_completions", 2], (value) => value - completed_value < 0 ? 0 : value - completed_value)
                         }
                     })
                 })
@@ -797,56 +804,13 @@ export default class DeleteModal extends Component {
 
                 sending_data.delete_timestamp_year_chart_stats_data.action_bool = true
 
-                sending_data.delete_timestamp_completed_task_data.keyPath = [task_id, timestamp_toString]
-                sending_data.deleted_task_data.keyPath = [task_id, timestamp_toString]
             }
+
+            sending_data.delete_timestamp_completed_task_data.keyPath = [task_id, timestamp_toString]
+            sending_data.deleted_task_data.keyPath = [task_id, timestamp_toString]
         }
 
         this.props.deleteTaskAndHistoryAtTimeThunk(sending_data)
-        this.props._agreeDelete()
-        this.props._toggleDelete()
-    }
-
-    _deleteOnlyTask = () => {
-        let task_id = Map(this.props.task_data).get("id"),
-            task_category = Map(this.props.task_data).get("category"),
-            task_priority_value = Map(this.props.task_data).getIn(["priority", "value"]),
-            type = this.props.type,
-            sending_data = {
-                delete_task_data: {
-                    type: "DELETE_DAY_TASK",
-                    id: task_id,
-                },
-                update_category_data: {
-                    keyPath: [task_category, "quantity"],
-                    notSetValue: 0,
-                    updater: (value) => value - 1 < 0 ? 0 : value - 1
-                },
-                update_priority_data: {
-                    keyPath: [task_priority_value, "tasks"],
-                    notSetValue: [],
-                    updater: (tasks) => List(tasks).delete(List(tasks).findIndex((task_data) => Map(task_data).get("id") === task_id))
-                },
-                delete_completed_task_data: {
-                    type: "DELETE_COMPLETED_DAY_TASK",
-                    id: task_id
-                },
-            }
-
-        if (type === "week") {
-            sending_data.delete_task_data.type = "DELETE_WEEK_TASK"
-            sending_data.delete_completed_task_data.type = "DELETE_COMPLETED_WEEK_TASK"
-        }
-
-        else if (type === "month") {
-            sending_data.delete_task_data.type = "DELETE_MONTH_TASK"
-            sending_data.delete_completed_task_data.type = "DELETE_COMPLETED_MONTH_TASK"
-        }
-
-        this.props.deleteOnlyTaskThunk(sending_data)
-
-        // this.props.stopDoingThisTaskThunk()
-
         this.props._agreeDelete()
         this.props._toggleDelete()
     }

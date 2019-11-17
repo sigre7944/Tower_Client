@@ -53,29 +53,6 @@ export const deleteTaskAndHistoryThunk = ({
     dispatch(batchActions(action_array))
 }
 
-export const stopDoingThisTaskThunk = ({
-    delete_task_data,
-    update_category_data,
-    update_priority_data,
-    delete_completed_task_data,
-    deleted_task_data,
-}) => (dispatch, getState) => {
-
-    let action_array = [
-        // deleteTask(delete_task_data.type, delete_task_data.id),
-
-        // updateCategory(update_category_data.keyPath, update_category_data.notSetValue, update_category_data.updater),
-
-        // updatePriority(update_priority_data.keyPath, update_priority_data.notSetValue, update_priority_data.updater),
-
-        // deleteTask(delete_completed_task_data.type, delete_completed_task_data.id),
-
-        // updateTask(deleted_task_data.type, deleted_task_data.keyPath, deleted_task_data.notSetValue, deleted_task_data.updater)
-    ]
-
-    dispatch(batchActions(action_array))
-}
-
 // Delete only record of the task at the time
 export const deleteTaskAndHistoryAtTimeThunk = ({
     delete_timestamp_completed_task_data,

@@ -11,6 +11,7 @@ const mapStateToProps = (state, ownProps) => {
             priorities: state.get("priorities"),
             completed_tasks: state.get("completed_day_tasks"),
             current_chosen_category: state.get("currentChosenCategory"),
+            deleted_tasks: state.get("deleted_day_tasks")
         })
     }
 
@@ -22,6 +23,7 @@ const mapStateToProps = (state, ownProps) => {
             priorities: state.get("priorities"),
             completed_tasks: state.get("completed_week_tasks"),
             current_chosen_category: state.get("currentChosenCategory"),
+            deleted_tasks: state.get("deleted_week_tasks")
         })
     }
 
@@ -32,6 +34,7 @@ const mapStateToProps = (state, ownProps) => {
         priorities: state.get("priorities"),
         completed_tasks: state.get("completed_month_tasks"),
         current_chosen_category: state.get("currentChosenCategory"),
+        deleted_tasks: state.get("deleted_month_tasks")
     })
 }
 
