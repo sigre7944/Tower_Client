@@ -1,6 +1,6 @@
 import {createMaterialTopTabNavigator} from 'react-navigation'
 
-import Daily from './components/Daily/Daily.Container'
+import Daily from './components/Daily/Daily'
 import Weekly from './components/Weekly/Weekly'
 import Monthly from './components/Monthly/Monthly'
 
@@ -13,27 +13,6 @@ const JournalTopNavigator = createMaterialTopTabNavigator({
 },
 {
     initialRouteName: "Day",
-    // tabBarOptions: {
-    //     upperCaseLabel: false,
-    //     labelStyle: {
-    //         color: 'black',
-    //         fontSize: 18
-    //     },
-    //     style: {
-    //         backgroundColor: 'white',
-    //         shadowColor: 'transparent',
-    //     },
-    //     tabStyle: {
-    //     },
-    //     indicatorStyle: {
-    //         top: 0,
-    //         backgroundColor: '#54BAAC',
-    //         height: 3,
-    //         borderRadius: 30,
-    //         alignContent: "center",
-    //     },
-        
-    // },
     tabBarComponent: CustomTabBarComponent
 })
 

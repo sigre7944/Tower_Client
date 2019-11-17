@@ -1,6 +1,6 @@
 import React from 'react'
 
-import JournalTab from '../../../../../shared/journal/JournalTab.Container'
+import JournalTab from '../share/journal/JournalTab.Container'
 
 export default class Weekly extends React.Component {
     static navigationOptions = {
