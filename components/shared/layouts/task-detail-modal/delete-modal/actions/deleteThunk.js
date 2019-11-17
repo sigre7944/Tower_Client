@@ -18,7 +18,6 @@ export const deleteTaskAndHistoryThunk = ({
     return_new_week_chart_stats_data,
     return_new_month_chart_stats_data,
     return_new_year_chart_stats_data,
-
     deleted_task_data,
 }) => (dispatch, getState) => {
 
@@ -59,7 +58,6 @@ export const stopDoingThisTaskThunk = ({
     update_category_data,
     update_priority_data,
     delete_completed_task_data,
-
     deleted_task_data,
 }) => (dispatch, getState) => {
 
@@ -80,26 +78,61 @@ export const stopDoingThisTaskThunk = ({
 
 // Delete only record of the task at the time
 export const deleteTaskAndHistoryAtTimeThunk = ({
-    delete_task_data,
-    update_category_data,
-    update_priority_data,
     delete_timestamp_completed_task_data,
-
     deleted_task_data,
+    delete_timestamp_day_chart_stats_data,
+    delete_timestamp_week_chart_stats_data,
+    delete_timestamp_month_chart_stats_data,
+    delete_timestamp_year_chart_stats_data,
 }) => (dispatch, getState) => {
 
     let action_array = [
-        // deleteTask(delete_task_data.type, delete_task_data.id),
-
         // Delete the timestamp record in completed_day/week/month_tasks
         deleteKeyPathTask(
             delete_timestamp_completed_task_data.type,
             delete_timestamp_completed_task_data.keyPath,
         ),
-        
+
         // Update deleted timestamp, task info in deleted_day/week/month_tasks
-        updateTask(deleted_task_data.type, deleted_task_data.keyPath, deleted_task_data.notSetValue, deleted_task_data.updater)
+        updateTask(deleted_task_data.type, deleted_task_data.keyPath, deleted_task_data.notSetValue, deleted_task_data.updater),
     ]
+
+    if (delete_timestamp_day_chart_stats_data.action_bool) {
+        action_array.push(
+            // Update deleted timestamp's task records in day/week/month/year_chart_stats
+            updateTask(
+                delete_timestamp_day_chart_stats_data.type,
+                delete_timestamp_day_chart_stats_data.data
+            ),
+        )
+    }
+
+    if (delete_timestamp_week_chart_stats_data.action_bool) {
+        action_array.push(
+            updateTask(
+                delete_timestamp_week_chart_stats_data.type,
+                delete_timestamp_week_chart_stats_data.data,
+            ),
+        )
+    }
+
+    if (delete_timestamp_month_chart_stats_data.action_bool) {
+        action_array.push(
+            updateTask(
+                delete_timestamp_month_chart_stats_data.type,
+                delete_timestamp_month_chart_stats_data.data,
+            ),
+        )
+    }
+
+    if (delete_timestamp_year_chart_stats_data.action_bool) {
+        action_array.push(
+            updateTask(
+                delete_timestamp_year_chart_stats_data.type,
+                delete_timestamp_year_chart_stats_data.data,
+            ),
+        )
+    }
 
     dispatch(batchActions(action_array))
 }

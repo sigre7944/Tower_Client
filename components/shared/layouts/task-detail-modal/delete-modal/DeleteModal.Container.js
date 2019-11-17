@@ -1,6 +1,10 @@
 import { connect } from 'react-redux'
 
-import { deleteTaskAndHistoryThunk, deleteOnlyTaskThunk } from './actions/deleteThunk'
+import { 
+    deleteTaskAndHistoryThunk, 
+    deleteOnlyTaskThunk,
+    deleteTaskAndHistoryAtTimeThunk
+} from './actions/deleteThunk'
 
 import DeleteModal from './DeleteModal'
 
@@ -34,7 +38,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
     deleteTaskAndHistoryThunk: (data) => dispatch(deleteTaskAndHistoryThunk(data)),
-    deleteOnlyTaskThunk: (data) => dispatch(deleteOnlyTaskThunk(data))
+    deleteOnlyTaskThunk: (data) => dispatch(deleteOnlyTaskThunk(data)),
+    deleteTaskAndHistoryAtTimeThunk: (data) => dispatch(deleteTaskAndHistoryAtTimeThunk(data))
 })
 
 export default connect(

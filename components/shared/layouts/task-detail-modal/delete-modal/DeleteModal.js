@@ -16,7 +16,7 @@ import {
 } from 'react-native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 
-import { Map, List } from 'immutable'
+import { Map, List, fromJS } from 'immutable'
 import { styles } from './styles/styles';
 
 const window_width = Dimensions.get("window").width
@@ -85,6 +85,34 @@ export default class DeleteModal extends Component {
                         day_timestamp_toString = key,
                         total_points = completed_tasks_map.getIn([task_id, key, "totalPoints"])
 
+                    if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
+                        returning_day_chart_stats_map.updateIn(
+                            [day_timestamp_toString, "totalPoints"],
+                            (value) => value - total_points < 0 ? 0 : value - total_points
+                        )
+                    }
+
+                    if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "totalPoints"])) {
+                        returning_week_chart_stats_map.updateIn(
+                            [week_timestamp_toString, "totalPoints"],
+                            (value) => value - total_points < 0 ? 0 : value - total_points
+                        )
+                    }
+
+                    if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "totalPoints"])) {
+                        returning_month_chart_stats_map.updateIn(
+                            [month_timestamp_toString, "totalPoints"],
+                            (value) => value - total_points < 0 ? 0 : value - total_points
+                        )
+                    }
+
+                    if (returning_year_chart_stats_map.hasIn([year_toString, "totalPoints"])) {
+                        returning_year_chart_stats_map.updateIn(
+                            [year_toString, "totalPoints"],
+                            (value) => value - total_points < 0 ? 0 : value - total_points
+                        )
+                    }
+
                     completed_priority_array.forEach((completed_value, priority_index) => {
                         if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "current", priority_index])) {
                             returning_day_chart_stats_map.updateIn(
@@ -93,12 +121,6 @@ export default class DeleteModal extends Component {
                             )
                         }
 
-                        if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
-                            returning_day_chart_stats_map.updateIn(
-                                [day_timestamp_toString, "totalPoints"],
-                                (value) => value - total_points < 0 ? 0 : value - total_points
-                            )
-                        }
 
                         if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "task_type_completions", this.task_type_order["day"]])) {
                             returning_day_chart_stats_map.updateIn(
@@ -118,13 +140,6 @@ export default class DeleteModal extends Component {
                             returning_week_chart_stats_map.updateIn(
                                 [week_timestamp_toString, "completed_priority_array", day_in_week, priority_index],
                                 (value) => value - completed_value < 0 ? 0 : value - completed_value
-                            )
-                        }
-
-                        if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "totalPoints"])) {
-                            returning_week_chart_stats_map.updateIn(
-                                [week_timestamp_toString, "totalPoints"],
-                                (value) => value - total_points < 0 ? 0 : value - total_points
                             )
                         }
 
@@ -149,13 +164,6 @@ export default class DeleteModal extends Component {
                             )
                         }
 
-                        if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "totalPoints"])) {
-                            returning_month_chart_stats_map.updateIn(
-                                [month_timestamp_toString, "totalPoints"],
-                                (value) => value - total_points < 0 ? 0 : value - total_points
-                            )
-                        }
-
                         if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "task_type_completions", this.task_type_order["day"]])) {
                             returning_month_chart_stats_map.updateIn(
                                 [month_timestamp_toString, "task_type_completions", this.task_type_order["day"]],
@@ -174,13 +182,6 @@ export default class DeleteModal extends Component {
                             returning_year_chart_stats_map.updateIn(
                                 [year_toString, "completed_priority_array", month_in_year, priority_index],
                                 (value) => value - completed_value < 0 ? 0 : value - completed_value
-                            )
-                        }
-
-                        if (returning_year_chart_stats_map.hasIn([year_toString, "totalPoints"])) {
-                            returning_year_chart_stats_map.updateIn(
-                                [year_toString, "totalPoints"],
-                                (value) => value - total_points < 0 ? 0 : value - total_points
                             )
                         }
 
@@ -209,18 +210,39 @@ export default class DeleteModal extends Component {
                             day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
                             total_points = parseInt(total_points_array.get(day_in_week_index))
 
+                        if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
+                            returning_day_chart_stats_map.updateIn(
+                                [day_timestamp_toString, "totalPoints"],
+                                (value) => value - total_points < 0 ? 0 : value - total_points
+                            )
+                        }
+
+                        if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "totalPoints"])) {
+                            returning_week_chart_stats_map.updateIn(
+                                [week_timestamp_toString, "totalPoints"],
+                                (value) => value - total_points < 0 ? 0 : value - total_points
+                            )
+                        }
+
+                        if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "totalPoints"])) {
+                            returning_month_chart_stats_map.updateIn(
+                                [month_timestamp_toString, "totalPoints"],
+                                (value) => value - total_points < 0 ? 0 : value - total_points
+                            )
+                        }
+
+                        if (returning_year_chart_stats_map.hasIn([year_toString, "totalPoints"])) {
+                            returning_year_chart_stats_map.updateIn(
+                                [year_toString, "totalPoints"],
+                                (value) => value - total_points < 0 ? 0 : value - total_points
+                            )
+                        }
+
                         List(completed_value_array).forEach((completed_value, priority_index) => {
                             if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "current", priority_index])) {
                                 returning_day_chart_stats_map.updateIn(
                                     [day_timestamp_toString, "current", priority_index],
                                     (value) => value - completed_value < 0 ? 0 : value - completed_value
-                                )
-                            }
-
-                            if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
-                                returning_day_chart_stats_map.updateIn(
-                                    [day_timestamp_toString, "totalPoints"],
-                                    (value) => value - total_points < 0 ? 0 : value - total_points
                                 )
                             }
 
@@ -245,13 +267,6 @@ export default class DeleteModal extends Component {
                                 )
                             }
 
-                            if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "totalPoints"])) {
-                                returning_week_chart_stats_map.updateIn(
-                                    [week_timestamp_toString, "totalPoints"],
-                                    (value) => value - total_points < 0 ? 0 : value - total_points
-                                )
-                            }
-
                             if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "task_type_completions", this.task_type_order["week"]])) {
                                 returning_week_chart_stats_map.updateIn(
                                     [week_timestamp_toString, "task_type_completions", this.task_type_order["week"]],
@@ -270,13 +285,6 @@ export default class DeleteModal extends Component {
                                 returning_month_chart_stats_map.updateIn(
                                     [month_timestamp_toString, "completed_priority_array", day_in_month - 1, priority_index],
                                     (value) => value - completed_value < 0 ? 0 : value - completed_value
-                                )
-                            }
-
-                            if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "totalPoints"])) {
-                                returning_month_chart_stats_map.updateIn(
-                                    [month_timestamp_toString, "totalPoints"],
-                                    (value) => value - total_points < 0 ? 0 : value - total_points
                                 )
                             }
 
@@ -301,13 +309,6 @@ export default class DeleteModal extends Component {
                                 )
                             }
 
-                            if (returning_year_chart_stats_map.hasIn([year_toString, "totalPoints"])) {
-                                returning_year_chart_stats_map.updateIn(
-                                    [year_toString, "totalPoints"],
-                                    (value) => value - total_points < 0 ? 0 : value - total_points
-                                )
-                            }
-
                             if (returning_year_chart_stats_map.hasIn([year_toString, "task_type_completions", this.task_type_order["week"]])) {
                                 returning_year_chart_stats_map.updateIn(
                                     [year_toString, "task_type_completions", this.task_type_order["week"]],
@@ -323,29 +324,51 @@ export default class DeleteModal extends Component {
                         total_points_array = List(completed_tasks_map.getIn([task_id, key, "total_points_array"]))
 
                     completed_priority_array.forEach((completed_value_array, day_in_month_index) => {
-                        let day_in_month = parseInt(day_in_month_index) + 1,
-                            date = new Date(timestamp),
+                        let day_in_month = day_in_month_index + 1,
+                            timestamp_date = new Date(timestamp),
+                            date = new Date(timestamp_date.getFullYear(), timestamp_date.getMonth(), day_in_month),
                             day_in_week = date.getDay(),
                             month_in_year = date.getMonth(),
                             year = date.getFullYear(),
                             year_toString = date.getFullYear().toString(),
-                            monday = this.getMonday(new Date(year, month_in_year, day_in_month)),
-                            day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
+                            monday = this.getMonday(date),
+                            day_timestamp_toString = date.getTime().toString(),
                             week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
                             total_points = parseInt(total_points_array.get(day_in_month_index))
+
+                        if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
+                            returning_day_chart_stats_map.updateIn(
+                                [day_timestamp_toString, "totalPoints"],
+                                (value) => value - total_points < 0 ? 0 : value - total_points
+                            )
+                        }
+
+                        if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "totalPoints"])) {
+                            returning_week_chart_stats_map.updateIn(
+                                [week_timestamp_toString, "totalPoints"],
+                                (value) => value - total_points < 0 ? 0 : value - total_points
+                            )
+                        }
+
+                        if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "totalPoints"])) {
+                            returning_month_chart_stats_map.updateIn(
+                                [month_timestamp_toString, "totalPoints"],
+                                (value) => value - total_points < 0 ? 0 : value - total_points
+                            )
+                        }
+
+                        if (returning_year_chart_stats_map.hasIn([year_toString, "totalPoints"])) {
+                            returning_year_chart_stats_map.updateIn(
+                                [year_toString, "totalPoints"],
+                                (value) => value - total_points < 0 ? 0 : value - total_points
+                            )
+                        }
 
                         List(completed_value_array).forEach((completed_value, priority_index) => {
                             if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "current", priority_index])) {
                                 returning_day_chart_stats_map.updateIn(
                                     [day_timestamp_toString, "current", priority_index],
                                     (value) => value - completed_value < 0 ? 0 : value - completed_value
-                                )
-                            }
-
-                            if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
-                                returning_day_chart_stats_map.updateIn(
-                                    [day_timestamp_toString, "totalPoints"],
-                                    (value) => value - total_points < 0 ? 0 : value - total_points
                                 )
                             }
 
@@ -370,13 +393,6 @@ export default class DeleteModal extends Component {
                                 )
                             }
 
-                            if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "totalPoints"])) {
-                                returning_week_chart_stats_map.updateIn(
-                                    [week_timestamp_toString, "totalPoints"],
-                                    (value) => value - total_points < 0 ? 0 : value - total_points
-                                )
-                            }
-
                             if (returning_week_chart_stats_map.hasIn([week_timestamp_toString, "task_type_completions", this.task_type_order["month"]])) {
                                 returning_week_chart_stats_map.updateIn(
                                     [week_timestamp_toString, "task_type_completions", this.task_type_order["month"]],
@@ -398,12 +414,6 @@ export default class DeleteModal extends Component {
                                 )
                             }
 
-                            if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "totalPoints"])) {
-                                returning_month_chart_stats_map.updateIn(
-                                    [month_timestamp_toString, "totalPoints"],
-                                    (value) => value - total_points < 0 ? 0 : value - total_points
-                                )
-                            }
 
                             if (returning_month_chart_stats_map.hasIn([month_timestamp_toString, "task_type_completions", this.task_type_order["month"]])) {
                                 returning_month_chart_stats_map.updateIn(
@@ -423,13 +433,6 @@ export default class DeleteModal extends Component {
                                 returning_year_chart_stats_map.updateIn(
                                     [year_toString, "completed_priority_array", month_in_year, priority_index],
                                     (value) => value - completed_value < 0 ? 0 : value - completed_value
-                                )
-                            }
-
-                            if (returning_year_chart_stats_map.hasIn([year_toString, "totalPoints"])) {
-                                returning_year_chart_stats_map.updateIn(
-                                    [year_toString, "totalPoints"],
-                                    (value) => value - total_points < 0 ? 0 : value - total_points
                                 )
                             }
 
@@ -515,6 +518,298 @@ export default class DeleteModal extends Component {
         this.props._toggleDelete()
     }
 
+    _deleteRecord = () => {
+        let type = this.props.type,
+            task_data_map = Map(this.props.task_data),
+            task_id = task_data_map.get("id"),
+            task_category = task_data_map.get("category"),
+            task_priority_value = task_data_map.getIn(["priority", "value"]),
+            chosen_date_data = this.props.chosen_date_data,
+            timestamp_toString = "",
+            returning_day_chart_stats_map = Map(this.props.day_chart_stats).asMutable(),
+            returning_week_chart_stats_map = Map(this.props.week_chart_stats).asMutable(),
+            returning_month_chart_stats_map = Map(this.props.month_chart_stats).asMutable(),
+            returning_year_chart_stats_map = Map(this.props.year_chart_stats).asMutable(),
+            completed_tasks_map = Map(this.props.completed_tasks),
+            sending_data = {
+                delete_timestamp_completed_task_data: {
+                    type: "DELETE_KEYPATH_COMPLETED_DAY_TASK",
+                    keyPath: [task_id, timestamp_toString]
+                },
+                deleted_task_data: {
+                    type: "UPDATE_DELETED_DAY_TASK",
+                    keyPath: [task_id, timestamp_toString],
+                    notSetValue: {},
+                    updater: (value) => fromJS({
+                        category: task_category,
+                        priority_value: task_priority_value
+                    })
+                },
+                delete_timestamp_day_chart_stats_data: {
+                    action_bool: false,
+                    type: "RETURN_NEW_DAY_CHART_STATS",
+                    data: returning_day_chart_stats_map,
+                },
+                delete_timestamp_week_chart_stats_data: {
+                    action_bool: false,
+                    type: "RETURN_NEW_WEEK_CHART_STATS",
+                    data: returning_week_chart_stats_map,
+                },
+                delete_timestamp_month_chart_stats_data: {
+                    action_bool: false,
+                    type: "RETURN_NEW_MONTH_CHART_STATS",
+                    data: returning_month_chart_stats_map,
+                },
+                delete_timestamp_year_chart_stats_data: {
+                    action_bool: false,
+                    type: "RETURN_NEW_YEAR_CHART_STATS",
+                    data: returning_year_chart_stats_map,
+                },
+            }
+
+        if (type === "day") {
+            let { day, month, year } = chosen_date_data
+
+            timestamp_toString = new Date(year, month, day).getTime().toString()
+
+            let chosen_date = new Date(year, month, day),
+                monday = this.getMonday(chosen_date),
+                day_in_week = chosen_date.getDay(),
+                day_in_month = chosen_date.getDate(),
+                month_in_year = chosen_date.getMonth(),
+                week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
+                month_timestamp_toString = new Date(year, month).getTime().toString(),
+                year_toString = year.toString()
+
+            if (completed_tasks_map.hasIn([task_id, timestamp_toString])) {
+                let total_points = completed_tasks_map.getIn([task_id, timestamp_toString, "totalPoints"]),
+                    completed_priority_array = List(completed_tasks_map.getIn([task_id, timestamp_toString, "completed_priority_array"]))
+
+                if (returning_day_chart_stats_map.has(timestamp_toString)) {
+                    returning_day_chart_stats_map.updateIn([timestamp_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
+                }
+
+                if (returning_week_chart_stats_map.has(week_timestamp_toString)) {
+                    returning_week_chart_stats_map.updateIn([week_timestamp_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
+                }
+
+                if (returning_month_chart_stats_map.has(month_timestamp_toString)) {
+                    returning_month_chart_stats_map.updateIn([month_timestamp_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
+                }
+
+                if (returning_year_chart_stats_map.has(year_toString)) {
+                    returning_year_chart_stats_map.updateIn([year_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
+                }
+
+                completed_priority_array.forEach((completed_value, priority_index) => {
+                    if (returning_day_chart_stats_map.has(timestamp_toString)) {
+                        returning_day_chart_stats_map.updateIn([timestamp_toString, "current", priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                        returning_day_chart_stats_map.updateIn([timestamp_toString, "task_type_completions", 0], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                    }
+
+                    if (returning_week_chart_stats_map.has(week_timestamp_toString)) {
+                        returning_week_chart_stats_map.updateIn([week_timestamp_toString, "current", priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                        returning_week_chart_stats_map.updateIn([week_timestamp_toString, "completed_priority_array", day_in_week, priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                        returning_week_chart_stats_map.updateIn([week_timestamp_toString, "task_type_completions", 0], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                    }
+
+                    if (returning_month_chart_stats_map.has(month_timestamp_toString)) {
+                        returning_month_chart_stats_map.updateIn([month_timestamp_toString, "current", priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                        returning_month_chart_stats_map.updateIn([month_timestamp_toString, "completed_priority_array", day_in_month - 1, priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                        returning_month_chart_stats_map.updateIn([month_timestamp_toString, "task_type_completions", 0], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                    }
+
+                    if (returning_year_chart_stats_map.has(year_toString)) {
+                        returning_year_chart_stats_map.updateIn([year_toString, "current", priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                        returning_year_chart_stats_map.updateIn([year_toString, "completed_priority_array", month_in_year, priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                        returning_year_chart_stats_map.updateIn([year_toString, "task_type_completions", 0], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                    }
+                })
+
+
+                sending_data.delete_timestamp_day_chart_stats_data.action_bool = true
+                // sending_data.delete_timestamp_day_chart_stats_data.data = returning_day_chart_stats_map
+
+                sending_data.delete_timestamp_week_chart_stats_data.action_bool = true
+                // sending_data.delete_timestamp_week_chart_stats_data.data = returning_week_chart_stats_map
+
+                sending_data.delete_timestamp_month_chart_stats_data.action_bool = true
+                // sending_data.delete_timestamp_month_chart_stats_data.data = returning_month_chart_stats_map
+
+                sending_data.delete_timestamp_year_chart_stats_data.action_bool = true
+                // sending_data.delete_timestamp_year_chart_stats_data.data = returning_year_chart_stats_map
+            }
+        }
+
+        else if (type === "week") {
+            let { monday, start_month, start_year } = chosen_date_data
+
+            timestamp_toString = new Date(start_year, start_month, monday).getTime().toString()
+
+            sending_data.delete_timestamp_completed_task_data.type = "DELETE_KEYPATH_COMPLETED_WEEK_TASK"
+            sending_data.deleted_task_data.type = "UPDATE_DELETED_WEEK_TASK"
+
+            if (completed_tasks_map.hasIn([task_id, timestamp_toString])) {
+                let total_points_array = completed_tasks_map.getIn([task_id, timestamp_toString, "total_points_array"]),
+                    completed_priority_array = List(completed_tasks_map.getIn([task_id, timestamp_toString, "completed_priority_array"]))
+
+
+                completed_priority_array.forEach((completed_value_array, day_in_week_index) => {
+                    let day_in_week = day_in_week_index === 0 ? 7 : day_in_week_index
+
+                    let date = new Date(parseInt(timestamp_toString) + (day_in_week - 1) * 86400 * 1000),
+                        day_in_month = date.getDate(),
+                        month_in_year = date.getMonth(),
+                        year = date.getFullYear(),
+                        year_toString = year.toString(),
+                        month_timestamp_toString = new Date(year, month_in_year).getTime().toString(),
+                        day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
+                        total_points = parseInt(total_points_array.get(day_in_week_index))
+
+                    if (returning_day_chart_stats_map.has(day_timestamp_toString)) {
+                        returning_day_chart_stats_map.updateIn([day_timestamp_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
+                    }
+
+                    if (returning_week_chart_stats_map.has(timestamp_toString)) {
+                        returning_week_chart_stats_map.updateIn([timestamp_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
+                    }
+
+                    if (returning_month_chart_stats_map.has(month_timestamp_toString)) {
+                        returning_month_chart_stats_map.updateIn([month_timestamp_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
+                    }
+
+                    if (returning_year_chart_stats_map.has(year_toString)) {
+                        returning_year_chart_stats_map.updateIn([year_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
+                    }
+
+                    completed_value_array.forEach((completed_value, priority_index) => {
+                        if (returning_day_chart_stats_map.has(day_timestamp_toString)) {
+                            returning_day_chart_stats_map.updateIn([day_timestamp_toString, "current", priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                            returning_day_chart_stats_map.updateIn([day_timestamp_toString, "task_type_completions", 1], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                        }
+
+                        if (returning_week_chart_stats_map.has(timestamp_toString)) {
+                            returning_week_chart_stats_map.updateIn([timestamp_toString, "current", priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                            returning_week_chart_stats_map.updateIn([timestamp_toString, "completed_priority_array", day_in_week_index, priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                            returning_week_chart_stats_map.updateIn([timestamp_toString, "task_type_completions", 1], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                        }
+
+                        if (returning_month_chart_stats_map.has(month_timestamp_toString)) {
+                            returning_month_chart_stats_map.updateIn([month_timestamp_toString, "current", priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                            returning_month_chart_stats_map.updateIn([month_timestamp_toString, "completed_priority_array", day_in_month - 1, priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                            returning_month_chart_stats_map.updateIn([month_timestamp_toString, "task_type_completions", 1], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                        }
+
+                        if (returning_year_chart_stats_map.has(year_toString)) {
+                            returning_year_chart_stats_map.updateIn([year_toString, "current", priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                            returning_year_chart_stats_map.updateIn([year_toString, "completed_priority_array", month_in_year, priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                            returning_year_chart_stats_map.updateIn([year_toString, "task_type_completions", 1], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                        }
+                    })
+                })
+
+                sending_data.delete_timestamp_day_chart_stats_data.action_bool = true
+                // sending_data.delete_timestamp_day_chart_stats_data.data = returning_day_chart_stats_map
+
+                sending_data.delete_timestamp_week_chart_stats_data.action_bool = true
+                // sending_data.delete_timestamp_week_chart_stats_data.data = returning_week_chart_stats_map
+
+                sending_data.delete_timestamp_month_chart_stats_data.action_bool = true
+                // sending_data.delete_timestamp_month_chart_stats_data.data = returning_month_chart_stats_map
+
+                sending_data.delete_timestamp_year_chart_stats_data.action_bool = true
+                // sending_data.delete_timestamp_year_chart_stats_data.data = returning_year_chart_stats_map
+            }
+        }
+
+        else {
+            let { month, year } = chosen_date_data
+
+            timestamp_toString = new Date(year, month).getTime().toString()
+
+            sending_data.delete_timestamp_completed_task_data.type = "DELETE_KEYPATH_COMPLETED_MONTH_TASK"
+            sending_data.deleted_task_data.type = "UPDATE_DELETED_MONTH_TASK"
+
+            if (completed_tasks_map.hasIn([task_id, timestamp_toString])) {
+                let total_points_array = completed_tasks_map.getIn([task_id, timestamp_toString, "total_points_array"]),
+                    completed_priority_array = List(completed_tasks_map.getIn([task_id, timestamp_toString, "completed_priority_array"]))
+
+
+                completed_priority_array.forEach((completed_value_array, day_in_month_index) => {
+                    let day_in_month = day_in_month_index + 1,
+                        timestamp_date = new Date(parseInt(timestamp_toString)),
+                        date = new Date(timestamp_date.getFullYear(), timestamp_date.getMonth(), day_in_month),
+                        day_in_week = date.getDay(),
+                        month_in_year = date.getMonth(),
+                        year = date.getFullYear(),
+                        year_toString = date.getFullYear().toString(),
+                        monday = this.getMonday(date),
+                        day_timestamp_toString = date.getTime().toString(),
+                        week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
+                        total_points = parseInt(total_points_array.get(day_in_month_index))
+
+                    if (returning_day_chart_stats_map.has(day_timestamp_toString)) {
+                        returning_day_chart_stats_map.updateIn([day_timestamp_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
+                    }
+
+                    if (returning_week_chart_stats_map.has(week_timestamp_toString)) {
+                        returning_week_chart_stats_map.updateIn([week_timestamp_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
+                    }
+
+                    if (returning_month_chart_stats_map.has(timestamp_toString)) {
+                        returning_month_chart_stats_map.updateIn([timestamp_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
+                    }
+
+                    if (returning_year_chart_stats_map.has(year_toString)) {
+                        returning_year_chart_stats_map.updateIn([year_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
+                    }
+
+                    completed_value_array.forEach((completed_value, priority_index) => {
+                        if (returning_day_chart_stats_map.has(day_timestamp_toString)) {
+                            returning_day_chart_stats_map.updateIn([day_timestamp_toString, "current", priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                            returning_day_chart_stats_map.updateIn([day_timestamp_toString, "task_type_completions", 1], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                        }
+
+                        if (returning_week_chart_stats_map.has(week_timestamp_toString)) {
+                            returning_week_chart_stats_map.updateIn([week_timestamp_toString, "current", priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                            returning_week_chart_stats_map.updateIn([week_timestamp_toString, "completed_priority_array", day_in_week, priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                            returning_week_chart_stats_map.updateIn([week_timestamp_toString, "task_type_completions", 1], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                        }
+
+                        if (returning_month_chart_stats_map.has(timestamp_toString)) {
+                            returning_month_chart_stats_map.updateIn([timestamp_toString, "current", priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                            returning_month_chart_stats_map.updateIn([timestamp_toString, "completed_priority_array", day_in_month_index, priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                            returning_month_chart_stats_map.updateIn([timestamp_toString, "task_type_completions", 1], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                        }
+
+                        if (returning_year_chart_stats_map.has(year_toString)) {
+                            returning_year_chart_stats_map.updateIn([year_toString, "current", priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                            returning_year_chart_stats_map.updateIn([year_toString, "completed_priority_array", month_in_year, priority_index], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                            returning_year_chart_stats_map.updateIn([year_toString, "task_type_completions", 1], (value) => value - completed_value < 0 ? 0 : value - completed_value)
+                        }
+                    })
+                })
+
+
+                sending_data.delete_timestamp_day_chart_stats_data.action_bool = true
+                // sending_data.delete_timestamp_day_chart_stats_data.data = returning_day_chart_stats_map
+
+                sending_data.delete_timestamp_week_chart_stats_data.action_bool = true
+                // sending_data.delete_timestamp_week_chart_stats_data.data = returning_week_chart_stats_map
+
+                sending_data.delete_timestamp_month_chart_stats_data.action_bool = true
+                // sending_data.delete_timestamp_month_chart_stats_data.data = returning_month_chart_stats_map
+
+                sending_data.delete_timestamp_year_chart_stats_data.action_bool = true
+                // sending_data.delete_timestamp_year_chart_stats_data.data = returning_year_chart_stats_map
+            }
+        }
+
+        this.props.deleteTaskAndHistoryAtTimeThunk(sending_data)
+        this.props._agreeDelete()
+        this.props._toggleDelete()
+    }
+
     _deleteOnlyTask = () => {
         let task_id = Map(this.props.task_data).get("id"),
             task_category = Map(this.props.task_data).get("category"),
@@ -559,11 +854,10 @@ export default class DeleteModal extends Component {
         this.props._toggleDelete()
     }
 
-    render() {
+    _checkIfTaskIsOneTimer = () => {
         let task_data_map = Map(this.props.task_data),
             task_end_type = task_data_map.getIn(["end", "type"]),
-            type = this.props.type,
-            is_task_an_one_time_type = false
+            type = this.props.type
 
         if (task_end_type === "on") {
             let task_end_at_timestamp = task_data_map.getIn(["end", "endAt"]),
@@ -576,7 +870,7 @@ export default class DeleteModal extends Component {
                     schedule_timestamp = new Date(schedule_year, schedule_month, schedule_day).getTime()
 
                 if (Math.floor(task_end_at_timestamp - schedule_timestamp) === 0) {
-                    is_task_a_one_time_type = true
+                    return true
                 }
             }
 
@@ -591,7 +885,7 @@ export default class DeleteModal extends Component {
                     schedule_end_timestamp = new Date(schedule_end_year, schedule_end_month, schedule_sunday).getTime()
 
                 if ((task_end_at_timestamp >= schedule_start_timestamp) && (task_end_at_timestamp <= schedule_end_timestamp)) {
-                    is_task_an_one_time_type = true
+                    return true
                 }
             }
 
@@ -600,7 +894,7 @@ export default class DeleteModal extends Component {
                     schedule_year = task_schedule.get("year")
 
                 if (new Date(task_end_at_timestamp).getMonth() === schedule_month && new Date(task_end_at_timestamp).getFullYear() === schedule_year) {
-                    is_task_an_one_time_type = true
+                    return true
                 }
             }
         }
@@ -609,9 +903,15 @@ export default class DeleteModal extends Component {
             let task_end_occurrence = task_data_map.getIn(["end", "occurrence"])
 
             if (task_end_occurrence === 1) {
-                is_task_an_one_time_type = true
+                return true
             }
         }
+
+        return false
+    }
+
+    render() {
+        let check_if_task_is_one_timer = this._checkIfTaskIsOneTimer()
 
         return (
             <Modal
@@ -678,26 +978,31 @@ export default class DeleteModal extends Component {
                             </Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity
-                            style={{
-                                flexDirection: "row",
-                                paddingHorizontal: 10,
-                                paddingVertical: 5,
-                                borderRadius: 5,
-                                justifyContent: "center",
-                                alignItems: "center",
-                                backgroundColor: "#ffb948",
-                                marginTop: 20,
-                            }}
+                        {check_if_task_is_one_timer ?
+                            null
+                            :
+                            <TouchableOpacity
+                                style={{
+                                    flexDirection: "row",
+                                    paddingHorizontal: 10,
+                                    paddingVertical: 5,
+                                    borderRadius: 5,
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    backgroundColor: "#ffb948",
+                                    marginTop: 20,
+                                }}
 
-                            onPress={this._deleteOnlyTask}
-                        >
-                            <Text
-                                style={{ ...styles.text, ...{ color: "white" } }}
+                                onPress={this._deleteRecord}
                             >
-                                {"Delete Record"}
-                            </Text>
-                        </TouchableOpacity>
+                                <Text
+                                    style={{ ...styles.text, ...{ color: "white" } }}
+                                >
+                                    {"Delete Record"}
+                                </Text>
+                            </TouchableOpacity>
+                        }
+
 
                         <TouchableOpacity
                             style={{
