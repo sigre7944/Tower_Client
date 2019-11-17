@@ -3,6 +3,7 @@ import { Map } from 'immutable'
 export const deleted_day_tasks = (state = Map(), action) => {
     switch (action.type) {
         case "UPDATE_DELETED_DAY_TASK":
+            console.log(state.updateIn(action.keyPath, action.notSetValue, action.updater))
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
         case "DELETE_DELETED_KEYPATH_DAY_TASK":

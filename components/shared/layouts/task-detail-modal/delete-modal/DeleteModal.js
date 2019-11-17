@@ -628,16 +628,15 @@ export default class DeleteModal extends Component {
 
 
                 sending_data.delete_timestamp_day_chart_stats_data.action_bool = true
-                // sending_data.delete_timestamp_day_chart_stats_data.data = returning_day_chart_stats_map
 
                 sending_data.delete_timestamp_week_chart_stats_data.action_bool = true
-                // sending_data.delete_timestamp_week_chart_stats_data.data = returning_week_chart_stats_map
 
                 sending_data.delete_timestamp_month_chart_stats_data.action_bool = true
-                // sending_data.delete_timestamp_month_chart_stats_data.data = returning_month_chart_stats_map
 
                 sending_data.delete_timestamp_year_chart_stats_data.action_bool = true
-                // sending_data.delete_timestamp_year_chart_stats_data.data = returning_year_chart_stats_map
+
+                sending_data.delete_timestamp_completed_task_data.keyPath = [task_id, timestamp_toString]
+                sending_data.deleted_task_data.keyPath = [task_id, timestamp_toString]
             }
         }
 
@@ -709,16 +708,15 @@ export default class DeleteModal extends Component {
                 })
 
                 sending_data.delete_timestamp_day_chart_stats_data.action_bool = true
-                // sending_data.delete_timestamp_day_chart_stats_data.data = returning_day_chart_stats_map
 
                 sending_data.delete_timestamp_week_chart_stats_data.action_bool = true
-                // sending_data.delete_timestamp_week_chart_stats_data.data = returning_week_chart_stats_map
 
                 sending_data.delete_timestamp_month_chart_stats_data.action_bool = true
-                // sending_data.delete_timestamp_month_chart_stats_data.data = returning_month_chart_stats_map
 
                 sending_data.delete_timestamp_year_chart_stats_data.action_bool = true
-                // sending_data.delete_timestamp_year_chart_stats_data.data = returning_year_chart_stats_map
+
+                sending_data.delete_timestamp_completed_task_data.keyPath = [task_id, timestamp_toString]
+                sending_data.deleted_task_data.keyPath = [task_id, timestamp_toString]
             }
         }
 
@@ -792,16 +790,15 @@ export default class DeleteModal extends Component {
 
 
                 sending_data.delete_timestamp_day_chart_stats_data.action_bool = true
-                // sending_data.delete_timestamp_day_chart_stats_data.data = returning_day_chart_stats_map
 
                 sending_data.delete_timestamp_week_chart_stats_data.action_bool = true
-                // sending_data.delete_timestamp_week_chart_stats_data.data = returning_week_chart_stats_map
 
                 sending_data.delete_timestamp_month_chart_stats_data.action_bool = true
-                // sending_data.delete_timestamp_month_chart_stats_data.data = returning_month_chart_stats_map
 
                 sending_data.delete_timestamp_year_chart_stats_data.action_bool = true
-                // sending_data.delete_timestamp_year_chart_stats_data.data = returning_year_chart_stats_map
+
+                sending_data.delete_timestamp_completed_task_data.keyPath = [task_id, timestamp_toString]
+                sending_data.deleted_task_data.keyPath = [task_id, timestamp_toString]
             }
         }
 

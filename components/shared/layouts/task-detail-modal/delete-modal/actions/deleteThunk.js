@@ -100,7 +100,7 @@ export const deleteTaskAndHistoryAtTimeThunk = ({
     if (delete_timestamp_day_chart_stats_data.action_bool) {
         action_array.push(
             // Update deleted timestamp's task records in day/week/month/year_chart_stats
-            updateTask(
+            returnNewChartStats(
                 delete_timestamp_day_chart_stats_data.type,
                 delete_timestamp_day_chart_stats_data.data
             ),
@@ -109,7 +109,7 @@ export const deleteTaskAndHistoryAtTimeThunk = ({
 
     if (delete_timestamp_week_chart_stats_data.action_bool) {
         action_array.push(
-            updateTask(
+            returnNewChartStats(
                 delete_timestamp_week_chart_stats_data.type,
                 delete_timestamp_week_chart_stats_data.data,
             ),
@@ -118,7 +118,7 @@ export const deleteTaskAndHistoryAtTimeThunk = ({
 
     if (delete_timestamp_month_chart_stats_data.action_bool) {
         action_array.push(
-            updateTask(
+            returnNewChartStats(
                 delete_timestamp_month_chart_stats_data.type,
                 delete_timestamp_month_chart_stats_data.data,
             ),
@@ -127,7 +127,7 @@ export const deleteTaskAndHistoryAtTimeThunk = ({
 
     if (delete_timestamp_year_chart_stats_data.action_bool) {
         action_array.push(
-            updateTask(
+            returnNewChartStats(
                 delete_timestamp_year_chart_stats_data.type,
                 delete_timestamp_year_chart_stats_data.data,
             ),
