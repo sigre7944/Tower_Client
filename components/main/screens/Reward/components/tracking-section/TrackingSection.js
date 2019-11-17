@@ -8,6 +8,8 @@ import {
 
 import { Map, fromJS } from 'immutable'
 
+import { styles } from "./styles/styles";
+
 export default class TrackingSection extends React.PureComponent {
 
     getReward = () => {
@@ -88,180 +90,131 @@ export default class TrackingSection extends React.PureComponent {
     }
 
     render() {
-        let rewards = Map(this.props.rewards),
-            { main_reward } = this.props,
-            is_there_a_main_reward = false,
-            main_reward_name,
-            main_reward_value,
-            balance = parseInt(this.props.balance),
-            progress_percent = 0
+        // let rewards = Map(this.props.rewards),
+        //     { main_reward } = this.props,
+        //     is_there_a_main_reward = false,
+        //     main_reward_name,
+        //     main_reward_value,
+        //     balance = parseInt(this.props.balance),
+        //     progress_percent = 0
 
-        if (rewards.has(main_reward)) {
-            is_there_a_main_reward = true
-            main_reward_name = rewards.get(main_reward).name
-            main_reward_value = rewards.get(main_reward).value
-            progress_percent = balance / parseInt(main_reward_value)
-        }
+        // if (rewards.has(main_reward)) {
+        //     is_there_a_main_reward = true
+        //     main_reward_name = rewards.get(main_reward).name
+        //     main_reward_value = rewards.get(main_reward).value
+        //     progress_percent = balance / parseInt(main_reward_value)
+        // }
 
         return (
             <View
                 style={{
-                    height: 300,
                     justifyContent: "center",
                     alignItems: "center",
-                    backgroundColor: "#F2F2F2"
+                    marginVertical: 40,
                 }}
             >
                 <View
                     style={{
-                        height: 236,
-                        width: 363,
+                        width: 333,
                         borderRadius: 10,
-                        backgroundColor: "#FAFAFA",
+                        backgroundColor: "white",
                         shadowOffset: {
-                            width: 0,
+                            width: 4,
                             height: 4
                         },
                         shadowOpacity: 1,
-                        shadowRadius: 4,
-                        shadowColor: "rgba(0, 0, 0, 0.12)",
+                        shadowRadius: 15,
+                        shadowColor: "rgba(0, 0, 0, 0.08)",
                         justifyContent: "center",
                         alignItems: "center",
                         paddingHorizontal: 22,
                         paddingVertical: 49
                     }}
                 >
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                    >
+                        <View
+                            style={{
+                                flex: 1,
+                                justifyContent: "center"
+                            }}
+                        >
+                            {/* main reward title */}
+                            <Text
+                                style={styles.main_value_title}
+                            >
+                                1112222225 3666564 1213
+                            </Text>
 
-                    {is_there_a_main_reward ?
+                            <Text
+                                style={styles.main_value_cheering}
+                            >
+                                You are almost there!
+                            </Text>
+
+                            <TouchableOpacity
+                                style={styles.get_button_container}
+
+                                // onPress={this.getReward}
+                            >
+                                <Text
+                                    style={styles.get_text}
+                                >
+                                    Get
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
 
                         <View
                             style={{
-                                flexDirection: "row",
+                                flex: 1,
+                                position: "relative",
                                 justifyContent: "center",
                                 alignItems: "center",
+                                height: 139,
                             }}
                         >
-                            <View
+                            <ProgressCircle
                                 style={{
                                     flex: 1,
-                                    justifyContent: "center"
+                                    width: 159,
                                 }}
-                            >
-                                {/* main reward title */}
-                                <Text
-                                    style={{
-                                        width: 100,
-                                        height: 30,
-                                        fontWeight: "500",
-                                        fontSize: 24,
-                                        lineHeight: 28,
-                                        letterSpacing: -0.02,
-                                        color: "rgba(0, 0, 0, 0.87)"
-                                    }}
-                                >
-                                    {main_reward_name}
-                                </Text>
-
-                                <Text
-                                    style={{
-                                        marginTop: 4,
-                                        height: 23,
-                                        fontSize: 14,
-                                        lineHeight: 16,
-                                        letterSpacing: -0.02,
-                                        color: "rgba(0, 0, 0, 0.5)"
-                                    }}
-                                >
-                                    You are almost there!
-                            </Text>
-
-                                <TouchableOpacity
-                                    style={{
-                                        marginTop: 11,
-                                        width: 110,
-                                        height: 36,
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        backgroundColor: "rgba(0, 0, 0, 0.05)",
-                                        borderRadius: 28,
-                                    }}
-
-                                    onPress={this.getReward}
-                                >
-                                    <Text
-                                        style={{
-                                            fontWeight: "500",
-                                            fontSize: 16,
-                                            lineHeight: 19,
-                                            color: "#FFFFFF"
-                                        }}
-                                    >
-                                        Get
-                                </Text>
-                                </TouchableOpacity>
-                            </View>
+                                progress={3750/5000}
+                                progressColor={"#05838B"}
+                                backgroundColor={"rgba(0, 0, 0, 0.05)"}
+                                strokeWidth={15}
+                                cornerRadius={0}
+                                animate={true}
+                            />
 
                             <View
                                 style={{
-                                    flex: 1,
-                                    position: "relative",
+                                    position: "absolute",
                                     justifyContent: "center",
-                                    alignItems: "center",
+                                    alignItems: "center"
                                 }}
                             >
-                                <ProgressCircle
-                                    style={{
-                                        height: 159,
-                                        width: 159,
-                                    }}
-                                    progress={progress_percent}
-                                    progressColor={"#000000"}
-                                    strokeWidth={15}
-                                    cornerRadius={0}
-                                    animate={true}
-                                />
-
-                                <View
-                                    style={{
-                                        position: "absolute",
-                                        justifyContent: "center",
-                                        alignItems: "center"
-                                    }}
+                                {/* Current balance */}
+                                <Text
+                                    style={styles.balance_text}
                                 >
-                                    {/* Current balance */}
-                                    <Text
-                                        style={{
-                                            fontWeight: "500",
-                                            fontSize: 24,
-                                            lineHeight: 28,
-                                            color: "black",
-                                            fontStyle: "normal",
-                                        }}
-                                    >
-                                        {balance}
-                                    </Text>
+                                    3750
+                                </Text>
 
-                                    {/* main reward value */}
-                                    <Text
-                                        style={{
-                                            fontSize: 14,
-                                            lineHeight: 16,
-                                            letterSpacing: -0.02,
-                                            color: "rgba(0, 0, 0, 0.25)"
-                                        }}
-                                    >
-                                        {main_reward_value}
-                                    </Text>
-                                </View>
+                                {/* main reward value */}
+                                <Text
+                                    style={styles.reward_value_text}
+                                >
+                                    5000
+                                </Text>
                             </View>
                         </View>
-
-                        :
-
-                        <Text>
-                            No main reward is available.
-                    </Text>
-                    }
+                    </View>
 
                 </View>
             </View>

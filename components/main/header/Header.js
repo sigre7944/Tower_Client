@@ -267,39 +267,58 @@ class ProgressHeader extends React.PureComponent {
 }
 
 class RewardHeader extends React.PureComponent {
-    openPurchaseHistoryTab = () => {
+    _openPurchaseHistoryTab = () => {
         this.props.navigation.navigate('PurchaseHistory')
+    }
+
+    _openEditModal = () => {
+        this.props._openEditModal()
+    }
+    _toggleReturn = () => {
+        this.props.toggleReturn()
     }
 
     render() {
         return (
-            <View
-                style={{
-                    paddingTop: 20,
-                    paddingHorizontal: 10,
-                    height: 80,
-                    flexDirection: "row",
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    backgroundColor: 'gray'
-                }}
-            >
-                <View></View>
+            <View style={styles.container}>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                    }}
+                >
+                    <TouchableOpacity
+                        style={styles.end_icon_container}
+                    >
+                        <FontAwesome
+                            name="bars"
+                            size={20}
+                            color={"#BDBDBD"}
+                        />
+                    </TouchableOpacity>
 
-                <Text>
-                    Reward
-                </Text>
+                    <TouchableOpacity
+                        onPress={this._toggleReturn}
+                    >
+                        <Text
+                            style={styles.middle_text_style}
+                        >
+                            Reward
+                        </Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity onPress={this.openPurchaseHistoryTab}>
-                    <Image
-                        source={require('./dots.png')}
-                        style={{
-                            width: 36,
-                            height: 36,
-                            tintColor: 'white'
-                        }}
-                    />
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.end_icon_container}
+                        onPress={this._openPurchaseHistoryTab}
+                    >
+                        <FontAwesome
+                            name={"ellipsis-v"}
+                            size={20}
+                            color={"#BDBDBD"}
+                        />
+                    </TouchableOpacity>
+                </View>
             </View>
         )
     }

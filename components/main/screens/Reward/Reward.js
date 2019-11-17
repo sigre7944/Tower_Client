@@ -2,17 +2,32 @@ import React from 'react';
 
 import {
   View,
-  ScrollView,
-  StyleSheet,
-  Keyboard,
-  Animated,
-  KeyboardAvoidingView
+  FlatList
 } from 'react-native';
 
 import TrackingSection from './components/tracking-section/TrackingSection.Container'
 import StoreSection from './components/store-section/StoreSection'
 
 export default class Reward extends React.Component {
+
+  state = {
+    data: [],
+    should_flatlist_update: 0
+  }
+
+  _keyExtractory = (item, index) => `reward-${item.id}-holder`
+
+  _renderItem = ({item, index}) => {
+    if(item.id === "tracking-main-reward"){
+      return(
+        <TrackingSection />
+      )
+    }
+
+    return(
+      <StoreSection />
+    )
+  }
 
   componentDidMount() {
     const didFocusScreen = this.props.navigation.addListener(
@@ -22,33 +37,36 @@ export default class Reward extends React.Component {
       }
     )
 
-    // const willFocusScreen = this.props.navigation.addListener(
-    //   'willFocus',
-    //   payload => {
-    //     this.props.changeRouteAction(payload.state.routeName)
-    //   }
-    // )
+    let data = []
+
+    data.push({
+      id: "tracking-main-reward"
+    })
+    data.push({
+      id: "balance-store-section"
+    })
+
+    this.setState({
+      data
+    })
   }
+
+
 
   render() {
     return (
-      <ScrollView
+      <View
         style={{
-          backgroundColor: "#F2F2F2",
+          backgroundColor: "white"
         }}
       >
-        {/* Tracking section */}
-        <TrackingSection
+        <FlatList
+          keyExtractor={this._keyExtractory}
+          renderItem={this._renderItem}
+          data={this.state.data}
+          extraData={this.state.should_flatlist_update}
         />
-
-        {/* Store Section */}
-        <StoreSection
-        />
-      </ScrollView>
+      </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-
-})
