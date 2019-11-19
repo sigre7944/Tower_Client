@@ -8,11 +8,9 @@ import { batchDispatchMiddleware } from 'redux-batched-actions'
 import { Provider } from 'react-redux'
 import rootReducer from './reducers'
 import Drawer from './components/drawer/Drawer.Container'
-import Header from './components/main/header/Header.Container'
 import * as FileSystem from 'expo-file-system';
 
-import PurchaseHistory from './components/main/header/reward-purchase-history-tab/PurchaseHistory.Container'
-
+import PurchaseHistory from './components/purchase-history-screen/PurchaseHistory.Container'
 import * as Font from 'expo-font'
 
 let categories = {},
@@ -175,26 +173,25 @@ export default class App extends React.Component {
 
 const ContentNavigator = createStackNavigator(
   { //Stack navigator works as a history object in a web browser, which helps popping out in pushing in screen to proceed navigations
-    Main: MainNavigator,
-    PurchaseHistory: { screen: PurchaseHistory }
+    Main: { screen: MainNavigator, navigationOptions: {} },
   },
   {
     initialRouteName: "Main",
-    transitionConfig: () => ({
-      transitionSpec: {
-        duration: 0,
-        timing: Animated.timing,
-        easing: Easing.step0
-      }
-    }),
+    // transitionConfig: () => ({
+    //   transitionSpec: {
+    //     duration: 0,
+    //     timing: Animated.timing,
+    //     easing: Easing.step0
+    //   }
+    // }),
     defaultNavigationOptions: ({ navigation }) => ({
-      header: <Header navigation={navigation} />
+      header: null
     }),
   }
 )
 
-const drawerNavigator = createDrawerNavigator({
-  ContentNavigator: ContentNavigator,
+const DrawerNavigator = createDrawerNavigator({
+  MainNavigator: MainNavigator,
 }, {
   drawerLockMode: 'locked-closed',
   contentComponent: Drawer,
@@ -203,7 +200,14 @@ const drawerNavigator = createDrawerNavigator({
   overlayColor: "gray"
 })
 
-const AppContainer = createAppContainer(drawerNavigator) //return a React component, which is to wrap the stack navigator 
+const AppStackNavigator = createStackNavigator({
+  DrawerNavigator: { screen: DrawerNavigator, navigationOptions: { header: null } },
+  PurchaseHistory: { screen: PurchaseHistory }
+}, {
+  initialRouteName: "DrawerNavigator",
+})
+
+const AppContainer = createAppContainer(AppStackNavigator) //return a React component, which is to wrap the stack navigator 
 
 
 

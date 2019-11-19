@@ -12,13 +12,14 @@ import {
     FlatList
 } from 'react-native';
 import { Map } from 'immutable'
-import PurchaseDate from './purchase-date/PurchaseDate.Container'
+
+import PurchaseHistoryHeader from "./header/PurchaseHistoryHeader";
 
 export default class PurchaseHistory extends React.PureComponent {
-    static navigationOptions = {
-        // header: null,
+    static navigationOptions = ({ navigation, navigationOptions }) => ({
+        header: <PurchaseHistoryHeader navigation={navigation} />,
         swipeable: false
-    };
+    })
 
     state = {
         purchase_history_data: []
@@ -27,9 +28,7 @@ export default class PurchaseHistory extends React.PureComponent {
     _keyExtractor = (item, index) => `purchased-item-day-${item[0]}`
 
     _renderItem = ({ item, index }) => (
-        <PurchaseDate
-            data={item}
-        />
+        <></>
     )
 
     loadPurchaseHistoryData = () => {
@@ -49,7 +48,7 @@ export default class PurchaseHistory extends React.PureComponent {
         this.loadPurchaseHistoryData()
     }
 
-    
+
 
 
     render() {

@@ -1,19 +1,21 @@
-import {createMaterialTopTabNavigator} from 'react-navigation'
+import React from 'react';
+import { createMaterialTopTabNavigator } from 'react-navigation'
 
-import Daily from './components/Daily/Daily'
-import Weekly from './components/Weekly/Weekly'
-import Monthly from './components/Monthly/Monthly'
+import Day from './components/Daily/Daily'
+import Week from './components/Weekly/Weekly'
+import Month from './components/Monthly/Monthly'
 
 import CustomTabBarComponent from './custom-tab-bar-component/CustomTabBarComponent'
 
 const JournalTopNavigator = createMaterialTopTabNavigator({
-    Day: {screen: Daily},
-    Week: {screen: Weekly},
-    Month: {screen: Monthly}
+    Day: { screen: Day },
+    Week: { screen: Week },
+    Month: { screen: Month }
 },
-{
-    initialRouteName: "Day",
-    tabBarComponent: CustomTabBarComponent
-})
+    {
+        initialRouteName: "Day",
+        tabBarComponent: CustomTabBarComponent,
+    }
+)
 
 export default JournalTopNavigator;

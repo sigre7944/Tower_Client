@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
-import { toggleReturn } from '../../shared/actions/otherAction'
-import Header from './Header'
+import { toggleReturn } from '../../../../../shared/actions/otherAction'
+import JournalHeader from './JournalHeader'
 
 const mapStateToProps = (state, ownProps) => ({
     headerText: state.get("headerText"),
@@ -14,4 +14,4 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Header)
+)(JournalHeader)

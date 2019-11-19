@@ -8,7 +8,16 @@ import {
 import TrackingSection from './components/tracking-section/TrackingSection.Container'
 import StoreSection from './components/store-section/StoreSection'
 
-export default class Reward extends React.Component {
+import RewardHeader from "./components/header/RewardHeader";
+
+export default class Reward extends React.PureComponent {
+
+  static navigationOptions = ({ navigation, navigationOptions }) => {
+    return ({
+      header: <RewardHeader navigation={navigation} />,
+      swipeable: false
+    })
+  }
 
   state = {
     data: [],
@@ -17,14 +26,14 @@ export default class Reward extends React.Component {
 
   _keyExtractory = (item, index) => `reward-${item.id}-holder`
 
-  _renderItem = ({item, index}) => {
-    if(item.id === "tracking-main-reward"){
-      return(
+  _renderItem = ({ item, index }) => {
+    if (item.id === "tracking-main-reward") {
+      return (
         <TrackingSection />
       )
     }
 
-    return(
+    return (
       <StoreSection />
     )
   }

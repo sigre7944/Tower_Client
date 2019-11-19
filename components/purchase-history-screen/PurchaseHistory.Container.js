@@ -1,5 +1,5 @@
-import {connect} from 'react-redux'
-import {changeRouteAction} from '../../../shared/actions/otherAction'
+import { connect } from 'react-redux'
+import { changeRouteAction } from '../shared/actions/otherAction'
 import PurchaseHistory from './PurchaseHistory'
 
 const mapStateToProps = (state) => ({

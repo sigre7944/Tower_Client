@@ -11,7 +11,17 @@ import Calendar from './components/calendar/Calendar.Container'
 import SummaryHolder from './components/summary-holder/SummaryHolder.Container'
 import ChartsHolder from "./components/charts-holder/ChartsHolder.Container";
 
+import ProgressHeader from "./components/header/ProgressHeader.Container";
+
 export default class Progress extends React.PureComponent {
+
+  static navigationOptions = ({ navigation, navigationOptions }) => {
+    return ({
+      header: <ProgressHeader navigation={navigation} />,
+      swipeable: false
+    })
+  }
+
   current_date = new Date()
 
   state = {
