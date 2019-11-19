@@ -3,12 +3,19 @@ import { ProgressCircle } from 'react-native-svg-charts'
 import {
     View,
     Text,
-    TouchableOpacity
+    TouchableOpacity,
+    Dimensions,
+    Image
 } from 'react-native';
 
 import { Map, fromJS } from 'immutable'
-
+import NoMainRewardSVG from "../../../../../../assets/svgs/looking_for_main_reward.svg";
+// import NoMainRewardSVG from "./components/NoMainRewardSVG";
+import Svg from "react-native-svg";
+import SvgUri from "react-native-svg-uri";
 import { styles } from "./styles/styles";
+
+const window_width = Dimensions.get("window").width
 
 export default class TrackingSection extends React.PureComponent {
 
@@ -105,6 +112,14 @@ export default class TrackingSection extends React.PureComponent {
         //     progress_percent = balance / parseInt(main_reward_value)
         // }
 
+        let { main_reward } = this.props,
+            no_main_reward_bool = false
+
+        if (main_reward.length === 0 || main_reward === "") {
+            no_main_reward_bool = true
+        }
+
+
         return (
             <View
                 style={{
@@ -113,110 +128,138 @@ export default class TrackingSection extends React.PureComponent {
                     marginVertical: 40,
                 }}
             >
-                <View
-                    style={{
-                        width: 333,
-                        borderRadius: 10,
-                        backgroundColor: "white",
-                        shadowOffset: {
-                            width: 4,
-                            height: 4
-                        },
-                        shadowOpacity: 1,
-                        shadowRadius: 15,
-                        shadowColor: "rgba(0, 0, 0, 0.08)",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        paddingHorizontal: 22,
-                        paddingVertical: 49
-                    }}
-                >
+                {no_main_reward_bool ?
                     <View
                         style={{
-                            flexDirection: "row",
                             justifyContent: "center",
                             alignItems: "center",
+                            width: window_width,
+                            height: 236,
+                            shadowColor: "rgba(0, 0, 0, 0.08)",
+                            shadowOffset: {
+                                width: 4,
+                                height: 4
+                            },
+                            shadowOpacity: 1,
+                            shadowRadius: 15,
+                            borderRadius: 10,
+                            backgroundColor: "white",
+                            marginHorizontal: 22,
+                            marginVertical: 49,
+                        }}
+                    >
+                        <SvgUri 
+                            width={window_width - 44}
+                            height={236}
+                            svgXmlData={NoMainRewardSVG}
+                        />
+                    </View>
+                    :
+
+                    <View
+                        style={{
+                            borderRadius: 10,
+                            backgroundColor: "white",
+                            shadowOffset: {
+                                width: 4,
+                                height: 4
+                            },
+                            shadowOpacity: 1,
+                            shadowRadius: 15,
+                            shadowColor: "rgba(0, 0, 0, 0.08)",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            paddingHorizontal: 22,
+                            paddingVertical: 49,
+                            marginHorizontal: 22
                         }}
                     >
                         <View
                             style={{
-                                flex: 1,
-                                justifyContent: "center"
-                            }}
-                        >
-                            {/* main reward title */}
-                            <Text
-                                style={styles.main_value_title}
-                            >
-                                1112222225 3666564 1213
-                            </Text>
-
-                            <Text
-                                style={styles.main_value_cheering}
-                            >
-                                You are almost there!
-                            </Text>
-
-                            <TouchableOpacity
-                                style={styles.get_button_container}
-
-                                // onPress={this.getReward}
-                            >
-                                <Text
-                                    style={styles.get_text}
-                                >
-                                    Get
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        <View
-                            style={{
-                                flex: 1,
-                                position: "relative",
+                                flexDirection: "row",
                                 justifyContent: "center",
                                 alignItems: "center",
-                                height: 139,
                             }}
                         >
-                            <ProgressCircle
+                            <View
                                 style={{
                                     flex: 1,
-                                    width: 159,
+                                    justifyContent: "center"
                                 }}
-                                progress={3750/5000}
-                                progressColor={"#05838B"}
-                                backgroundColor={"rgba(0, 0, 0, 0.05)"}
-                                strokeWidth={15}
-                                cornerRadius={0}
-                                animate={true}
-                            />
+                            >
+                                {/* main reward title */}
+                                <Text
+                                    style={styles.main_value_title}
+                                >
+                                    1112222225 3666564 1213
+                            </Text>
+
+                                <Text
+                                    style={styles.main_value_cheering}
+                                >
+                                    You are almost there!
+                            </Text>
+
+                                <TouchableOpacity
+                                    style={styles.get_button_container}
+
+                                // onPress={this.getReward}
+                                >
+                                    <Text
+                                        style={styles.get_text}
+                                    >
+                                        Get
+                                </Text>
+                                </TouchableOpacity>
+                            </View>
 
                             <View
                                 style={{
-                                    position: "absolute",
+                                    flex: 1,
+                                    position: "relative",
                                     justifyContent: "center",
-                                    alignItems: "center"
+                                    alignItems: "center",
+                                    height: 139,
                                 }}
                             >
-                                {/* Current balance */}
-                                <Text
-                                    style={styles.balance_text}
+                                <ProgressCircle
+                                    style={{
+                                        flex: 1,
+                                        width: 159,
+                                    }}
+                                    progress={3750 / 5000}
+                                    progressColor={"#05838B"}
+                                    backgroundColor={"rgba(0, 0, 0, 0.05)"}
+                                    strokeWidth={15}
+                                    cornerRadius={0}
+                                    animate={true}
+                                />
+
+                                <View
+                                    style={{
+                                        position: "absolute",
+                                        justifyContent: "center",
+                                        alignItems: "center"
+                                    }}
                                 >
-                                    3750
+                                    {/* Current balance */}
+                                    <Text
+                                        style={styles.balance_text}
+                                    >
+                                        3750
                                 </Text>
 
-                                {/* main reward value */}
-                                <Text
-                                    style={styles.reward_value_text}
-                                >
-                                    5000
+                                    {/* main reward value */}
+                                    <Text
+                                        style={styles.reward_value_text}
+                                    >
+                                        5000
                                 </Text>
+                                </View>
                             </View>
                         </View>
                     </View>
-
-                </View>
+                }
             </View>
         )
     }

@@ -1,5 +1,9 @@
 import { connect } from 'react-redux'
-import { updateRewardAndMainReward } from './actions/rewardActionThunk'
+import {
+    addRewardAndMainReward,
+    editRewardAndMainReward,
+    deleteReward
+} from './actions/rewardActionThunk'
 import AddEditReward from './AddEditReward'
 
 const mapStateToProps = (state) => ({
@@ -8,7 +12,9 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    updateRewardAndMainReward: (sending_obj) => dispatch(updateRewardAndMainReward(sending_obj))
+    addRewardAndMainReward: (data) => dispatch(addRewardAndMainReward(data)),
+    editRewardAndMainReward: (data) => dispatch(editRewardAndMainReward(data)),
+    deleteReward: (data) => dispatch(deleteReward(data))
 })
 
 export default connect(

@@ -7,12 +7,22 @@ import {
     FlatList,
 } from 'react-native';
 
-import { Map, fromJS } from 'immutable'
+import { Map, fromJS, OrderedMap } from 'immutable'
 
 import AddEditReward from './add-edit-reward.js/AddEditReward.Container'
 import DeleteReward from './delete-reward/DeleteReward.Container'
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import {
+    faPlus,
+    faEdit
+} from "@fortawesome/free-solid-svg-icons";
+import { styles } from "./styles/styles";
 
-export default class TrackingSection extends React.PureComponent {
+const window_width = Dimensions.get("window").width
+const number_of_columns = 2
+const reward_holder_width = (window_width - (22 * 2 + 23 * (number_of_columns - 1))) / number_of_columns //22 = paddingHorizontal value, 23 = margin between 2 cols
+
+export default class CRUDRewardSection extends React.PureComponent {
     edit_reward_data = {}
     delete_reward_id = ""
 
@@ -21,7 +31,7 @@ export default class TrackingSection extends React.PureComponent {
         reward_data: [],
         is_add_new_reward: false,
         is_edit_reward: false,
-        is_delete_reward: false
+        is_delete_reward: false,
     }
 
     addNewReward = () => {
@@ -139,10 +149,10 @@ export default class TrackingSection extends React.PureComponent {
         this._flatlistReft = ref
     }
 
-    _keyExtractor = (item, index) => `reward_${index}`
+    _keyExtractor = (item, index) => `reward-CRUD-Store-${item[0]}`
 
     _renderItem = ({ item, index }) => {
-        if (item["is_add_button"]) {
+        if (item[0] === "is_add_button") {
             return (
                 <AddRewardHolder
                     addNewReward={this.addNewReward}
@@ -153,12 +163,39 @@ export default class TrackingSection extends React.PureComponent {
         else {
             return (
                 <RewardHolder
-                    data={item}
+                    data={item[1]}
                     editReward={this.editReward}
                     deleteReward={this.deleteReward}
                     getReward={this.getReward}
                 />
             )
+        }
+    }
+
+    _updateRewardData = () => {
+        let rewards_map = OrderedMap(this.props.rewards),
+            reward_data = []
+
+        reward_data.push(["is_add_button", {
+            is_add_button: true
+        }])
+
+        rewards_map.entrySeq().forEach((entry, index) => {
+            reward_data.push(entry)
+        })
+
+        this.setState({
+            reward_data
+        })
+    }
+
+    componentDidMount() {
+        this._updateRewardData()
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.rewards !== prevProps.rewards) {
+            this._updateRewardData()
         }
     }
 
@@ -170,14 +207,15 @@ export default class TrackingSection extends React.PureComponent {
                 }}
             >
                 <FlatList
-                    data={Map(this.props.rewards).valueSeq().toArray()}
+                    data={this.state.reward_data}
                     extraData={this.state.should_flatlist_update}
                     keyExtractor={this._keyExtractor}
                     renderItem={this._renderItem}
                     numColumns={2}
                     ref={this._setFlatListRef}
                     columnWrapperStyle={{
-                        justifyContent: "space-between"
+                        justifyContent: "space-between",
+                        marginTop: 22
                     }}
                 />
 
@@ -233,98 +271,53 @@ class RewardHolder extends React.PureComponent {
     }
 
     render() {
+        let reward_value = Map(this.props.data).get("value"),
+            reward_name = Map(this.props.data).get("name")
         return (
             <View
-                style={{
-                    width: (Dimensions.get("window").width - 67) / 2,
-                    height: 185,
-                    alignItems: "center",
-                    backgroundColor: "rgba(0, 0, 0, 0.05)",
-                    marginBottom: 22,
-                    borderRadius: 10,
-                }}
+                style={
+                    { ...{ width: reward_holder_width }, ...styles.reward_holder_container }
+                }
             >
                 <View
                     style={{
                         flexDirection: "row",
-                        justifyContent: "space-between",
-                        width: (Dimensions.get("window").width - 67) / 2 - 14,
-                        marginTop: 7,
+                        justifyContent: "flex-end",
+                        width: reward_holder_width,
+                        marginTop: 10,
+                        paddingHorizontal: 10,
                     }}
                 >
                     <TouchableOpacity
                         onPress={this._editReward}
                     >
-                        <Text
-                            style={{
-                                fontSize: 9,
-                            }}
-                        >
-                            Edit
-                        </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={this._deleteReward}
-                    >
-                        <Text
-                            style={{
-                                fontSize: 9,
-                            }}
-                        >
-                            Del
-                    </Text>
+                        <FontAwesomeIcon
+                            icon={faEdit}
+                            color="#05838B"
+                            size={14}
+                        />
                     </TouchableOpacity>
                 </View>
 
                 <Text
-                    style={{
-                        fontSize: 16,
-                        lineHeight: 19,
-                        fontWeight: "500",
-                        color: "rgba(0, 0, 0, 0.5)",
-                        textAlign: "center",
-                        marginTop: 5,
-                        letterSpacing: -0.02
-                    }}
+                    style={reward_name}
                 >
-                    {this.props.data.name}
+                    {reward_name}
                 </Text>
 
                 <Text
-                    style={{
-                        fontWeight: "500",
-                        fontSize: 24,
-                        lineHeight: 28,
-                        textAlign: "center",
-                        letterSpacing: -0.02,
-                        color: "rgba(0, 0, 0, 0.87)",
-                        marginTop: 21,
-                    }}
+                    style={styles.reward_value}
                 >
-                    {this.props.data.value} €
+                    {reward_value} €
                 </Text>
 
                 <TouchableOpacity
-                    style={{
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: 110,
-                        height: 36,
-                        backgroundColor: "rgba(0, 0, 0, 0.87)",
-                        borderRadius: 28,
-                        marginTop: 28,
-                    }}
+                    style={styles.reward_get_button_container}
 
                     onPress={this._getReward}
                 >
                     <Text
-                        style={{
-                            color: "white",
-                            lineHeight: 19,
-                            fontSize: 16,
-                            fontWeight: "500"
-                        }}
+                        style={styles.reward_get_text}
                     >
                         Get
                     </Text>
@@ -343,25 +336,17 @@ class AddRewardHolder extends React.PureComponent {
     render() {
         return (
             <TouchableOpacity
-                style={{
-                    width: (Dimensions.get("window").width - 67) / 2,
-                    height: 185,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: "rgba(0, 0, 0, 0.05)",
-                    marginBottom: 22,
-                    borderRadius: 10
-                }}
+                style={
+                    { ...{ width: reward_holder_width }, ...styles.add_button_container }
+                }
 
                 onPress={this.addNewReward}
             >
-                <Text
-                    style={{
-                        color: "#FFFFFF"
-                    }}
-                >
-                    Add
-                </Text>
+                <FontAwesomeIcon
+                    icon={faPlus}
+                    color="white"
+                    size={45}
+                />
             </TouchableOpacity>
         )
     }

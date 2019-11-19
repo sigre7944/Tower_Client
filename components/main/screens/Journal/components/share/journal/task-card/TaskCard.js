@@ -611,6 +611,32 @@ export default class TaskCard extends React.PureComponent {
         return returning_data.toMap()
     }
 
+    _updateBalanceData = (amount, flag, operation) => {
+        let returning_data = {
+            type: "",
+            amount: amount
+        }
+
+        if (operation === "inc") {
+            // Deposit
+            if (flag === "uncompleted") {
+                returning_data.type = "DEPOSIT_BALANCE_AMOUNT"
+            }
+
+            // Withdraw
+            else {
+                returning_data.type = "WITHDRAW_BALANCE_AMOUNT"
+            }
+        }
+
+        // Withdraw
+        else {
+            returning_data.type = "WITHDRAW_BALANCE_AMOUNT"
+        }
+
+        return returning_data
+    }
+
     _checkComplete = () => {
         if (this.props.is_chosen_date_today) {
             let sending_obj = {}
@@ -618,6 +644,10 @@ export default class TaskCard extends React.PureComponent {
             sending_obj.completed_task_data = this._doUpdateOnCompletedTask(this.props.flag, this.props.type, "inc")
 
             sending_obj.chart_data = this._doUpdateOnChartStats(this.props.flag, "inc")
+
+            let reward_value = parseFloat(Map(this.props.task_data).getIn(["reward", "value"]))
+
+            sending_obj.balance_data = this._updateBalanceData(reward_value, this.props.flag, "inc")
 
             this.props.updateBulkThunk(sending_obj)
 
@@ -633,7 +663,12 @@ export default class TaskCard extends React.PureComponent {
             let sending_obj = {}
 
             sending_obj.completed_task_data = this._doUpdateOnCompletedTask(this.props.flag, this.props.type, "dec")
+
             sending_obj.chart_data = this._doUpdateOnChartStats(this.props.flag, "dec")
+
+            let reward_value = parseFloat(Map(this.props.task_data).getIn(["reward", "value"]))
+
+            sending_obj.balance_data = this._updateBalanceData(reward_value, this.props.flag, "dec")
 
             this.props.updateBulkThunk(sending_obj)
         }

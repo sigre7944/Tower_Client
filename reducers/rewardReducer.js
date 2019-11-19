@@ -1,11 +1,11 @@
-import { Map, List, fromJS } from 'immutable'
+import { Map, List, fromJS, OrderedMap } from 'immutable'
 
 export const balance = (state = 4000, action) => {
     switch (action.type) {
-        case 'DEPOSIT_AMOUNT':
+        case 'DEPOSIT_BALANCE_AMOUNT':
             return state + action.amount
 
-        case 'WITHDRAW_AMOUNT':
+        case 'WITHDRAW_BALANCE_AMOUNT':
             return state - action.amount
 
         default:
@@ -13,11 +13,15 @@ export const balance = (state = 4000, action) => {
     }
 }
 
-let rewards_map = {
-    is_add_button: true
-}
+let rewards_map = fromJS({
+    reward_01: {
+        id: "reward_01",
+        name: "Testing obj",
+        value: "100",
+    }
+})
 
-export const rewards = (state = Map(), action) => {
+export const rewards = (state = OrderedMap(), action) => {
     switch (action.type) {
         case "UPDATE_KEYPATH_REWARD":
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)

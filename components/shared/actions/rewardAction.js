@@ -1,16 +1,13 @@
-export const createReward = (id, data) => ({
-    type: "CREATE_REWARD",
-    id,
-    data
+export const updateKeyPathReward = (keyPath, notSetValue, updater) => ({
+    type: "UPDATE_KEYPATH_REWARD",
+    keyPath,
+    notSetValue,
+    updater
 })
-export const updateReward = (id, data) => ({
-    type: "UPDATE_REWARD",
-    id,
-    data
-})
-export const deleteReward = (id) => ({
-    type: "DELETE_REWARD",
-    id
+
+export const deleteKeyPathReward = (keyPath) => ({
+    type: "DELETE_KEYPATH_REWARD",
+    keyPath
 })
 
 
@@ -48,11 +45,7 @@ export const deletePurchaseItem = (timestamp, id) => ({
 
 
 
-export const depositBalance = (amount) => ({
-    type: "DEPOSIT_AMOUNT",
-    amount
-})
-export const withdrawBalance = (amount) => ({
-    type: "WITHDRAW_AMOUNT",
+export const updateBalance = (type, amount) => ({
+    type,
     amount
 })

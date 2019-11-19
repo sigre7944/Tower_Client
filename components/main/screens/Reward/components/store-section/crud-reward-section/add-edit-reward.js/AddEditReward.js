@@ -3,13 +3,26 @@ import {
     View,
     Text,
     Dimensions,
+    TouchableWithoutFeedback,
     TouchableOpacity,
     TextInput,
     Modal,
     Switch,
+    ScrollView,
     KeyboardAvoidingView
 } from 'react-native';
 
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import {
+    faEdit,
+    faDollarSign,
+    faCheck,
+    faTimes
+} from "@fortawesome/free-solid-svg-icons";
+
+import { styles } from "./styles/styles";
+
+import { Map, fromJS } from "immutable";
 const shortid = require("shortid")
 
 export default class AddEditReward extends React.PureComponent {
@@ -17,14 +30,33 @@ export default class AddEditReward extends React.PureComponent {
     state = {
         reward_title: "",
         reward_value: "",
-        is_tracked: false
+        is_main: false,
+        toggle_delete: false
     }
 
     _dismissAction = () => {
         this.props.dismissAction()
     }
 
-    cancel = () => {
+    _toggleDelete = () => {
+        this.setState(prevState => ({
+            toggle_delete: !prevState.toggle_delete
+        }))
+    }
+
+    _delete = () => {
+        let edit_reward_data_map = Map(this.props.edit_reward_data),
+            sending_obj = {
+                delete_reward_data: {
+                    keyPath: [edit_reward_data_map.get("id")]
+                }
+            }
+
+        this.props.deleteReward(sending_obj)
+        this.props.dismissAction()
+    }
+
+    _cancel = () => {
         this.props.dismissAction()
     }
 
@@ -36,76 +68,76 @@ export default class AddEditReward extends React.PureComponent {
 
     onChangeRewardValue = (e) => {
         this.setState({
-            reward_value: e.nativeEvent.text.replace(/[^0-9]/g, "")
+            reward_value: e.nativeEvent.text.replace(/[,]/g, ".")
         })
     }
 
     onChangeTrackReward = () => {
         this.setState(prevState => ({
-            is_tracked: !prevState.is_tracked
+            is_main: !prevState.is_main
         }))
     }
 
-    add = () => {
+    _save = () => {
         if (this.state.reward_title.length > 0 && this.state.reward_value.length > 0) {
-            let sending_obj = {
-                createReward_data: {
-                    should_update: false
-                },
-                updateMainReward_data: {
-                    should_update: false
-                },
-                updateReward_data: {
-                    should_update: false
-                },
-            }
+            if (this.props.edit) {
+                let edit_reward_data_map = Map(this.props.edit_reward_data),
+                    sending_obj = {
+                        edit_reward_data: {
+                            keyPath: [edit_reward_data_map.get("id")],
+                            notSetValue: {},
+                            updater: (value) => fromJS({
+                                id: edit_reward_data_map.get("id"),
+                                name: this.state.reward_title,
+                                value: parseFloat(this.state.reward_value),
+                                created_at: edit_reward_data_map.get("created_at"),
+                            })
+                        },
 
+                        update_main_reward_data: {
+                            should_update: this.state.is_main,
+                            id: edit_reward_data_map.get("id")
+                        }
+                    }
 
-            if (!this.props.edit) {
-                let reward_id = shortid.generate()
-
-                sending_obj.createReward_data.should_update = true
-                sending_obj.createReward_data.data = {
-                    id: reward_id,
-                    name: this.state.reward_title,
-                    value: this.state.reward_value
-                }
-
-
-                if (this.state.is_tracked) {
-                    sending_obj.updateMainReward_data.should_update = true
-                    sending_obj.updateMainReward_data.id = reward_id
-                }
+                this.props.editRewardAndMainReward(sending_obj)
             }
 
             else {
-                sending_obj.updateReward_data.should_update = true
-                sending_obj.updateReward_data.data = {
-                    id: this.props.edit_reward_data.id,
-                    name: this.state.reward_title,
-                    value: this.state.reward_value
-                }
+                let reward_id = `reward-${shortid.generate()}`,
+                    sending_obj = {
+                        new_reward_data: {
+                            keyPath: [reward_id],
+                            notSetValue: {},
+                            updater: (value) => fromJS({
+                                id: reward_id,
+                                name: this.state.reward_title,
+                                value: parseFloat(this.state.reward_value),
+                                created_at: new Date().getTime()
+                            })
+                        },
+                        update_main_reward_data: {
+                            should_update: this.state.is_main,
+                            id: reward_id
+                        }
+                    }
 
-                if (this.state.is_tracked) {
-                    sending_obj.updateMainReward_data.should_update = true
-                    sending_obj.updateMainReward_data.id = this.props.edit_reward_data.id
-                }
+                this.props.addRewardAndMainReward(sending_obj)
             }
-
-            this.props.updateRewardAndMainReward(sending_obj)
         }
 
         this.props.dismissAction()
     }
 
     componentDidMount() {
-        let { edit_reward_data } = this.props
 
-        if (edit_reward_data) {
+        if (this.props.edit) {
+            let { edit_reward_data } = this.props
+
             this.setState({
-                reward_title: edit_reward_data.name,
-                reward_value: edit_reward_data.value,
-                is_tracked: this.props.main_reward === edit_reward_data.id
+                reward_title: Map(edit_reward_data).get("name"),
+                reward_value: `${Map(edit_reward_data).get("value")}`,
+                is_main: Map(edit_reward_data).get("id") === this.props.main_reward
             })
         }
     }
@@ -123,157 +155,240 @@ export default class AddEditReward extends React.PureComponent {
                         flex: 1,
                     }}
                 >
-                    <TouchableOpacity
-                        style={{
-                            flex: 1,
-                            width: Dimensions.get("window").width,
-                            backgroundColor: "black",
-                            opacity: 0.5
-                        }}
-
+                    <TouchableWithoutFeedback
                         onPress={this._dismissAction}
                     >
-
-                    </TouchableOpacity>
-
-                    <View
-                        style={{
-                            position: "absolute",
-                            width: 300,
-                            height: 330,
-                            borderRadius: 10,
-                            backgroundColor: "white",
-                            paddingHorizontal: 22,
-                            paddingVertical: 32,
-                        }}
-                    >
-                        <Text
-                            style={{
-                                textAlign: "center"
-                            }}
-                        >
-                            {
-                                this.props.edit ?
-                                    "Add New Reward" : "Edit Reward"
-                            }
-                        </Text>
-
                         <View
                             style={{
-                                marginTop: 10
+                                flex: 1,
+                                width: Dimensions.get("window").width,
+                                backgroundColor: "black",
+                                opacity: 0.5
                             }}
                         >
-                            <Text>
-                                Reward title:
-                            </Text>
-                            <TextInput
-                                style={{
-                                    width: 256,
-                                    height: 40,
-                                    borderRadius: 7,
-                                    backgroundColor: "gainsboro",
-                                    marginTop: 10,
-                                    paddingHorizontal: 10,
-                                    paddingVertical: 5,
-                                }}
 
-                                onChange={this.onChangeRewardTitle}
-                                value={this.state.reward_title}
-                                placeholder={this.props.edit_reward_data ? `${this.props.edit_reward_data.name}` : ""}
-                            />
                         </View>
+                    </TouchableWithoutFeedback>
 
+                    {this.state.toggle_delete ?
                         <View
                             style={{
-                                flexDirection: "row",
-                                marginTop: 20,
-                                alignItems: "center"
+                                position: "absolute",
+                                width: 331,
+                                borderRadius: 10,
+                                backgroundColor: "white",
+                                paddingHorizontal: 32,
+                                paddingVertical: 32,
                             }}
                         >
-                            <Text>
-                                Reward value:
-                            </Text>
-                            <TextInput
-                                style={{
-                                    width: 100,
-                                    height: 40,
-                                    borderRadius: 7,
-                                    backgroundColor: "gainsboro",
-                                    paddingHorizontal: 10,
-                                    paddingVertical: 5,
-                                    marginLeft: 20,
-                                }}
-
-                                onChange={this.onChangeRewardValue}
-                                value={this.state.reward_value}
-                                keyboardType={"numbers-and-punctuation"}
-                                placeholder={this.props.edit_reward_data ? `${this.props.edit_reward_data.value}` : ""}
-                            />
-                        </View>
-
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                marginTop: 20,
-                            }}
-                        >
-                            <Text>
-                                Track reward
+                            <Text
+                                style={styles.delete_warning_text}
+                            >
+                                Are you sure you want to delete this reward?
                             </Text>
 
-                            <Switch
+                            <View
                                 style={{
-                                    marginLeft: 20,
-                                }}
-
-                                value={this.state.is_tracked}
-                                onValueChange={this.onChangeTrackReward}
-                            />
-                        </View>
-
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "flex-end",
-                                marginTop: 40,
-                            }}
-                        >
-                            <TouchableOpacity
-                                style={{
-                                    width: 50,
-                                    height: 30,
+                                    flexDirection: "row",
                                     justifyContent: "center",
                                     alignItems: "center",
+                                    marginTop: 32
                                 }}
-
-                                onPress={this.cancel}
                             >
-                                <Text>
-                                    X
-                                </Text>
-                            </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.cancel_container}
+                                    onPress={this._toggleDelete}
+                                >
+                                    <FontAwesomeIcon
+                                        icon={faTimes}
+                                        color="white"
+                                    />
+                                </TouchableOpacity>
 
-                            <TouchableOpacity
-                                style={{
-                                    width: 50,
-                                    height: 30,
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    marginLeft: 10,
-                                }}
+                                <TouchableOpacity
+                                    style={{ ...styles.save_container, ...{ backgroundColor: "#EB5757" } }}
 
-                                onPress={this.add}
-                            >
-                                <Text>
-                                    Add
-                                </Text>
-                            </TouchableOpacity>
+                                    onPress={this._delete}
+                                >
+                                    <FontAwesomeIcon
+                                        icon={faCheck}
+                                        color="white"
+                                    />
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                    </View>
+                        :
+
+
+                        <View
+                            style={{
+                                position: "absolute",
+                                width: 331,
+                                borderRadius: 10,
+                                backgroundColor: "white",
+                                paddingHorizontal: 32,
+                                paddingVertical: 32,
+                            }}
+                        >
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                }}
+                            >
+                                {!this.props.edit ?
+                                    <>
+                                        <FontAwesomeIcon
+                                            icon={faDollarSign}
+                                            color="#2C2C2C"
+                                            size={17}
+                                        />
+
+                                        <Text
+                                            style={styles.title}
+                                        >
+                                            Add Reward
+                                    </Text>
+                                    </>
+
+                                    :
+
+                                    <>
+                                        <FontAwesomeIcon
+                                            icon={faEdit}
+                                            color="#2C2C2C"
+                                            size={17}
+                                        />
+
+                                        <Text
+                                            style={styles.title}
+                                        >
+                                            Edit Reward
+                                    </Text>
+                                    </>
+                                }
+                            </View>
+
+                            <View
+                                style={{
+                                    marginTop: 32
+                                }}
+                            >
+                                <Text
+                                    style={styles.reward_title_informer}
+                                >
+                                    Title
+                            </Text>
+                                <TextInput
+                                    style={styles.reward_input}
+
+                                    onChange={this.onChangeRewardTitle}
+                                    maxLength={24}
+                                    value={this.state.reward_title}
+                                    placeholder={this.props.edit_reward_data ? `${this.props.edit_reward_data.name}` : "Enter a reward title"}
+                                />
+                            </View>
+
+                            <View
+                                style={{
+                                    marginTop: 22
+                                }}
+                            >
+                                <Text
+                                    style={styles.reward_title_informer}
+                                >
+                                    Value
+                            </Text>
+                                <TextInput
+                                    style={styles.reward_input}
+
+                                    onChange={this.onChangeRewardValue}
+                                    value={this.state.reward_value}
+                                    keyboardType={"numeric"}
+                                    placeholder={this.props.edit_reward_data ? `${this.props.edit_reward_data.value}` : "Enter a value for the reward"}
+                                />
+                            </View>
+
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    marginTop: 22,
+                                }}
+                            >
+                                <Text
+                                    style={styles.set_as_main_reward_text}
+                                >
+                                    Set as main reward
+                            </Text>
+
+                                <Switch
+                                    value={this.state.is_main}
+                                    onValueChange={this.onChangeTrackReward}
+                                    trackColor={{
+                                        false: "rgba(189, 189, 189, 0.2)",
+                                        true: "#05838B"
+                                    }}
+                                    ios_backgroundColor="rgba(189, 189, 189, 0.2)"
+                                />
+                            </View>
+
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    marginTop: 40,
+                                }}
+                            >
+                                <TouchableOpacity
+                                    onPress={this._toggleDelete}
+                                >
+                                    <Text
+                                        style={styles.delete_reward_text}
+                                    >
+                                        {this.props.edit ?
+                                            `Delete reward`
+                                            :
+
+                                            null
+
+                                        }
+                                    </Text>
+                                </TouchableOpacity>
+                                <View
+                                    style={{
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <TouchableOpacity
+                                        style={styles.cancel_container}
+
+                                        onPress={this._cancel}
+                                    >
+                                        <FontAwesomeIcon
+                                            icon={faTimes}
+                                            color="white"
+                                        />
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={styles.save_container}
+
+                                        onPress={this._save}
+                                    >
+                                        <FontAwesomeIcon
+                                            icon={faCheck}
+                                            color="white"
+                                        />
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    }
                 </View>
-
             </Modal>
         )
     }

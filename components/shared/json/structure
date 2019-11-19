@@ -161,6 +161,14 @@
     }
 
 
+- Rewards structure : OrderedMap {
+    reward_id: Map {
+        id: reward_id,
+        name: reward_name,
+        value: reward_value,
+    }
+}
+
 - Category structure: OrderedMap {
     category_id: Map {
         id: category_id,
@@ -168,7 +176,6 @@
         quantity: 3
     }
 }
-
 
 - Purchase History structure: Map {
     timestamp: Map {

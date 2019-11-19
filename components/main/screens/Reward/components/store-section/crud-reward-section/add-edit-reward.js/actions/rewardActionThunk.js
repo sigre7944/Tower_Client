@@ -1,48 +1,47 @@
-import { createReward, updateMainReward, updateReward } from '../../../../../../../../shared/actions/rewardAction'
+import { updateMainReward, updateKeyPathReward, deleteKeyPathReward } from '../../../../../../../../shared/actions/rewardAction'
 import { batchActions } from 'redux-batched-actions'
 
-export const updateRewardAndMainReward = ({
-    createReward_data,
-    updateMainReward_data,
-    updateReward_data,
+export const addRewardAndMainReward = ({
+    new_reward_data,
+    update_main_reward_data
 }) => (dispatch, getState) => {
-    let action_array = []
+    let action_array = [
+        updateKeyPathReward(new_reward_data.keyPath, new_reward_data.notSetValue, new_reward_data.updater)
+    ]
 
-    if (updateMainReward_data.should_update) {
+    if (update_main_reward_data.should_update) {
         action_array.push(
-            updateMainReward(updateMainReward_data.id)
+            updateMainReward(update_main_reward_data.id)
         )
     }
 
-    else {
-        if (updateReward_data.should_update) {
-            if (getState().get("main_reward") === updateReward_data.data.id) {
-                action_array.push(
-                    updateMainReward("")
-                )
-            }
-        }
+    dispatch(batchActions(action_array))
+}
 
-        else if(createReward_data.should_update) {
-            if (getState().get("main_reward") === createReward_data.data.id) {
-                action_array.push(
-                    updateMainReward("")
-                )
-            }
-        }
-    }
+export const editRewardAndMainReward = ({
+    edit_reward_data,
+    update_main_reward_data
+}) => (dispatch, getState) => {
+    let action_array = [
+        updateKeyPathReward(edit_reward_data.keyPath, edit_reward_data.notSetValue, edit_reward_data.updater)
+    ]
 
-    if (createReward_data.should_update) {
+    if (update_main_reward_data.should_update) {
         action_array.push(
-            createReward(createReward_data.data.id, createReward_data.data)
+            updateMainReward(update_main_reward_data.id)
         )
     }
 
-    if (updateReward_data.should_update) {
-        action_array.push(
-            updateReward(updateReward_data.data.id, updateReward_data.data)
-        )
-    }
+    dispatch(batchActions(action_array))
+}
+
+export const deleteReward = ({
+    delete_reward_data
+}) => (dispatch, getState) => {
+    let action_array = [
+        deleteKeyPathReward(delete_reward_data.keyPath),
+        updateMainReward("")
+    ]
 
     dispatch(batchActions(action_array))
 }
