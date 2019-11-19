@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import {updatePurchaseItemThunk, addPurchaseItemThunk} from './actions/getRewardActionThunk'
+import { updatePurchaseItemThunk } from './actions/getRewardActionThunk'
 import TrackingSection from './TrackingSection'
 
 const mapStateToProps = (state, ownProps) => ({
@@ -10,8 +10,7 @@ const mapStateToProps = (state, ownProps) => ({
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    addPurchaseItemThunk: (sending_obj) => dispatch(addPurchaseItemThunk(sending_obj)),
-    updatePurchaseItemThunk: (sending_obj) => dispatch(updatePurchaseItemThunk(sending_obj))
+    updatePurchaseItemThunk: (data) => dispatch(updatePurchaseItemThunk(data))
 })
 
 export default connect(

@@ -32,6 +32,14 @@ export const editRewardAndMainReward = ({
         )
     }
 
+    else {
+        if (update_main_reward_data.id === update_main_reward_data.current_main_reward) {
+            action_array.push(
+                updateMainReward("")
+            )
+        }
+    }
+
     dispatch(batchActions(action_array))
 }
 

@@ -10,7 +10,6 @@ import {
 import { Map, fromJS, OrderedMap } from 'immutable'
 
 import AddEditReward from './add-edit-reward.js/AddEditReward.Container'
-import DeleteReward from './delete-reward/DeleteReward.Container'
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
     faPlus,
@@ -70,77 +69,49 @@ export default class CRUDRewardSection extends React.PureComponent {
         })
     }
 
-    getReward = (reward_id, reward_value) => {
-        let purchase_history = Map(this.props.purchase_history),
-            rewards = Map(this.props.rewards),
-            balance = parseInt(this.props.balance)
+    _getReward = (reward_id, reward_name, reward_value) => {
+        let purchase_history_map = OrderedMap(this.props.purchase_history),
+            rewards = OrderedMap(this.props.rewards),
+            balance = parseFloat(this.props.balance)
 
         // Can buy when have enough balance
         if (balance >= reward_value) {
             if (rewards.has(reward_id)) {
                 let date = new Date(),
-                    day_timestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
+                    day_timestamp_toString = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime().toString(),
+                    sending_obj = {
+                        purchase_item_data: {
 
-                if (purchase_history.has(day_timestamp)) {
-                    let purchase_timestamp_data = Map(purchase_history.get(day_timestamp))
-
-                    if (purchase_timestamp_data.has(reward_id)) {
-                        let item_data = Map(purchase_timestamp_data.get(reward_id)).toMap().asMutable()
-                        item_data.update("quantity", (value) => value + 1)
-                        item_data.update("latest_timestamp", (value) => new Date().getTime())
-
-                        let sending_obj = {
-                            purchase_item_data: {
-                                timestamp: day_timestamp,
-                                id: reward_id,
-                                data: item_data
-                            },
-
+                        },
+                        balance_data: {
+                            type: "WITHDRAW_BALANCE_AMOUNT",
                             amount: reward_value
                         }
-
-                        this.props.updatePurchaseItemThunk(sending_obj)
                     }
 
-                    else {
-                        let item_data = Map().asMutable()
-                        item_data.set("id", reward_id)
-                        item_data.set("quantity", 1)
-                        item_data.set("latest_timestamp", new Date().getTime())
-
-                        let sending_obj = {
-                            purchase_item_data: {
-                                timestamp: day_timestamp,
-                                id: reward_id,
-                                data: item_data
-                            },
-
-                            amount: reward_value
-                        }
-
-                        this.props.addPurchaseItemThunk(sending_obj)
+                if (purchase_history_map.hasIn([day_timestamp_toString, reward_id, "quantity"])) {
+                    sending_obj.purchase_item_data = {
+                        keyPath: [day_timestamp_toString, reward_id, "quantity"],
+                        notSetValue: 0,
+                        updater: (value) => value + 1
                     }
                 }
 
                 else {
-                    let timestamp_obj = {
-                        id: reward_id,
-                        latest_timestamp: new Date().getTime(),
-                        quantity: 1
-                    }
-
-                    let sending_obj = {
-                        purchase_item_data: {
-                            timestamp: day_timestamp,
+                    sending_obj.purchase_item_data = {
+                        keyPath: [day_timestamp_toString, reward_id],
+                        notSetValue: {},
+                        updater: (value) => fromJS({
                             id: reward_id,
-                            data: fromJS(timestamp_obj)
-                        },
-
-                        amount: reward_value
+                            value: reward_value,
+                            name: reward_name,
+                            quantity: 1,
+                            latest_timestamp: new Date().getTime()
+                        })
                     }
-
-                    this.props.addPurchaseItemThunk(sending_obj)
                 }
+
+                this.props.updatePurchaseItemThunk(sending_obj)
             }
         }
     }
@@ -166,7 +137,7 @@ export default class CRUDRewardSection extends React.PureComponent {
                     data={item[1]}
                     editReward={this.editReward}
                     deleteReward={this.deleteReward}
-                    getReward={this.getReward}
+                    _getReward={this._getReward}
                 />
             )
         }
@@ -235,18 +206,7 @@ export default class CRUDRewardSection extends React.PureComponent {
 
                             :
 
-                            <>
-                                {this.state.is_delete_reward ?
-                                    <DeleteReward
-                                        dismissAction={this.dismissAction}
-                                        reward_id={this.delete_reward_id}
-                                    />
-
-                                    :
-
-                                    null
-                                }
-                            </>
+                            null
                         }
                     </>
                 }
@@ -262,12 +222,9 @@ class RewardHolder extends React.PureComponent {
         this.props.editReward(this.props.data)
     }
 
-    _deleteReward = () => {
-        this.props.deleteReward(this.props.data.id)
-    }
-
     _getReward = () => {
-        this.props.getReward(this.props.data.id, this.props.data.value)
+        let data_map = Map(this.props.data)
+        this.props._getReward(data_map.get("id"), data_map.get("name"), data_map.get("value"))
     }
 
     render() {
@@ -284,11 +241,15 @@ class RewardHolder extends React.PureComponent {
                         flexDirection: "row",
                         justifyContent: "flex-end",
                         width: reward_holder_width,
-                        marginTop: 10,
-                        paddingHorizontal: 10,
                     }}
                 >
                     <TouchableOpacity
+                        style={{
+                            height: 24,
+                            width: 24,
+                            alignItems: "flex-start",
+                            justifyContent: "flex-end"
+                        }}
                         onPress={this._editReward}
                     >
                         <FontAwesomeIcon

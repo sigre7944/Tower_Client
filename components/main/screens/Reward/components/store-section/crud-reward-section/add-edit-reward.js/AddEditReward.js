@@ -96,7 +96,8 @@ export default class AddEditReward extends React.PureComponent {
 
                         update_main_reward_data: {
                             should_update: this.state.is_main,
-                            id: edit_reward_data_map.get("id")
+                            id: edit_reward_data_map.get("id"),
+                            current_main_reward: this.props.main_reward
                         }
                     }
 

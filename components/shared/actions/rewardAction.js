@@ -21,24 +21,16 @@ export const updateMainReward = (id) => ({
 
 
 
-
-
-export const addPurchaseItem = (timestamp, id, data) => ({
-    type: "ADD_PURCHASE_ITEM",
-    id,
-    timestamp,
-    data
+export const updatePurchaseItem = (keyPath, notSetValue, updater) => ({
+    type: "UPDATE_KEYPATH_PURCHASE_ITEM",
+    keyPath,
+    notSetValue,
+    updater
 })
-export const updatePurchaseItem = (timestamp, id, data) => ({
+
+export const deletePurchaseItem = (keyPath) => ({
     type: "UPDATE_PURCHASE_ITEM",
-    id,
-    timestamp,
-    data
-})
-export const deletePurchaseItem = (timestamp, id) => ({
-    type: "UPDATE_PURCHASE_ITEM",
-    timestamp,
-    id
+    keyPath,
 })
 
 

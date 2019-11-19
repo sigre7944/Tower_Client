@@ -22,13 +22,23 @@ export const styles = StyleSheet.create({
         marginTop: 5,
     },
 
-    get_button_container: {
+    cannot_get_button_container: {
         width: 110,
         height: 36,
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 30,
-        backgroundColor:CommonStyles.text_icon_colors.ti_4,
+        backgroundColor: CommonStyles.text_icon_colors.ti_4,
+        marginTop: 21,
+    },
+
+    can_get_button_container: {
+        width: 110,
+        height: 36,
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 30,
+        backgroundColor: CommonStyles.primary_colors.prim_1,
         marginTop: 21,
     },
 

@@ -44,16 +44,13 @@ export const main_reward = (state = "", action) => {
     }
 }
 
-export const purchase_history = (state = Map(), action) => {
+export const purchase_history = (state = OrderedMap(), action) => {
     switch (action.type) {
-        case "ADD_PURCHASE_ITEM":
-            return state.setIn([action.timestamp, action.id], action.data)
+        case "UPDATE_KEYPATH_PURCHASE_ITEM":
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
-        case "UPDATE_PURCHASE_ITEM":
-            return state.updateIn([action.timestamp, action.id], action.data, (value) => action.data)
-
-        case "REMOVE_PURCHASE_ITEM":
-            return state.deleteIn([action.timestamp, action.id])
+        case "DELETE_KEYPATH_PURCHASE_ITEM":
+            return state.deleteIn(action.keyPath)
 
         case "REMOVE_PURCHASE_TIMESTAMP":
             return state.delete(action.timestamp)
