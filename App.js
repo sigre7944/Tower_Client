@@ -177,13 +177,6 @@ const ContentNavigator = createStackNavigator(
   },
   {
     initialRouteName: "Main",
-    // transitionConfig: () => ({
-    //   transitionSpec: {
-    //     duration: 0,
-    //     timing: Animated.timing,
-    //     easing: Easing.step0
-    //   }
-    // }),
     defaultNavigationOptions: ({ navigation }) => ({
       header: null
     }),
@@ -205,6 +198,7 @@ const AppStackNavigator = createStackNavigator({
   PurchaseHistory: { screen: PurchaseHistory }
 }, {
   initialRouteName: "DrawerNavigator",
+  headerMode: "screen"
 })
 
 const AppContainer = createAppContainer(AppStackNavigator) //return a React component, which is to wrap the stack navigator 
