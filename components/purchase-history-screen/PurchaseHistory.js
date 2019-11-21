@@ -10,12 +10,24 @@ import {
     Dimensions,
     Modal,
     FlatList,
-    Text
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback
 } from 'react-native';
+
 import { Map, OrderedMap } from 'immutable'
 
 import PurchaseHistoryHeader from "./header/PurchaseHistoryHeader";
 import { styles } from "./styles/styles";
+
+import Collapsible from "react-native-collapsible";
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import {
+    faTrashAlt,
+} from "@fortawesome/free-solid-svg-icons";
+
+const window_width = Dimensions.get("window").width
+
 export default class PurchaseHistory extends React.PureComponent {
     static navigationOptions = ({ navigation, navigationOptions }) => ({
         header: <PurchaseHistoryHeader navigation={navigation} />,
@@ -31,7 +43,8 @@ export default class PurchaseHistory extends React.PureComponent {
     _renderItem = ({ item, index }) => (
         <PurchasedTimestamp
             timestamp_toString={item[0]}
-            purchase_data={item[1]}
+            day_timestamp_purchased_data={item[1]}
+            _deleteRecordsInDay={this._deleteRecordsInDay}
         />
     )
 
@@ -42,6 +55,16 @@ export default class PurchaseHistory extends React.PureComponent {
         purchase_history_map.entrySeq().forEach((entry, index) => {
             purchase_history_data.push([])
         })
+    }
+
+    _deleteRecordsInDay = (day_timestamp_toString) => {
+        let sending_data = {
+            delete_purchase_data: {
+                keyPath: [day_timestamp_toString]
+            }
+        }
+
+        this.props.deleteRecordsInDayThunk(sending_data)
     }
 
     componentDidMount() {
@@ -61,12 +84,13 @@ export default class PurchaseHistory extends React.PureComponent {
             <View
                 style={{
                     flex: 1,
+                    backgroundColor: "white"
                 }}
             >
                 <FlatList
                     keyExtractor={this._keyExtractor}
                     renderItem={this._renderItem}
-                    data={OrderedMap(this.props.purchase_history).toArray()}
+                    data={OrderedMap(this.props.purchase_history).toArray().reverse()}
                 />
             </View>
         )
@@ -78,10 +102,101 @@ class PurchasedTimestamp extends React.PureComponent {
     month_text_array = ["January", "Febuary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
     state = {
-        should_flatlist_update: 0
+        should_flatlist_update: 0,
+        should_display_options_collasped: true,
     }
 
-    _keyExtractor = (item, index) => `purchased-item-timestamp-${this.props.timestamp_toString}-id-${item[0]}`
+    _keyExtractor = (item, index) => `purchased-detailed-timestamp-${this.props.timestamp_toString}-id-${item[0]}`
+
+    _renderItem = ({ item, index }) => {
+        return (
+            <PurchasedDetailedTimestamp
+                purchased_item_data={item[1]}
+                detail_timestamp={item[0]}
+            />
+        )
+    }
+    _ToggleDisplayingOptionsBool = () => {
+        this.setState(prevState => ({
+            should_display_options_collasped: !prevState.should_display_options_collasped
+        }))
+    }
+
+    _deleteRecordsInDay = () => {
+        this.props._deleteRecordsInDay(this.props.timestamp_toString)
+    }
+
+    render() {
+        let timestamp = parseInt(this.props.timestamp_toString),
+            date = new Date(timestamp),
+            displaying_date = `${this.day_in_week_text_array[date.getDay()]} ${date.getDate()} ${this.month_text_array[date.getMonth()]} ${date.getFullYear()}`
+
+        return (
+            <View
+                style={{
+                    marginTop: 32,
+                }}
+            >
+                <TouchableOpacity
+                    onPress={this._ToggleDisplayingOptionsBool}
+                >
+                    <Text
+                        style={styles.timestamp_text}
+                    >
+                        {displaying_date}
+                    </Text>
+                </TouchableOpacity>
+
+                <Collapsible collapsed={this.state.should_display_options_collasped}>
+                    <View
+                        style={{
+                            marginTop: 22,
+                        }}
+                    >
+                        <TouchableOpacity
+                            style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                paddingHorizontal: 22,
+                            }}
+
+                            onPress={this._deleteRecordsInDay}
+                        >
+                            <FontAwesomeIcon
+                                icon={faTrashAlt}
+                                color="#EB5757"
+                                size={16}
+                            />
+
+                            <Text
+                                style={styles.delete_all_records_text}
+                            >
+                                Delete all records
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </Collapsible>
+
+                <View
+                    style={{
+                        marginTop: 16
+                    }}
+                >
+                    <FlatList
+                        keyExtractor={this._keyExtractor}
+                        renderItem={this._renderItem}
+                        extraData={this.state.should_flatlist_update}
+                        data={OrderedMap(this.props.day_timestamp_purchased_data).toArray()}
+                    />
+                </View>
+            </View>
+        )
+    }
+}
+
+class PurchasedDetailedTimestamp extends React.PureComponent {
+
+    _keyExtractor = (item, index) => `purchase-item-detailed-timestamp-${this.props.detail_timestamp}-id-${item[0]}`
 
     _renderItem = ({ item, index }) => {
         return (
@@ -92,25 +207,12 @@ class PurchasedTimestamp extends React.PureComponent {
     }
 
     render() {
-        let timestamp = parseInt(this.props.timestamp_toString),
-            date = new Date(timestamp),
-            displaying_date = `${this.day_in_week_text_array[date.getDay()]} ${date.getDate()} ${this.month_text_array[date.getMonth()]} ${date.getFullYear()}`
         return (
-            <View
-                style={{
-                    marginTop: 32,
-                }}
-            >
-                <Text
-                    style={styles.timestamp_text}
-                >
-                    {displaying_date}
-                </Text>
+            <View>
                 <FlatList
                     keyExtractor={this._keyExtractor}
                     renderItem={this._renderItem}
-                    extraData={this.state.should_flatlist_update}
-                    data={Map(this.props.purchase_data).toArray()}
+                    data={Map(this.props.purchased_item_data).toArray()}
                 />
             </View>
         )

@@ -177,12 +177,17 @@
     }
 }
 
-- Purchase History structure: Map {
-    timestamp: Map {
-        id: Map {
-            id: reward_id,
-            lastest_timestamp: 100000,
-            quantity: 2
+- Purchase History structure: OrderedMap {
+    timestamp: OrderedMap {
+        //with involved day, month, year, hours and minutes
+        latest_timestamp : {
+            id: Map {
+                id: reward_id,
+                name: reward_name,
+                value: reward_value,
+                latest_timestamp: latest_timestamp,
+                quantity: 1
+            }
         }
     }
 }

@@ -198,7 +198,7 @@ const AppStackNavigator = createStackNavigator({
   PurchaseHistory: { screen: PurchaseHistory }
 }, {
   initialRouteName: "DrawerNavigator",
-  headerMode: "screen"
+  headerMode: "screen",
 })
 
 const AppContainer = createAppContainer(AppStackNavigator) //return a React component, which is to wrap the stack navigator 

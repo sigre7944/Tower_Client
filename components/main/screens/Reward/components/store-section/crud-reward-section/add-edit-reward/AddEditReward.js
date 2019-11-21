@@ -9,7 +9,8 @@ import {
     Modal,
     Switch,
     ScrollView,
-    KeyboardAvoidingView
+    Animated,
+    Easing
 } from 'react-native';
 
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -23,9 +24,19 @@ import {
 import { styles } from "./styles/styles";
 
 import { Map, fromJS } from "immutable";
+
 const shortid = require("shortid")
+const animation_duration = 200
+const easing = Easing.inOut(Easing.linear)
 
 export default class AddEditReward extends React.PureComponent {
+
+    scale_value = new Animated.Value(0.3)
+    opacity_value = this.scale_value.interpolate({
+        inputRange: [0.3, 0.5, 0.7, 1],
+        outputRange: [0.3, 0.5, 0.7, 1],
+        extrapolate: "clamp"
+    })
 
     state = {
         reward_title: "",
@@ -41,7 +52,11 @@ export default class AddEditReward extends React.PureComponent {
     _toggleDelete = () => {
         this.setState(prevState => ({
             toggle_delete: !prevState.toggle_delete
-        }))
+        }), () => {
+            if (!this.state.toggle_delete) {
+                this.scale_value.setValue(1)
+            }
+        })
     }
 
     _delete = () => {
@@ -130,7 +145,22 @@ export default class AddEditReward extends React.PureComponent {
         this.props.dismissAction()
     }
 
+    _animate = () => {
+        Animated.parallel([
+            Animated.timing(
+                this.scale_value,
+                {
+                    toValue: 1,
+                    duration: animation_duration,
+                    easing,
+                    useNativeDriver: true
+                }
+            )
+        ]).start()
+    }
+
     componentDidMount() {
+        this._animate()
 
         if (this.props.edit) {
             let { edit_reward_data } = this.props
@@ -221,7 +251,7 @@ export default class AddEditReward extends React.PureComponent {
                         :
 
 
-                        <View
+                        <Animated.View
                             style={{
                                 position: "absolute",
                                 width: 331,
@@ -229,165 +259,172 @@ export default class AddEditReward extends React.PureComponent {
                                 backgroundColor: "white",
                                 paddingHorizontal: 32,
                                 paddingVertical: 32,
+                                transform: [{ scale: this.scale_value }],
+                                opacity: this.opacity_value
                             }}
                         >
-                            <View
-                                style={{
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                }}
+                            <ScrollView
+                                keyboardDismissMode="on-drag"
+                                scrollEnabled={false}
                             >
-                                {!this.props.edit ?
-                                    <>
-                                        <FontAwesomeIcon
-                                            icon={faDollarSign}
-                                            color="#2C2C2C"
-                                            size={17}
-                                        />
-
-                                        <Text
-                                            style={styles.title}
-                                        >
-                                            Add Reward
-                                    </Text>
-                                    </>
-
-                                    :
-
-                                    <>
-                                        <FontAwesomeIcon
-                                            icon={faEdit}
-                                            color="#2C2C2C"
-                                            size={17}
-                                        />
-
-                                        <Text
-                                            style={styles.title}
-                                        >
-                                            Edit Reward
-                                    </Text>
-                                    </>
-                                }
-                            </View>
-
-                            <View
-                                style={{
-                                    marginTop: 32
-                                }}
-                            >
-                                <Text
-                                    style={styles.reward_title_informer}
-                                >
-                                    Title
-                            </Text>
-                                <TextInput
-                                    style={styles.reward_input}
-
-                                    onChange={this.onChangeRewardTitle}
-                                    maxLength={24}
-                                    value={this.state.reward_title}
-                                    placeholder={this.props.edit_reward_data ? `${this.props.edit_reward_data.name}` : "Enter a reward title"}
-                                />
-                            </View>
-
-                            <View
-                                style={{
-                                    marginTop: 22
-                                }}
-                            >
-                                <Text
-                                    style={styles.reward_title_informer}
-                                >
-                                    Value
-                            </Text>
-                                <TextInput
-                                    style={styles.reward_input}
-
-                                    onChange={this.onChangeRewardValue}
-                                    value={this.state.reward_value}
-                                    keyboardType={"numeric"}
-                                    placeholder={this.props.edit_reward_data ? `${this.props.edit_reward_data.value}` : "Enter a value for the reward"}
-                                />
-                            </View>
-
-                            <View
-                                style={{
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                    marginTop: 22,
-                                }}
-                            >
-                                <Text
-                                    style={styles.set_as_main_reward_text}
-                                >
-                                    Set as main reward
-                            </Text>
-
-                                <Switch
-                                    value={this.state.is_main}
-                                    onValueChange={this.onChangeTrackReward}
-                                    trackColor={{
-                                        false: "rgba(189, 189, 189, 0.2)",
-                                        true: "#05838B"
-                                    }}
-                                    ios_backgroundColor="rgba(189, 189, 189, 0.2)"
-                                />
-                            </View>
-
-                            <View
-                                style={{
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                    marginTop: 40,
-                                }}
-                            >
-                                <TouchableOpacity
-                                    onPress={this._toggleDelete}
-                                >
-                                    <Text
-                                        style={styles.delete_reward_text}
-                                    >
-                                        {this.props.edit ?
-                                            `Delete reward`
-                                            :
-
-                                            null
-
-                                        }
-                                    </Text>
-                                </TouchableOpacity>
                                 <View
                                     style={{
                                         flexDirection: "row",
                                         alignItems: "center",
                                     }}
                                 >
-                                    <TouchableOpacity
-                                        style={styles.cancel_container}
+                                    {!this.props.edit ?
+                                        <>
+                                            <FontAwesomeIcon
+                                                icon={faDollarSign}
+                                                color="#2C2C2C"
+                                                size={17}
+                                            />
 
-                                        onPress={this._cancel}
-                                    >
-                                        <FontAwesomeIcon
-                                            icon={faTimes}
-                                            color="white"
-                                        />
-                                    </TouchableOpacity>
+                                            <Text
+                                                style={styles.title}
+                                            >
+                                                Add Reward
+                                    </Text>
+                                        </>
 
-                                    <TouchableOpacity
-                                        style={styles.save_container}
+                                        :
 
-                                        onPress={this._save}
-                                    >
-                                        <FontAwesomeIcon
-                                            icon={faCheck}
-                                            color="white"
-                                        />
-                                    </TouchableOpacity>
+                                        <>
+                                            <FontAwesomeIcon
+                                                icon={faEdit}
+                                                color="#2C2C2C"
+                                                size={17}
+                                            />
+
+                                            <Text
+                                                style={styles.title}
+                                            >
+                                                Edit Reward
+                                    </Text>
+                                        </>
+                                    }
                                 </View>
-                            </View>
-                        </View>
+
+                                <View
+                                    style={{
+                                        marginTop: 32
+                                    }}
+                                >
+                                    <Text
+                                        style={styles.reward_title_informer}
+                                    >
+                                        Title
+                            </Text>
+                                    <TextInput
+                                        style={styles.reward_input}
+
+                                        onChange={this.onChangeRewardTitle}
+                                        maxLength={24}
+                                        value={this.state.reward_title}
+                                        placeholder={this.props.edit_reward_data ? `${this.props.edit_reward_data.name}` : "Enter a reward title"}
+                                    />
+                                </View>
+
+                                <View
+                                    style={{
+                                        marginTop: 22
+                                    }}
+                                >
+                                    <Text
+                                        style={styles.reward_title_informer}
+                                    >
+                                        Value
+                            </Text>
+                                    <TextInput
+                                        style={styles.reward_input}
+
+                                        onChange={this.onChangeRewardValue}
+                                        value={this.state.reward_value}
+                                        keyboardType={"numeric"}
+                                        placeholder={this.props.edit_reward_data ? `${this.props.edit_reward_data.value}` : "Enter a value for the reward"}
+                                    />
+                                </View>
+
+                                <View
+                                    style={{
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        marginTop: 22,
+                                    }}
+                                >
+                                    <Text
+                                        style={styles.set_as_main_reward_text}
+                                    >
+                                        Set as main reward
+                            </Text>
+
+                                    <Switch
+                                        value={this.state.is_main}
+                                        onValueChange={this.onChangeTrackReward}
+                                        trackColor={{
+                                            false: "rgba(189, 189, 189, 0.2)",
+                                            true: "#05838B"
+                                        }}
+                                        ios_backgroundColor="rgba(189, 189, 189, 0.2)"
+                                    />
+                                </View>
+
+                                <View
+                                    style={{
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        marginTop: 40,
+                                    }}
+                                >
+                                    <TouchableOpacity
+                                        onPress={this._toggleDelete}
+                                    >
+                                        <Text
+                                            style={styles.delete_reward_text}
+                                        >
+                                            {this.props.edit ?
+                                                `Delete reward`
+                                                :
+
+                                                null
+
+                                            }
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <View
+                                        style={{
+                                            flexDirection: "row",
+                                            alignItems: "center",
+                                        }}
+                                    >
+                                        <TouchableOpacity
+                                            style={styles.cancel_container}
+
+                                            onPress={this._cancel}
+                                        >
+                                            <FontAwesomeIcon
+                                                icon={faTimes}
+                                                color="white"
+                                            />
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity
+                                            style={styles.save_container}
+
+                                            onPress={this._save}
+                                        >
+                                            <FontAwesomeIcon
+                                                icon={faCheck}
+                                                color="white"
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </ScrollView>
+                        </Animated.View>
                     }
                 </View>
             </Modal>

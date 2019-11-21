@@ -28,8 +28,8 @@ export const updatePurchaseItem = (keyPath, notSetValue, updater) => ({
     updater
 })
 
-export const deletePurchaseItem = (keyPath) => ({
-    type: "UPDATE_PURCHASE_ITEM",
+export const deleteKeyPathPurchaseHistory = (keyPath) => ({
+    type: "DELETE_KEYPATH_PURCHASE_ITEM",
     keyPath,
 })
 

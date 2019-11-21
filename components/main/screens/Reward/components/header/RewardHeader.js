@@ -5,11 +5,10 @@ import {
     Text,
     TouchableOpacity
 } from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
-    faChevronLeft,
-    faShoppingCart
+    faShoppingCart,
+    faBars
 } from "@fortawesome/free-solid-svg-icons";
 import {
     styles
@@ -36,8 +35,8 @@ export default class RewardHeader extends React.PureComponent {
                     <TouchableOpacity
                         style={styles.end_icon_container}
                     >
-                        <FontAwesome
-                            name="bars"
+                        <FontAwesomeIcon
+                            icon={faBars}
                             size={20}
                             color={"#BDBDBD"}
                         />

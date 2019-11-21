@@ -4,6 +4,7 @@ import Reward from './Reward'
 
 const mapStateToProps = (state) => ({
     currentRoute: state.get("currentRoute"),
+    rewards: state.get("rewards")
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

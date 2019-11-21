@@ -7,9 +7,9 @@ import {
     FlatList,
 } from 'react-native';
 
-import { Map, fromJS, OrderedMap } from 'immutable'
+import { Map, fromJS, OrderedMap, isKeyed } from 'immutable'
 
-import AddEditReward from './add-edit-reward.js/AddEditReward.Container'
+import AddEditReward from './add-edit-reward/AddEditReward.Container'
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
     faPlus,
@@ -78,7 +78,10 @@ export default class CRUDRewardSection extends React.PureComponent {
         if (balance >= reward_value) {
             if (rewards.has(reward_id)) {
                 let date = new Date(),
-                    day_timestamp_toString = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime().toString(),
+                    day_timestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime(),
+                    day_timestamp_toString = day_timestamp.toString(),
+                    timestamp_without_seconds = day_timestamp + (date.getHours() * 3600 * 1000) + (date.getMinutes() * 60 * 1000),
+                    timestamp_without_seconds_toString = timestamp_without_seconds.toString(),
                     sending_obj = {
                         purchase_item_data: {
 
@@ -89,25 +92,73 @@ export default class CRUDRewardSection extends React.PureComponent {
                         }
                     }
 
-                if (purchase_history_map.hasIn([day_timestamp_toString, reward_id, "quantity"])) {
+                if (purchase_history_map.hasIn([day_timestamp_toString, timestamp_without_seconds_toString, reward_id, "quantity"])) {
                     sending_obj.purchase_item_data = {
-                        keyPath: [day_timestamp_toString, reward_id, "quantity"],
+                        keyPath: [day_timestamp_toString, timestamp_without_seconds_toString, reward_id, "quantity"],
                         notSetValue: 0,
                         updater: (value) => value + 1
                     }
                 }
 
                 else {
-                    sending_obj.purchase_item_data = {
-                        keyPath: [day_timestamp_toString, reward_id],
-                        notSetValue: {},
-                        updater: (value) => fromJS({
+                    if (purchase_history_map.hasIn([day_timestamp_toString, timestamp_without_seconds_toString])) {
+                        let updater_data = OrderedMap(purchase_history_map.getIn([day_timestamp_toString, timestamp_without_seconds_toString])).asMutable()
+
+                        updater_data.set(reward_id, fromJS({
                             id: reward_id,
                             value: reward_value,
                             name: reward_name,
                             quantity: 1,
-                            latest_timestamp: new Date().getTime()
-                        })
+                            latest_timestamp: timestamp_without_seconds
+                        }))
+
+                        sending_obj.purchase_item_data = {
+                            keyPath: [day_timestamp_toString, timestamp_without_seconds_toString],
+                            notSetValue: {},
+                            updater: (value) => updater_data.toOrderedMap()
+                        }
+                    }
+
+                    else {
+                        if (purchase_history_map.has(day_timestamp_toString)) {
+                            let updater_data = {}
+
+                            updater_data[reward_id] = {
+                                id: reward_id,
+                                value: reward_value,
+                                name: reward_name,
+                                quantity: 1,
+                                latest_timestamp: timestamp_without_seconds
+                            }
+
+                            sending_obj.purchase_item_data = {
+                                keyPath: [day_timestamp_toString, timestamp_without_seconds_toString],
+                                notSetValue: {},
+                                updater: (value) => fromJS(updater_data, (key, value, path) => {
+                                    return isKeyed(value) ? value.toOrderedMap() : value.toList()
+                                })
+                            }
+                        }
+
+                        else {
+                            let updater_data = {}
+                            updater_data[timestamp_without_seconds_toString] = {}
+                            updater_data[timestamp_without_seconds_toString][reward_id] = {
+                                id: reward_id,
+                                value: reward_value,
+                                name: reward_name,
+                                quantity: 1,
+                                latest_timestamp: timestamp_without_seconds
+                            }
+
+                            sending_obj.purchase_item_data = {
+                                keyPath: [day_timestamp_toString],
+                                notSetValue: {},
+                                updater: (value) => fromJS(updater_data, (key, value, path) => {
+                                    return isKeyed(value) ? value.toOrderedMap() : value.toList()
+                                })
+                            }
+                        }
                     }
                 }
 

@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
         fontSize: 18,
         lineHeight: 21,
         letterSpacing: -0.02,
-        color: CommonStyles.text_icon_colors.ti_1,
+        color: CommonStyles.primary_colors.prim_1,
         marginLeft: 22,
     },
 
@@ -47,5 +47,14 @@ export const styles = StyleSheet.create({
         lineHeight: 19,
         letterSpacing: -0.02,
         color: CommonStyles.text_icon_colors.ti_1,
+    },
+
+    delete_all_records_text: {
+        fontFamily: CommonStyles.sf_ui_display_light_font,
+        fontSize: 16,
+        lineHeight: 19,
+        letterSpacing: -0.02,
+        color: "#EB5757",
+        marginLeft: 10
     }
 })

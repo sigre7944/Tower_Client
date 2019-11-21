@@ -1,5 +1,6 @@
 import { connect } from 'react-redux'
 import { changeRouteAction } from '../shared/actions/otherAction'
+import { deleteRecordsInDayThunk } from "./actions/deleteRecordsThunk";
 import PurchaseHistory from './PurchaseHistory'
 
 const mapStateToProps = (state) => ({
@@ -9,7 +10,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    changeRouteAction: (routeName) => dispatch(changeRouteAction(routeName))
+    changeRouteAction: (routeName) => dispatch(changeRouteAction(routeName)),
+    deleteRecordsInDayThunk: (data) => dispatch(deleteRecordsInDayThunk(data))
 })
 
 export default connect(
