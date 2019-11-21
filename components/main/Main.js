@@ -4,7 +4,7 @@ import React from 'react'
 import Journal from './screens/Journal/Journal'
 import Progress from './screens/Progress/Progress.Container'
 import Reward from './screens/Reward/Reward.Container'
-import Settings from './screens/Settings/Settings'
+import Settings from './screens/Settings/Settings.Container'
 
 import BottomTabNavigator from './bottomTabNavigator/BottomTabNavigator.Container'
 
