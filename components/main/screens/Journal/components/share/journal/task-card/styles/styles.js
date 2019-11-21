@@ -20,6 +20,7 @@ export const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
         marginVertical: 5,
+        position: "relative"
     },
 
     complete_box_container: {

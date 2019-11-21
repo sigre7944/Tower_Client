@@ -4,8 +4,12 @@ import {
     Text,
     View,
     StyleSheet,
-    Animated
+    Animated,
+    Switch
 } from 'react-native'
+
+import { Haptics } from "expo";
+
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
     faRedoAlt
@@ -651,6 +655,14 @@ export default class TaskCard extends React.PureComponent {
 
             this.props.updateBulkThunk(sending_obj)
 
+            if (this.props.flag === "uncompleted") {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+            }
+
+            else{
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+            }
+
             this.setState(prevState => ({
                 checked_complete: !prevState.checked_complete
             }))
@@ -671,6 +683,8 @@ export default class TaskCard extends React.PureComponent {
             sending_obj.balance_data = this._updateBalanceData(reward_value, this.props.flag, "dec")
 
             this.props.updateBulkThunk(sending_obj)
+
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
         }
     }
 
@@ -774,7 +788,6 @@ export default class TaskCard extends React.PureComponent {
                         category_color={task_category_color}
                     />
                 </View>
-
             </View>
         )
     }
