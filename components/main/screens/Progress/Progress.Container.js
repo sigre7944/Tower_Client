@@ -3,7 +3,7 @@ import {changeRoute} from './actions/ChangeRoute'
 import Progress from './Progress.Presentational'
 
 const mapStateToProps = (state) => ({
-    currentRoute: state.get("currentRoute"),
+    currentRoute: state["currentRoute"],
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

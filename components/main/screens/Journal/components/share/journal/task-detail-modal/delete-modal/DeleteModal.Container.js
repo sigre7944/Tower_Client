@@ -11,26 +11,26 @@ const mapStateToProps = (state, ownProps) => {
     let completed_tasks = {}
 
     if (ownProps.type === "day") {
-        completed_tasks = state.get("completed_day_tasks")
+        completed_tasks = state["completed_day_tasks"]
     }
 
     else if (ownProps.type === "week") {
-        completed_tasks = state.get("completed_week_tasks")
+        completed_tasks = state["completed_week_tasks"]
     }
 
     else {
-        completed_tasks = state.get("completed_month_tasks")
+        completed_tasks = state["completed_month_tasks"]
     }
 
     return (
         {
-            categories: state.get("categories"),
-            priorities: state.get("priorities"),
+            categories: state["categories"],
+            priorities: state["priorities"],
             completed_tasks,
-            day_chart_stats: state.get("day_chart_stats"),
-            week_chart_stats: state.get("week_chart_stats"),
-            month_chart_stats: state.get("month_chart_stats"),
-            year_chart_stats: state.get("year_chart_stats"),
+            day_chart_stats: state["day_chart_stats"],
+            week_chart_stats: state["week_chart_stats"],
+            month_chart_stats: state["month_chart_stats"],
+            year_chart_stats: state["year_chart_stats"],
         }
     )
 }

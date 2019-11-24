@@ -7,37 +7,37 @@ import BottomOptionsHolder from './BottomOptionsHolder'
 const mapStateToProps = (state, ownProps) => {
     if (ownProps.currentAnnotation === "day") {
         return ({
-            task_data: state.get("currentDayTask"),
+            task_data: state["currentDayTask"],
 
-            categories: state.get("categories"),
-            priorities: state.get("priorities"),
+            categories: state["categories"],
+            priorities: state["priorities"],
 
-            addTaskDescription: state.get("addTaskDescription"),
-            addTaskTitle: state.get("addTaskTitle")
+            addTaskDescription: state["addTaskDescription"],
+            addTaskTitle: state["addTaskTitle"]
         })
     }
 
     else if (ownProps.currentAnnotation === "week") {
         return ({
-            task_data: state.get("currentWeekTask"),
+            task_data: state["currentWeekTask"],
 
-            categories: state.get("categories"),
-            priorities: state.get("priorities"),
+            categories: state["categories"],
+            priorities: state["priorities"],
 
-            addTaskDescription: state.get("addTaskDescription"),
-            addTaskTitle: state.get("addTaskTitle")
+            addTaskDescription: state["addTaskDescription"],
+            addTaskTitle: state["addTaskTitle"]
         })
     }
 
     else
         return ({
-            task_data: state.get("currentMonthTask"),
+            task_data: state["currentMonthTask"],
 
-            categories: state.get("categories"),
-            priorities: state.get("priorities"),
+            categories: state["categories"],
+            priorities: state["priorities"],
 
-            addTaskDescription: state.get("addTaskDescription"),
-            addTaskTitle: state.get("addTaskTitle")
+            addTaskDescription: state["addTaskDescription"],
+            addTaskTitle: state["addTaskTitle"]
         })
 }
 

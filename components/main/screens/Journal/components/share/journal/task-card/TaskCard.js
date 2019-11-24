@@ -16,7 +16,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { Map, List, fromJS } from 'immutable'
 
+import { Audio } from "expo-av";
+
 import { styles } from './styles/styles'
+
+// const completing_sound = new Audio.Sound()
+// completing_sound.loadAsync(require("../../../../../../../../assets/sounds/Completing01.mp3"))
 
 export default class TaskCard extends React.PureComponent {
     priority_order = {
@@ -657,10 +662,14 @@ export default class TaskCard extends React.PureComponent {
 
             if (this.props.flag === "uncompleted") {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+
+                this._playingSound()
             }
 
-            else{
+            else {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+
+
             }
 
             this.setState(prevState => ({
@@ -685,6 +694,18 @@ export default class TaskCard extends React.PureComponent {
             this.props.updateBulkThunk(sending_obj)
 
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+        }
+    }
+
+    _playingSound = async () => {
+        try {
+            const completing_sound = new Audio.Sound()
+            await completing_sound.loadAsync(require("../../../../../../../../assets/sounds/Completing01.wav"))
+            await completing_sound.playAsync()
+        }
+
+        catch (error) {
+            console.log(error)
         }
     }
 

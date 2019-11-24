@@ -5,9 +5,9 @@ import OverlayModal from './OverlayModal'
 import {updateThunk} from './actions/updateThunk'
 
 const mapStateToProps = (state) => ({
-    currentDayTask: state.get("currentDayTask"),
-    currentWeekTask: state.get("currentWeekTask"),
-    currentMonthTask: state.get("currentMonthTask"),
+    currentDayTask: state["currentDayTask"],
+    currentWeekTask: state["currentWeekTask"],
+    currentMonthTask: state["currentMonthTask"],
 })
 
 const mapDispatchToProps = (dispatch) => ({

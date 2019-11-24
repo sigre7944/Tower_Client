@@ -3,10 +3,10 @@ import {changeRouteAction} from '../../../shared/actions/otherAction'
 import CustomTabBarComponent from './CustomTabBarComponent'
 
 const mapStateToProps = (state) => ({
-    currentRoute: state.get("currentRoute"),
-    day_tasks: state.get("day_tasks"),
-    week_tasks: state.get("week_tasks"),
-    month_tasks: state.get("month_tasks"),
+    currentRoute: state["currentRoute"],
+    day_tasks: state["day_tasks"],
+    week_tasks: state["week_tasks"],
+    month_tasks: state["month_tasks"],
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

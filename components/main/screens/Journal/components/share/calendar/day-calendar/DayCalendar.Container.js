@@ -5,7 +5,7 @@ import DayCalendar from './DayCalendar'
 const mapStateToProps = (state, ownProps) => {
     if (!ownProps.edit) {
         return ({
-            task_data: state.get("currentDayTask")
+            task_data: state["currentDayTask"]
         })
     }
 

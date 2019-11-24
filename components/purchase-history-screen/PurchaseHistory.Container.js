@@ -4,9 +4,9 @@ import { deleteRecordsInDayThunk } from "./actions/deleteRecordsThunk";
 import PurchaseHistory from './PurchaseHistory'
 
 const mapStateToProps = (state) => ({
-    currentRoute: state.get("currentRoute"),
-    rewards: state.get("rewards"),
-    purchase_history: state.get("purchase_history")
+    currentRoute: state["currentRoute"],
+    rewards: state["rewards"],
+    purchase_history: state["purchase_history"]
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

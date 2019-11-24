@@ -1,5 +1,5 @@
-// import { combineReducers } from 'redux'
-import { combineReducers } from 'redux-immutable'
+// import { combineReducers as immutableCombineReducers } from 'redux-immutable'
+import { combineReducers } from "redux";
 import { priorities } from './priorityReducer'
 
 import {
@@ -48,6 +48,8 @@ import {
     deleted_week_tasks,
     deleted_month_tasks
 } from "./deletedTasksReducer";
+
+import { } from "immutable";
 
 const rootReducer = combineReducers({
     currentRoute,

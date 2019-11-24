@@ -5,7 +5,7 @@ import MonthCalendar from './MonthCalendar'
 const mapStateToProps = (state, ownProps) => {
     if (!ownProps.edit) {
         return ({
-            task_data: state.get("currentMonthTask")
+            task_data: state["currentMonthTask"]
         })
     }
 

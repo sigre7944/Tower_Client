@@ -2,9 +2,12 @@ import React from 'react';
 import {
   View,
   Text,
+  TouchableOpacity
 } from 'react-native';
 
 import SettingHeader from "./components/header/SettingHeader";
+
+import { styles } from "./styles/styles";
 
 export default class Settings extends React.Component {
   static navigationOptions = ({ navigation, navigationOptions }) => {
@@ -25,8 +28,12 @@ export default class Settings extends React.Component {
 
   render() {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Settings!</Text>
+      <View
+        style={{
+          backgroundColor: "white"
+        }}
+      >
+        
       </View>
     );
   }

@@ -5,8 +5,8 @@ import TaskDetailModal from './TaskDetailModal'
 const mapStateToProps = (state, ownProps) => {
     return (
         {
-            categories: state.get("categories"),
-            priorities: state.get("priorities"),
+            categories: state["categories"],
+            priorities: state["priorities"],
         }
     )
 }

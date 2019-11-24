@@ -5,36 +5,36 @@ import JournalTab from './JournalTab'
 const mapStateToProps = (state, ownProps) => {
     if (ownProps.type === "day") {
         return ({
-            routeName: state.get("currentRoute"),
-            tasks: state.get("day_tasks"),
-            categories: state.get("categories"),
-            priorities: state.get("priorities"),
-            completed_tasks: state.get("completed_day_tasks"),
-            current_chosen_category: state.get("currentChosenCategory"),
-            deleted_tasks: state.get("deleted_day_tasks")
+            routeName: state["currentRoute"],
+            tasks: state["day_tasks"],
+            categories: state["categories"],
+            priorities: state["priorities"],
+            completed_tasks: state["completed_day_tasks"],
+            current_chosen_category: state["currentChosenCategory"],
+            deleted_tasks: state["deleted_day_tasks"]
         })
     }
 
     else if (ownProps.type === "week") {
         return ({
-            routeName: state.get("currentRoute"),
-            tasks: state.get("week_tasks"),
-            categories: state.get("categories"),
-            priorities: state.get("priorities"),
-            completed_tasks: state.get("completed_week_tasks"),
-            current_chosen_category: state.get("currentChosenCategory"),
-            deleted_tasks: state.get("deleted_week_tasks")
+            routeName: state["currentRoute"],
+            tasks: state["week_tasks"],
+            categories: state["categories"],
+            priorities: state["priorities"],
+            completed_tasks: state["completed_week_tasks"],
+            current_chosen_category: state["currentChosenCategory"],
+            deleted_tasks: state["deleted_week_tasks"]
         })
     }
 
     return ({
-        routeName: state.get("currentRoute"),
-        tasks: state.get("month_tasks"),
-        categories: state.get("categories"),
-        priorities: state.get("priorities"),
-        completed_tasks: state.get("completed_month_tasks"),
-        current_chosen_category: state.get("currentChosenCategory"),
-        deleted_tasks: state.get("deleted_month_tasks")
+        routeName: state["currentRoute"],
+        tasks: state["month_tasks"],
+        categories: state["categories"],
+        priorities: state["priorities"],
+        completed_tasks: state["completed_month_tasks"],
+        current_chosen_category: state["currentChosenCategory"],
+        deleted_tasks: state["deleted_month_tasks"]
     })
 }
 

@@ -7,15 +7,15 @@ import TaskAnnotationTypeHolder from './TaskAnnotationTypeHolder'
 
 
 const mapStateToProps = (state) => ({
-    currentDayTask: state.get("currentDayTask"),
-    currentWeekTask: state.get("currentWeekTask"),
-    currentMonthTask: state.get("currentMonthTask"),
+    currentDayTask: state["currentDayTask"],
+    currentWeekTask: state["currentWeekTask"],
+    currentMonthTask: state["currentMonthTask"],
 
-    categories: state.get("categories"),
-    priorities: state.get("priorities"),
+    categories: state["categories"],
+    priorities: state["priorities"],
 
-    addTaskDescription: state.get("addTaskDescription"),
-    addTaskTitle: state.get("addTaskTitle")
+    addTaskDescription: state["addTaskDescription"],
+    addTaskTitle: state["addTaskTitle"]
 })
 
 

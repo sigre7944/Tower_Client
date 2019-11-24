@@ -8,8 +8,8 @@ import TitleAndDescriptionHolder from './TitleAndDescriptionHolder'
 
 
 const mapStateToProps = (state) => ({
-    addTaskDescription: state.get("addTaskDescription"),
-    addTaskTitle: state.get("addTaskTitle")
+    addTaskDescription: state["addTaskDescription"],
+    addTaskTitle: state["addTaskTitle"]
 })
 
 

@@ -3,7 +3,7 @@ import { changeRouteAction } from '../../../shared/actions/otherAction'
 import Settings from './Settings'
 
 const mapStateToProps = (state) => ({
-    currentRoute: state.get("currentRoute"),
+    currentRoute: state["currentRoute"],
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

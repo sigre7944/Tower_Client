@@ -3,9 +3,9 @@ import { updatePurchaseItemThunk } from './actions/getRewardActionThunk'
 import CRUDRewardSection from './CRUDRewardSection'
 
 const mapStateToProps = (state) => ({
-    rewards: state.get("rewards"),
-    purchase_history: state.get("purchase_history"),
-    balance: state.get("balance")
+    rewards: state["rewards"],
+    purchase_history: state["purchase_history"],
+    balance: state["balance"]
 })
 
 const mapDispatchToProps = (dispatch) => ({

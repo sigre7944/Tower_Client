@@ -37,8 +37,17 @@ export default class BottomTabNavigator extends React.Component {
         this.props.navigation.navigate({ routeName })
     }
 
+    componentDidMount(){
+        if ((this.props.routeName === "Day" || this.props.routeName === "Week" || this.props.routeName === "Month")) {
+            this.setState({
+                should_AddTaskButton_be_displayed: true
+            })
+        }
+    }
+
     componentDidUpdate = (prevProps, prevState) => {
         if (this.props.routeName !== prevProps.routeName) {
+
             if ((this.props.routeName === "Day" || this.props.routeName === "Week" || this.props.routeName === "Month")) {
                 this.setState({
                     should_AddTaskButton_be_displayed: true

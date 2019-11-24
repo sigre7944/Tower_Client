@@ -4,7 +4,7 @@ import AddCategoryPanel from './AddCategoryPanel'
 
 const mapStateToProps = (state, ownProps) => {
     return({
-        categories: state.get("categories")
+        categories: state["categories"]
     })
 }
 
