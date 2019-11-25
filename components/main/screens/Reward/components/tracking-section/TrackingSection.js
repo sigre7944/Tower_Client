@@ -10,11 +10,26 @@ import {
 
 import { Map, fromJS, OrderedMap, isKeyed } from 'immutable'
 import { styles } from "./styles/styles";
+import { Haptics } from "expo";
+import { Audio } from "expo-av";
 
 const window_width = Dimensions.get("window").width
 const looking_for_main_reward_image = require("../../../../../../assets/pngs/looking_for_main_reward.png")
 
 export default class TrackingSection extends React.PureComponent {
+
+    _playingSound = async () => {
+        try {
+            const completing_sound = new Audio.Sound()
+            await completing_sound.loadAsync(require("../../../../../../assets/sounds/GetReward01.wav"))
+            await completing_sound.playAsync()
+        }
+
+        catch (error) {
+            console.log(error)
+        }
+    }
+
 
     _getReward = () => {
         let purchase_history_map = OrderedMap(this.props.purchase_history),
@@ -114,6 +129,8 @@ export default class TrackingSection extends React.PureComponent {
                 }
 
                 this.props.updatePurchaseItemThunk(sending_obj)
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+                this._playingSound()
             }
         }
     }

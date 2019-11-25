@@ -1,11 +1,10 @@
 import { connect } from 'react-redux'
-import { toggleReturn, toggleEditMultipleTasksAction } from '../../../../../shared/actions/otherAction'
-import JournalHeader from './JournalHeader'
+import { toggleEditMultipleTasksAction } from '../../../../../../../shared/actions/otherAction'
+import EditMultipleTasks from './EditMultipleTasks'
 
 const mapStateToProps = (state, ownProps) => {
     return ({
-        headerText: state["headerText"],
-        currentRoute: state["currentRoute"],
+        toggleEditMultipleTasks: state["toggleEditMultipleTasks"],
     })
 }
 
@@ -17,4 +16,4 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(JournalHeader)
+)(EditMultipleTasks)

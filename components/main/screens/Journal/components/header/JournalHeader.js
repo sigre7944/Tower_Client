@@ -1,9 +1,11 @@
 import React from 'react';
 import {
     View,
-    Image,
     Text,
-    TouchableOpacity
+    TouchableOpacity,
+    Modal,
+    Dimensions,
+    TouchableWithoutFeedback,
 } from 'react-native';
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
@@ -15,7 +17,10 @@ import {
     styles
 } from './styles/styles'
 
+
 export default class JournalHeader extends React.PureComponent {
+
+
     _openDrawer = () => {
         this.props.navigation.dispatch(DrawerActions.openDrawer())
     }
@@ -24,6 +29,11 @@ export default class JournalHeader extends React.PureComponent {
         this.props.toggleReturn()
     }
 
+
+    _toggleEditMultipleTasksAction = () => {
+        this.props.toggleEditMultipleTasksAction()
+    }
+    
     render() {
         return (
             <View style={styles.container}>
@@ -56,6 +66,7 @@ export default class JournalHeader extends React.PureComponent {
 
                     <TouchableOpacity
                         style={styles.end_icon_container}
+                        onPress={this._toggleEditMultipleTasksAction}
                     >
                         <FontAwesomeIcon
                             icon={faEllipsisV}

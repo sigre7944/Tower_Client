@@ -18,14 +18,7 @@ export const updateTitle = (title) => ({
     title
 })
 
-// export const updateType = (type, task_type) => ({
-//     type,
-//     data: {
-//         type: task_type
-//     }
-// })
-
-export const updateType = (type, keyPath, notSetValue, updater ) => ({
+export const updateType = (type, keyPath, notSetValue, updater) => ({
     type,
     keyPath,
     notSetValue,
@@ -40,4 +33,8 @@ export const updateDescription = (description) => ({
 export const changeAnnotation = (annotation) => ({
     type: "CHANGE_CURRENT_ANNOTATION",
     annotation
+})
+
+export const toggleEditMultipleTasksAction = () => ({
+    type: "TOGGLE_EDIT_MULTIPLE_TASKS"
 })

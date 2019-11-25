@@ -16,6 +16,8 @@ import {
     faEdit
 } from "@fortawesome/free-solid-svg-icons";
 import { styles } from "./styles/styles";
+import { Haptics } from "expo";
+import { Audio } from "expo-av";
 
 const window_width = Dimensions.get("window").width
 const number_of_columns = 2
@@ -67,6 +69,18 @@ export default class CRUDRewardSection extends React.PureComponent {
             is_edit_reward: false,
             is_delete_reward: false,
         })
+    }
+
+    _playingSound = async () => {
+        try {
+            const completing_sound = new Audio.Sound()
+            await completing_sound.loadAsync(require("../../../../../../../assets/sounds/GetReward01.wav"))
+            await completing_sound.playAsync()
+        }
+
+        catch (error) {
+            console.log(error)
+        }
     }
 
     _getReward = (reward_id, reward_name, reward_value) => {
@@ -163,6 +177,8 @@ export default class CRUDRewardSection extends React.PureComponent {
                 }
 
                 this.props.updatePurchaseItemThunk(sending_obj)
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+                this._playingSound()
             }
         }
     }

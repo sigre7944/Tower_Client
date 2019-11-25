@@ -32,14 +32,14 @@ export default class MonthFlatlist extends React.Component {
             current_month_index: month_index,
 
             should_update: prevState.should_update + 1
-        }))
+        }), () => {
+            let month = this.month_data[month_index].month,
+                year = this.month_data[month_index].year
 
-        let month = this.month_data[month_index].month,
-            year = this.month_data[month_index].year
+            this.props.setChosenDateData({ month, year })
 
-        this.props.setChosenDateData({ month, year })
-
-        this.scrollToIndex(month_index)
+            this.scrollToIndex(month_index)
+        })
     }
 
     scrollToIndex = (index) => {
@@ -125,6 +125,10 @@ export default class MonthFlatlist extends React.Component {
         this.props.updateHeaderText(string)
     }
 
+    _onLayout = () => {
+        this.scrollToIndex(this.start_index)
+    }
+
     componentDidMount() {
         this.initializeMonthData()
 
@@ -134,12 +138,7 @@ export default class MonthFlatlist extends React.Component {
             if (data.month === current.getMonth() && data.year === current.getFullYear()) {
                 this.start_index = index
 
-                this.setState(prevState => ({
-                    last_month_index: prevState.current_month_index,
-                    current_month_index: index,
-
-                    should_update: prevState.should_update + 1
-                }))
+                this.chooseMonth(this.start_index)
 
                 return false
             }
@@ -192,6 +191,8 @@ export default class MonthFlatlist extends React.Component {
                     scrollEventThrottle={6}
                     removeClippedSubviews={true}
                     showsHorizontalScrollIndicator={false}
+
+                    onLayout={this._onLayout}
                 />
             </View>
         )

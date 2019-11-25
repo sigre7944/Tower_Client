@@ -5,17 +5,21 @@ import {
     Text,
     TouchableOpacity
 } from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
     faBars,
     faEllipsisV
 } from "@fortawesome/free-solid-svg-icons";
+import { DrawerActions } from 'react-navigation-drawer';
 import {
     styles
 } from './styles/styles'
 
 export default class RewardHeader extends React.PureComponent {
+    _openDrawer = () => {
+        this.props.navigation.dispatch(DrawerActions.openDrawer())
+    }
+    
     render() {
         return (
             <View style={styles.container}>
@@ -45,15 +49,10 @@ export default class RewardHeader extends React.PureComponent {
                         </Text>
                     </View>
 
-                    <TouchableOpacity
+                    <View
                         style={styles.end_icon_container}
                     >
-                        <FontAwesomeIcon
-                            icon={faEllipsisV}
-                            size={20}
-                            color={"#BDBDBD"}
-                        />
-                    </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         )

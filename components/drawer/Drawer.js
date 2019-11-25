@@ -611,6 +611,7 @@ export default class Drawer extends React.PureComponent {
 
                     _toggleDeleteWarning={this._toggleDeleteWarning}
                     navigation={this.props.navigation}
+                    currentRoute={this.props.currentRoute}
                 />
 
                 <AddNewCategory
@@ -672,6 +673,12 @@ class CategoryFlatlist extends React.PureComponent {
                 this.props.chooseCategory(Map(category_data).get("id"))
 
                 this.props.navigation.dispatch(DrawerActions.closeDrawer())
+
+                if (this.props.currentRoute !== "Day" || this.props.currentRoute !== "Week" || this.props.currentRoute !== "Month") {
+                    this.props.navigation.navigate("Journal")
+                }
+
+
             })
         }
 
@@ -681,6 +688,10 @@ class CategoryFlatlist extends React.PureComponent {
             this.props.chooseCategory(Map(category_data).get("id"))
 
             this.props.navigation.dispatch(DrawerActions.closeDrawer())
+
+            if (this.props.currentRoute !== "Day" || this.props.currentRoute !== "Week" || this.props.currentRoute !== "Month") {
+                this.props.navigation.navigate("Journal")
+            }
         }
     }
 

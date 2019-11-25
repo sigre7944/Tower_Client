@@ -36,15 +36,15 @@ export default class DayFlatlist extends React.Component {
             current_day_index: day_index,
 
             should_update: prevState.should_update + 1,
-        }))
+        }), () => {
+            let day = this.day_data[day_index].day,
+                month = this.day_data[day_index].month,
+                year = this.day_data[day_index].year
 
-        let day = this.day_data[day_index].day,
-            month = this.day_data[day_index].month,
-            year = this.day_data[day_index].year
+            this.props.setChosenDateData({ day, month, year })
 
-        this.props.setChosenDateData({ day, month, year })
-
-        this.scrollToIndex(day_index)
+            this.scrollToIndex(day_index)
+        })
     }
 
     scrollToIndex = (index) => {
@@ -116,6 +116,10 @@ export default class DayFlatlist extends React.Component {
 
     }
 
+    _onLayout = () => {
+        this.scrollToIndex(this.start_index)
+    }
+
     componentDidMount() {
         this.initializeDayData()
 
@@ -127,18 +131,14 @@ export default class DayFlatlist extends React.Component {
             if (data.day === day && data.month === month && data.year === year) {
                 this.start_index = index
 
-                this.setState(prevState => ({
-                    last_day_index: prevState.current_day_index,
-                    current_day_index: index,
-
-                    should_update: prevState.should_update + 1,
-                }))
+                this.chooseDay(this.start_index)
 
                 return false
             }
 
             return true
         })
+
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -183,6 +183,8 @@ export default class DayFlatlist extends React.Component {
                     scrollEventThrottle={5}
                     removeClippedSubviews={true}
                     showsHorizontalScrollIndicator={false}
+
+                    onLayout={this._onLayout}
                 />
             </View>
         )

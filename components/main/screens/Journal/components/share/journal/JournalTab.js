@@ -14,6 +14,8 @@ import DayFlatlist from './day-flatlist/DayFlatlist.Container'
 import WeekFlatlist from './week-flatlist/WeekFlatlist.Container'
 import MonthFlatlist from './month-flatlist/MonthFlatlist.Container'
 
+import EditMultipleTasks from "./edit-multiple-tasks/EditMultipleTasks.Container";
+
 import { styles } from './styles/styles'
 
 import { List, Map, hasIn, getIn } from 'immutable'
@@ -218,6 +220,8 @@ export default class JournalTab extends React.PureComponent {
 
                     <></>
                 }
+
+                <EditMultipleTasks />
             </View>
         )
     }
@@ -984,7 +988,7 @@ class UncompletedTaskCard extends React.PureComponent {
             category = task_map.get("category"), //category id
             current_goal_value = 0
 
-        if (current_chosen_category === "general" || current_chosen_category === category) {
+        if (current_chosen_category === category) {
             if (type === "day") {
                 let { day, month, year } = chosen_date_data,
                     chosen_day_timestamp = new Date(year, month, day).getTime(),
@@ -1298,7 +1302,7 @@ class CompletedTaskCard extends React.PureComponent {
                 category = Map(task).get("category"), // category id
                 current_goal_value = 0
 
-            if (current_chosen_category === "general" || current_chosen_category === category) {
+            if (current_chosen_category === category) {
                 if (type === "day") {
                     let { day, month, year } = chosen_date_data,
                         chosen_day_timestamp = new Date(year, month, day).getTime(),

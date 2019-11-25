@@ -26,7 +26,8 @@ import {
     currentRoute,
     currentWeekInMonth,
     headerPressed,
-    headerText
+    headerText,
+    toggleEditMultipleTasks
 } from './otherReducer'
 
 import {
@@ -88,7 +89,9 @@ const rootReducer = combineReducers({
 
     deleted_day_tasks,
     deleted_week_tasks,
-    deleted_month_tasks
+    deleted_month_tasks,
+
+    toggleEditMultipleTasks
 })
 
 export default rootReducer

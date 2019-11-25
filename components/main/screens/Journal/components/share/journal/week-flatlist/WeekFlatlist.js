@@ -32,13 +32,13 @@ export default class WeekFlatlist extends React.Component {
             current_week_index: week_index,
 
             should_update: prevState.should_update + 1
-        }))
+        }), () => {
+            let { monday, sunday, week, start_month, end_month, start_year, end_year, start_noWeekInMonth, end_noWeekInMonth } = this.week_data[week_index]
 
-        let { monday, sunday, week, start_month, end_month, start_year, end_year, start_noWeekInMonth, end_noWeekInMonth } = this.week_data[week_index]
+            this.props.setChosenDateData({ monday, sunday, week, start_month, end_month, start_year, end_year, start_noWeekInMonth, end_noWeekInMonth })
 
-        this.props.setChosenDateData({ monday, sunday, week, start_month, end_month, start_year, end_year, start_noWeekInMonth, end_noWeekInMonth })
-
-        this.scrollToIndex(week_index)
+            this.scrollToIndex(week_index)
+        })
     }
 
     scrollToIndex = (index) => {
@@ -140,6 +140,9 @@ export default class WeekFlatlist extends React.Component {
         this.props.updateHeaderText(string)
     }
 
+    _onLayout = () => {
+        this.scrollToIndex(this.start_index)
+    }
 
     componentDidMount() {
         this.initializeWeekData()
@@ -153,12 +156,8 @@ export default class WeekFlatlist extends React.Component {
 
                 this.start_index = index
 
-                this.setState(prevState => ({
-                    last_week_index: prevState.current_week_index,
-                    current_week_index: index,
 
-                    should_update: prevState.should_update + 1
-                }))
+                this.chooseWeek(this.start_index)
 
                 return false
             }
@@ -209,6 +208,8 @@ export default class WeekFlatlist extends React.Component {
                     scrollEventThrottle={5}
                     removeClippedSubviews={true}
                     showsHorizontalScrollIndicator={false}
+
+                    onLayout={this._onLayout}
                 />
             </View>
         )

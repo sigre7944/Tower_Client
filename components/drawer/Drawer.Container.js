@@ -4,6 +4,7 @@ import { deleteTasksAndHistory, deleteOnlyTasks } from './actions/deleteActionTh
 import Drawer from './Drawer'
 const mapStateToProps = (state, ownProps) => {
     return ({
+        currentRoute: state["currentRoute"],
         categories: state["categories"],
         priorities: state["priorities"],
 

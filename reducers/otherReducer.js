@@ -1,5 +1,5 @@
 export const addTaskTitle = (state = "", action) => {
-    switch(action.type){
+    switch (action.type) {
         case "CHANGE_ADD_TASK_TITLE":
             return action.title
 
@@ -9,7 +9,7 @@ export const addTaskTitle = (state = "", action) => {
 }
 
 export const addTaskDescription = (state = "", action) => {
-    switch(action.type){
+    switch (action.type) {
         case "CHANGE_ADD_TASK_DESCRIPTION":
             return action.description
 
@@ -19,7 +19,7 @@ export const addTaskDescription = (state = "", action) => {
 }
 
 export const currentAnnotation = (state = "day", action) => {
-    switch(action.type){
+    switch (action.type) {
         case "CHANGE_CURRENT_ANNOTATION":
             return action.annotation
 
@@ -32,7 +32,7 @@ export const currentRoute = (state = "", action) => {
     switch (action.type) {
         case 'CHANGE_ROUTE':
             return state = action.routeName
-        
+
         default:
             return state
     }
@@ -40,7 +40,7 @@ export const currentRoute = (state = "", action) => {
 
 
 export const headerText = (state = "", action) => {
-    switch(action.type){
+    switch (action.type) {
         case 'UPDATE_HEADER_TEXT':
             return action.data
 
@@ -50,7 +50,7 @@ export const headerText = (state = "", action) => {
 }
 
 export const headerPressed = (state = false, action) => {
-    switch(action.type){
+    switch (action.type) {
         case 'TOGGLE_RETURN':
             return !state
 
@@ -62,8 +62,17 @@ export const headerPressed = (state = false, action) => {
 export const currentWeekInMonth = (state = {}, action) => {
     switch (action.type) {
         case 'UPDATE':
-            return state = {... action}
+            return state = { ...action }
 
+        default:
+            return state
+    }
+}
+
+export const toggleEditMultipleTasks = (state = false, action) => {
+    switch (action.type) {
+        case 'TOGGLE_EDIT_MULTIPLE_TASKS':
+            return !state
 
         default:
             return state

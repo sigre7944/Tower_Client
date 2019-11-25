@@ -10,16 +10,15 @@ import {
     faBars,
     faEllipsisV
 } from "@fortawesome/free-solid-svg-icons";
+import { DrawerActions } from 'react-navigation-drawer';
 import {
     styles
 } from './styles/styles'
 
 export default class SettingHeader extends React.PureComponent {
-
-    _toggleReturn = () => {
-        this.props.toggleReturn()
+    _openDrawer = () => {
+        this.props.navigation.dispatch(DrawerActions.openDrawer())
     }
-
     render() {
         return (
             <View style={styles.container}>
@@ -32,6 +31,7 @@ export default class SettingHeader extends React.PureComponent {
                 >
                     <TouchableOpacity
                         style={styles.end_icon_container}
+                        onPress={this._openDrawer}
                     >
                         <FontAwesomeIcon
                             icon={faBars}
@@ -47,10 +47,10 @@ export default class SettingHeader extends React.PureComponent {
                         </Text>
                     </View>
 
-                    <TouchableOpacity
+                    <View
                         style={styles.end_icon_container}
                     >
-                    </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         )

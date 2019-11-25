@@ -10,16 +10,21 @@ import {
     faShoppingCart,
     faBars
 } from "@fortawesome/free-solid-svg-icons";
+import { DrawerActions } from 'react-navigation-drawer';
 import {
     styles
 } from './styles/styles'
 
 export default class RewardHeader extends React.PureComponent {
+    _openDrawer = () => {
+        this.props.navigation.dispatch(DrawerActions.openDrawer())
+    }
+
     _openPurchaseHistoryTab = () => {
         this.props.navigation.navigate('PurchaseHistory')
     }
 
-    componentDidMount(){
+    componentDidMount() {
     }
 
     render() {
@@ -34,6 +39,8 @@ export default class RewardHeader extends React.PureComponent {
                 >
                     <TouchableOpacity
                         style={styles.end_icon_container}
+
+                        onPress={this._openDrawer}
                     >
                         <FontAwesomeIcon
                             icon={faBars}
