@@ -5,7 +5,7 @@ import Day from './components/Daily/Daily'
 import Week from './components/Weekly/Weekly'
 import Month from './components/Monthly/Monthly'
 
-import CustomTabBarComponent from './custom-tab-bar-component/CustomTabBarComponent'
+import CustomTabBarComponent from './custom-tab-bar-component/CustomTabBarComponent.Container'
 
 const JournalTopNavigator = createMaterialTopTabNavigator({
     Day: { screen: Day },

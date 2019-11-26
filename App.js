@@ -6,6 +6,7 @@ import { Provider } from 'react-redux'
 import Drawer from './components/drawer/Drawer.Container'
 
 import PurchaseHistory from './components/purchase-history-screen/PurchaseHistory.Container'
+import EditMultipleTasks from "./components/edit-multiple-tasks-screen/EditMultipleTasks.Container";
 import * as Font from 'expo-font'
 
 import { PersistGate } from "redux-persist/lib/integration/react";
@@ -69,7 +70,8 @@ const DrawerNavigator = createDrawerNavigator({
 
 const AppStackNavigator = createStackNavigator({
   DrawerNavigator: { screen: DrawerNavigator, navigationOptions: { header: null } },
-  PurchaseHistory: { screen: PurchaseHistory }
+  PurchaseHistory: { screen: PurchaseHistory },
+  EditMultipleTasks: { screen: EditMultipleTasks }
 }, {
   initialRouteName: "DrawerNavigator",
   headerMode: "screen",

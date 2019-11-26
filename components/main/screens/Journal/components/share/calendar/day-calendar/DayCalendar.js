@@ -32,7 +32,11 @@ export default class DayCalendar extends React.Component {
     chosen_year = -1
 
     calendar_scale_value = new Animated.Value(0.3)
-    calendar_opacity_value = new Animated.Value(0.3)
+    calendar_opacity_value = this.calendar_scale_value.interpolate({
+        inputRange: [0.3, 0.5, 0.7, 1],
+        outputRange: [0.3, 0.5, 0.7, 1],
+        extrapolate: "clamp"
+    })
 
     save = () => {
         if (this.chosen_day > 0 && this.chosen_month >= 0 && this.chosen_year > 0) {
@@ -46,6 +50,14 @@ export default class DayCalendar extends React.Component {
                     })
 
                 this.props._editFieldData(keyPath, notSetValue, updater)
+            }
+
+            else if (this.props.edit_multiple) {
+                this.props._editMultipleFieldData({
+                    day: this.chosen_day,
+                    month: this.chosen_month,
+                    year: this.chosen_year
+                })
             }
 
             else {
@@ -75,26 +87,15 @@ export default class DayCalendar extends React.Component {
     }
 
     animateCalendar = () => {
-        Animated.parallel([
-            Animated.timing(
-                this.calendar_opacity_value,
-                {
-                    toValue: 1,
-                    duration: animation_duration,
-                    easing,
-                    useNativeDriver: true
-                }
-            ),
-            Animated.timing(
-                this.calendar_scale_value,
-                {
-                    toValue: 1,
-                    duration: animation_duration,
-                    easing,
-                    useNativeDriver: true
-                }
-            )
-        ]).start()
+        Animated.timing(
+            this.calendar_scale_value,
+            {
+                toValue: 1,
+                duration: animation_duration,
+                easing,
+                useNativeDriver: true
+            }
+        ).start()
     }
 
     componentDidMount() {
@@ -120,6 +121,8 @@ export default class DayCalendar extends React.Component {
                     {/* Main content of day calendar */}
                     <Calendar
                         edit={this.props.edit}
+                        edit_multiple={this.props.edit_multiple}
+                        edit_multiple_set_calendar_data={this.props.edit_multiple_set_calendar_data}
                         setData={this.setData}
                         task_data={this.props.task_data}
                         edit_task_data={this.props.edit_task_data}
@@ -260,11 +263,13 @@ class Calendar extends React.Component {
             this.start_index = this.findStartIndex(this.props.edit_task_data)
         }
 
+        else if (this.props.edit_multiple) {
+            this.start_index = this.findStartIndex(this.props.edit_multiple_set_calendar_data)
+        }
+
         else {
             this.start_index = this.findStartIndex(this.props.task_data)
         }
-
-
     }
 
     _getItemLayout = (data, index) => ({
@@ -296,6 +301,28 @@ class Calendar extends React.Component {
         }
     }
 
+    findStartIndex = (edit_multiple_set_calendar_data) => {
+        if (edit_multiple_set_calendar_data) {
+            let { day, month, year } = edit_multiple_set_calendar_data,
+                month_index = this.findMonthIndex(month, year)
+
+            this.chooseDay(month_index, this.findDayIndex(day, month, year))
+
+            return month_index
+        }
+
+        else {
+            let current_day = new Date().getDate(),
+                month_index = this.findMonthIndex(this.current_month, this.current_year)
+
+            this.setState(prevState => ({
+                current_month_index: month_index,
+                last_month_index: prevState.current_month_index,
+                should_flatlist_update: prevState.should_flatlist_update + 1
+            }))
+            return month_index
+        }
+    }
 
     findMonthIndex = (month, year) => {
         return (year - this.left_end_year) * 12 + month

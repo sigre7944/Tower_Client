@@ -31,7 +31,11 @@ export default class MonthCalendar extends React.Component {
     chosen_year = -1
 
     calendar_scale_value = new Animated.Value(0.3)
-    calendar_opacity_value = new Animated.Value(0.3)
+    calendar_opacity_value = this.calendar_scale_value.interpolate({
+        inputRange: [0.3, 0.5, 0.7, 1],
+        outputRange: [0.3, 0.5, 0.7, 1],
+        extrapolate: "clamp"
+    })
 
     save = () => {
         if (this.chosen_month >= 0 && this.chosen_year >= 0) {
@@ -44,6 +48,13 @@ export default class MonthCalendar extends React.Component {
                     })
 
                 this.props._editFieldData(keyPath, notSetValue, updater)
+            }
+
+            else if (this.props.edit_multiple) {
+                this.props._editMultipleFieldData({
+                    month: this.chosen_month,
+                    year: this.chosen_year
+                })
             }
 
             else {
@@ -71,26 +82,15 @@ export default class MonthCalendar extends React.Component {
     }
 
     animateCalendar = () => {
-        Animated.parallel([
-            Animated.timing(
-                this.calendar_opacity_value,
-                {
-                    toValue: 1,
-                    duration: animation_duration,
-                    easing,
-                    useNativeDriver: true
-                }
-            ),
-            Animated.timing(
-                this.calendar_scale_value,
-                {
-                    toValue: 1,
-                    duration: animation_duration,
-                    easing,
-                    useNativeDriver: true
-                }
-            )
-        ]).start()
+        Animated.timing(
+            this.calendar_scale_value,
+            {
+                toValue: 1,
+                duration: animation_duration,
+                easing,
+                useNativeDriver: true
+            }
+        ).start()
     }
 
     componentDidMount() {
@@ -116,6 +116,8 @@ export default class MonthCalendar extends React.Component {
                     {/* Main content of day calendar */}
                     <Calendar
                         edit={this.props.edit}
+                        edit_multiple={this.props.edit_multiple}
+                        edit_multiple_set_calendar_data={this.props.edit_multiple_set_calendar_data}
                         setData={this.setData}
                         task_data={this.props.task_data}
                         edit_task_data={this.props.edit_task_data}
@@ -247,6 +249,10 @@ class Calendar extends React.Component {
             this.start_index = this.findStartIndex(this.props.edit_task_data)
         }
 
+        else if (this.props.edit_multiple) {
+            this.start_index = this.findStartIndex(this.props.edit_multiple_set_calendar_data)
+        }
+
         else {
             this.start_index = this.findStartIndex(this.props.task_data)
         }
@@ -282,6 +288,32 @@ class Calendar extends React.Component {
         }
     }
 
+    findStartIndex = (edit_multiple_set_calendar_data) => {
+        if (edit_multiple_set_calendar_data) {
+            let { month, year } = edit_multiple_set_calendar_data,
+                month_index = month,
+                year_index = this.findYearIndex(year)
+
+            this.chooseMonth(year_index, month_index)
+
+            return year_index
+        }
+
+        else {
+            let month_index = new Date().getMonth(),
+                year = new Date().getFullYear(),
+                year_index = this.findYearIndex(year)
+
+            this.setState(prevState => ({
+                current_year_index: year_index,
+                last_year_index: prevState.current_year_index,
+
+                should_flatlist_update: prevState.should_flatlist_update + 1
+            }))
+
+            return year_index
+        }
+    }
 
     findYearIndex = (year) => {
 

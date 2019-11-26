@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { changeRouteAction } from '../../../../../../shared/actions/otherAction'
+import { changeRouteAction, returnNewChosenDateData } from '../../../../../../shared/actions/otherAction'
 import JournalTab from './JournalTab'
 
 const mapStateToProps = (state, ownProps) => {
@@ -40,6 +40,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
     changeRouteAction: (routeName) => dispatch(changeRouteAction(routeName)),
+    returnNewChosenDateData: (type, data) => dispatch(returnNewChosenDateData(type, data))
 })
 
 export default connect(

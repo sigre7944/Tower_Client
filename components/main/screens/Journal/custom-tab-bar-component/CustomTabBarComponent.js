@@ -30,9 +30,11 @@ export default class CustomTabBarComponent extends React.PureComponent {
             },
         ).start()
 
-        this.props.navigation.navigate("Day")
         this.setState({
             current_index: 0
+        }, () => {
+            this.props.navigation.navigate("Day")
+            this.props.updateCurrentChosenJournalType("day")
         })
     }
     goToWeekScreen = () => {
@@ -46,9 +48,11 @@ export default class CustomTabBarComponent extends React.PureComponent {
             }
         ).start()
 
-        this.props.navigation.navigate("Week")
         this.setState({
             current_index: 1
+        }, () => {
+            this.props.navigation.navigate("Week")
+            this.props.updateCurrentChosenJournalType("week")
         })
     }
 
@@ -63,10 +67,16 @@ export default class CustomTabBarComponent extends React.PureComponent {
             }
         ).start()
 
-        this.props.navigation.navigate("Month")
         this.setState({
             current_index: 2
+        }, () => {
+            this.props.navigation.navigate("Month")
+            this.props.updateCurrentChosenJournalType("month")
         })
+    }
+
+    componentDidMount(){
+        this.goToDayScreen()
     }
 
     render() {
@@ -94,7 +104,7 @@ export default class CustomTabBarComponent extends React.PureComponent {
                             borderRadius: 30,
                             transform: [{ translateX: this.translate_x }],
                         }}
-                        
+
                     >
                     </Animated.View>
                 </View>

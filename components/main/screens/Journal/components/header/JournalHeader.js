@@ -17,9 +17,13 @@ import {
     styles
 } from './styles/styles'
 
+import EditMultipleTasks from "../share/journal/edit-multiple-tasks/EditMultipleTasks";
 
 export default class JournalHeader extends React.PureComponent {
 
+    state = {
+        toggleEditMultipleTasks: false,
+    }
 
     _openDrawer = () => {
         this.props.navigation.dispatch(DrawerActions.openDrawer())
@@ -29,11 +33,12 @@ export default class JournalHeader extends React.PureComponent {
         this.props.toggleReturn()
     }
 
-
     _toggleEditMultipleTasksAction = () => {
-        this.props.toggleEditMultipleTasksAction()
+        this.setState(prevState => ({
+            toggleEditMultipleTasks: !prevState.toggleEditMultipleTasks
+        }))
     }
-    
+
     render() {
         return (
             <View style={styles.container}>
@@ -75,6 +80,16 @@ export default class JournalHeader extends React.PureComponent {
                         />
                     </TouchableOpacity>
                 </View>
+
+
+                {this.state.toggleEditMultipleTasks ?
+                    <EditMultipleTasks
+                        _toggleEditMultipleTasksAction={this._toggleEditMultipleTasksAction}
+                        navigation={this.props.navigation}
+                    />
+                    :
+                    null
+                }
             </View>
         )
     }

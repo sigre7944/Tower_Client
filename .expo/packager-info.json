@@ -1,9 +1,9 @@
 {
   "packagerPort": 19001,
-  "packagerPid": 10288,
+  "packagerPid": 5624,
   "expoServerNgrokUrl": "https://54-hkz.anonymous.tower-client.exp.direct",
   "packagerNgrokUrl": "https://packager.54-hkz.anonymous.tower-client.exp.direct",
-  "ngrokPid": 12180,
+  "ngrokPid": 12184,
   "devToolsPort": 19002,
   "expoServerPort": 19000
 }

@@ -38,3 +38,13 @@ export const changeAnnotation = (annotation) => ({
 export const toggleEditMultipleTasksAction = () => ({
     type: "TOGGLE_EDIT_MULTIPLE_TASKS"
 })
+
+export const returnNewChosenDateData = (type, data) => ({
+    type,
+    data
+})
+
+export const updateCurrentChosenJournalType = (data) => ({
+    type: "UPDATE_CURRENT_CHOSEN_JOURNAL_TYPE",
+    data
+})

@@ -1,3 +1,5 @@
+import { Map } from "immutable";
+
 export const addTaskTitle = (state = "", action) => {
     switch (action.type) {
         case "CHANGE_ADD_TASK_TITLE":
@@ -74,6 +76,45 @@ export const toggleEditMultipleTasks = (state = false, action) => {
         case 'TOGGLE_EDIT_MULTIPLE_TASKS':
             return !state
 
+        default:
+            return state
+    }
+}
+
+export const chosenDayDateData = (state = Map(), action) => {
+    switch (action.type) {
+        case 'RETURN_NEW_CHOSEN_DAY_DATE_DATA':
+            return action.data
+
+        default:
+            return state
+    }
+}
+
+export const chosenWeekDateData = (state = Map(), action) => {
+    switch (action.type) {
+        case 'RETURN_NEW_CHOSEN_WEEK_DATE_DATA':
+            return action.data
+
+        default:
+            return state
+    }
+}
+
+export const chosenMonthDateData = (state = Map(), action) => {
+    switch (action.type) {
+        case 'RETURN_NEW_CHOSEN_MONTH_DATE_DATA':
+            return action.data
+
+        default:
+            return state
+    }
+}
+
+export const currentChosenJournalType = (state = "day", action) => {
+    switch (action.type) {
+        case 'UPDATE_CURRENT_CHOSEN_JOURNAL_TYPE':
+            return action.data
         default:
             return state
     }

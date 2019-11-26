@@ -24,6 +24,10 @@ export default class Calendar extends React.PureComponent {
                             _editFieldData={this.props._editFieldData}
 
                             hideAction={this.props.hideAction}
+
+                            edit_multiple={this.props.edit_multiple}
+                            _editMultipleFieldData={this.props._editMultipleFieldData}
+                            edit_multiple_set_calendar_data={this.props.edit_multiple_set_calendar_data}
                         />
 
                         :
@@ -36,6 +40,10 @@ export default class Calendar extends React.PureComponent {
                                     _editFieldData={this.props._editFieldData}
 
                                     hideAction={this.props.hideAction}
+
+                                    edit_multiple={this.props.edit_multiple}
+                                    _editMultipleFieldData={this.props._editMultipleFieldData}
+                                    edit_multiple_set_calendar_data={this.props.edit_multiple_set_calendar_data}
                                 />
                                 :
 
@@ -45,6 +53,10 @@ export default class Calendar extends React.PureComponent {
                                     _editFieldData={this.props._editFieldData}
 
                                     hideAction={this.props.hideAction}
+
+                                    edit_multiple={this.props.edit_multiple}
+                                    _editMultipleFieldData={this.props._editMultipleFieldData}
+                                    edit_multiple_set_calendar_data={this.props.edit_multiple_set_calendar_data}
                                 />
                             }
                         </>

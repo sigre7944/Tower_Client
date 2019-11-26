@@ -27,7 +27,11 @@ import {
     currentWeekInMonth,
     headerPressed,
     headerText,
-    toggleEditMultipleTasks
+    toggleEditMultipleTasks,
+    chosenDayDateData,
+    chosenWeekDateData,
+    chosenMonthDateData,
+    currentChosenJournalType
 } from './otherReducer'
 
 import {
@@ -91,7 +95,11 @@ const rootReducer = combineReducers({
     deleted_week_tasks,
     deleted_month_tasks,
 
-    toggleEditMultipleTasks
+    toggleEditMultipleTasks,
+    chosenDayDateData,
+    chosenWeekDateData,
+    chosenMonthDateData,
+    currentChosenJournalType
 })
 
 export default rootReducer

@@ -40,7 +40,11 @@ export default class WeekCalendar extends React.Component {
     chosen_end_noWeekInMonth = -1
 
     calendar_scale_value = new Animated.Value(0.3)
-    calendar_opacity_value = new Animated.Value(0.3)
+    calendar_opacity_value = this.calendar_scale_value.interpolate({
+        inputRange: [0.3, 0.5, 0.7, 1],
+        outputRange: [0.3, 0.5, 0.7, 1],
+        extrapolate: "clamp"
+    })
 
     save = () => {
 
@@ -74,6 +78,22 @@ export default class WeekCalendar extends React.Component {
                     })
 
                 this.props._editFieldData(keyPath, notSetValue, updater)
+            }
+
+            else if (this.props.edit_multiple) {
+                this.props._editMultipleFieldData({
+                    monday: this.chosen_monday,
+                    sunday: this.chosen_sunday,
+                    week: this.chosen_week,
+                    start_month: this.chosen_start_month,
+                    end_month: this.chosen_end_month,
+                    chosen_month: this.chosen_selected_month,
+                    start_year: this.chosen_start_year,
+                    end_year: this.chosen_end_year,
+                    chosen_year: this.chosen_selected_year,
+                    start_noWeekInMonth: this.chosen_start_noWeekInMonth,
+                    end_noWeekInMonth: this.chosen_end_noWeekInMonth
+                })
             }
 
             else {
@@ -122,26 +142,15 @@ export default class WeekCalendar extends React.Component {
     }
 
     animateCalendar = () => {
-        Animated.parallel([
-            Animated.timing(
-                this.calendar_opacity_value,
-                {
-                    toValue: 1,
-                    duration: animation_duration,
-                    easing,
-                    useNativeDriver: true
-                }
-            ),
-            Animated.timing(
-                this.calendar_scale_value,
-                {
-                    toValue: 1,
-                    duration: animation_duration,
-                    easing,
-                    useNativeDriver: true
-                }
-            )
-        ]).start()
+        Animated.timing(
+            this.calendar_scale_value,
+            {
+                toValue: 1,
+                duration: animation_duration,
+                easing,
+                useNativeDriver: true
+            }
+        ).start()
     }
 
     componentDidMount() {
@@ -167,6 +176,8 @@ export default class WeekCalendar extends React.Component {
                     {/* Main content of day calendar */}
                     <Calendar
                         edit={this.props.edit}
+                        edit_multiple={this.props.edit_multiple}
+                        edit_multiple_set_calendar_data={this.props.edit_multiple_set_calendar_data}
                         setData={this.setData}
                         task_data={this.props.task_data}
                         edit_task_data={this.props.edit_task_data}
@@ -326,6 +337,10 @@ class Calendar extends React.Component {
             this.start_index = this.findStartIndex(this.props.edit_task_data)
         }
 
+        else if (this.props.edit_multiple) {
+            this.start_index = this.findStartIndex(this.props.edit_multiple_set_calendar_data)
+        }
+
         else {
             this.start_index = this.findStartIndex(this.props.task_data)
         }
@@ -340,13 +355,14 @@ class Calendar extends React.Component {
     findStartIndex = (task_data) => {
         if (task_data) {
             let task_data_map = Map(task_data),
-                chosen_month = task_data_map.getIn(["schedule", "chosen_month"]),
-                chosen_year = task_data_map.getIn(["schedule", "chosen_year"]),
                 start_month = task_data_map.getIn(["schedule", "start_month"]),
                 end_month = task_data_map.getIn(["schedule", "end_month"]),
+                chosen_month = task_data_map.getIn(["schedule", "chosen_month"]),
                 start_year = task_data_map.getIn(["schedule", "start_year"]),
                 end_year = task_data_map.getIn(["schedule", "end_year"]),
-                week_index = task_data_map.getIn(["schedule", "start_noWeekInMonth"]),
+                chosen_year = task_data_map.getIn(["schedule", "chosen_year"]),
+                start_noWeekInMonth = task_data_map.getIn(["schedule", "start_noWeekInMonth"]),
+                week_index = start_noWeekInMonth,
                 month_index = this.findMonthIndex(chosen_month, chosen_year)
 
             if (chosen_month === start_month) {
@@ -358,7 +374,6 @@ class Calendar extends React.Component {
             }
 
             this.chooseWeek(month_index, week_index)
-
             return month_index
         }
 
@@ -367,6 +382,46 @@ class Calendar extends React.Component {
                 month_index = this.findMonthIndex(this.current_month, this.current_year)
 
             this.chooseWeek(month_index, week_index)
+
+            return month_index
+        }
+    }
+
+    findStartIndex = (edit_multiple_set_calendar_data) => {
+        if (edit_multiple_set_calendar_data) {
+            let {
+                chosen_month,
+                chosen_year,
+                start_month,
+                end_month,
+                start_noWeekInMonth,
+                end_noWeekInMonth
+            } = edit_multiple_set_calendar_data,
+                month_index = this.findMonthIndex(chosen_month, chosen_year),
+                week_index = 0
+
+            if (chosen_month === start_month) {
+                week_index = start_noWeekInMonth - 1
+            }
+
+            else if (chosen_month === end_month) {
+                week_index = end_noWeekInMonth - 1
+            }
+
+            this.chooseWeek(month_index, week_index)
+
+            return month_index
+        }
+
+        else {
+            let week_index = this.getNoWeekInMonth(new Date()) - 1,
+                month_index = this.findMonthIndex(this.current_month, this.current_year)
+
+            this.setState(prevState => ({
+                current_month_index: month_index,
+                last_month_index: prevState.current_month_index,
+                should_flatlist_update: prevState.should_flatlist_update + 1
+            }))
 
             return month_index
         }
