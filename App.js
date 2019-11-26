@@ -42,7 +42,7 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    this.reset()
+    // this.reset()
     this.loadFonts()
   }
 
@@ -52,9 +52,9 @@ export default class App extends React.Component {
         {
           this.state.finished_loading_fonts ?
             <Provider store={store}>
-              <PersistGate loading={null} persistor={persistor}>
+              {/* <PersistGate loading={null} persistor={persistor}> */}
                 <AppContainer />
-              </PersistGate>
+              {/* </PersistGate> */}
             </Provider>
             :
             null

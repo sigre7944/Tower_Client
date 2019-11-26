@@ -128,13 +128,11 @@ export default class EditMultipleTasks extends React.PureComponent {
             set_calendar_data = this.set_calendar_data,
             chosen_category_id = this.edit_multiple_chosen_category_id,
             type = this.props.currentChosenJournalType,
-            tasks = Map(this.props.tasks),
+            tasks_map = Map(this.props.tasks),
             sending_data = {
                 edit_task_data: {
                     action_type: "",
-                    task_id_list: [],
-                    category_id_list: [],
-                    updater: fromJS(set_calendar_data)
+                    task_update_list: []
                 },
 
                 edit_category_data: {
@@ -156,8 +154,24 @@ export default class EditMultipleTasks extends React.PureComponent {
 
         checked_task_data.valueSeq().forEach((data, index) => {
             if (data.get("checked")) {
-                sending_data.edit_task_data.task_id_list.push(data.get("task_id"))
-                sending_data.edit_task_data.category_id_list.push(tasks.getIn([data.get("task_id"), "category"]))
+                let task_id = Map(data).get("task_id"),
+                    category = tasks_map.getIn([task_id, "category"]),
+                    updating_task_data = Map(tasks_map.get(task_id)).toMap().asMutable()
+
+                if (set_calendar_data) {
+                    updating_task_data.updateIn(["schedule"], (value) => fromJS(set_calendar_data))
+                }
+
+                if (chosen_category_id) {
+                    updating_task_data.updateIn(["category"], (value) => chosen_category_id)
+                }
+
+                sending_data.edit_task_data.task_update_list.push({
+                    keyPath: [task_id],
+                    notSetValue: {},
+                    updater: (value) => updating_task_data,
+                    category
+                })
             }
         })
 

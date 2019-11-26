@@ -38,7 +38,7 @@ const window_height = Dimensions.get("window").height
 const easing = Easing.inOut(Easing.linear)
 const animation_duration = 250
 
-export default class TaskDetailModal extends Component {
+export default class TaskDetailModal extends React.PureComponent {
 
     anim_translate_y = new Animated.Value(window_height)
 
@@ -51,9 +51,6 @@ export default class TaskDetailModal extends Component {
     month_names_in_short = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
     short_daysInWeekText = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-
-
-    edit_task = this.props.task_data
 
     yes_delete_clicked = false
 
@@ -109,13 +106,13 @@ export default class TaskDetailModal extends Component {
         this._appearAnim()
     }
 
-    componentDidUpdate = (prevProps, prevState) => {
+    componentDidUpdate(prevProps, prevState) {
         if (this.state.is_delete_selected !== prevState.is_delete_selected && this.yes_delete_clicked) {
             this.props.closeModal()
         }
 
-        if(this.props.task_data !== prevProps.task_data){
-            console.log(this.props.task_data)
+        if (this.props.task_data !== prevProps.task_data) {
+            // console.log(this.props.task_data)
         }
     }
 

@@ -126,6 +126,9 @@ export const day_tasks = (state = Map(), action) => {
         case 'DELETE_ALL_DAY_TASKS_WITH_CATEGORY':
             return state.filterNot((task) => Map(task).get("category") === action.id)
 
+        case 'RETURN_NEW_DAY_TASKS':
+            return action.data.toMap()
+
         default:
             return state
     }
@@ -142,6 +145,9 @@ export const week_tasks = (state = Map(), action) => {
         case 'DELETE_ALL_WEEK_TASKS_WITH_CATEGORY':
             return state.filterNot((task) => Map(task).get("category") === action.id)
 
+        case 'RETURN_NEW_WEEK_TASKS':
+            return action.data.toMap()
+
         default:
             return state
     }
@@ -157,6 +163,9 @@ export const month_tasks = (state = Map(), action) => {
 
         case 'DELETE_ALL_MONTH_TASKS_WITH_CATEGORY':
             return state.filterNot((task) => Map(task).get("category") === action.id)
+
+        case 'RETURN_NEW_MONTH_TASKS':
+            return action.data.toMap()
 
         default:
             return state

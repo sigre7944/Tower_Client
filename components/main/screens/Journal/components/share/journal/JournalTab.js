@@ -26,11 +26,7 @@ export default class JournalTab extends React.PureComponent {
         header: null
     }
 
-    task_data = Map()
-
-    resetTaskData = () => {
-        this.task_data = Map()
-    }
+    task_data = null
 
     getWeek = (date) => {
         let target = new Date(date);
@@ -104,7 +100,7 @@ export default class JournalTab extends React.PureComponent {
     state = {
         isModalOpened: false,
 
-        chosen_date_data: this.initChosenDateData()
+        chosen_date_data: this.initChosenDateData(),
     }
 
     setChosenDateData = (data) => {
@@ -133,7 +129,9 @@ export default class JournalTab extends React.PureComponent {
     openModal = (task_data) => {
         this.task_data = task_data
 
-        this.setState({ isModalOpened: true })
+        this.setState({
+            isModalOpened: true,
+        })
     }
 
     closeModal = () => {
@@ -222,7 +220,6 @@ export default class JournalTab extends React.PureComponent {
                         categories={this.props.categories}
                         priorities={this.props.priorities}
                         action_type={this.props.action_type}
-                        resetTaskData={this.resetTaskData}
                         type={this.props.type}
                         chosen_date_data={this.state.chosen_date_data}
                     />

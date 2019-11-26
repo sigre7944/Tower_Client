@@ -43,7 +43,7 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    saveEditThunk: (data) => dispatch(saveEditThunk(data))
+    saveEditThunk: (data) => dispatch(saveEditThunk(data)),
 })
 
 export default connect(
