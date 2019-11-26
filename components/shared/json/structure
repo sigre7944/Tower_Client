@@ -172,6 +172,7 @@
 - Category structure: OrderedMap {
     category_id: Map {
         id: category_id,
+        name: "",
         color: "red",
         quantity: 3
     }

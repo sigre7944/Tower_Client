@@ -104,8 +104,6 @@ export default class JournalTab extends React.PureComponent {
     state = {
         isModalOpened: false,
 
-        should_update: 0,
-
         chosen_date_data: this.initChosenDateData()
     }
 
@@ -133,7 +131,7 @@ export default class JournalTab extends React.PureComponent {
     }
 
     openModal = (task_data) => {
-        this.task_data = Map(task_data)
+        this.task_data = task_data
 
         this.setState({ isModalOpened: true })
     }
@@ -159,9 +157,6 @@ export default class JournalTab extends React.PureComponent {
         if (this.props.tasks !== prevProps.tasks) {
             if (Map(this.task_data).get("id")) {
                 this.task_data = Map(this.props.tasks).get(Map(this.task_data).get("id"))
-                this.setState(prevState => ({
-                    should_update: prevState.should_update + 1,
-                }))
             }
         }
 
@@ -222,7 +217,6 @@ export default class JournalTab extends React.PureComponent {
 
                 {this.state.isModalOpened ?
                     <TaskDetailModal
-                        // isOpened={this.state.isModalOpened}
                         closeModal={this.closeModal}
                         task_data={this.task_data}
                         categories={this.props.categories}

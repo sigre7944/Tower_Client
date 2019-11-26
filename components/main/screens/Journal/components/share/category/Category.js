@@ -34,7 +34,11 @@ const list_max_height = 8 * category_height
 export default class Category extends React.PureComponent {
 
     repeat_opacity_value = new Animated.Value(0.3)
-    repeat_scale_value = new Animated.Value(0.3)
+    repeat_scale_value = this.repeat_opacity_value.interpolate({
+        inputRange: [0.3, 0.5, 0.7, 1],
+        outputRange: [0.3, 0.5, 0.7, 1],
+        extrapolate: "clamp"
+    })
 
     start_index = 0
 
@@ -64,7 +68,6 @@ export default class Category extends React.PureComponent {
 
     _chooseCategoryRow = (category_index, category_id) => {
         if (this.state.current_category_index !== category_index) {
-
             this.chosen_category_id = category_id
 
             this.setState(prevState => ({
@@ -125,6 +128,38 @@ export default class Category extends React.PureComponent {
         }
     }
 
+    _findStartIndexEditMultiple = (category_id) => {
+        if (category_id) {
+            let counter = 0
+
+            OrderedMap(this.props.categories).keySeq().every((key) => {
+                if (key === category_id) {
+                    return false
+                }
+
+                counter += 1
+                return true
+            })
+
+            this.start_index = counter
+
+            this._chooseCategoryRow(this.start_index, category_id)
+        }
+
+        else {
+            let category_id = OrderedMap(this.props.categories).keySeq().get(0)
+            this.start_index = 0
+
+            this.chosen_category_id = category_id
+
+            this.setState(prevState => ({
+                current_category_index: this.start_index,
+                last_category_index: prevState.current_category_index,
+                should_flatlist_update: prevState.should_flatlist_update + 1
+            }))
+        }
+    }
+
     _keyExtractor = (item, index) => {
         return `category-row-${item[0]}`
     }
@@ -155,6 +190,10 @@ export default class Category extends React.PureComponent {
             this.props._editFieldData(keyPath, notSetValue, updater)
         }
 
+        else if (this.props.edit_multiple) {
+            this.props._editMultipleFieldData(this.chosen_category_id)
+        }
+
         else {
             let sending_obj = {
                 keyPath: ["category"],
@@ -169,26 +208,15 @@ export default class Category extends React.PureComponent {
     }
 
     _animate = () => {
-        Animated.parallel([
-            Animated.timing(
-                this.repeat_opacity_value,
-                {
-                    toValue: 1,
-                    duration: animation_duration,
-                    easing,
-                    useNativeDriver: true
-                }
-            ),
-            Animated.timing(
-                this.repeat_scale_value,
-                {
-                    toValue: 1,
-                    duration: animation_duration,
-                    easing,
-                    useNativeDriver: true
-                }
-            )
-        ]).start()
+        Animated.timing(
+            this.repeat_opacity_value,
+            {
+                toValue: 1,
+                duration: animation_duration,
+                easing,
+                useNativeDriver: true
+            }
+        ).start()
     }
 
     _chooseNewCreatedCategory = () => {
@@ -216,6 +244,10 @@ export default class Category extends React.PureComponent {
 
         if (this.props.edit) {
             this._findStartIndex(this.props.edit_task_data)
+        }
+
+        else if (this.props.edit_multiple) {
+            this._findStartIndexEditMultiple(this.props.edit_multiple_chosen_category_id)
         }
 
         else {

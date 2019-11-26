@@ -30,6 +30,7 @@ import MaterialCommunityIcon from "react-native-vector-icons/MaterialCommunityIc
 import AntDesignIcon from "react-native-vector-icons/AntDesign";
 
 import Calendar from "../main/screens/Journal/components/share/calendar/Calendar";
+import Category from "../main/screens/Journal/components/share/category/Category.Container";
 import Collapsible from "react-native-collapsible";
 
 const window_width = Dimensions.get("window").width
@@ -46,11 +47,14 @@ export default class EditMultipleTasks extends React.PureComponent {
     short_month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
     set_calendar_data = null
-    checked_task_data = Map()
+    checked_task_data = Map().asMutable()
+    edit_multiple_chosen_category_id = null
 
     state = {
         should_display_calendar_panel: false,
+        should_display_category_panel: false,
         should_reschedule_text_collapse: true,
+        should_category_text_collapse: true,
     }
 
     _goBackToJournal = () => {
@@ -59,20 +63,36 @@ export default class EditMultipleTasks extends React.PureComponent {
 
     _toggleDisplayCalendarPanel = () => {
         this.setState(prevState => ({
-            should_display_calendar_panel: !prevState.should_display_calendar_panel
+            should_display_calendar_panel: !prevState.should_display_calendar_panel,
+            should_display_category_panel: false,
+        }))
+    }
+
+    _toggleDisplayCategoryPanel = () => {
+        this.setState(prevState => ({
+            should_display_category_panel: !prevState.should_display_category_panel,
+            should_display_calendar_panel: false
         }))
     }
 
     _editMultipleFieldData = (data) => {
         this.set_calendar_data = data
 
-        if(this.state.should_reschedule_text_collapse){
+        if (this.state.should_reschedule_text_collapse) {
             this._toggleRescheduleTextCollapse()
         }
     }
 
+    _editMultipleCategoryFieldData = (category_id) => {
+        this.edit_multiple_chosen_category_id = category_id
+
+        if (this.state.should_category_text_collapse) {
+            this._toggleCategoryTextCollapse()
+        }
+    }
+
     _checkTaskToEdit = (task_id) => {
-        if (this.state.checked_task_data.hasIn([task_id, "checked"])) {
+        if (this.checked_task_data.hasIn([task_id, "checked"])) {
             this.checked_task_data.updateIn([task_id, "checked"], (value) => true)
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
         }
@@ -97,30 +117,87 @@ export default class EditMultipleTasks extends React.PureComponent {
         }))
     }
 
+    _toggleCategoryTextCollapse = () => {
+        this.setState(prevState => ({
+            should_category_text_collapse: false
+        }))
+    }
+
+    _save = () => {
+        let checked_task_data = this.checked_task_data,
+            set_calendar_data = this.set_calendar_data,
+            chosen_category_id = this.edit_multiple_chosen_category_id,
+            type = this.props.currentChosenJournalType,
+            tasks = Map(this.props.tasks),
+            sending_data = {
+                edit_task_data: {
+                    action_type: "",
+                    task_id_list: [],
+                    category_id_list: [],
+                    updater: fromJS(set_calendar_data)
+                },
+
+                edit_category_data: {
+                    chosen_category_id
+                }
+            }
+
+        if (type === "day") {
+            sending_data.edit_task_data.action_type = "UPDATE_DAY_TASK"
+        }
+
+        else if (type === "week") {
+            sending_data.edit_task_data.action_type = "UPDATE_WEEK_TASK"
+        }
+
+        else {
+            sending_data.edit_task_data.action_type = "UPDATE_MONTH_TASK"
+        }
+
+        checked_task_data.valueSeq().forEach((data, index) => {
+            if (data.get("checked")) {
+                sending_data.edit_task_data.task_id_list.push(data.get("task_id"))
+                sending_data.edit_task_data.category_id_list.push(tasks.getIn([data.get("task_id"), "category"]))
+            }
+        })
+
+        if (set_calendar_data !== null || chosen_category_id !== null) {
+            this.props.saveEditThunk(sending_data)
+        }
+        this._goBackToJournal()
+    }
+
     componentDidMount() {
     }
 
     render() {
         let date_text = "",
             chosen_date_data = Map(this.props.chosenDateData),
-            rescheduled_text = ""
+            rescheduled_text = "",
+            edit_multiple_chosen_category_id = this.edit_multiple_chosen_category_id,
+            categories = OrderedMap(this.props.categories),
+            moved_to_category_text = categories.getIn([edit_multiple_chosen_category_id, "name"]),
+            category_color = categories.getIn([edit_multiple_chosen_category_id, "color"])
+
+        if (category_color === "no color") {
+            category_color = "#2C2C2C"
+        }
 
         if (this.props.currentChosenJournalType === "day") {
-
-
             date_text = `${this.month_names[chosen_date_data.get("month")]} ${chosen_date_data.get("day")}, ${chosen_date_data.get("year")}`
+
             if (this.set_calendar_data) {
                 let {
                     day: rescheduled_day,
                     month: rescheduled_month,
                     year: rescheduled_year
                 } = this.set_calendar_data
+
                 rescheduled_text = `${this.month_names[rescheduled_month]} ${rescheduled_day}, ${rescheduled_year}`
             }
         }
 
         else if (this.props.currentChosenJournalType === "week") {
-
             date_text = `Week ${chosen_date_data.get("week")}: ${this.short_month_names[chosen_date_data.get("start_month")]} ${chosen_date_data.get("monday")} ${chosen_date_data.get("start_year")} - ${this.short_month_names[chosen_date_data.get("end_month")]} ${chosen_date_data.get("sunday")} ${chosen_date_data.get("end_year")}`
 
             if (this.set_calendar_data) {
@@ -194,7 +271,7 @@ export default class EditMultipleTasks extends React.PureComponent {
 
                         <TouchableOpacity
                             style={styles.end_icon_container}
-                            onPress={this._openPurchaseHistoryTab}
+                            onPress={this._save}
                         >
                             <FeatherIcon
                                 name="check"
@@ -208,14 +285,45 @@ export default class EditMultipleTasks extends React.PureComponent {
                 <Collapsible collapsed={this.state.should_reschedule_text_collapse}>
                     <View
                         style={{
-                            marginBottom: 15,
-                            alignItems: "center"
+                            marginBottom: 10,
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            alignItems: "center",
                         }}
                     >
                         <Text
-                            style={styles.chosen_option_text}
+                            style={{ ...styles.chosen_option_text, ...{ color: "#6E6E6E" } }}
                         >
-                            Rescheduled to {rescheduled_text}
+                            Rescheduled to
+                        </Text>
+
+                        <Text
+                            style={{ ...styles.chosen_option_text, ...{ marginLeft: 5 } }}
+                        >
+                            {rescheduled_text}
+                        </Text>
+                    </View>
+                </Collapsible>
+
+                <Collapsible collapsed={this.state.should_category_text_collapse}>
+                    <View
+                        style={{
+                            marginBottom: 15,
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                    >
+                        <Text
+                            style={{ ...styles.chosen_option_text, ...{ color: "#6E6E6E" } }}
+                        >
+                            Moved to
+                        </Text>
+
+                        <Text
+                            style={{ ...styles.chosen_option_text, ...{ marginLeft: 5, color: category_color } }}
+                        >
+                            {moved_to_category_text}
                         </Text>
                     </View>
                 </Collapsible>
@@ -257,7 +365,7 @@ export default class EditMultipleTasks extends React.PureComponent {
                     />
                 </View>
 
-                {this.state.should_display_calendar_panel ?
+                {this.state.should_display_calendar_panel || this.state.should_display_category_panel ?
                     <Modal
                         transparent={true}
                     >
@@ -270,7 +378,7 @@ export default class EditMultipleTasks extends React.PureComponent {
                             }}
                         >
                             <TouchableWithoutFeedback
-                                onPress={this._toggleDisplayCalendarPanel}
+                                onPress={this.state.should_display_calendar_panel ? this._toggleDisplayCalendarPanel : this._toggleDisplayCategoryPanel}
                             >
                                 <View
                                     style={{
@@ -284,14 +392,26 @@ export default class EditMultipleTasks extends React.PureComponent {
                                 </View>
                             </TouchableWithoutFeedback>
 
-                            <Calendar
-                                hideAction={this._toggleDisplayCalendarPanel}
-                                edit_multiple={true}
-                                currentAnnotation={this.props.currentChosenJournalType}
-                                _editMultipleFieldData={this._editMultipleFieldData}
+                            {this.state.should_display_calendar_panel ?
+                                <Calendar
+                                    hideAction={this._toggleDisplayCalendarPanel}
+                                    edit_multiple={true}
+                                    currentAnnotation={this.props.currentChosenJournalType}
+                                    _editMultipleFieldData={this._editMultipleFieldData}
 
-                                edit_multiple_set_calendar_data={this.set_calendar_data}
-                            />
+                                    edit_multiple_set_calendar_data={this.set_calendar_data}
+                                />
+                                :
+
+                                <Category
+                                    hideAction={this._toggleDisplayCategoryPanel}
+                                    edit_multiple={true}
+                                    _editMultipleFieldData={this._editMultipleCategoryFieldData}
+
+                                    edit_multiple_chosen_category_id={this.edit_multiple_chosen_category_id}
+                                />
+                            }
+
                         </View>
                     </Modal>
                     :
@@ -332,6 +452,7 @@ export default class EditMultipleTasks extends React.PureComponent {
 
                     <TouchableOpacity
                         style={styles.bottom_nav_icon_button_container}
+                        onPress={this._toggleDisplayCategoryPanel}
                     >
                         <MaterialCommunityIcon
                             name="folder-move"
@@ -350,7 +471,7 @@ export default class EditMultipleTasks extends React.PureComponent {
                         />
                     </TouchableOpacity>
                 </View>
-            </View>
+            </View >
         )
     }
 }

@@ -264,7 +264,7 @@ class Calendar extends React.Component {
         }
 
         else if (this.props.edit_multiple) {
-            this.start_index = this.findStartIndex(this.props.edit_multiple_set_calendar_data)
+            this.start_index = this.findStartIndexEditMultiple(this.props.edit_multiple_set_calendar_data)
         }
 
         else {
@@ -301,7 +301,7 @@ class Calendar extends React.Component {
         }
     }
 
-    findStartIndex = (edit_multiple_set_calendar_data) => {
+    findStartIndexEditMultiple = (edit_multiple_set_calendar_data) => {
         if (edit_multiple_set_calendar_data) {
             let { day, month, year } = edit_multiple_set_calendar_data,
                 month_index = this.findMonthIndex(month, year)

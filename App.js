@@ -11,8 +11,9 @@ import * as Font from 'expo-font'
 
 import { PersistGate } from "redux-persist/lib/integration/react";
 import { persistor, store } from "./store/index";
-
-import { Map } from "immutable";
+import * as FileSystem from "expo-file-system";
+import { CacheDir, DocumentDir } from "redux-persist-expo-fs-storage";
+import { cacheDirectory } from 'expo-file-system';
 
 export default class App extends React.Component {
 
@@ -35,7 +36,13 @@ export default class App extends React.Component {
     })
   }
 
+  reset = () => {
+    FileSystem.readDirectoryAsync(FileSystem.documentDirectory).then((string) => { console.log(string) })
+    FileSystem.deleteAsync(FileSystem.documentDirectory + 'reduxPersist').then(() => { console.log("reset!") })
+  }
+
   componentDidMount() {
+    this.reset()
     this.loadFonts()
   }
 

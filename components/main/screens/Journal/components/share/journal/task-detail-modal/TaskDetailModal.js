@@ -110,8 +110,12 @@ export default class TaskDetailModal extends Component {
     }
 
     componentDidUpdate = (prevProps, prevState) => {
-        if (this.state.is_delete_selected !== prevProps.is_delete_selected && this.yes_delete_clicked) {
+        if (this.state.is_delete_selected !== prevState.is_delete_selected && this.yes_delete_clicked) {
             this.props.closeModal()
+        }
+
+        if(this.props.task_data !== prevProps.task_data){
+            console.log(this.props.task_data)
         }
     }
 

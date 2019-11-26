@@ -1,4 +1,5 @@
 import { connect } from 'react-redux'
+import { saveEditThunk } from "./actions/saveEditThunk";
 import EditMultipleTasks from './EditMultipleTasks'
 
 const mapStateToProps = (state) => {
@@ -42,9 +43,10 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
+    saveEditThunk: (data) => dispatch(saveEditThunk(data))
 })
 
 export default connect(
     mapStateToProps,
-    null
+    mapDispatchToProps
 )(EditMultipleTasks)
