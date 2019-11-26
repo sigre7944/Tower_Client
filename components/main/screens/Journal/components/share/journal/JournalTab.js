@@ -26,8 +26,6 @@ export default class JournalTab extends React.PureComponent {
         header: null
     }
 
-    task_data = null
-
     getWeek = (date) => {
         let target = new Date(date);
         let dayNr = (date.getDay() + 6) % 7;
@@ -99,7 +97,7 @@ export default class JournalTab extends React.PureComponent {
 
     state = {
         isModalOpened: false,
-
+        task_data: Map(),
         chosen_date_data: this.initChosenDateData(),
     }
 
@@ -127,17 +125,16 @@ export default class JournalTab extends React.PureComponent {
     }
 
     openModal = (task_data) => {
-        this.task_data = task_data
-
         this.setState({
             isModalOpened: true,
+            task_data: Map(task_data).toMap()
         })
     }
 
     closeModal = () => {
-        this.task_data = Map()
-
-        this.setState({ isModalOpened: false })
+        this.setState({
+            isModalOpened: false,
+        })
     }
 
     componentDidMount() {
@@ -153,14 +150,14 @@ export default class JournalTab extends React.PureComponent {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.props.tasks !== prevProps.tasks) {
-            if (Map(this.task_data).get("id")) {
-                this.task_data = Map(this.props.tasks).get(Map(this.task_data).get("id"))
+            if (Map(this.state.task_data).has("id")) {
+                let task_id = Map(this.state.task_data).get("id"),
+                    tasks_map = Map(this.props.tasks)
+                this.setState(prevState => ({
+                    task_data: Map(tasks_map.get(task_id)).toMap()
+                }))
             }
         }
-
-        // if(this.props.completed_tasks !== prevProps.completed_tasks){
-        //     console.log("\ncompleted_tasks", this.props.completed_tasks)
-        // }
     }
 
     render() {
@@ -216,7 +213,7 @@ export default class JournalTab extends React.PureComponent {
                 {this.state.isModalOpened ?
                     <TaskDetailModal
                         closeModal={this.closeModal}
-                        task_data={this.task_data}
+                        task_data={this.state.task_data}
                         categories={this.props.categories}
                         priorities={this.props.priorities}
                         action_type={this.props.action_type}

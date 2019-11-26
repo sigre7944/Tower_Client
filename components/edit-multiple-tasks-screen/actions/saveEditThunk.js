@@ -1,7 +1,6 @@
 import { batchActions } from 'redux-batched-actions'
 import { updateTask, returnNewTasks } from '../../shared/actions/taskAction'
 import { updateCategory } from '../../shared/actions/categoryAction'
-import { Map } from "immutable";
 
 export const saveEditThunk = ({ edit_task_data, edit_category_data }) => (dispatch, getState) => {
     let action_array = []
