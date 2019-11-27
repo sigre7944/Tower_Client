@@ -1,5 +1,6 @@
 import { connect } from 'react-redux'
 import { saveEditThunk } from "./actions/saveEditThunk";
+import { updateTask } from "../shared/actions/taskAction";
 import EditMultipleTasks from './EditMultipleTasks'
 
 const mapStateToProps = (state) => {
@@ -14,6 +15,7 @@ const mapStateToProps = (state) => {
             priorities: state["priorities"],
             categories: state["categories"],
             current_chosen_category: state["currentChosenCategory"],
+            deleted_tasks: state["deleted_day_tasks"]
         })
     }
 
@@ -27,6 +29,7 @@ const mapStateToProps = (state) => {
             priorities: state["priorities"],
             categories: state["categories"],
             current_chosen_category: state["currentChosenCategory"],
+            deleted_tasks: state["deleted_week_tasks"]
         })
     }
 
@@ -39,11 +42,13 @@ const mapStateToProps = (state) => {
         priorities: state["priorities"],
         categories: state["categories"],
         current_chosen_category: state["currentChosenCategory"],
+        deleted_tasks: state["deleted_month_tasks"]
     })
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
     saveEditThunk: (data) => dispatch(saveEditThunk(data)),
+    updateTask: (type, keyPath, notSetValue, updater) => dispatch(updateTask(type, keyPath, notSetValue, updater))
 })
 
 export default connect(

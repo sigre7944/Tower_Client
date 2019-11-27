@@ -38,6 +38,9 @@ export default class DeleteModal extends Component {
         month: 2
     }
 
+    month_names = ["January", "Febuary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    short_month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
     getWeek = (date) => {
         let target = new Date(date);
         let dayNr = (date.getDay() + 6) % 7;
@@ -120,7 +123,6 @@ export default class DeleteModal extends Component {
                                 (value) => value - completed_value < 0 ? 0 : value - completed_value
                             )
                         }
-
 
                         if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "task_type_completions", this.task_type_order["day"]])) {
                             returning_day_chart_stats_map.updateIn(
@@ -208,7 +210,7 @@ export default class DeleteModal extends Component {
                             year_toString = year.toString(),
                             month_timestamp_toString = new Date(year, month_in_year).getTime().toString(),
                             day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
-                            total_points = parseInt(total_points_array.get(day_in_week_index))
+                            total_points = parseFloat(total_points_array.get(day_in_week_index))
 
                         if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
                             returning_day_chart_stats_map.updateIn(
@@ -334,7 +336,7 @@ export default class DeleteModal extends Component {
                             monday = this.getMonday(date),
                             day_timestamp_toString = date.getTime().toString(),
                             week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
-                            total_points = parseInt(total_points_array.get(day_in_month_index))
+                            total_points = parseFloat(total_points_array.get(day_in_month_index))
 
                         if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
                             returning_day_chart_stats_map.updateIn(
@@ -589,7 +591,7 @@ export default class DeleteModal extends Component {
                 year_toString = year.toString()
 
             if (completed_tasks_map.hasIn([task_id, timestamp_toString])) {
-                let total_points = completed_tasks_map.getIn([task_id, timestamp_toString, "totalPoints"]),
+                let total_points = completed_tasks_map.getIn([task_id, timestamp_toString, "totalPoints"], 0),
                     completed_priority_array = List(completed_tasks_map.getIn([task_id, timestamp_toString, "completed_priority_array"]))
 
                 if (returning_day_chart_stats_map.has(timestamp_toString)) {
@@ -670,7 +672,7 @@ export default class DeleteModal extends Component {
                         year_toString = year.toString(),
                         month_timestamp_toString = new Date(year, month_in_year).getTime().toString(),
                         day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
-                        total_points = parseInt(total_points_array.get(day_in_week_index))
+                        total_points = parseFloat(total_points_array.get(day_in_week_index))
 
                     if (returning_day_chart_stats_map.has(day_timestamp_toString)) {
                         returning_day_chart_stats_map.updateIn([day_timestamp_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
@@ -751,7 +753,7 @@ export default class DeleteModal extends Component {
                         monday = this.getMonday(date),
                         day_timestamp_toString = date.getTime().toString(),
                         week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
-                        total_points = parseInt(total_points_array.get(day_in_month_index))
+                        total_points = parseFloat(total_points_array.get(day_in_month_index))
 
                     if (returning_day_chart_stats_map.has(day_timestamp_toString)) {
                         returning_day_chart_stats_map.updateIn([day_timestamp_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
@@ -835,7 +837,7 @@ export default class DeleteModal extends Component {
                 }
             }
 
-            else if (type === "schedule") {
+            else if (type === "week") {
                 let schedule_monday = task_schedule.get("monday"),
                     schedule_start_month = task_schedule.get("start_month"),
                     schedule_start_year = task_schedule.get("start_year"),
@@ -874,6 +876,21 @@ export default class DeleteModal extends Component {
     render() {
         let check_if_task_is_one_timer = this._checkIfTaskIsOneTimer()
 
+        let chosen_date_text = "",
+            { chosen_date_data } = this.props
+
+        if (this.props.type === "day") {
+            chosen_date_text = `${this.month_names[chosen_date_data.month]} ${chosen_date_data.day} ${chosen_date_data.year}`
+        }
+
+        else if (this.props.type === "week") {
+            chosen_date_text = `Week ${chosen_date_data.week}: ${this.short_month_names[chosen_date_data.start_month]} ${chosen_date_data.monday} ${chosen_date_data.start_year} - ${this.short_month_names[chosen_date_data.end_month]} ${chosen_date_data.sunday} ${chosen_date_data.end_year}`
+        }
+
+        else {
+            chosen_date_text = `${this.month_names[chosen_date_data.month]} ${chosen_date_data.year}`
+        }
+
         return (
             <Modal
                 transparent={true}
@@ -905,29 +922,26 @@ export default class DeleteModal extends Component {
                         style={{
                             position: "absolute",
                             borderRadius: 20,
-                            width: 330,
+                            width: 320,
                             backgroundColor: "white",
-                            paddingHorizontal: 20,
-                            paddingVertical: 20,
-                            alignItems: "center",
+                            paddingHorizontal: 22,
+                            paddingVertical: 22,
                         }}
                     >
-                        <Text
-                            style={styles.text}
+                        {/* <Text
+                            style={styles.normal_warning_text}
                         >
                             Are you sure you want to delete this task?
-                        </Text>
+                        </Text> */}
 
                         <TouchableOpacity
                             style={{
                                 flexDirection: "row",
-                                paddingHorizontal: 10,
                                 paddingVertical: 5,
                                 borderRadius: 5,
                                 justifyContent: "center",
                                 alignItems: "center",
-                                backgroundColor: "#ff3006",
-                                marginTop: 20,
+                                backgroundColor: "#EB5757",
                             }}
 
                             onPress={this._deleteTaskAndHistory}
@@ -939,41 +953,71 @@ export default class DeleteModal extends Component {
                             </Text>
                         </TouchableOpacity>
 
+                        <View
+                            style={{
+                                marginTop: 5
+                            }}
+                        >
+                            <Text
+                                style={styles.small_warning_text}
+                            >
+                                Delete the task and all of its records
+                            </Text>
+                        </View>
+
                         {check_if_task_is_one_timer ?
                             null
                             :
-                            <TouchableOpacity
-                                style={{
-                                    flexDirection: "row",
-                                    paddingHorizontal: 10,
-                                    paddingVertical: 5,
-                                    borderRadius: 5,
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    backgroundColor: "#ffb948",
-                                    marginTop: 20,
-                                }}
+                            <>
+                                <TouchableOpacity
+                                    style={{
+                                        flexDirection: "row",
+                                        paddingVertical: 5,
+                                        borderRadius: 5,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        backgroundColor: "#F2994A",
+                                        marginTop: 15,
+                                    }}
 
-                                onPress={this._deleteRecord}
-                            >
-                                <Text
-                                    style={{ ...styles.text, ...{ color: "white" } }}
+                                    onPress={this._deleteRecord}
                                 >
-                                    {"Delete Record"}
-                                </Text>
-                            </TouchableOpacity>
+                                    <Text
+                                        style={{ ...styles.text, ...{ color: "white" } }}
+                                    >
+                                        {"Delete Record"}
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <View
+                                    style={{
+                                        marginTop: 5
+                                    }}
+                                >
+                                    <Text
+                                        style={styles.small_warning_text}
+                                    >
+                                        Delete the task and its records at
+                                    </Text>
+
+                                    <Text
+                                        style={styles.small_warning_text}
+                                    >
+                                        {chosen_date_text}
+                                    </Text>
+                                </View>
+                            </>
                         }
 
 
                         <TouchableOpacity
                             style={{
                                 flexDirection: "row",
-                                paddingHorizontal: 10,
                                 paddingVertical: 5,
                                 borderRadius: 5,
                                 justifyContent: "center",
                                 alignItems: "center",
-                                marginTop: 20,
+                                marginTop: 15,
                             }}
 
                             onPress={this.props._toggleDelete}

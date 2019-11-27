@@ -68,7 +68,7 @@ export default class TaskCard extends React.PureComponent {
             task_id = task_map.get("id"),
             task_category = task_map.get("category"),
             task_priority = task_map.getIn(["priority", "value"]),
-            task_reward = parseInt(task_map.getIn(["reward", "value"])),
+            task_reward = parseFloat(task_map.getIn(["reward", "value"])),
             current_date = new Date(),
             monday = this.getMonday(current_date),
             data = Map(),
@@ -296,7 +296,7 @@ export default class TaskCard extends React.PureComponent {
             month_timestamp_toString = new Date(current_date.getFullYear(), current_date.getMonth()).getTime().toString(),
             year_timestamp_toString = current_date.getFullYear().toString(),
             task_priority = Map(this.props.task_data).getIn(["priority", "value"]),
-            task_reward = parseInt(Map(this.props.task_data).getIn(["reward", "value"])),
+            task_reward = parseFloat(Map(this.props.task_data).getIn(["reward", "value"])),
             task_type = Map(this.props.task_data).get("type")
 
 

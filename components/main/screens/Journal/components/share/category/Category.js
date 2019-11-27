@@ -400,7 +400,6 @@ export default class Category extends React.PureComponent {
 
 class CategoryRow extends React.Component {
 
-
     shouldComponentUpdate(nextProps, nextState) {
         return this.props.category_index === nextProps.current_category_index
             || this.props.category_index === nextProps.last_category_index

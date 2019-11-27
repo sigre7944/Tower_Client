@@ -151,7 +151,7 @@ class BottomConfirmElement extends React.PureComponent {
                     type: add_task_type,
                     keyPath: [task_id],
                     notSetValue: {},
-                    updater: (value) => new_task_with_id
+                    updater: (value) => new_task_with_id.toMap()
                 },
 
                 category_data: {

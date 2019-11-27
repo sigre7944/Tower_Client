@@ -4,7 +4,6 @@ import { updateCategory } from '../../shared/actions/categoryAction'
 
 export const saveEditThunk = ({ edit_task_data, edit_category_data }) => (dispatch, getState) => {
     let action_array = []
-
     let update_task_action_type = edit_task_data.action_type,
         chosen_category_id = edit_category_data.chosen_category_id
 

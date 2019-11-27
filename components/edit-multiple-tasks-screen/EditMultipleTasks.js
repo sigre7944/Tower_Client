@@ -33,6 +33,8 @@ import Calendar from "../main/screens/Journal/components/share/calendar/Calendar
 import Category from "../main/screens/Journal/components/share/category/Category.Container";
 import Collapsible from "react-native-collapsible";
 
+import DeleteMultiple from "./components/delete-multiple/DeleteMultiple.Container";
+
 const window_width = Dimensions.get("window").width
 
 export default class EditMultipleTasks extends React.PureComponent {
@@ -53,6 +55,7 @@ export default class EditMultipleTasks extends React.PureComponent {
     state = {
         should_display_calendar_panel: false,
         should_display_category_panel: false,
+        should_display_delete_panel: false,
         should_reschedule_text_collapse: true,
         should_category_text_collapse: true,
     }
@@ -65,13 +68,23 @@ export default class EditMultipleTasks extends React.PureComponent {
         this.setState(prevState => ({
             should_display_calendar_panel: !prevState.should_display_calendar_panel,
             should_display_category_panel: false,
+            should_display_delete_panel: false
         }))
     }
 
     _toggleDisplayCategoryPanel = () => {
         this.setState(prevState => ({
             should_display_category_panel: !prevState.should_display_category_panel,
-            should_display_calendar_panel: false
+            should_display_calendar_panel: false,
+            should_display_delete_panel: false
+        }))
+    }
+
+    _toggleDisplayDeletePanel = () => {
+        this.setState(prevState => ({
+            should_display_delete_panel: !prevState.should_display_delete_panel,
+            should_display_calendar_panel: false,
+            should_display_category_panel: false
         }))
     }
 
@@ -156,7 +169,7 @@ export default class EditMultipleTasks extends React.PureComponent {
             if (data.get("checked")) {
                 let task_id = Map(data).get("task_id"),
                     category = tasks_map.getIn([task_id, "category"]),
-                    updating_task_data = Map(tasks_map.get(task_id)).toMap().asMutable()
+                    updating_task_data = Map(tasks_map.get(task_id)).asMutable()
 
                 if (set_calendar_data) {
                     updating_task_data.updateIn(["schedule"], (value) => fromJS(set_calendar_data))
@@ -169,7 +182,7 @@ export default class EditMultipleTasks extends React.PureComponent {
                 sending_data.edit_task_data.task_update_list.push({
                     keyPath: [task_id],
                     notSetValue: {},
-                    updater: (value) => updating_task_data,
+                    updater: (value) => updating_task_data.toMap(),
                     category
                 })
             }
@@ -182,6 +195,7 @@ export default class EditMultipleTasks extends React.PureComponent {
     }
 
     componentDidMount() {
+
     }
 
     render() {
@@ -379,7 +393,9 @@ export default class EditMultipleTasks extends React.PureComponent {
                     />
                 </View>
 
-                {this.state.should_display_calendar_panel || this.state.should_display_category_panel ?
+                {this.state.should_display_calendar_panel
+                    || this.state.should_display_category_panel
+                    || this.state.should_display_delete_panel ?
                     <Modal
                         transparent={true}
                     >
@@ -391,41 +407,95 @@ export default class EditMultipleTasks extends React.PureComponent {
                                 alignItems: "center"
                             }}
                         >
-                            <TouchableWithoutFeedback
-                                onPress={this.state.should_display_calendar_panel ? this._toggleDisplayCalendarPanel : this._toggleDisplayCategoryPanel}
-                            >
-                                <View
-                                    style={{
-                                        flex: 1,
-                                        width: window_width,
-                                        backgroundColor: "black",
-                                        opacity: 0.2
-                                    }}
-                                >
-
-                                </View>
-                            </TouchableWithoutFeedback>
-
                             {this.state.should_display_calendar_panel ?
-                                <Calendar
-                                    hideAction={this._toggleDisplayCalendarPanel}
-                                    edit_multiple={true}
-                                    currentAnnotation={this.props.currentChosenJournalType}
-                                    _editMultipleFieldData={this._editMultipleFieldData}
+                                <>
+                                    <TouchableWithoutFeedback
+                                        onPress={this._toggleDisplayCalendarPanel}
+                                    >
+                                        <View
+                                            style={{
+                                                flex: 1,
+                                                width: window_width,
+                                                backgroundColor: "black",
+                                                opacity: 0.2
+                                            }}
+                                        >
 
-                                    edit_multiple_set_calendar_data={this.set_calendar_data}
-                                />
+                                        </View>
+                                    </TouchableWithoutFeedback>
+
+                                    <Calendar
+                                        hideAction={this._toggleDisplayCalendarPanel}
+                                        edit_multiple={true}
+                                        currentAnnotation={this.props.currentChosenJournalType}
+                                        _editMultipleFieldData={this._editMultipleFieldData}
+
+                                        edit_multiple_set_calendar_data={this.set_calendar_data}
+                                    />
+                                </>
                                 :
+                                <>
+                                    {this.state.should_display_category_panel ?
+                                        <>
+                                            <TouchableWithoutFeedback
+                                                onPress={this._toggleDisplayCategoryPanel}
+                                            >
+                                                <View
+                                                    style={{
+                                                        flex: 1,
+                                                        width: window_width,
+                                                        backgroundColor: "black",
+                                                        opacity: 0.2
+                                                    }}
+                                                >
 
-                                <Category
-                                    hideAction={this._toggleDisplayCategoryPanel}
-                                    edit_multiple={true}
-                                    _editMultipleFieldData={this._editMultipleCategoryFieldData}
+                                                </View>
+                                            </TouchableWithoutFeedback>
 
-                                    edit_multiple_chosen_category_id={this.edit_multiple_chosen_category_id}
-                                />
+                                            <Category
+                                                hideAction={this._toggleDisplayCategoryPanel}
+                                                edit_multiple={true}
+                                                _editMultipleFieldData={this._editMultipleCategoryFieldData}
+
+                                                edit_multiple_chosen_category_id={this.edit_multiple_chosen_category_id}
+                                            />
+                                        </>
+
+                                        :
+
+                                        <>
+                                            {this.state.should_display_delete_panel ?
+                                                <>
+                                                    <TouchableWithoutFeedback
+                                                        onPress={this._toggleDisplayDeletePanel}
+                                                    >
+                                                        <View
+                                                            style={{
+                                                                flex: 1,
+                                                                width: window_width,
+                                                                backgroundColor: "black",
+                                                                opacity: 0.2
+                                                            }}
+                                                        >
+
+                                                        </View>
+                                                    </TouchableWithoutFeedback>
+
+                                                    <DeleteMultiple
+                                                        hideAction={this._toggleDisplayDeletePanel}
+                                                        checked_task_data={this.checked_task_data}
+                                                        type={this.props.currentChosenJournalType}
+                                                        chosen_date_data={Map(this.props.chosenDateData).toJS()}
+                                                    />
+                                                </>
+                                                :
+
+                                                null
+                                            }
+                                        </>
+                                    }
+                                </>
                             }
-
                         </View>
                     </Modal>
                     :
@@ -477,6 +547,7 @@ export default class EditMultipleTasks extends React.PureComponent {
 
                     <TouchableOpacity
                         style={styles.bottom_nav_icon_button_container}
+                        onPress={this._toggleDisplayDeletePanel}
                     >
                         <MaterialCommunityIcon
                             name="delete-outline"

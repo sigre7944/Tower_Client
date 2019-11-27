@@ -130,18 +130,39 @@ export default class Drawer extends React.PureComponent {
 
                             total_points = parseInt(data.get("totalPoints"))
 
+                        if (new_day_chart_stats.hasIn([day_timestamp_toString, "totalPoints"])) {
+                            new_day_chart_stats.updateIn(
+                                [day_timestamp_toString, "totalPoints"],
+                                (value) => value - total_points < 0 ? 0 : value - total_points
+                            )
+                        }
+
+                        if (new_week_chart_stats.hasIn([week_timestamp_toString, "totalPoints"])) {
+                            new_week_chart_stats.updateIn(
+                                [week_timestamp_toString, "totalPoints"],
+                                (value) => value - total_points < 0 ? 0 : value - total_points
+                            )
+                        }
+
+                        if (new_month_chart_stats.hasIn([month_timestamp_toString, "totalPoints"])) {
+                            new_month_chart_stats.updateIn(
+                                [month_timestamp_toString, "totalPoints"],
+                                (value) => value - total_points < 0 ? 0 : value - total_points
+                            )
+                        }
+
+                        if (new_year_chart_stats.hasIn([year_toString, "totalPoints"])) {
+                            new_year_chart_stats.updateIn(
+                                [year_toString, "totalPoints"],
+                                (value) => value - total_points < 0 ? 0 : value - total_points
+                            )
+                        }
+
                         completed_priority_array.forEach((completed_value, priority_index) => {
                             if (new_day_chart_stats.hasIn([day_timestamp_toString, "current", priority_index])) {
                                 new_day_chart_stats.updateIn(
                                     [day_timestamp_toString, "current", priority_index],
                                     (value) => value - completed_value < 0 ? 0 : value - completed_value
-                                )
-                            }
-
-                            if (new_day_chart_stats.hasIn([day_timestamp_toString, "totalPoints"])) {
-                                new_day_chart_stats.updateIn(
-                                    [day_timestamp_toString, "totalPoints"],
-                                    (value) => value - total_points < 0 ? 0 : value - total_points
                                 )
                             }
 
@@ -166,21 +187,12 @@ export default class Drawer extends React.PureComponent {
                                 )
                             }
 
-                            if (new_week_chart_stats.hasIn([week_timestamp_toString, "totalPoints"])) {
-                                new_week_chart_stats.updateIn(
-                                    [week_timestamp_toString, "totalPoints"],
-                                    (value) => value - total_points < 0 ? 0 : value - total_points
-                                )
-                            }
-
-
                             if (new_week_chart_stats.hasIn([week_timestamp_toString, "task_type_completions", this.task_type_order["day"]])) {
                                 new_week_chart_stats.updateIn(
                                     [week_timestamp_toString, "task_type_completions", this.task_type_order["day"]],
                                     (value) => value - completed_value < 0 ? 0 : value - completed_value
                                 )
                             }
-
 
                             if (new_month_chart_stats.hasIn([month_timestamp_toString, "current", priority_index])) {
                                 new_month_chart_stats.updateIn(
@@ -193,13 +205,6 @@ export default class Drawer extends React.PureComponent {
                                 new_month_chart_stats.updateIn(
                                     [month_timestamp_toString, "completed_priority_array", day_in_month, priority_index],
                                     (value) => value - completed_value < 0 ? 0 : value - completed_value
-                                )
-                            }
-
-                            if (new_month_chart_stats.hasIn([month_timestamp_toString, "totalPoints"])) {
-                                new_month_chart_stats.updateIn(
-                                    [month_timestamp_toString, "totalPoints"],
-                                    (value) => value - total_points < 0 ? 0 : value - total_points
                                 )
                             }
 
@@ -221,13 +226,6 @@ export default class Drawer extends React.PureComponent {
                                 new_year_chart_stats.updateIn(
                                     [year_toString, "completed_priority_array", month_in_year, priority_index],
                                     (value) => value - completed_value < 0 ? 0 : value - completed_value
-                                )
-                            }
-
-                            if (new_year_chart_stats.hasIn([year_toString, "totalPoints"])) {
-                                new_year_chart_stats.updateIn(
-                                    [year_toString, "totalPoints"],
-                                    (value) => value - total_points < 0 ? 0 : value - total_points
                                 )
                             }
 
@@ -268,18 +266,39 @@ export default class Drawer extends React.PureComponent {
                                 day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
                                 total_points = total_points_array.get(day_in_week_index)
 
+                            if (new_day_chart_stats.hasIn([day_timestamp_toString, "totalPoints"])) {
+                                new_day_chart_stats.updateIn(
+                                    [day_timestamp_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
+                            if (new_week_chart_stats.hasIn([week_timestamp_toString, "totalPoints"])) {
+                                new_week_chart_stats.updateIn(
+                                    [week_timestamp_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
+                            if (new_month_chart_stats.hasIn([month_timestamp_toString, "totalPoints"])) {
+                                new_month_chart_stats.updateIn(
+                                    [month_timestamp_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
+                            if (new_year_chart_stats.hasIn([year_toString, "totalPoints"])) {
+                                new_year_chart_stats.updateIn(
+                                    [year_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
                             List(completed_value_array).forEach((completed_value, priority_index) => {
                                 if (new_day_chart_stats.hasIn([day_timestamp_toString, "current", priority_index])) {
                                     new_day_chart_stats.updateIn(
                                         [day_timestamp_toString, "current", priority_index],
                                         (value) => value - completed_value < 0 ? 0 : value - completed_value
-                                    )
-                                }
-
-                                if (new_day_chart_stats.hasIn([day_timestamp_toString, "totalPoints"])) {
-                                    new_day_chart_stats.updateIn(
-                                        [day_timestamp_toString, "totalPoints"],
-                                        (value) => value - total_points < 0 ? 0 : value - total_points
                                     )
                                 }
 
@@ -303,13 +322,6 @@ export default class Drawer extends React.PureComponent {
                                     )
                                 }
 
-                                if (new_week_chart_stats.hasIn([week_timestamp_toString, "totalPoints"])) {
-                                    new_week_chart_stats.updateIn(
-                                        [week_timestamp_toString, "totalPoints"],
-                                        (value) => value - total_points < 0 ? 0 : value - total_points
-                                    )
-                                }
-
                                 if (new_week_chart_stats.hasIn([week_timestamp_toString, "task_type_completions", this.task_type_order["week"]])) {
                                     new_week_chart_stats.updateIn(
                                         [week_timestamp_toString, "task_type_completions", this.task_type_order["week"]],
@@ -323,18 +335,10 @@ export default class Drawer extends React.PureComponent {
                                         (value) => value - completed_value < 0 ? 0 : value - completed_value)
                                 }
 
-
                                 if (new_month_chart_stats.hasIn([month_timestamp_toString, "completed_priority_array", day_in_month - 1, priority_index])) {
                                     new_month_chart_stats.updateIn(
                                         [month_timestamp_toString, "completed_priority_array", day_in_month - 1, priority_index],
                                         (value) => value - completed_value < 0 ? 0 : value - completed_value
-                                    )
-                                }
-
-                                if (new_month_chart_stats.hasIn([month_timestamp_toString, "totalPoints"])) {
-                                    new_month_chart_stats.updateIn(
-                                        [month_timestamp_toString, "totalPoints"],
-                                        (value) => value - total_points < 0 ? 0 : value - total_points
                                     )
                                 }
 
@@ -356,13 +360,6 @@ export default class Drawer extends React.PureComponent {
                                     new_year_chart_stats.updateIn(
                                         [year_toString, "completed_priority_array", month_in_year, priority_index],
                                         (value) => value - completed_value < 0 ? 0 : value - completed_value
-                                    )
-                                }
-
-                                if (new_year_chart_stats.hasIn([year_toString, "totalPoints"])) {
-                                    new_year_chart_stats.updateIn(
-                                        [year_toString, "totalPoints"],
-                                        (value) => value - total_points < 0 ? 0 : value - total_points
                                     )
                                 }
 
@@ -406,18 +403,39 @@ export default class Drawer extends React.PureComponent {
                                 day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
                                 total_points = total_points_array.get(day_in_month_index)
 
+                            if (new_day_chart_stats.hasIn([day_timestamp_toString, "totalPoints"])) {
+                                new_day_chart_stats.updateIn(
+                                    [day_timestamp_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
+                            if (new_week_chart_stats.hasIn([week_timestamp_toString, "totalPoints"])) {
+                                new_week_chart_stats.updateIn(
+                                    [week_timestamp_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
+                            if (new_month_chart_stats.hasIn([month_timestamp_toString, "totalPoints"])) {
+                                new_month_chart_stats.updateIn(
+                                    [month_timestamp_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
+                            if (new_year_chart_stats.hasIn([year_toString, "totalPoints"])) {
+                                new_year_chart_stats.updateIn(
+                                    [year_toString, "totalPoints"],
+                                    (value) => value - total_points < 0 ? 0 : value - total_points
+                                )
+                            }
+
                             List(completed_value_array).forEach((completed_value, priority_index) => {
                                 if (new_day_chart_stats.hasIn([day_timestamp_toString, "current", priority_index])) {
                                     new_day_chart_stats.updateIn(
                                         [day_timestamp_toString, "current", priority_index],
                                         (value) => value - completed_value < 0 ? 0 : value - completed_value
-                                    )
-                                }
-
-                                if (new_day_chart_stats.hasIn([day_timestamp_toString, "totalPoints"])) {
-                                    new_day_chart_stats.updateIn(
-                                        [day_timestamp_toString, "totalPoints"],
-                                        (value) => value - total_points < 0 ? 0 : value - total_points
                                     )
                                 }
 
@@ -442,13 +460,6 @@ export default class Drawer extends React.PureComponent {
                                     )
                                 }
 
-                                if (new_week_chart_stats.hasIn([week_timestamp_toString, "totalPoints"])) {
-                                    new_week_chart_stats.updateIn(
-                                        [week_timestamp_toString, "totalPoints"],
-                                        (value) => value - total_points < 0 ? 0 : value - total_points
-                                    )
-                                }
-
                                 if (new_week_chart_stats.hasIn([week_timestamp_toString, "task_type_completions", this.task_type_order["month"]])) {
                                     new_week_chart_stats.updateIn(
                                         [week_timestamp_toString, "task_type_completions", this.task_type_order["month"]],
@@ -470,13 +481,6 @@ export default class Drawer extends React.PureComponent {
                                     )
                                 }
 
-                                if (new_month_chart_stats.hasIn([month_timestamp_toString, "totalPoints"])) {
-                                    new_month_chart_stats.updateIn(
-                                        [month_timestamp_toString, "totalPoints"],
-                                        (value) => value - total_points < 0 ? 0 : value - total_points
-                                    )
-                                }
-
                                 if (new_month_chart_stats.hasIn([month_timestamp_toString, "task_type_completions", this.task_type_order["month"]])) {
                                     new_month_chart_stats.updateIn(
                                         [month_timestamp_toString, "task_type_completions", this.task_type_order["month"]],
@@ -495,13 +499,6 @@ export default class Drawer extends React.PureComponent {
                                     new_year_chart_stats.updateIn(
                                         [year_toString, "completed_priority_array", month_in_year, priority_index],
                                         (value) => value - completed_value < 0 ? 0 : value - completed_value
-                                    )
-                                }
-
-                                if (new_year_chart_stats.hasIn([year_toString, "totalPoints"])) {
-                                    new_year_chart_stats.updateIn(
-                                        [year_toString, "totalPoints"],
-                                        (value) => value - total_points < 0 ? 0 : value - total_points
                                     )
                                 }
 
@@ -1095,28 +1092,28 @@ class DeleteWarning extends React.PureComponent {
                         style={{
                             position: "absolute",
                             borderRadius: 20,
-                            width: 330,
+                            width: 320,
                             backgroundColor: "white",
-                            paddingHorizontal: 20,
-                            paddingVertical: 20,
-                            alignItems: "center",
+                            paddingHorizontal: 22,
+                            paddingVertical: 22,
                         }}
                     >
                         {/* <Text
-                            style={styles.text}
+                            style={styles.normal_warning_text}
                         >
-                            Are you sure you want to delete this task?
+                            Are you sure you want to delete the category?
                         </Text> */}
+
+
 
                         <TouchableOpacity
                             style={{
                                 flexDirection: "row",
-                                paddingHorizontal: 10,
-                                paddingVertical: 5,
                                 borderRadius: 5,
                                 justifyContent: "center",
                                 alignItems: "center",
-                                backgroundColor: "#ff3006",
+                                backgroundColor: "#EB5757",
+                                paddingVertical: 5
                             }}
 
                             onPress={this.props._deleteCategoryAffectingTasksAndHistory}
@@ -1124,11 +1121,23 @@ class DeleteWarning extends React.PureComponent {
                             <Text
                                 style={{ ...styles.text, ...{ color: "white" } }}
                             >
-                                {"DELETE TASKS & HISTORY"}
+                                {"Delete category"}
                             </Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity
+                        <View
+                            style={{
+                                marginTop: 5,
+                            }}
+                        >
+                            <Text
+                                style={styles.small_warning_text}
+                            >
+                                This action will delete all tasks and their records belonged to the category
+                            </Text>
+                        </View>
+
+                        {/* <TouchableOpacity
                             style={{
                                 flexDirection: "row",
                                 paddingHorizontal: 10,
@@ -1147,17 +1156,16 @@ class DeleteWarning extends React.PureComponent {
                             >
                                 {"DELETE ONLY TASKS"}
                             </Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
 
                         <TouchableOpacity
                             style={{
                                 flexDirection: "row",
-                                paddingHorizontal: 10,
-                                paddingVertical: 5,
                                 borderRadius: 5,
                                 justifyContent: "center",
                                 alignItems: "center",
-                                marginTop: 20,
+                                marginTop: 15,
+                                paddingVertical: 5
                             }}
 
                             onPress={this.props._toggleDeleteWarning}
@@ -1165,7 +1173,7 @@ class DeleteWarning extends React.PureComponent {
                             <Text
                                 style={{ ...styles.text, ...{ color: "#6E6E6E" } }}
                             >
-                                {"CANCEL"}
+                                {"Cancel"}
                             </Text>
                         </TouchableOpacity>
                     </View>
