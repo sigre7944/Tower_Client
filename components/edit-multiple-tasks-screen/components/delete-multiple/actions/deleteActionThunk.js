@@ -7,59 +7,55 @@ import {
 } from '../../../../shared/actions/taskAction'
 import { updateChartStats, returnNewChartStats } from '../../../../shared/actions/chartStatsAction'
 import { batchActions } from 'redux-batched-actions'
-import { updateCategory } from '../../../../shared/actions/categoryAction'
+import { returnNewCategories } from '../../../../shared/actions/categoryAction'
 import { updatePriority, returnNewPriorities } from '../../../../shared/actions/priorityAction'
 
-export const deleteTasksAndHistories = ({
-    new_tasks_data,
-    new_completed_tasks_data,
-    update_category_data,
-    new_priority_data,
-    delete_completed_task_data,
-    return_new_day_chart_stats_data,
-    return_new_week_chart_stats_data,
-    return_new_month_chart_stats_data,
-    return_new_year_chart_stats_data,
-    deleted_task_data,
+export const deleteAction = ({
+    new_tasks,
+    new_completed_tasks_map,
+    new_categories,
+    new_priorities,
+    new_deleted_tasks,
+    new_day_chart_stats_map,
+    new_week_chart_stats_map,
+    new_month_chart_stats_map,
+    new_year_chart_stats_map,
 }) => (dispatch, getState) => {
 
     let action_array = [
         // Update new day/week/month tasks with deletions of chosen tasks
-        returnNewTasks(new_tasks_data.type, new_tasks_data.data),
+        returnNewTasks(new_tasks.type, new_tasks.data),
 
         // update new day/week/month completed tasks with deletions of chosen tasks
-        returnNewCompletedTask(new_completed_tasks_data.type, new_completed_tasks_data.data),
+        returnNewTasks(new_completed_tasks_map.type, new_completed_tasks_map.data),
 
         //Update quantity in corresponding category
-        updateCategory(update_category_data.keyPath, update_category_data.notSetValue, update_category_data.updater),
+        returnNewCategories(new_categories),
 
         // Update new priorities with deletions of chosen task ids
-        returnNewPriorities(new_priority_data.data),
-
-        //Delete the records of deleted task in day/week/month_completed_tasks
-        deleteTask(delete_completed_task_data.type, delete_completed_task_data.id),
+        returnNewPriorities(new_priorities),
 
         //Update new records after mitigating the deleted task's records
-        returnNewChartStats(return_new_day_chart_stats_data.type, return_new_day_chart_stats_data.data),
+        returnNewTasks("RETURN_NEW_DAY_CHART_STATS", new_day_chart_stats_map),
 
         //Update new records after mitigating the deleted task's records
-        returnNewChartStats(return_new_week_chart_stats_data.type, return_new_week_chart_stats_data.data),
+        returnNewTasks("RETURN_NEW_WEEK_CHART_STATS", new_week_chart_stats_map),
 
         //Update new records after mitigating the deleted task's records
-        returnNewChartStats(return_new_month_chart_stats_data.type, return_new_month_chart_stats_data.data),
+        returnNewTasks("RETURN_NEW_MONTH_CHART_STATS", new_month_chart_stats_map),
 
         //Update new records after mitigating the deleted task's records
-        returnNewChartStats(return_new_year_chart_stats_data.type, return_new_year_chart_stats_data.data),
+        returnNewTasks("RETURN_NEW_YEAR_CHART_STATS", new_year_chart_stats_map),
 
-        //Delete deleted records of task in deleted_day/week/month_tasks
-        deleteKeyPathTask(deleted_task_data.type, deleted_task_data.keyPath)
+        // Update new day/week/month deleted tasks with deletions of chosen tasks
+        returnNewTasks(new_deleted_tasks.type, new_deleted_tasks.data)
     ]
 
     dispatch(batchActions(action_array))
 }
 
-// Delete only record of the task at the time
-export const deleteTaskAndHistoryAtTimeThunk = ({
+// Delete only records of the tasks at the time
+export const deleteRecords = ({
     delete_timestamp_completed_task_data,
     deleted_task_data,
     delete_timestamp_day_chart_stats_data,

@@ -19,6 +19,9 @@ export const categories = (state = initialState, action) => {
         case 'DELETE_CATEGORY':
             return state.delete(action.id)
 
+        case 'RETURN_NEW_CATEGORIES':
+            return action.data.toOrderedMap()
+
         default:
             return state
     }

@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { deleteTasksAndHistories } from "./actions/deleteActionThunk";
+import { deleteAction } from "./actions/deleteActionThunk";
 import DeleteMultiple from './DeleteMultiple'
 
 const mapStateToProps = (state, ownProps) => {
@@ -7,6 +7,8 @@ const mapStateToProps = (state, ownProps) => {
         return ({
             tasks: state["day_tasks"],
             completed_tasks: state["completed_day_tasks"],
+            deleted_tasks: state["deleted_day_tasks"],
+            categories: state["categories"],
             priorities: state["priorities"],
             day_chart_stats: state["day_chart_stats"],
             month_chart_stats: state["month_chart_stats"],
@@ -19,6 +21,8 @@ const mapStateToProps = (state, ownProps) => {
         return ({
             tasks: state["week_tasks"],
             completed_tasks: state["completed_week_tasks"],
+            deleted_tasks: state["deleted_week_tasks"],
+            categories: state["categories"],
             priorities: state["priorities"],
             day_chart_stats: state["day_chart_stats"],
             month_chart_stats: state["month_chart_stats"],
@@ -30,6 +34,8 @@ const mapStateToProps = (state, ownProps) => {
     return ({
         tasks: state["month_tasks"],
         completed_tasks: state["completed_month_tasks"],
+        deleted_tasks: state["deleted_month_tasks"],
+        categories: state["categories"],
         priorities: state["priorities"],
         day_chart_stats: state["day_chart_stats"],
         month_chart_stats: state["month_chart_stats"],
@@ -39,6 +45,7 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
+    deleteAction: (data) => dispatch(deleteAction(data)),
 })
 
 export default connect(
