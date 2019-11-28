@@ -11,7 +11,8 @@ const mapStateToProps = (state, ownProps) => {
             priorities: state["priorities"],
             completed_tasks: state["completed_day_tasks"],
             current_chosen_category: state["currentChosenCategory"],
-            deleted_tasks: state["deleted_day_tasks"]
+            deleted_tasks: state["deleted_day_tasks"],
+            sortSettings: state["sortSettings"]
         })
     }
 
@@ -23,7 +24,8 @@ const mapStateToProps = (state, ownProps) => {
             priorities: state["priorities"],
             completed_tasks: state["completed_week_tasks"],
             current_chosen_category: state["currentChosenCategory"],
-            deleted_tasks: state["deleted_week_tasks"]
+            deleted_tasks: state["deleted_week_tasks"],
+            sortSettings: state["sortSettings"]
         })
     }
 
@@ -34,7 +36,8 @@ const mapStateToProps = (state, ownProps) => {
         priorities: state["priorities"],
         completed_tasks: state["completed_month_tasks"],
         current_chosen_category: state["currentChosenCategory"],
-        deleted_tasks: state["deleted_month_tasks"]
+        deleted_tasks: state["deleted_month_tasks"],
+        sortSettings: state["sortSettings"]
     })
 }
 

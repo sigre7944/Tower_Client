@@ -31,7 +31,8 @@ import {
     chosenDayDateData,
     chosenWeekDateData,
     chosenMonthDateData,
-    currentChosenJournalType
+    currentChosenJournalType,
+    sortSettings
 } from './otherReducer'
 
 import {
@@ -99,7 +100,9 @@ const rootReducer = combineReducers({
     chosenDayDateData,
     chosenWeekDateData,
     chosenMonthDateData,
-    currentChosenJournalType
+    currentChosenJournalType,
+
+    sortSettings
 })
 
 export default rootReducer

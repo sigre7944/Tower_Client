@@ -44,3 +44,8 @@ export const updateCurrentChosenJournalType = (data) => ({
     type: "UPDATE_CURRENT_CHOSEN_JOURNAL_TYPE",
     data
 })
+
+export const returnNewSortSettings = (data) => ({
+    type: "RETURN_NEW_SORT_SETTINGS",
+    data
+})

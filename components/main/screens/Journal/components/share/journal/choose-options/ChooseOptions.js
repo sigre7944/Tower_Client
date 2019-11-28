@@ -165,7 +165,9 @@ export default class ChooseOptions extends React.PureComponent {
                                 paddingHorizontal: 33,
                             }}
                         >
-                            <SortPanel />
+                            <SortPanel
+                                hideAction={this._close}
+                            />
                         </Animated.View>
                         :
 

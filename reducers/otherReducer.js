@@ -1,4 +1,4 @@
-import { Map } from "immutable";
+import { Map, fromJS } from "immutable";
 
 export const addTaskTitle = (state = "", action) => {
     switch (action.type) {
@@ -108,4 +108,21 @@ export const currentChosenJournalType = (state = "day", action) => {
         default:
             return state
     }
+}
+
+let initial_sort_settings = fromJS([
+    true, //sort by priority
+    false, // sort by name
+    false // sort by reward
+])
+
+export const sortSettings = (state = initial_sort_settings, action) => {
+    switch (action.type) {
+        case 'RETURN_NEW_SORT_SETTINGS':
+            return action.data.toList()
+
+        default:
+            return state
+    }
+
 }
