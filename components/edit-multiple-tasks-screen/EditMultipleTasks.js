@@ -613,6 +613,13 @@ class TaskCardsFlatlist extends React.PureComponent {
         this._prioritizeTasks()
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.priorities !== prevProps.priorities
+            || this.props.deleted_tasks !== prevProps.deleted_tasks) {
+            this._prioritizeTasks()
+        }
+    }
+
     render() {
         return (
             <FlatList
