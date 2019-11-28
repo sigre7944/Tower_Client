@@ -340,7 +340,7 @@ class UncompletedTaskCardHolder extends React.PureComponent {
 
     state = {
         should_flatlist_update: 0,
-        prioritized_tasks: []
+        data: []
     }
 
     _keyExtractor = (item, index) => `journal-${this.props.type}-uncompleted-task-${item[0]}`
@@ -361,27 +361,82 @@ class UncompletedTaskCardHolder extends React.PureComponent {
         )
     }
 
-    _prioritizeTasks = () => {
+    _sortedByPriorityTasks = () => {
         let tasks_map = Map(this.props.tasks),
             priorities_map = Map(this.props.priorities),
-            prioritized_tasks = []
-
+            data = []
 
         priorities_map.valueSeq().forEach((priority_data, index) => {
             List(priority_data.get("tasks")).forEach((task_data, i) => {
                 let task_id = Map(task_data).get("id")
-                prioritized_tasks.push([task_id, tasks_map.get(task_id)])
+                data.push([task_id, tasks_map.get(task_id)])
             })
         })
 
-        this.setState(prevState => ({
-            prioritized_tasks: prioritized_tasks,
-            should_flatlist_update: prevState.should_flatlist_update + 1
-        }))
+        if (data.length > 0) {
+            this.setState(prevState => ({
+                data,
+                should_flatlist_update: prevState.should_flatlist_update + 1
+            }))
+        }
+    }
+
+    _sortedByNameTasks = () => {
+        let tasks_map = Map(this.props.tasks),
+            data = []
+
+        let tasks_for_sorting_array = tasks_map.valueSeq().map((value, index) => {
+            let title = Map(value).get("title"),
+                id = Map(value).get("id")
+
+            return ([title, id])
+        })
+
+        let sorted_tasks = tasks_for_sorting_array.sort()
+
+        data = sorted_tasks.map((tuple) => {
+            let id = tuple[1]
+            return ([id, tasks_map.get(id)])
+        })
+
+        if (data.length > 0) {
+            this.setState(prevState => ({
+                data,
+                should_flatlist_update: prevState.should_flatlist_update + 1
+            }))
+        }
+    }
+
+    _sortByRewardTasks = () => {
+        let tasks_map = Map(this.props.tasks),
+            data = []
+
+        let tasks_for_sorting_array = tasks_map.valueSeq().map((value, index) => {
+            let reward_value = Map(value).getIn(["reward", "value"]),
+                id = Map(value).get("id")
+
+            return ([reward_value, id])
+        })
+
+        let sorted_tasks = tasks_for_sorting_array.sort((a, b) => b[0] - a[0])
+
+        data = sorted_tasks.map((tuple) => {
+            let id = tuple[1]
+            return ([id, tasks_map.get(id)])
+        })
+
+        if (data.length > 0) {
+            this.setState(prevState => ({
+                data,
+                should_flatlist_update: prevState.should_flatlist_update + 1
+            }))
+        }
     }
 
     componentDidMount() {
-        this._prioritizeTasks()
+        // this._sortedByNameTasks()
+        // this._sortByRewardTasks()
+        this._sortedByPriorityTasks()
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -390,7 +445,12 @@ class UncompletedTaskCardHolder extends React.PureComponent {
             || this.props.current_chosen_category !== prevProps.current_chosen_category
             || this.props.deleted_tasks !== prevProps.deleted_tasks
             || this.props.chosen_date_data !== prevProps.chosen_date_data) {
-            this._prioritizeTasks()
+
+            this._sortedByPriorityTasks()
+
+            this._sortedByNameTasks()
+
+            this._sortByRewardTasks()
         }
     }
 
@@ -398,7 +458,7 @@ class UncompletedTaskCardHolder extends React.PureComponent {
         return (
             <FlatList
                 // data={Map(this.props.tasks).toArray()}
-                data={this.state.prioritized_tasks}
+                data={this.state.data}
                 extraData={this.state.should_flatlist_update}
                 showsVerticalScrollIndicator={false}
                 removeClippedSubviews={true}

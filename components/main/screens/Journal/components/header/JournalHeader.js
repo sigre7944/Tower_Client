@@ -17,7 +17,7 @@ import {
     styles
 } from './styles/styles'
 
-import EditMultipleTasks from "../share/journal/edit-multiple-tasks/EditMultipleTasks";
+import ChooseOptions from "../share/journal/choose-options/ChooseOptions";
 
 export default class JournalHeader extends React.PureComponent {
 
@@ -83,7 +83,7 @@ export default class JournalHeader extends React.PureComponent {
 
 
                 {this.state.toggleEditMultipleTasks ?
-                    <EditMultipleTasks
+                    <ChooseOptions
                         _toggleEditMultipleTasksAction={this._toggleEditMultipleTasksAction}
                         navigation={this.props.navigation}
                     />

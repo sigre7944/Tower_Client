@@ -35,10 +35,6 @@ export const changeAnnotation = (annotation) => ({
     annotation
 })
 
-export const toggleEditMultipleTasksAction = () => ({
-    type: "TOGGLE_EDIT_MULTIPLE_TASKS"
-})
-
 export const returnNewChosenDateData = (type, data) => ({
     type,
     data

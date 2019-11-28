@@ -71,16 +71,6 @@ export const currentWeekInMonth = (state = {}, action) => {
     }
 }
 
-export const toggleEditMultipleTasks = (state = false, action) => {
-    switch (action.type) {
-        case 'TOGGLE_EDIT_MULTIPLE_TASKS':
-            return !state
-
-        default:
-            return state
-    }
-}
-
 export const chosenDayDateData = (state = Map(), action) => {
     switch (action.type) {
         case 'RETURN_NEW_CHOSEN_DAY_DATE_DATA':
