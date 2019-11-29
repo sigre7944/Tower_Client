@@ -103,17 +103,30 @@ export default class SortPanel extends React.PureComponent {
                         alignItems: "center"
                     }}
                 >
-                    <MaterialIcons
-                        name="sort"
-                        color="#2C2C2C"
-                        size={28}
-                    />
-
-                    <Text
-                        style={styles.title}
+                    <View
+                        style={{
+                            justifyContent: "center",
+                            alignItems: "center",
+                            width: 26
+                        }}
                     >
-                        Sort by
-                    </Text>
+                        <MaterialIcons
+                            name="sort"
+                            color="#2C2C2C"
+                            size={26}
+                        />
+                    </View>
+                    <View
+                        style={{
+                            marginLeft: 14
+                        }}
+                    >
+                        <Text
+                            style={styles.title}
+                        >
+                            Sort by
+                        </Text>
+                    </View>
                 </View>
 
                 <View

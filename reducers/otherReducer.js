@@ -126,3 +126,27 @@ export const sortSettings = (state = initial_sort_settings, action) => {
     }
 
 }
+
+let initial_general_settings = fromJS({
+    account: {
+        isLoggedIn: false,
+        userId: "",
+        email: "",
+        deviceId: "",
+        plan: "free"
+    },
+
+    sound: true,
+    vibration: true,
+    currency: "euro"
+})
+
+export const generalSettings = (state = Map(), action) => {
+    switch (action.type) {
+        case 'UPDATE_GENERAL_SETTINGS':
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
+
+        default:
+            return state
+    }
+}

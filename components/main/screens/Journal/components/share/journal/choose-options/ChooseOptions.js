@@ -256,12 +256,12 @@ export default class ChooseOptions extends React.PureComponent {
                             </Text>
                             </TouchableOpacity>
 
-                            <View
+                            {/* <View
                                 style={styles.separating_line}
                             >
-                            </View>
+                            </View> */}
 
-                            <TouchableOpacity
+                            {/* <TouchableOpacity
                                 style={{
                                     marginTop: 5,
                                     paddingHorizontal: 33,
@@ -281,7 +281,7 @@ export default class ChooseOptions extends React.PureComponent {
                                 >
                                     Share
                             </Text>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
                         </Animated.View>
                     }
                 </View>

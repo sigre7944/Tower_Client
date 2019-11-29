@@ -49,3 +49,11 @@ export const returnNewSortSettings = (data) => ({
     type: "RETURN_NEW_SORT_SETTINGS",
     data
 })
+
+
+export const updateGeneralSettings = (keyPath, notSetValue, updater) => ({
+    type: "UPDATE_GENERAL_SETTINGS",
+    keyPath,
+    notSetValue,
+    updater
+})
