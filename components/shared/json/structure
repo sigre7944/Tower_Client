@@ -166,6 +166,7 @@
         id: reward_id,
         name: reward_name,
         value: reward_value,
+        currency: "euro",
     }
 }
 
@@ -187,7 +188,8 @@
                 name: reward_name,
                 value: reward_value,
                 latest_timestamp: latest_timestamp,
-                quantity: 1
+                quantity: 1,
+                currency: "euro",
             }
         }
     }

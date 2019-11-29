@@ -46,4 +46,12 @@ export const styles = StyleSheet.create({
         height: 1,
         backgroundColor: CommonStyles.text_icon_colors.ti_4
     },
+
+    currency_symbol: {
+        fontFamily: CommonStyles.fontFamily,
+        fontSize: 18,
+        lineHeight: 21,
+        letterSpacing: -0.02,
+        color: CommonStyles.primary_colors.prim_1
+    }
 })

@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   Dimensions,
   ScrollView,
-  Switch
+  Switch,
+  Picker
 } from 'react-native';
 
 import SettingHeader from "./components/header/SettingHeader";
@@ -17,12 +18,17 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { styles } from "./styles/styles";
 
+import { Map } from "immutable";
+
+import Collapsible from "react-native-collapsible";
+
 const window_width = Dimensions.get("window").width
 
-const euro_symbol = <FontAwesome name="euro" color="#05838B" size={21} />
-const dollar_symbol = <FontAwesome name="dollar" color="#05838B" size={21} />
-const pound_symbol = <FontAwesome5 name="pound-sign" color="#05838B" size={21} />
-const yen_symbol = <FontAwesome name="yen" color="#05838B" size={21} />
+const euro_symbol = "\u20AC"
+const dollar_symbol = "\u0024"
+const pound_symbol = "\u00A3"
+const yen_symbol = "\u00A5"
+const dong_symbol = "\u20AB"
 
 export default class Settings extends React.Component {
   static navigationOptions = ({ navigation, navigationOptions }) => {
@@ -33,20 +39,37 @@ export default class Settings extends React.Component {
   }
 
   state = {
-    sound_bool: true,
-    vibration_bool: true,
+    currency_choosing_collapsed: true,
   }
 
   _onSoundChange = () => {
-    this.setState(prevState => ({
-      sound_bool: !prevState.sound_bool
-    }))
+    this.props.updateGeneralSettings(
+      ["sound"],
+      true,
+      (value) => !value
+    )
   }
 
   _onVibrationChange = () => {
+    this.props.updateGeneralSettings(
+      ["vibration"],
+      true,
+      (value) => !value
+    )
+  }
+
+  _toggleCurrencyChoosingCollapsed = () => {
     this.setState(prevState => ({
-      vibration_bool: !prevState.vibration_bool
+      currency_choosing_collapsed: !prevState.currency_choosing_collapsed
     }))
+  }
+
+  _onCurrencySelectionChange = (value, index) => {
+    this.props.updateGeneralSettings(
+      ["currency"],
+      "euro",
+      (v) => value
+    )
   }
 
   componentDidMount() {
@@ -59,7 +82,28 @@ export default class Settings extends React.Component {
   }
 
   render() {
-    let currency_symbol = euro_symbol
+    let currency_selection = Map(this.props.generalSettings).get("currency"),
+      currency_symbol = euro_symbol
+
+    if (currency_selection === "dollar") {
+      currency_symbol = dollar_symbol
+    }
+
+    else if (currency_selection === "euro") {
+      currency_symbol = euro_symbol
+    }
+
+    else if (currency_selection === "pound") {
+      currency_symbol = pound_symbol
+    }
+
+    else if (currency_selection === "yen") {
+      currency_symbol = yen_symbol
+    }
+
+    else {
+      currency_symbol = dong_symbol
+    }
 
     return (
       <View
@@ -237,7 +281,7 @@ export default class Settings extends React.Component {
               </Text>
 
               <Switch
-                value={this.state.sound_bool}
+                value={Map(this.props.generalSettings).get("sound")}
                 onValueChange={this._onSoundChange}
                 trackColor={{
                   false: "rgba(189, 189, 189, 0.2)",
@@ -269,7 +313,7 @@ export default class Settings extends React.Component {
               </Text>
 
               <Switch
-                value={this.state.vibration_bool}
+                value={Map(this.props.generalSettings).get("vibration")}
                 onValueChange={this._onVibrationChange}
                 trackColor={{
                   false: "rgba(189, 189, 189, 0.2)",
@@ -293,6 +337,8 @@ export default class Settings extends React.Component {
                 paddingHorizontal: 22,
                 paddingVertical: 18
               }}
+
+              onPress={this._toggleCurrencyChoosingCollapsed}
             >
               <Text
                 style={styles.normal_text}
@@ -300,7 +346,218 @@ export default class Settings extends React.Component {
                 Currency
               </Text>
 
-              {currency_symbol}
+              <Text
+                style={styles.currency_symbol}
+              >
+                {currency_symbol}
+              </Text>
+
+            </TouchableOpacity>
+
+            <Collapsible collapsed={this.state.currency_choosing_collapsed}>
+              <Picker
+                style={{
+                  borderTopWidth: 1,
+                  borderColor: "#D6D6D6"
+                }}
+                itemStyle={{
+
+                }}
+                selectedValue={Map(this.props.generalSettings).get("currency")}
+                onValueChange={this._onCurrencySelectionChange}
+              >
+                <Picker.Item value={"dollar"} label={dollar_symbol} />
+                <Picker.Item value={"euro"} label={euro_symbol} />
+                <Picker.Item value={"pound"} label={pound_symbol} />
+                <Picker.Item value={"yen"} label={yen_symbol} />
+                <Picker.Item value={"dong"} label={dong_symbol} />
+              </Picker>
+            </Collapsible>
+          </View>
+
+          <View
+            style={{
+              paddingHorizontal: 22,
+              marginTop: 32,
+              marginBottom: 22,
+            }}
+          >
+            <Text
+              style={styles.normal_text}
+            >
+              Instruction
+            </Text>
+          </View>
+
+          <View
+            style={{
+              backgroundColor: "white",
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowRadius: 8,
+              shadowColor: "black",
+              shadowOpacity: 0.12
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                height: 59,
+                width: window_width,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingHorizontal: 22,
+                paddingVertical: 18
+              }}
+            >
+              <Text
+                style={styles.normal_text}
+              >
+                User manual
+              </Text>
+
+              <Feather
+                name="chevron-right"
+                size={21}
+                color="#6E6E6E"
+              />
+            </TouchableOpacity>
+
+            <View
+              style={styles.separating_line}
+            />
+            <TouchableOpacity
+              style={{
+                height: 59,
+                width: window_width,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingHorizontal: 22,
+                paddingVertical: 18
+              }}
+            >
+              <Text
+                style={styles.normal_text}
+              >
+                How Quint works?
+              </Text>
+
+              <Feather
+                name="chevron-right"
+                size={21}
+                color="#6E6E6E"
+              />
+            </TouchableOpacity>
+
+            <View
+              style={styles.separating_line}
+            />
+
+            <TouchableOpacity
+              style={{
+                height: 59,
+                width: window_width,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingHorizontal: 22,
+                paddingVertical: 18
+              }}
+            >
+              <Text
+                style={styles.normal_text}
+              >
+                Question us
+              </Text>
+
+              <Feather
+                name="chevron-right"
+                size={21}
+                color="#6E6E6E"
+              />
+            </TouchableOpacity>
+          </View>
+
+          <View
+            style={{
+              paddingHorizontal: 22,
+              marginTop: 32,
+              marginBottom: 22,
+            }}
+          >
+            <Text
+              style={styles.normal_text}
+            >
+              Support us
+            </Text>
+          </View>
+
+          <View
+            style={{
+              backgroundColor: "white",
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowRadius: 8,
+              shadowColor: "black",
+              shadowOpacity: 0.12,
+              marginBottom: 32,
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                height: 59,
+                width: window_width,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingHorizontal: 22,
+                paddingVertical: 18
+              }}
+            >
+              <Text
+                style={styles.normal_text}
+              >
+                Write a review
+              </Text>
+
+              <Feather
+                name="chevron-right"
+                size={21}
+                color="#6E6E6E"
+              />
+            </TouchableOpacity>
+
+            <View
+              style={styles.separating_line}
+            />
+
+            <TouchableOpacity
+              style={{
+                height: 59,
+                width: window_width,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingHorizontal: 22,
+                paddingVertical: 18
+              }}
+            >
+              <Text
+                style={styles.normal_text}
+              >
+                Feedback
+              </Text>
+
+              <Feather
+                name="chevron-right"
+                size={21}
+                color="#6E6E6E"
+              />
             </TouchableOpacity>
           </View>
         </ScrollView>

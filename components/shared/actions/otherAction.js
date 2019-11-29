@@ -57,3 +57,8 @@ export const updateGeneralSettings = (keyPath, notSetValue, updater) => ({
     notSetValue,
     updater
 })
+
+export const returnNewGeneralSettings = (data) => ({
+    type: "RETURN_NEW_GENERAL_SETTINGS",
+    data
+})

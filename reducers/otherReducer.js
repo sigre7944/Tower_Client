@@ -141,10 +141,13 @@ let initial_general_settings = fromJS({
     currency: "euro"
 })
 
-export const generalSettings = (state = Map(), action) => {
+export const generalSettings = (state = initial_general_settings, action) => {
     switch (action.type) {
         case 'UPDATE_GENERAL_SETTINGS':
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
+
+        case 'RETURN_NEW_GENERAL_SETTINGS':
+            return action.data.toMap()
 
         default:
             return state
