@@ -31,7 +31,7 @@ import PriorityPicker from './priority-picker/PriorityPicker'
 const panel_width = 338
 const panel_height = 375
 const animation_duration = 250
-const easing = Easing.inOut(Easing.linear)
+const easing = Easing.in()
 const window_height = Dimensions.get("window").height
 
 const extra_margin_from_keyboard = 10
@@ -40,7 +40,12 @@ const text_input_state = TextInput.State
 
 export default class Priority extends React.PureComponent {
     opacity_value = new Animated.Value(0.3)
-    scale_value = new Animated.Value(0.3)
+    scale_value = this.opacity_value.interpolate({
+        inputRange: [0, 0.3, 0.5, 0.7, 1],
+        outputRange: [0, 0.3, 0.5, 0.7, 1],
+        extrapolate: "clamp"
+    })
+
     translate_y_value = new Animated.Value(0)
 
     priority_stored_rewards = {
@@ -210,31 +215,34 @@ export default class Priority extends React.PureComponent {
     }
 
 
-    _animate = () => {
-        Animated.parallel([
-            Animated.timing(
-                this.opacity_value,
-                {
-                    toValue: 1,
-                    duration: animation_duration,
-                    easing,
-                    useNativeDriver: true
-                }
-            ),
-            Animated.timing(
-                this.scale_value,
-                {
-                    toValue: 1,
-                    duration: animation_duration,
-                    easing,
-                    useNativeDriver: true
-                }
-            )
-        ]).start()
+    _animate = (edit) => {
+        Animated.timing(
+            this.opacity_value,
+            {
+                toValue: 1,
+                duration: animation_duration,
+                easing,
+                useNativeDriver: edit ? false : true
+            }
+        ).start()
+    }
+
+    _animateEnd = (callback, edit) => {
+        Animated.timing(
+            this.opacity_value,
+            {
+                toValue: 0,
+                duration: animation_duration,
+                easing,
+                useNativeDriver: edit ? false : true
+            }
+        ).start(() => {
+            callback()
+        })
     }
 
     _cancel = () => {
-        this.props.hideAction()
+        this._animateEnd(this.props.hideAction, this.props.edit)
     }
 
     _save = () => {
@@ -276,16 +284,16 @@ export default class Priority extends React.PureComponent {
             }
         }
 
-        if(this.props.edit){
+        if (this.props.edit) {
             this.props._editFieldData(sending_obj.priority_data.keyPath, sending_obj.priority_data.notSetValue, sending_obj.priority_data.updater)
             this.props._editFieldData(sending_obj.reward_data.keyPath, sending_obj.reward_data.notSetValue, sending_obj.reward_data.updater)
         }
-        
-        else{
+
+        else {
             this.props.updateTaskPriorityAndReward(sending_obj)
         }
 
-        this.props.hideAction()
+        this._cancel()
     }
 
     _setDefaultRewardValue = () => {
@@ -398,7 +406,7 @@ export default class Priority extends React.PureComponent {
     }
 
     componentDidMount() {
-        this._animate()
+        this._animate(this.props.edit)
 
         this.keyboardWillHideListener = Keyboard.addListener("keyboardWillHide", this._keyboardWillHideHandler)
         this.keyboardWillShowListener = Keyboard.addListener("keyboardWillShow", this._keyboardWillShowHandler)
@@ -408,6 +416,12 @@ export default class Priority extends React.PureComponent {
         }
         else {
             this._initializePriorityData(this.props.task_data)
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.should_call_end_animation_from_parent !== prevProps.should_call_end_animation_from_parent) {
+            this._cancel()
         }
     }
 

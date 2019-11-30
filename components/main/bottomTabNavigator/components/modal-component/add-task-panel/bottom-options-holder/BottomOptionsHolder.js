@@ -50,31 +50,26 @@ export default class BottomOptionsHolder extends React.PureComponent {
             >
                 <BottomOptionElement
                     chooseOption={this.props.chooseCalenderOption}
-                    disableAddTaskPanel={this.props.disableAddTaskPanel}
                     icon={faCalendarAlt}
                 />
 
                 <BottomOptionElement
                     chooseOption={this.props.chooseRepeatOption}
-                    disableAddTaskPanel={this.props.disableAddTaskPanel}
                     icon={faRedoAlt}
                 />
 
                 <BottomOptionElement
                     chooseOption={this.props.chosenCategoryOption}
-                    disableAddTaskPanel={this.props.disableAddTaskPanel}
                     icon={faList}
                 />
 
                 <BottomOptionElement
                     chooseOption={this.props.choosePriorityOption}
-                    disableAddTaskPanel={this.props.disableAddTaskPanel}
                     icon={faExclamationTriangle}
                 />
 
                 <BottomConfirmElement
-                    chooseOption={this.props.toggleAddTask}
-                    disableAddTaskPanel={this.props.disableAddTaskPanel}
+                    chooseOption={this.props._closeAddTaskPanel}
                     {... this.props}
 
                     title_value={this.props.addTaskTitle}
@@ -92,7 +87,6 @@ class BottomOptionElement extends React.PureComponent {
 
     _onPress = () => {
         this.props.chooseOption()
-        this.props.disableAddTaskPanel()
     }
 
     render() {
@@ -136,8 +130,8 @@ class BottomConfirmElement extends React.PureComponent {
 
             let new_task_with_id = Map(this.props.task_data).asMutable()
             new_task_with_id.update("id", (value) => task_id)
-            new_task_with_id.update("title", (value) => this.props.title_value)
-            new_task_with_id.update("description", (value) => this.props.description_value)
+            new_task_with_id.update("title", (value) => this.props.title_value.trim())
+            new_task_with_id.update("description", (value) => this.props.description_value.trim())
             new_task_with_id.update("type", (value) => this.props.currentAnnotation)
 
             let priority_value = Map(this.props.task_data).getIn(["priority", "value"]),
@@ -171,11 +165,11 @@ class BottomConfirmElement extends React.PureComponent {
 
             this.props.addTaskThunk(sending_obj)
 
-            this.props.toggleAddTask()
+            this.props._closeAddTaskPanel()
         }
 
         else {
-            this.props.toggleAddTask()
+            this.props._closeAddTaskPanel()
         }
     }
 

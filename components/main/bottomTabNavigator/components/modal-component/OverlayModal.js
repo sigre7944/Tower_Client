@@ -4,7 +4,9 @@ import {
     View,
     Modal,
     TouchableWithoutFeedback,
-    Dimensions
+    Dimensions,
+    Animated,
+    Easing
 } from 'react-native';
 
 import AddTaskPanel from './add-task-panel/AddTaskPanel'
@@ -20,10 +22,13 @@ import { Map, fromJS } from 'immutable'
 class DismissElement extends React.PureComponent {
     _onPress = () => {
         if (this.props.addTaskMenuChosen) {
-            this.props.toggleAddTask()
+            // this.props.toggleAddTask()
+            this.props._toggleShouldCallEndAnimationFromParent()
         }
 
-        this.props.disableAllTabs()
+        else {
+            this.props._toggleShouldCallEndAnimationFromParent()
+        }
     }
 
     render() {
@@ -54,11 +59,24 @@ export default class OverlayModal extends Component {
         priorityChosen: false,
         addTaskMenuChosen: true,
 
-        shouldCallBackKeyboard: false
+        should_animate_end_animation: true,
+        should_call_end_animation_from_parent: true
     }
 
     setCurrentAnnotation = (annotation) => {
         this.setState({ currentAnnotation: annotation })
+    }
+
+    _toggleShouldCallEndAnimationFromParent = () => {
+        this.setState(prevState => ({
+            should_call_end_animation_from_parent: !prevState.should_call_end_animation_from_parent
+        }))
+    }
+
+    _toggleShouldAnimateEndAnimation = () => {
+        this.setState(prevState => ({
+            should_animate_end_animation: !prevState.should_animate_end_animation
+        }))
     }
 
     disableAllTabs = () => {
@@ -77,7 +95,9 @@ export default class OverlayModal extends Component {
             repeatChosen: false,
             categoryChosen: false,
             priorityChosen: false,
+
             addTaskMenuChosen: false,
+            is_task_menu_chosen_ready: true
         }))
     }
 
@@ -414,6 +434,12 @@ export default class OverlayModal extends Component {
         }
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.should_animate_end_animation !== prevState.should_animate_end_animation) {
+            this.disableAllTabs()
+        }
+    }
+
     render() {
 
         return (
@@ -431,8 +457,8 @@ export default class OverlayModal extends Component {
 
                     <DismissElement
                         toggleAddTask={this.props.toggleAddTask}
-                        disableAllTabs={this.disableAllTabs}
                         addTaskMenuChosen={this.state.addTaskMenuChosen}
+                        _toggleShouldCallEndAnimationFromParent={this._toggleShouldCallEndAnimationFromParent}
                     />
 
                     {
@@ -447,6 +473,8 @@ export default class OverlayModal extends Component {
                                 currentAnnotation={this.state.currentAnnotation}
 
                                 toggleAddTask={this.props.toggleAddTask}
+
+                                should_call_end_animation_from_parent={this.state.should_call_end_animation_from_parent}
                             />
                             :
 
@@ -455,7 +483,8 @@ export default class OverlayModal extends Component {
                                 {this.state.calendarChosen ?
                                     <Calendar
                                         currentAnnotation={this.state.currentAnnotation}
-                                        hideAction={this.disableAllTabs}
+                                        hideAction={this._toggleShouldAnimateEndAnimation}
+                                        should_call_end_animation_from_parent={this.state.should_call_end_animation_from_parent}
                                         edit={false}
                                     />
 
@@ -467,7 +496,8 @@ export default class OverlayModal extends Component {
                                             <Category
                                                 currentAnnotation={this.state.currentAnnotation}
                                                 edit={false}
-                                                hideAction={this.disableAllTabs}
+                                                hideAction={this._toggleShouldAnimateEndAnimation}
+                                                should_call_end_animation_from_parent={this.state.should_call_end_animation_from_parent}
                                             />
                                             :
 
@@ -477,7 +507,8 @@ export default class OverlayModal extends Component {
                                                     <Repeat
                                                         currentAnnotation={this.state.currentAnnotation}
                                                         edit={false}
-                                                        hideAction={this.disableAllTabs}
+                                                        hideAction={this._toggleShouldAnimateEndAnimation}
+                                                        should_call_end_animation_from_parent={this.state.should_call_end_animation_from_parent}
                                                     />
 
                                                     :
@@ -488,7 +519,8 @@ export default class OverlayModal extends Component {
                                                             <Priority
                                                                 currentAnnotation={this.state.currentAnnotation}
                                                                 edit={false}
-                                                                hideAction={this.disableAllTabs}
+                                                                hideAction={this._toggleShouldAnimateEndAnimation}
+                                                                should_call_end_animation_from_parent={this.state.should_call_end_animation_from_parent}
                                                             />
 
                                                             :

@@ -487,9 +487,9 @@ class UncompletedTaskCardHolder extends React.PureComponent {
                 keyExtractor={this._keyExtractor}
                 scrollEnabled={false}
 
-                windowSize={3}
-                maxToRenderPerBatch={3}
-                initialNumToRender={3}
+                windowSize={5}
+                maxToRenderPerBatch={5}
+                initialNumToRender={5}
             />
         )
     }
@@ -1439,9 +1439,9 @@ class CompletedTaskCardHolder extends React.PureComponent {
                 keyExtractor={this._keyExtractor}
                 scrollEnabled={false}
 
-                windowSize={3}
-                maxToRenderPerBatch={3}
-                initialNumToRender={3}
+                windowSize={5}
+                maxToRenderPerBatch={5}
+                initialNumToRender={5}
             />
         )
     }

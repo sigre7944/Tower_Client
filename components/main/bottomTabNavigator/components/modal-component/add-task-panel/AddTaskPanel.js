@@ -8,6 +8,7 @@ import {
     Dimensions,
     KeyboardAvoidingView,
     Animated,
+    Easing,
     Keyboard,
     ScrollView
 } from 'react-native';
@@ -18,7 +19,6 @@ import TitleAndDescriptionHolder from './title-and-description-holder/TitleAndDe
 import TagDataHolder from './tag-data-holder/TagDataHolder.Container'
 
 import BottomOptionsHolder from "./bottom-options-holder/BottomOptionsHolder.Container"
-
 
 export default class AddTaskPanel extends Component {
     taskTextInputRef = React.createRef()
@@ -32,10 +32,13 @@ export default class AddTaskPanel extends Component {
     month_names_in_short = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
     translateY_value = new Animated.Value(0)
-    opacity_value = new Animated.Value(0)
+    opacity_value = this.translateY_value.interpolate({
+        inputRange: [-80, 0],
+        outputRange: [1, 0],
+        extrapolate: "clamp"
+    })
 
     state = {
-        AddTaskPanelDisplayProperty: 'flex',
         tag_data: [],
     }
 
@@ -43,33 +46,34 @@ export default class AddTaskPanel extends Component {
         this.taskTextInputRef = ref
     }
 
+    toDoWhenWillShowKeyboard = (e) => {
+        Animated.timing(
+            this.translateY_value,
+            {
+                toValue: - e.endCoordinates.height,
+                duration: e.duration,
+                easing: Easing.in()
+                // useNativeDriver: true
+            }
+        ).start()
+    }
 
-    disableAddTaskPanel = () => {
-        this.setState({
-            AddTaskPanelDisplayProperty: 'none'
+    _animateEnd = (callback) => {
+        Animated.timing(
+            this.translateY_value,
+            {
+                toValue: 0,
+                duration: 250,
+                easing: Easing.in()
+                // useNativeDriver: true
+            }
+        ).start(() => {
+            callback()
         })
     }
 
-    toDoWhenWillShowKeyboard = (e) => {
-        Animated.parallel([
-            Animated.timing(
-                this.translateY_value,
-                {
-                    toValue: - e.endCoordinates.height,
-                    duration: e.duration,
-                    useNativeDriver: true
-                }
-            ),
-            Animated.timing(
-                this.opacity_value,
-                {
-                    toValue: 1,
-                    duration: e.duration,
-                    useNativeDriver: true
-                }
-            )
-        ],
-        ).start()
+    _close = () => {
+        this._animateEnd(this.props.toggleAddTask)
     }
 
     componentDidMount() {
@@ -83,6 +87,12 @@ export default class AddTaskPanel extends Component {
         Keyboard.removeListener('keyboardWillShow', this.toDoWhenWillShowKeyboard)
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.should_call_end_animation_from_parent !== prevProps.should_call_end_animation_from_parent) {
+            this._close()
+        }
+    }
+
     render() {
         return (
             <Animated.View
@@ -91,7 +101,6 @@ export default class AddTaskPanel extends Component {
                     width: Dimensions.get('window').width,
                     bottom: 0,
                     transform: [{ translateY: this.translateY_value }],
-                    display: this.state.AddTaskPanelDisplayProperty,
                     height: 409,
                     backgroundColor: "white",
                     borderTopRightRadius: 20,
@@ -121,6 +130,9 @@ export default class AddTaskPanel extends Component {
                     <TitleAndDescriptionHolder
                         currentAnnotation={this.props.currentAnnotation}
                         setTaskTextInputRef={this.setTaskTextInputRef}
+
+                        _closeAddTaskPanel={this._close}
+                        currentAnnotation={this.props.currentAnnotation}
                     />
 
                     <TagDataHolder
@@ -134,9 +146,7 @@ export default class AddTaskPanel extends Component {
                     chosenCategoryOption={this.props.chosenCategoryOption}
                     choosePriorityOption={this.props.choosePriorityOption}
                     chooseRepeatOption={this.props.chooseRepeatOption}
-                    toggleAddTask={this.props.toggleAddTask}
-                    disableAddTaskPanel={this.disableAddTaskPanel}
-
+                    _closeAddTaskPanel={this._close}
                     currentAnnotation={this.props.currentAnnotation}
                 />
             </Animated.View>

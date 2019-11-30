@@ -30,7 +30,7 @@ import {
 import { Map, fromJS } from 'immutable'
 
 const animation_duration = 250
-const easing = Easing.inOut(Easing.linear)
+const easing = Easing.in()
 const window_width = Dimensions.get("window").width
 const margin_bottom_of_last_row = 35
 const extra_margin_from_keyboard = 10
@@ -39,7 +39,11 @@ const window_height = Dimensions.get("window").height
 export default class WeekTypeRepeat extends React.PureComponent {
 
     repeat_opacity_value = new Animated.Value(0.3)
-    repeat_scale_value = new Animated.Value(0.3)
+    repeat_scale_value = this.repeat_opacity_value.interpolate({
+        inputRange: [0, 0.3, 0.5, 0.7, 1],
+        outputRange: [0, 0.3, 0.5, 0.7, 1],
+        extrapolate: "clamp"
+    })
 
     translate_y = new Animated.Value(0)
 
@@ -144,27 +148,28 @@ export default class WeekTypeRepeat extends React.PureComponent {
         }
     }
 
-    animateRepeat = () => {
-        Animated.parallel([
-            Animated.timing(
-                this.repeat_opacity_value,
-                {
-                    toValue: 1,
-                    duration: animation_duration,
-                    easing,
-                    useNativeDriver: true
-                }
-            ),
-            Animated.timing(
-                this.repeat_scale_value,
-                {
-                    toValue: 1,
-                    duration: animation_duration,
-                    easing,
-                    useNativeDriver: true
-                }
-            )
-        ]).start()
+    animateRepeat = (edit) => {
+        Animated.timing(
+            this.repeat_opacity_value,
+            {
+                toValue: 1,
+                duration: animation_duration,
+                easing,
+                useNativeDriver: edit ? false : true
+            }
+        ).start()
+    }
+
+    _animateRepeat = (callback, edit) => {
+        Animated.timing(
+            this.repeat_opacity_value,
+            {
+                toValue: 0,
+                duration: animation_duration,
+                easing,
+                useNativeDriver: edit ? false : true
+            }
+        ).start(() => { callback() })
     }
 
     _keyboardWillHideHandler = (e) => {
@@ -207,10 +212,8 @@ export default class WeekTypeRepeat extends React.PureComponent {
         })
     }
 
-
-
     close = () => {
-        this.props.hideAction()
+        this._animateRepeat(this.props.hideAction, this.props.edit)
     }
 
     save = () => {
@@ -286,7 +289,7 @@ export default class WeekTypeRepeat extends React.PureComponent {
             this.props.updateThunk(sending_data)
         }
 
-        this.props.hideAction()
+        this.close()
     }
 
     getNoWeekInMonth = (date) => {
@@ -380,7 +383,7 @@ export default class WeekTypeRepeat extends React.PureComponent {
     }
 
     componentDidMount() {
-        this.animateRepeat()
+        this.animateRepeat(this.props.edit)
 
         this._keyboardWillHideListener = Keyboard.addListener("keyboardWillHide", this._keyboardWillHideHandler)
         this._keyboardWillShowListener = Keyboard.addListener("keyboardWillShow", this._keyboardWillShowHandler)
@@ -391,6 +394,12 @@ export default class WeekTypeRepeat extends React.PureComponent {
 
         else {
             this.initializeData(this.props.currentTask)
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.should_call_end_animation_from_parent !== prevProps.should_call_end_animation_from_parent) {
+            this.close()
         }
     }
 

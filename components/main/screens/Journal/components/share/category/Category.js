@@ -25,7 +25,7 @@ import AddCategoryPanel from './add-category-panel/AddCategoryPanel.Container'
 
 const panel_width = 338
 const animation_duration = 250
-const easing = Easing.inOut(Easing.linear)
+const easing = Easing.in()
 const category_height = 45 // row's height = 25 + margin top = 20
 
 const list_max_height = 8 * category_height
@@ -35,8 +35,8 @@ export default class Category extends React.PureComponent {
 
     repeat_opacity_value = new Animated.Value(0.3)
     repeat_scale_value = this.repeat_opacity_value.interpolate({
-        inputRange: [0.3, 0.5, 0.7, 1],
-        outputRange: [0.3, 0.5, 0.7, 1],
+        inputRange: [0, 0.3, 0.5, 0.7, 1],
+        outputRange: [0, 0.3, 0.5, 0.7, 1],
         extrapolate: "clamp"
     })
 
@@ -102,19 +102,15 @@ export default class Category extends React.PureComponent {
 
     _findStartIndex = (task_data) => {
         if (task_data) {
-            let category_id = Map(task_data).get("category"),
-                counter = 0
+            let category_id = Map(task_data).get("category")
 
-            OrderedMap(this.props.categories).keySeq().every((key) => {
+            OrderedMap(this.props.categories).keySeq().every((key, index) => {
                 if (key === category_id) {
+                    this.start_index = index
                     return false
                 }
-
-                counter += 1
                 return true
             })
-
-            this.start_index = counter
 
             this._chooseCategoryRow(this.start_index, category_id)
         }
@@ -124,24 +120,19 @@ export default class Category extends React.PureComponent {
             this.start_index = 0
 
             this._chooseCategoryRow(this.start_index, category_id)
-
         }
     }
 
     _findStartIndexEditMultiple = (category_id) => {
         if (category_id) {
-            let counter = 0
-
-            OrderedMap(this.props.categories).keySeq().every((key) => {
+            OrderedMap(this.props.categories).keySeq().every((key, index) => {
                 if (key === category_id) {
+                    this.start_index = index
                     return false
                 }
-
-                counter += 1
                 return true
             })
 
-            this.start_index = counter
 
             this._chooseCategoryRow(this.start_index, category_id)
         }
@@ -178,7 +169,7 @@ export default class Category extends React.PureComponent {
     }
 
     _cancel = () => {
-        this.props.hideAction()
+        this._animateEnd(this.props.hideAction, this.props.edit)
     }
 
     _save = () => {
@@ -204,19 +195,33 @@ export default class Category extends React.PureComponent {
             this.props.updateTaskCategory(sending_obj)
         }
 
-        this.props.hideAction()
+        this._cancel()
     }
 
-    _animate = () => {
+    _animate = (edit) => {
         Animated.timing(
             this.repeat_opacity_value,
             {
                 toValue: 1,
                 duration: animation_duration,
                 easing,
-                useNativeDriver: true
+                useNativeDriver: edit ? false : true
             }
         ).start()
+    }
+
+    _animateEnd = (callback, edit) => {
+        Animated.timing(
+            this.repeat_opacity_value,
+            {
+                toValue: 0,
+                duration: animation_duration,
+                easing,
+                useNativeDriver: edit ? false : true
+            }
+        ).start(() => {
+            callback()
+        })
     }
 
     _chooseNewCreatedCategory = () => {
@@ -240,7 +245,7 @@ export default class Category extends React.PureComponent {
     }
 
     componentDidMount() {
-        this._animate()
+        this._animate(this.props.edit)
 
         if (this.props.edit) {
             this._findStartIndex(this.props.edit_task_data)
@@ -258,6 +263,10 @@ export default class Category extends React.PureComponent {
     componentDidUpdate(prevProps, prevState) {
         if (this.props.categories !== prevProps.categories) {
             this._chooseNewCreatedCategory()
+        }
+
+        if (this.props.should_call_end_animation_from_parent !== prevProps.should_call_end_animation_from_parent) {
+            this._cancel()
         }
     }
 

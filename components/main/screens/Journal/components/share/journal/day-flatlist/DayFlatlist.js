@@ -113,7 +113,6 @@ export default class DayFlatlist extends React.Component {
                 }
             }
         }
-
     }
 
     _onLayout = () => {
@@ -185,6 +184,8 @@ export default class DayFlatlist extends React.Component {
                     showsHorizontalScrollIndicator={false}
 
                     onLayout={this._onLayout}
+
+                    windowSize={7}
                 />
             </View>
         )

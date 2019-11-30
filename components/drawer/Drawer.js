@@ -776,6 +776,10 @@ class CategoryFlatlist extends React.PureComponent {
                     renderItem={this._renderItem}
                     getItemLayout={this._getItemLayout}
                     ref={this._setRef}
+
+                    windowSize={5}
+                    maxToRenderPerBatch={5}
+                    initialNumToRender={5}
                 />
 
 

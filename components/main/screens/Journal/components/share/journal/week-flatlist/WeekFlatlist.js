@@ -210,6 +210,8 @@ export default class WeekFlatlist extends React.Component {
                     showsHorizontalScrollIndicator={false}
 
                     onLayout={this._onLayout}
+
+                    windowSize={5}
                 />
             </View>
         )

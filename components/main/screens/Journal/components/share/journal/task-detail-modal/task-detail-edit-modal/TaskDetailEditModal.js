@@ -54,6 +54,21 @@ export default class TaskDetailEditModal extends Component {
         task_description: "",
         should_display_editting_panel: false,
         editting_field: "none",
+
+        should_animate_end_animation: true,
+        should_call_end_animation_from_parent: true,
+    }
+
+    _toggleShouldCallEndAnimationFromParent = () => {
+        this.setState(prevState => ({
+            should_call_end_animation_from_parent: !prevState.should_call_end_animation_from_parent
+        }))
+    }
+
+    _toggleShouldAnimateEndAnimation = () => {
+        this.setState(prevState => ({
+            should_animate_end_animation: !prevState.should_animate_end_animation
+        }))
     }
 
     _chooseEdittingField = (field) => {
@@ -96,6 +111,12 @@ export default class TaskDetailEditModal extends Component {
             task_title,
             task_description
         })
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.should_animate_end_animation !== prevState.should_animate_end_animation) {
+            this._closeEdittingField()
+        }
     }
 
     render() {
@@ -311,6 +332,12 @@ export default class TaskDetailEditModal extends Component {
                 <EdittingModal
                     should_display_editting_panel={this.state.should_display_editting_panel}
                     _closeEdittingField={this._closeEdittingField}
+
+                    _toggleShouldCallEndAnimationFromParent={this._toggleShouldCallEndAnimationFromParent}
+                    _toggleShouldAnimateEndAnimation={this._toggleShouldAnimateEndAnimation}
+
+                    should_call_end_animation_from_parent={this.state.should_call_end_animation_from_parent}
+
                     editting_field={this.state.editting_field}
                     task_data_map={this.state.task_data_map}
                     type={this.props.type}
@@ -337,7 +364,7 @@ class EdittingModal extends React.PureComponent {
                     }}
                 >
                     <TouchableWithoutFeedback
-                        onPress={this.props._closeEdittingField}
+                        onPress={this.props._toggleShouldCallEndAnimationFromParent}
                     >
                         <View
                             style={{
@@ -355,7 +382,8 @@ class EdittingModal extends React.PureComponent {
                         this.props.editting_field === "schedule" ?
 
                             <Calendar
-                                hideAction={this.props._closeEdittingField}
+                                hideAction={this.props._toggleShouldAnimateEndAnimation}
+                                should_call_end_animation_from_parent={this.props.should_call_end_animation_from_parent}
                                 currentAnnotation={this.props.type}
                                 edit={true}
                                 edit_task_data={this.props.task_data_map}
@@ -367,7 +395,9 @@ class EdittingModal extends React.PureComponent {
                             <>
                                 {this.props.editting_field === "category" ?
                                     <Category
-                                        hideAction={this.props._closeEdittingField}
+                                        // hideAction={this.props._closeEdittingField}
+                                        hideAction={this.props._toggleShouldAnimateEndAnimation}
+                                        should_call_end_animation_from_parent={this.props.should_call_end_animation_from_parent}
                                         currentAnnotation={this.props.type}
                                         edit={true}
                                         edit_task_data={this.props.task_data_map}
@@ -382,7 +412,9 @@ class EdittingModal extends React.PureComponent {
                                             || this.props.editting_field === "goal" ?
 
                                             <Repeat
-                                                hideAction={this.props._closeEdittingField}
+                                                // hideAction={this.props._closeEdittingField}
+                                                hideAction={this.props._toggleShouldAnimateEndAnimation}
+                                                should_call_end_animation_from_parent={this.props.should_call_end_animation_from_parent}
                                                 currentAnnotation={this.props.type}
                                                 edit={true}
                                                 edit_task_data={this.props.task_data_map}
@@ -395,7 +427,9 @@ class EdittingModal extends React.PureComponent {
                                                 {this.props.editting_field === "priority"
                                                     || this.props.editting_field === "reward" ?
                                                     <Priority
-                                                        hideAction={this.props._closeEdittingField}
+                                                        // hideAction={this.props._closeEdittingField}
+                                                        hideAction={this.props._toggleShouldAnimateEndAnimation}
+                                                        should_call_end_animation_from_parent={this.props.should_call_end_animation_from_parent}
                                                         currentAnnotation={this.props.type}
                                                         edit={true}
                                                         edit_task_data={this.props.task_data_map}

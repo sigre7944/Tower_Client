@@ -24,7 +24,7 @@ const margin_top_for_calendar_row = 20
 const margin_top_for_month_year_text = 30
 const calendar_total_height = margin_top_for_calendar_row * 3 + 45 * 3
 const animation_duration = 250
-const easing = Easing.inOut(Easing.linear)
+const easing = Easing.in()
 
 export default class MonthCalendar extends React.Component {
     chosen_month = -1
@@ -32,8 +32,8 @@ export default class MonthCalendar extends React.Component {
 
     calendar_scale_value = new Animated.Value(0.3)
     calendar_opacity_value = this.calendar_scale_value.interpolate({
-        inputRange: [0.3, 0.5, 0.7, 1],
-        outputRange: [0.3, 0.5, 0.7, 1],
+        inputRange: [0, 0.3, 0.5, 0.7, 1],
+        outputRange: [0, 0.3, 0.5, 0.7, 1],
         extrapolate: "clamp"
     })
 
@@ -62,11 +62,11 @@ export default class MonthCalendar extends React.Component {
             }
         }
 
-        this.props.hideAction()
+        this.cancel()
     }
 
     cancel = () => {
-        this.props.hideAction()
+        this._animateEndCalendar(this.props.hideAction, this.props.edit)
     }
 
     setData = (month, year) => {
@@ -81,22 +81,41 @@ export default class MonthCalendar extends React.Component {
         })
     }
 
-    animateCalendar = () => {
+    animateCalendar = (edit) => {
         Animated.timing(
             this.calendar_scale_value,
             {
                 toValue: 1,
                 duration: animation_duration,
                 easing,
-                useNativeDriver: true
+                useNativeDriver: edit ? false : true
             }
         ).start()
     }
 
-    componentDidMount() {
-        this.animateCalendar()
+    _animateEndCalendar = (callback, edit) => {
+        Animated.timing(
+            this.calendar_scale_value,
+            {
+                toValue: 0,
+                duration: animation_duration,
+                easing,
+                useNativeDriver: edit ? false : true
+            }
+        ).start(() => {
+            callback()
+        })
     }
 
+    componentDidMount() {
+        this.animateCalendar(this.props.edit)
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.should_call_end_animation_from_parent !== prevProps.should_call_end_animation_from_parent) {
+            this.cancel()
+        }
+    }
 
     render() {
         return (

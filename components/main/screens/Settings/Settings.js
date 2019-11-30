@@ -375,7 +375,7 @@ export default class Settings extends React.Component {
             </Collapsible>
           </View>
 
-          <View
+          {/* <View
             style={{
               paddingHorizontal: 22,
               marginTop: 32,
@@ -479,7 +479,7 @@ export default class Settings extends React.Component {
                 color="#6E6E6E"
               />
             </TouchableOpacity>
-          </View>
+          </View> */}
 
           <View
             style={{

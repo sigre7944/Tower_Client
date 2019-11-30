@@ -28,6 +28,8 @@ export default class Calendar extends React.PureComponent {
                             edit_multiple={this.props.edit_multiple}
                             _editMultipleFieldData={this.props._editMultipleFieldData}
                             edit_multiple_set_calendar_data={this.props.edit_multiple_set_calendar_data}
+
+                            should_call_end_animation_from_parent={this.props.should_call_end_animation_from_parent}
                         />
 
                         :
@@ -44,6 +46,8 @@ export default class Calendar extends React.PureComponent {
                                     edit_multiple={this.props.edit_multiple}
                                     _editMultipleFieldData={this.props._editMultipleFieldData}
                                     edit_multiple_set_calendar_data={this.props.edit_multiple_set_calendar_data}
+
+                                    should_call_end_animation_from_parent={this.props.should_call_end_animation_from_parent}
                                 />
                                 :
 
@@ -57,6 +61,8 @@ export default class Calendar extends React.PureComponent {
                                     edit_multiple={this.props.edit_multiple}
                                     _editMultipleFieldData={this.props._editMultipleFieldData}
                                     edit_multiple_set_calendar_data={this.props.edit_multiple_set_calendar_data}
+
+                                    should_call_end_animation_from_parent={this.props.should_call_end_animation_from_parent}
                                 />
                             }
                         </>

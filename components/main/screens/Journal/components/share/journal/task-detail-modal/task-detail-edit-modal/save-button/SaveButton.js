@@ -32,8 +32,8 @@ export default class SaveButton extends React.PureComponent {
     _save = () => {
         let task_data_map = Map(this.props.task_data_map).asMutable()
 
-        task_data_map.update("title", (value) => this.props.task_title)
-        task_data_map.update("description", (value) => this.props.task_description)
+        task_data_map.update("title", (value) => this.props.task_title.trim())
+        task_data_map.update("description", (value) => this.props.task_description.trim())
 
         let old_category = Map(this.props.old_task_data_map).get("category"),
             new_category = task_data_map.get("category"),
