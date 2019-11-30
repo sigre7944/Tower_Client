@@ -660,16 +660,23 @@ export default class TaskCard extends React.PureComponent {
 
             this.props.updateBulkThunk(sending_obj)
 
-            if (this.props.flag === "uncompleted") {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
 
-                this._playingSound()
+            let general_settings = Map(this.props.generalSettings)
+
+            if (this.props.flag === "uncompleted") {
+                if (general_settings.get("vibration")) {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+                }
+
+                if (general_settings.get("sound")) {
+                    this._playingSound()
+                }
             }
 
             else {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-
-
+                if (general_settings.get("vibration")) {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+                }
             }
 
             this.setState(prevState => ({

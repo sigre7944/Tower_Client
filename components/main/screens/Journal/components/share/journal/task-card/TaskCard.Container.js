@@ -13,7 +13,8 @@ const mapStateToProps = (state, ownProps) => {
                 month_chart_stats: state["month_chart_stats"],
                 year_chart_stats: state["year_chart_stats"],
                 priorities: state["priorities"],
-                categories: state["categories"]
+                categories: state["categories"],
+                generalSettings: state["generalSettings"]
             }
         )
     }
@@ -27,7 +28,8 @@ const mapStateToProps = (state, ownProps) => {
                 month_chart_stats: state["month_chart_stats"],
                 year_chart_stats: state["year_chart_stats"],
                 priorities: state["priorities"],
-                categories: state["categories"]
+                categories: state["categories"],
+                generalSettings: state["generalSettings"]
             }
         )
     }
@@ -41,7 +43,8 @@ const mapStateToProps = (state, ownProps) => {
             month_chart_stats: state["month_chart_stats"],
             year_chart_stats: state["year_chart_stats"],
             priorities: state["priorities"],
-            categories: state["categories"]
+            categories: state["categories"],
+            generalSettings: state["generalSettings"]
         }
     )
 }

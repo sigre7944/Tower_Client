@@ -1,9 +1,9 @@
 {
   "packagerPort": 19001,
-  "packagerPid": 8228,
+  "packagerPid": 13532,
   "expoServerNgrokUrl": "https://tz-dqa.anonymous.tower-client.exp.direct",
   "packagerNgrokUrl": "https://packager.tz-dqa.anonymous.tower-client.exp.direct",
-  "ngrokPid": 7292,
+  "ngrokPid": 13440,
   "devToolsPort": 19002,
   "expoServerPort": 19000
 }

@@ -6,7 +6,8 @@ const mapStateToProps = (state, ownProps) => ({
     main_reward: state["main_reward"],
     rewards: state["rewards"],
     balance: state["balance"],
-    purchase_history: state["purchase_history"]
+    purchase_history: state["purchase_history"],
+    generalSettings: state["generalSettings"]
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

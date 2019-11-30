@@ -5,7 +5,8 @@ import CRUDRewardSection from './CRUDRewardSection'
 const mapStateToProps = (state) => ({
     rewards: state["rewards"],
     purchase_history: state["purchase_history"],
-    balance: state["balance"]
+    balance: state["balance"],
+    generalSettings: state["generalSettings"]
 })
 
 const mapDispatchToProps = (dispatch) => ({

@@ -129,8 +129,16 @@ export default class TrackingSection extends React.PureComponent {
                 }
 
                 this.props.updatePurchaseItemThunk(sending_obj)
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
-                this._playingSound()
+
+                let general_settings = Map(this.props.generalSettings)
+
+                if (general_settings.get("vibration")) {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+                }
+
+                if (general_settings.get("sound")) {
+                    this._playingSound()
+                }
             }
         }
     }
