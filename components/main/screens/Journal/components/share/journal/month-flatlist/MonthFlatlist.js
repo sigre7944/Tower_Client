@@ -189,11 +189,14 @@ export default class MonthFlatlist extends React.Component {
 
                     onScroll={this._onScroll}
                     scrollEventThrottle={6}
-                    removeClippedSubviews={true}
+                    // removeClippedSubviews={true}
                     showsHorizontalScrollIndicator={false}
 
                     onLayout={this._onLayout}
+
                     windowSize={5}
+                    maxToRenderPerBatch={5}
+                    initialNumToRender={5}
                 />
             </View>
         )

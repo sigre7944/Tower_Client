@@ -180,12 +180,14 @@ export default class DayFlatlist extends React.Component {
 
                     onScroll={this._onScroll}
                     scrollEventThrottle={5}
-                    removeClippedSubviews={true}
+                    // removeClippedSubviews={true}
                     showsHorizontalScrollIndicator={false}
 
                     onLayout={this._onLayout}
 
                     windowSize={7}
+                    maxToRenderPerBatch={7}
+                    initialNumToRender={7}
                 />
             </View>
         )

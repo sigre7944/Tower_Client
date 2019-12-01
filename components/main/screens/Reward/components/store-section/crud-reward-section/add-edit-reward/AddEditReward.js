@@ -94,6 +94,7 @@ export default class AddEditReward extends React.PureComponent {
     }
 
     _save = () => {
+        let currency = Map(this.props.generalSettings).get("currency")
         if (this.state.reward_title.length > 0 && this.state.reward_value.length > 0) {
             if (this.props.edit) {
                 let edit_reward_data_map = Map(this.props.edit_reward_data),
@@ -106,6 +107,7 @@ export default class AddEditReward extends React.PureComponent {
                                 name: this.state.reward_title,
                                 value: parseFloat(this.state.reward_value),
                                 created_at: edit_reward_data_map.get("created_at"),
+                                currency
                             })
                         },
 

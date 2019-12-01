@@ -780,6 +780,8 @@ class CategoryFlatlist extends React.PureComponent {
                     windowSize={5}
                     maxToRenderPerBatch={5}
                     initialNumToRender={5}
+                    // removeClippedSubviews={true}
+                    showsVerticalScrollIndicator={false}
                 />
 
 

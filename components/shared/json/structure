@@ -167,6 +167,7 @@
         name: reward_name,
         value: reward_value,
         currency: "euro",
+        created_at: new Date().getTime()
     }
 }
 

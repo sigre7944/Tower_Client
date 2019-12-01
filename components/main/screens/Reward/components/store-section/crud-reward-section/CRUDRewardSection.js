@@ -263,6 +263,11 @@ export default class CRUDRewardSection extends React.PureComponent {
                         justifyContent: "space-between",
                         marginTop: 22
                     }}
+
+                    windowSize={7}
+                    maxToRenderPerBatch={7}
+                    initialNumToRender={7}
+                    // removeClippedSubviews={true}
                 />
 
                 {this.state.is_add_new_reward ?

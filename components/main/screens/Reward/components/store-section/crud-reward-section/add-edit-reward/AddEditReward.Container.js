@@ -8,7 +8,8 @@ import AddEditReward from './AddEditReward'
 
 const mapStateToProps = (state) => ({
     rewards: state["rewards"],
-    main_reward: state["main_reward"]
+    main_reward: state["main_reward"],
+    generalSettings: state["generalSettings"]
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

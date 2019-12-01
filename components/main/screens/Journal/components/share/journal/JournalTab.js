@@ -477,11 +477,10 @@ class UncompletedTaskCardHolder extends React.PureComponent {
     render() {
         return (
             <FlatList
-                // data={Map(this.props.tasks).toArray()}
                 data={this.state.data}
                 extraData={this.state.should_flatlist_update}
                 showsVerticalScrollIndicator={false}
-                removeClippedSubviews={true}
+                // removeClippedSubviews={true}
 
                 renderItem={this._renderItem}
                 keyExtractor={this._keyExtractor}
@@ -1429,11 +1428,10 @@ class CompletedTaskCardHolder extends React.PureComponent {
     render() {
         return (
             <FlatList
-                // data={Map(this.props.completed_tasks).toArray()}
                 data={this.state.data}
                 extraData={this.state.should_flatlist_update}
                 showsVerticalScrollIndicator={false}
-                removeClippedSubviews={true}
+                // removeClippedSubviews={true}
 
                 renderItem={this._renderItem}
                 keyExtractor={this._keyExtractor}

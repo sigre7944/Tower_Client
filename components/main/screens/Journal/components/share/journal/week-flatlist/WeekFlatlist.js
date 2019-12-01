@@ -206,12 +206,14 @@ export default class WeekFlatlist extends React.Component {
 
                     onScroll={this._onScroll}
                     scrollEventThrottle={5}
-                    removeClippedSubviews={true}
+                    // removeClippedSubviews={true}
                     showsHorizontalScrollIndicator={false}
 
                     onLayout={this._onLayout}
 
                     windowSize={5}
+                    maxToRenderPerBatch={5}
+                    initialNumToRender={5}
                 />
             </View>
         )
