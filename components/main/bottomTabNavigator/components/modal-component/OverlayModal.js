@@ -206,10 +206,12 @@ export default class OverlayModal extends Component {
                 end_data: {
                     keyPath: ["end"],
                     notSetValue: fromJS({
-                        type: "never"
+                        type: "after",
+                        occurrence: 1
                     }),
                     updater: (value) => fromJS({
-                        type: "never"
+                        type: "after",
+                        occurrence: 1
                     })
                 },
                 priority_data: {
@@ -303,10 +305,12 @@ export default class OverlayModal extends Component {
                 end_data: {
                     keyPath: ["end"],
                     notSetValue: fromJS({
-                        type: "never"
+                        type: "after",
+                        occurrence: 1
                     }),
                     updater: (value) => fromJS({
-                        type: "never"
+                        type: "after",
+                        occurrence: 1
                     })
                 },
                 priority_data: {
@@ -392,10 +396,12 @@ export default class OverlayModal extends Component {
                 end_data: {
                     keyPath: ["end"],
                     notSetValue: fromJS({
-                        type: "never"
+                        type: "after",
+                        occurrence: 1
                     }),
                     updater: (value) => fromJS({
-                        type: "never"
+                        type: "after",
+                        occurrence: 1
                     })
                 },
                 priority_data: {

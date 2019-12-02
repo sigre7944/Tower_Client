@@ -11,6 +11,8 @@ import {
 
 import SettingHeader from "./components/header/SettingHeader";
 
+import PremiumAdvert from "./components/premium-advert/PremiumAdvert";
+
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -21,6 +23,7 @@ import { Map } from "immutable";
 import CurrencySetting from "./components/currency-setting/CurrencySetting.Container";
 
 const window_width = Dimensions.get("window").width
+const premium_1x_image = require("../../../../assets/pngs/premium_1x.png")
 
 export default class Settings extends React.Component {
   static navigationOptions = ({ navigation, navigationOptions }) => {
@@ -31,6 +34,7 @@ export default class Settings extends React.Component {
   }
 
   state = {
+    should_display_premium_advert: false
   }
 
   _onSoundChange = () => {
@@ -47,6 +51,12 @@ export default class Settings extends React.Component {
       true,
       (value) => !value
     )
+  }
+
+  _togglePremiumAdvert = () => {
+    this.setState(prevState => ({
+      should_display_premium_advert: !prevState.should_display_premium_advert
+    }))
   }
 
   componentDidMount() {
@@ -111,7 +121,7 @@ export default class Settings extends React.Component {
                 <Text
                   style={styles.normal_text}
                 >
-                  Sign in
+                  Sign in or Sign up
               </Text>
               </View>
             </View>
@@ -142,6 +152,8 @@ export default class Settings extends React.Component {
               shadowOpacity: 0.08,
               backgroundColor: "white"
             }}
+
+            onPress={this._togglePremiumAdvert}
           >
             <View
               style={{
@@ -184,11 +196,11 @@ export default class Settings extends React.Component {
               </View>
             </View>
 
-            <Feather
+            {/* <Feather
               name="chevron-right"
               size={21}
               color="#6E6E6E"
-            />
+            /> */}
           </TouchableOpacity>
 
           <View
@@ -469,6 +481,17 @@ export default class Settings extends React.Component {
             </TouchableOpacity>
           </View>
         </ScrollView>
+
+        {this.state.should_display_premium_advert ?
+          <PremiumAdvert
+            dismissAction={this._togglePremiumAdvert}
+            premium_1x_image={premium_1x_image}
+          />
+
+          :
+
+          null
+        }
       </View>
     );
   }

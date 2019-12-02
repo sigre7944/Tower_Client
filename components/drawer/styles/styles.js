@@ -13,8 +13,8 @@ export const styles = StyleSheet.create({
 
     sign_in_sign_up_text: {
         fontFamily: CommonStyles.sf_ui_display_light_font,
-        fontSize: 16,
-        lineHeight: 19,
+        fontSize: 18,
+        lineHeight: 21,
         letterSpacing: -0.02,
         color: "white",
         marginLeft: 16
@@ -22,23 +22,23 @@ export const styles = StyleSheet.create({
 
     text: {
         fontFamily: CommonStyles.sf_ui_display_light_font,
-        fontSize: 16,
-        lineHeight: 19,
+        fontSize: 18,
+        lineHeight: 21,
         letterSpacing: -0.02,
         color: "white",
     },
     normal_warning_text: {
         fontFamily: CommonStyles.sf_ui_display_light_font,
-        fontSize: 16,
-        lineHeight: 19,
+        fontSize: 18,
+        lineHeight: 21,
         letterSpacing: -0.02,
         color: CommonStyles.text_icon_colors.ti_1,
         textAlign: "center"
     },
     small_warning_text: {
         fontFamily: CommonStyles.sf_ui_display_light_font,
-        fontSize: 13,
-        lineHeight: 16,
+        fontSize: 15,
+        lineHeight: 18,
         letterSpacing: -0.02,
         color: CommonStyles.text_icon_colors.ti_3,
         textAlign: "center"

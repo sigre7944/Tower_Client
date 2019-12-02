@@ -24,7 +24,7 @@ import {
 import SortPanel from './sort-panel/SortPanel.Container';
 
 const window_width = Dimensions.get("window").width
-const animation_duration = 100
+const animation_duration = 200
 const easing = Easing.in()
 
 export default class ChooseOptions extends React.PureComponent {
@@ -49,7 +49,7 @@ export default class ChooseOptions extends React.PureComponent {
                 toValue: 0,
                 duration: animation_duration,
                 easing,
-                useNativeDriver: true
+                // useNativeDriver: true
             }
         ).start()
     }
@@ -61,7 +61,7 @@ export default class ChooseOptions extends React.PureComponent {
                 toValue: 1,
                 duration: animation_duration,
                 easing,
-                useNativeDriver: true
+                // useNativeDriver: true
             }
         ).start()
     }
@@ -72,7 +72,7 @@ export default class ChooseOptions extends React.PureComponent {
             {
                 toValue: 200,
                 duration: animation_duration,
-                useNativeDriver: true
+                // useNativeDriver: true
             }
         ).start(() => {
             callback()
@@ -86,7 +86,7 @@ export default class ChooseOptions extends React.PureComponent {
                 toValue: 0,
                 duration: animation_duration,
                 easing,
-                useNativeDriver: true
+                // useNativeDriver: true
             }
         ).start(() => {
             callback()

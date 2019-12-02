@@ -14,6 +14,9 @@ import {
 import AddCategoryPanel from '../main/screens/Journal/components/share/category/add-category-panel/AddCategoryPanel.Container'
 import EditCategoryPanel from '../main/screens/Journal/components/share/category/edit-category-panel/EditCategoryPanel.Container'
 import { Map, List, OrderedMap } from 'immutable'
+
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
     faUser,
@@ -28,7 +31,8 @@ import Swipeable from 'react-native-gesture-handler/Swipeable'
 
 import {
     category_icon,
-    plus_icon
+    plus_icon,
+    user_icon
 } from "../shared/icons";
 
 const icon_size = 18
@@ -580,6 +584,11 @@ export default class Drawer extends React.PureComponent {
         this._toggleDeleteWarning()
     }
 
+    _goToSignInSignUp = () => {
+        this.props.navigation.dispatch(DrawerActions.closeDrawer())
+        this.props.navigation.navigate("SignInSignUp")
+    }
+
     render() {
         return (
             <View
@@ -592,12 +601,21 @@ export default class Drawer extends React.PureComponent {
                         alignItems: "center",
                         marginHorizontal: 22,
                     }}
+
+                    onPress={this._goToSignInSignUp}
                 >
-                    <FontAwesomeIcon
-                        icon={faUser}
-                        color="white"
-                        size={22}
-                    />
+                    <View
+                        style={{
+                            width: 34,
+                            height: 34,
+                            justifyContent: "center",
+                            alignItems: "center",
+                            borderRadius: 17,
+                            backgroundColor: "white"
+                        }}
+                    >
+                        {user_icon(26, "#05838B")}
+                    </View>
 
                     <Text
                         style={styles.sign_in_sign_up_text}

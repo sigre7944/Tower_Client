@@ -64,5 +64,14 @@ export const styles = StyleSheet.create({
         lineHeight: 17,
         letterSpacing: -0.02,
         color: CommonStyles.text_icon_colors.ti_2
+    },
+
+    no_reward_tracked_text: {
+        fontFamily: CommonStyles.sf_ui_display_light_font,
+        fontSize: 16,
+        lineHeight: 19,
+        letterSpacing: -0.02,
+        color: CommonStyles.text_icon_colors.ti_1,
+        textAlign: "center"
     }
 })

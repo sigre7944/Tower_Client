@@ -33,3 +33,6 @@ export const settings_icon = (icon_size, icon_color) => <Feather name="settings"
 export const plus_icon = (icon_size, icon_color) => <AntDesign name="plus" size={icon_size} color={icon_color} />
 
 export const question_icon = (icon_size, icon_color) => <FontAwesomeIcon icon={faQuestion} size={icon_size} color={icon_color} />
+
+export const user_icon = (icon_size, icon_color) => <MaterialCommunityIcons name="account" size={icon_size} color={icon_color} />
+export const left_arrow_icon = (icon_size, icon_color) => <Feather name="arrow-left" size={icon_size} color={icon_color} />

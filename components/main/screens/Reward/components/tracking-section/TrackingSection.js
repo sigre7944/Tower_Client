@@ -14,7 +14,7 @@ import { Haptics } from "expo";
 import { Audio } from "expo-av";
 
 const window_width = Dimensions.get("window").width
-const looking_for_main_reward_image = require("../../../../../../assets/pngs/looking_for_main_reward.png")
+const no_main_reward_1x = require("../../../../../../assets/pngs/no_main_reward_1x.png")
 
 export default class TrackingSection extends React.PureComponent {
 
@@ -155,7 +155,8 @@ export default class TrackingSection extends React.PureComponent {
             progress_percent = 0,
             balance = parseFloat(this.props.balance),
             rewards_map = OrderedMap(this.props.rewards),
-            can_get_reward_bool = false
+            can_get_reward_bool = false,
+            motivating_text = ""
 
         if (main_reward.length === 0 || main_reward === "") {
             no_main_reward_bool = true
@@ -167,7 +168,20 @@ export default class TrackingSection extends React.PureComponent {
             progress_percent = balance / parseFloat(main_reward_value)
 
             if (progress_percent >= 1) {
+                motivating_text = "You nailed it!"
                 can_get_reward_bool = true
+            }
+
+            else if (progress_percent >= 0.75 & progress_percent < 1) {
+                motivating_text = "Almost there!"
+            }
+
+            else if (progress_percent >= 0.4 & progress_percent < 0.75) {
+                motivating_text = "You're doing great!"
+            }
+
+            else {
+                motivating_text = "You can do this!"
             }
         }
 
@@ -191,16 +205,37 @@ export default class TrackingSection extends React.PureComponent {
                     >
                         <View
                             style={{
-                                height: 284,
+                                height: 254,
                                 borderRadius: 10,
                                 justifyContent: "center",
                                 alignItems: "center",
                             }}
                         >
                             <Image
-                                source={looking_for_main_reward_image}
-                                resizeMode="center"
+                                source={no_main_reward_1x}
+                                resizeMode="contain"
+                                style={{
+                                    flex: 1,
+                                }}
                             />
+
+                            <View
+                                style={{
+                                    marginTop: 10,
+                                }}
+                            >
+                                <Text
+                                    style={styles.no_reward_tracked_text}
+                                >
+                                    You don't have any main rewards.
+                                </Text>
+
+                                <Text
+                                    style={styles.no_reward_tracked_text}
+                                >
+                                    Set one to stay active!
+                                </Text>
+                            </View>
                         </View>
                     </View>
                     :
@@ -246,8 +281,8 @@ export default class TrackingSection extends React.PureComponent {
                                 <Text
                                     style={styles.main_value_cheering}
                                 >
-                                    You are almost there!
-                            </Text>
+                                    {motivating_text}
+                                </Text>
 
                                 {can_get_reward_bool ?
                                     <TouchableOpacity

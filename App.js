@@ -7,6 +7,10 @@ import Drawer from './components/drawer/Drawer.Container'
 
 import PurchaseHistory from './components/purchase-history-screen/PurchaseHistory.Container'
 import EditMultipleTasks from "./components/edit-multiple-tasks-screen/EditMultipleTasks.Container";
+
+import SignInSignUpOptions from "./components/sign-in-sign-up-screen/SignInSignUpOptions";
+import SignInScreen from "./components/sign-in-screen/SignInScreen";
+
 import * as Font from 'expo-font'
 
 import { PersistGate } from "redux-persist/lib/integration/react";
@@ -53,7 +57,7 @@ export default class App extends React.Component {
           this.state.finished_loading_fonts ?
             <Provider store={store}>
               {/* <PersistGate loading={null} persistor={persistor}> */}
-                <AppContainer />
+              <AppContainer />
               {/* </PersistGate> */}
             </Provider>
             :
@@ -78,7 +82,9 @@ const DrawerNavigator = createDrawerNavigator({
 const AppStackNavigator = createStackNavigator({
   DrawerNavigator: { screen: DrawerNavigator, navigationOptions: { header: null } },
   PurchaseHistory: { screen: PurchaseHistory },
-  EditMultipleTasks: { screen: EditMultipleTasks }
+  EditMultipleTasks: { screen: EditMultipleTasks },
+  SignInSignUp: { screen: SignInSignUpOptions },
+  SignInScreen: { screen: SignInScreen }
 }, {
   initialRouteName: "DrawerNavigator",
   headerMode: "screen",
