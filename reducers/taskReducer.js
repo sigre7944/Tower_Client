@@ -19,7 +19,8 @@ let initial_currentMonthTask = fromJS({
         }
     },
     end: {
-        type: "never"
+        type: "after",
+        occurrence: 1
     },
 
     priority: {
@@ -56,7 +57,8 @@ let initial_currentMonthTask = fromJS({
             }
         },
         end: {
-            type: "never"
+            type: "after",
+            occurrence: 1
         },
         priority: {
             value: "pri_01",
@@ -85,7 +87,8 @@ let initial_currentMonthTask = fromJS({
             }
         },
         end: {
-            type: "never"
+            type: "after",
+            occurrence: 1
         },
         priority: {
             value: "pri_01",

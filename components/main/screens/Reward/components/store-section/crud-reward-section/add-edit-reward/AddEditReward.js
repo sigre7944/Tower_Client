@@ -13,21 +13,22 @@ import {
     Easing
 } from 'react-native';
 
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
-    faEdit,
-    faDollarSign,
-    faCheck,
-    faTimes
-} from "@fortawesome/free-solid-svg-icons";
+    reward_icon,
+    check_icon,
+    close_icon
+} from "../../../../../../../shared/icons";
+
+const icon_size = 14
+const icon_color = "#2C2C2C"
 
 import { styles } from "./styles/styles";
 
 import { Map, fromJS } from "immutable";
 
 const shortid = require("shortid")
-const animation_duration = 200
-const easing = Easing.inOut(Easing.linear)
+const animation_duration = 250
+const easing = Easing.in()
 
 export default class AddEditReward extends React.PureComponent {
 
@@ -68,11 +69,12 @@ export default class AddEditReward extends React.PureComponent {
             }
 
         this.props.deleteReward(sending_obj)
-        this.props.dismissAction()
+        this._dismissAction()
     }
 
     _cancel = () => {
-        this.props.dismissAction()
+        this._animateEnd(this.props.dismissAction)
+        // this.props.dismissAction()
     }
 
     onChangeRewardTitle = (e) => {
@@ -144,21 +146,33 @@ export default class AddEditReward extends React.PureComponent {
             }
         }
 
-        this.props.dismissAction()
+        this._cancel()
     }
 
     _animate = () => {
-        Animated.parallel([
-            Animated.timing(
-                this.scale_value,
-                {
-                    toValue: 1,
-                    duration: animation_duration,
-                    easing,
-                    useNativeDriver: true
-                }
-            )
-        ]).start()
+        Animated.timing(
+            this.scale_value,
+            {
+                toValue: 1,
+                duration: animation_duration,
+                easing,
+                // useNativeDriver: true
+            }
+        ).start()
+    }
+
+    _animateEnd = (callback) => {
+        Animated.timing(
+            this.scale_value,
+            {
+                toValue: 0,
+                duration: animation_duration,
+                easing,
+                // useNativeDriver: true
+            }
+        ).start(() => {
+            callback()
+        })
     }
 
     componentDidMount() {
@@ -189,7 +203,7 @@ export default class AddEditReward extends React.PureComponent {
                     }}
                 >
                     <TouchableWithoutFeedback
-                        onPress={this._dismissAction}
+                        onPress={this._cancel}
                     >
                         <View
                             style={{
@@ -232,10 +246,7 @@ export default class AddEditReward extends React.PureComponent {
                                     style={styles.cancel_container}
                                     onPress={this._toggleDelete}
                                 >
-                                    <FontAwesomeIcon
-                                        icon={faTimes}
-                                        color="white"
-                                    />
+                                    {close_icon(19, "white")}
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
@@ -243,10 +254,7 @@ export default class AddEditReward extends React.PureComponent {
 
                                     onPress={this._delete}
                                 >
-                                    <FontAwesomeIcon
-                                        icon={faCheck}
-                                        color="white"
-                                    />
+                                    {check_icon(19, "white")}
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -277,11 +285,7 @@ export default class AddEditReward extends React.PureComponent {
                                 >
                                     {!this.props.edit ?
                                         <>
-                                            <FontAwesomeIcon
-                                                icon={faDollarSign}
-                                                color="#2C2C2C"
-                                                size={17}
-                                            />
+                                            {reward_icon(icon_size, icon_color)}
 
                                             <Text
                                                 style={styles.title}
@@ -293,11 +297,7 @@ export default class AddEditReward extends React.PureComponent {
                                         :
 
                                         <>
-                                            <FontAwesomeIcon
-                                                icon={faEdit}
-                                                color="#2C2C2C"
-                                                size={17}
-                                            />
+                                            {reward_icon(icon_size, icon_color)}
 
                                             <Text
                                                 style={styles.title}
@@ -407,10 +407,7 @@ export default class AddEditReward extends React.PureComponent {
 
                                             onPress={this._cancel}
                                         >
-                                            <FontAwesomeIcon
-                                                icon={faTimes}
-                                                color="white"
-                                            />
+                                            {close_icon(19, "white")}
                                         </TouchableOpacity>
 
                                         <TouchableOpacity
@@ -418,10 +415,7 @@ export default class AddEditReward extends React.PureComponent {
 
                                             onPress={this._save}
                                         >
-                                            <FontAwesomeIcon
-                                                icon={faCheck}
-                                                color="white"
-                                            />
+                                            {check_icon(19, "white")}
                                         </TouchableOpacity>
                                     </View>
                                 </View>

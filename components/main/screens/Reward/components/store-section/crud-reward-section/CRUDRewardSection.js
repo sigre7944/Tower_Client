@@ -349,7 +349,7 @@ class RewardHolder extends React.PureComponent {
                 <Text
                     style={styles.reward_value}
                 >
-                    {reward_value} €
+                    {reward_value} pts
                 </Text>
 
                 <TouchableOpacity

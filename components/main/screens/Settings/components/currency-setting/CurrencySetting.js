@@ -12,11 +12,7 @@ import {
 import { styles } from "./styles/styles";
 import Collapsible from "react-native-collapsible";
 
-import { Map, fromJS } from "immutable";
-
-import axios from "axios";
-
-import { EXCHANGERATES } from "../../../../../../api/endPoints";
+import { Map } from "immutable";
 
 const window_width = Dimensions.get("window").width
 
@@ -41,68 +37,33 @@ export default class CurrencySetting extends React.PureComponent {
     }
 
     _onCurrencySelectionChange = (value, index) => {
-        this.props.updateGeneralSettings(
-            ["currency"],
-            "EUR",
-            (v) => value
-        )
-    }
-
-    _getLatestEURRate = () => {
-        return axios({
-            method: "GET",
-            url: EXCHANGERATES + 'latest?symbols=JPY,USD,GBP&base=EUR'
-        })
-    }
-
-    _getLatestUSDRate = () => {
-        return axios({
-            method: "GET",
-            url: EXCHANGERATES + 'latest?symbols=JPY,EUR,GBP&base=USD'
-        })
-    }
-
-    _getLatestGBPRate = () => {
-        return axios({
-            method: "GET",
-            url: EXCHANGERATES + 'latest?symbols=JPY,USD,EUR&base=GBP'
-        })
-    }
-
-    _getLatestJPYRate = () => {
-        return axios({
-            method: "GET",
-            url: EXCHANGERATES + 'latest?symbols=EUR,USD,GBP&base=JPY'
-        })
-    }
-
-    _updateLatestCurrencyRatesRemotely = async () => {
-        try {
-            let promises = [this._getLatestEURRate(), this._getLatestUSDRate(), this._getLatestGBPRate(), this._getLatestJPYRate()]
-            const latest_results = await axios.all(promises)
-
-            let sending_data = {}
-
-            latest_results.forEach((result, index) => {
-                let base = result.data["base"]
-                sending_data[base] = result.data
-            })
-
-            this.props.updateGeneralSettings(
-                ["exchange_rates"],
-                {},
-                (v) => fromJS(sending_data)
-            )
+        let sending_data = {
+            general_settings: {},
+            balance: {}
         }
 
-        catch (err) {
-            console.log(err)
+        sending_data.general_settings = {
+            keyPath: ["currency"],
+            notSetValue: "EUR",
+            updater: (v) => value
         }
+
+        let current_balance = parseFloat(this.props.balance),
+            general_settings = Map(this.props.generalSettings),
+            current_currency = general_settings.get("currency"),
+            new_currency = value,
+            rate = parseFloat(general_settings.getIn(["exchange_rates", current_currency, "rates", new_currency])),
+            new_balance = rate * current_balance
+
+        sending_data.balance = {
+            amount: new_balance.toFixed(2)
+        }
+
+        this.props.updateCurrency(sending_data)
     }
 
     componentDidMount() {
-        // this._updateLatestCurrencyRatesRemotely()
-        this.props.updateCurrencyExchangeRatesAsync()
+        this.props.updateLatestCurrencyExchangeRatesAsync()
     }
 
     render() {

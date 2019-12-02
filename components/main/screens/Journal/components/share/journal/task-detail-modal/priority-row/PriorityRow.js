@@ -10,11 +10,13 @@ import {
     TextInput,
     Modal,
 } from 'react-native'
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
-    faExclamationTriangle
-} from '@fortawesome/free-solid-svg-icons'
-import { Map, List } from 'immutable'
+    priority_icon
+} from "../../../../../../../../shared/icons";
+
+const icon_size = 14
+const icon_color = "#2C2C2C"
+
 import { styles } from './styles/styles';
 
 const window_width = Dimensions.get("window").width
@@ -38,11 +40,15 @@ export default class PriorityRow extends React.PureComponent {
                         alignItems: "center",
                     }}
                 >
-                    <FontAwesomeIcon
-                        icon={faExclamationTriangle}
-                        size={14}
-                        color={this.props.priority_color}
-                    />
+                    <View
+                        style={{
+                            width: icon_size,
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}
+                    >
+                        {priority_icon(icon_size, icon_color)}
+                    </View>
                 </View>
 
 

@@ -59,7 +59,7 @@ class CompleteBox extends React.PureComponent {
 
     render() {
         return (
-            <TouchableOpacity
+            <View
                 style={styles.complete_box_container}
             >
                 {this.props.checked_complete ?
@@ -75,7 +75,7 @@ class CompleteBox extends React.PureComponent {
                 <View>
 
                 </View>
-            </TouchableOpacity>
+            </View>
         )
     }
 }

@@ -141,7 +141,7 @@ let initial_general_settings = fromJS({
     vibration: true,
     currency: "EUR",
     exchange_rates: {
-        euro: {
+        EUR: {
             base: "EUR",
             date: "2019-11-29",
             rates: {

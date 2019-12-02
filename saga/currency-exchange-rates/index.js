@@ -44,6 +44,9 @@ function* updateCurrencyExchangeRates() {
 
     latest_results.forEach((result, index) => {
         let base = result.data["base"]
+        if(base === "euro"){
+            base = "EUR"
+        }
         sending_data[base] = result.data
     })
 

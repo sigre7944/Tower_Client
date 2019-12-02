@@ -499,7 +499,7 @@ class GoalHolder extends React.PureComponent {
                         <Text
                             style={styles.every_option_text}
                         >
-                            times per day
+                            times per month
                         </Text>
                     </View>
                 </TouchableOpacity>

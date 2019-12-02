@@ -13,10 +13,13 @@ import TrackingSection from './components/tracking-section/TrackingSection.Conta
 import StoreSection from './components/store-section/StoreSection'
 
 import RewardHeader from "./components/header/RewardHeader";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+
 import {
-  faPlus
-} from "@fortawesome/free-solid-svg-icons";
+  plus_icon
+} from "../../../shared/icons";
+
+const icon_size = 19
+const icon_color = "white"
 
 import { OrderedMap } from "immutable";
 
@@ -160,11 +163,7 @@ export default class Reward extends React.PureComponent {
               style={styles.add_reward_button_container}
               onPress={this._toggleShouldDisplayNewRewardModal}
             >
-              <FontAwesomeIcon
-                icon={faPlus}
-                color="white"
-                size={18}
-              />
+              {plus_icon(icon_size, icon_color)}
             </TouchableOpacity>
           </View>
           :

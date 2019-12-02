@@ -8,6 +8,9 @@ export const balance = (state = 100, action) => {
         case 'WITHDRAW_BALANCE_AMOUNT':
             return state - action.amount
 
+        case 'UPDATE_BALANCE_AMOUNT':
+            return action.amount
+
         default:
             return state
     }

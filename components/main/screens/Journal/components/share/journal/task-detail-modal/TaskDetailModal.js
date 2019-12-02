@@ -41,6 +41,11 @@ const animation_duration = 250
 export default class TaskDetailModal extends React.PureComponent {
 
     anim_translate_y = new Animated.Value(window_height)
+    anim_opacity = this.anim_translate_y.interpolate({
+        inputRange: [0, window_height],
+        outputRange: [1, 0],
+        extrapolate: "clamp"
+    })
 
     daysInWeekText = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
@@ -75,9 +80,23 @@ export default class TaskDetailModal extends React.PureComponent {
                 toValue: 0,
                 duration: animation_duration,
                 easing,
-                useNativeDriver: true
+                // useNativeDriver: true
             }
         ).start()
+    }
+
+    _disappearAnim = (callback) => {
+        Animated.timing(
+            this.anim_translate_y,
+            {
+                toValue: window_height,
+                duration: animation_duration,
+                easing,
+                // useNativeDriver: true
+            }
+        ).start(() => {
+            callback()
+        })
     }
 
     _openEdit = () => {
@@ -89,7 +108,8 @@ export default class TaskDetailModal extends React.PureComponent {
     }
 
     _dismissModal = () => {
-        this.props.closeModal()
+        this._disappearAnim(this.props.closeModal)
+        // this.props.closeModal()
     }
 
     _toggleDelete = () => {
@@ -139,7 +159,7 @@ export default class TaskDetailModal extends React.PureComponent {
             task_end_type = task_data_map.getIn(["end", "type"]),
             task_end_text = "",
             task_reward_text = Map(task_data_map).getIn(["reward", "value"]),
-            task_goal_text = `${Map(task_data_map).getIn(["goal", "max"])} time per occurrence`
+            task_goal_text = `${Map(task_data_map).getIn(["goal", "max"])} times per ${type}`
 
         if (type === "day") {
             let day = parseInt(Map(task_schedule).get("day")),
@@ -217,13 +237,13 @@ export default class TaskDetailModal extends React.PureComponent {
         else if (task_end_type === "on") {
             let end_date = new Date(parseInt(Map(task_end).get("endAt")))
 
-            task_end_text = `${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]} ${end_date.getFullYear()}`
+            task_end_text = `on ${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]} ${end_date.getFullYear()}`
         }
 
         else {
             let occurrences = Map(task_end).get("occurrence")
 
-            task_end_text = `${occurrences} occurrence`
+            task_end_text = `after ${occurrences} occurrences`
         }
 
         return (
@@ -262,7 +282,8 @@ export default class TaskDetailModal extends React.PureComponent {
                             width: Dimensions.get("window").width,
                             backgroundColor: "white",
                             bottom: 0,
-                            transform: [{ translateY: this.anim_translate_y }]
+                            transform: [{ translateY: this.anim_translate_y }],
+                            opacity: this.anim_opacity
                         }}
                     >
                         {this.state.is_edit_selected ?

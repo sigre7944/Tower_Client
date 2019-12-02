@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import {
     View,
     Text,
+    TouchableWithoutFeedback,
     TouchableOpacity,
     TextInput,
     Modal,
@@ -181,17 +182,18 @@ class RepeatTypePicker extends React.PureComponent {
                         position: "relative"
                     }}
                 >
-                    <TouchableOpacity
-                        style={{
-                            flex: 1,
-                            width: window_width,
-                            backgroundColor: "#000000",
-                            opacity: 0.2,
-                        }}
-
+                    <TouchableWithoutFeedback
                         onPress={this.props._closePicker}
                     >
-                    </TouchableOpacity>
+                        <View
+                            style={{
+                                flex: 1,
+                                width: window_width,
+                                backgroundColor: "#000000",
+                                opacity: 0.2,
+                            }}
+                        />
+                    </TouchableWithoutFeedback>
 
                     <View
                         style={{

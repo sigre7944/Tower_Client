@@ -1,17 +1,13 @@
-import { call, takeEvery } from "redux-saga/effects";
-import axios from "axios";
+import { batchActions } from "redux-batched-actions";
 
-import { EXCHANGERATES } from "../../../../../../../api/endPoints";
+import { updateGeneralSettings } from '../../../../../../shared/actions/otherAction'
 
-function* getLatestExchangeRate() {
-    const result = yield axios({
-        method: "GET",
-        url: EXCHANGERATES + 'latest'
-    })
 
-    console.log(result)
-}
+export const updateCurrency = ({ general_settings, balance }) => (dispatch, getState) => {
+    let action_array = [
+        updateGeneralSettings(general_settings.keyPath, general_settings.notSetValue, general_settings.updater),
+        { type: "UPDATE_BALANCE_AMOUNT", amount: balance.amount }
+    ]
 
-export const getUpdateCurrencyExchangeRate = () => {
-    getLatestExchangeRate()
+    dispatch(batchActions(action_array))
 }

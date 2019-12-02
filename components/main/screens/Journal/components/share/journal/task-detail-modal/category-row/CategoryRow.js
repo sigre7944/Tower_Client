@@ -10,19 +10,14 @@ import {
     TextInput,
     Modal,
 } from 'react-native'
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import {
-    faCalendarAlt
-} from '@fortawesome/free-solid-svg-icons'
-import { Map, List } from 'immutable'
 import { styles } from './styles/styles';
 
 const window_width = Dimensions.get("window").width
 
 export default class CategoryRow extends React.PureComponent {
     render() {
-        let category_text_style = this.props.category_color === "white" 
-        || this.props.category_color === "no color" ? styles.text : { ...styles.text, ...{ color: this.props.category_color } }
+        let category_text_style = this.props.category_color === "white"
+            || this.props.category_color === "no color" ? styles.text : { ...styles.text, ...{ color: this.props.category_color } }
         return (
             <View
                 style={{

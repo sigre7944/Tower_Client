@@ -44,6 +44,7 @@ export default class TagDataHolder extends React.PureComponent {
                         currentTask={this.props.currentTask}
                         categories={this.props.categories}
                         priorities={this.props.priorities}
+                        currentAnnotation={this.props.currentAnnotation}
                     />
 
                     :
@@ -55,6 +56,7 @@ export default class TagDataHolder extends React.PureComponent {
                                     currentTask={this.props.currentTask}
                                     categories={this.props.categories}
                                     priorities={this.props.priorities}
+                                    currentAnnotation={this.props.currentAnnotation}
                                 />
 
                                 :
@@ -63,6 +65,7 @@ export default class TagDataHolder extends React.PureComponent {
                                     currentTask={this.props.currentTask}
                                     categories={this.props.categories}
                                     priorities={this.props.priorities}
+                                    currentAnnotation={this.props.currentAnnotation}
                                 />
                         }
                     </>
@@ -84,6 +87,7 @@ class DayTagDataList extends React.PureComponent {
                             data={data[1]}
                             categories={this.props.categories}
                             priorities={this.props.priorities}
+                            currentAnnotation={this.props.currentAnnotation}
                         />
                     ))
                 }
@@ -223,7 +227,7 @@ class DayTagDataElement extends React.PureComponent {
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
-                                {`${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]} ${end_date.getFullYear()}`}
+                                {`on ${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]} ${end_date.getFullYear()}`}
                             </Text>
                         </View>
                 })
@@ -242,7 +246,7 @@ class DayTagDataElement extends React.PureComponent {
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
-                                {`${occurrences} occurrence`}
+                                {`after ${occurrences} occurrences`}
                             </Text>
                         </View>
                 })
@@ -317,7 +321,7 @@ class DayTagDataElement extends React.PureComponent {
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
-                            {`${value} time per occurrence`}
+                            {`${value} times per ${this.props.currentAnnotation}`}
                         </Text>
                     </View>
             })
@@ -345,6 +349,7 @@ class WeekTagDataList extends React.PureComponent {
                             data={data[1]}
                             categories={this.props.categories}
                             priorities={this.props.priorities}
+                            currentAnnotation={this.props.currentAnnotation}
                         />
                     ))
                 }
@@ -491,7 +496,7 @@ class WeekTagDataElement extends React.PureComponent {
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
-                                {`${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]} ${end_date.getFullYear()}`}
+                                {`on ${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]} ${end_date.getFullYear()}`}
                             </Text>
                         </View>
                 })
@@ -510,7 +515,7 @@ class WeekTagDataElement extends React.PureComponent {
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
-                                {`${occurrences} occurrence`}
+                                {`after ${occurrences} occurrences`}
                             </Text>
                         </View>
                 })
@@ -585,7 +590,7 @@ class WeekTagDataElement extends React.PureComponent {
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
-                            {`${value} time per occurrence`}
+                            {`${value} times per ${this.props.currentAnnotation}`}
                         </Text>
                     </View>
             })
@@ -613,6 +618,7 @@ class MonthTagDataList extends React.PureComponent {
                             data={data[1]}
                             categories={this.props.categories}
                             priorities={this.props.priorities}
+                            currentAnnotation={this.props.currentAnnotation}
                         />
                     ))
                 }
@@ -709,7 +715,7 @@ class MonthTagDataElement extends React.PureComponent {
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
-                                {`${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]} ${end_date.getFullYear()}`}
+                                {`on ${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]} ${end_date.getFullYear()}`}
                             </Text>
                         </View>
                 })
@@ -728,7 +734,7 @@ class MonthTagDataElement extends React.PureComponent {
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
-                                {`${occurrences} occurrence`}
+                                {`after ${occurrences} occurrences`}
                             </Text>
                         </View>
                 })
@@ -803,7 +809,7 @@ class MonthTagDataElement extends React.PureComponent {
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
-                            {`${value} time per occurrence`}
+                            {`${value} times per ${this.props.currentAnnotation}`}
                         </Text>
                     </View>
             })

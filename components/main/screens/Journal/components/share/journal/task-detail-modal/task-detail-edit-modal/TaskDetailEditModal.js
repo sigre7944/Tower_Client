@@ -12,17 +12,19 @@ import {
     Modal,
     ScrollView
 } from 'react-native'
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 
 import {
-    faCalendarAlt,
-    faExclamationTriangle,
-    faRedoAlt,
-    faFlag,
-    faHourglassEnd,
-    faTrophy,
-    faTimes
-} from '@fortawesome/free-solid-svg-icons'
+    calendar_icon,
+    priority_icon,
+    repeat_icon,
+    goal_icon,
+    end_icon,
+    reward_icon,
+    close_icon
+} from "../../../../../../../../shared/icons";
+
+const icon_size = 14
+const icon_color = "#2C2C2C"
 
 import { Map, List } from 'immutable'
 import { styles } from './styles/styles';
@@ -140,7 +142,7 @@ export default class TaskDetailEditModal extends Component {
             task_end_type = task_data_map.getIn(["end", "type"]),
             task_end_text = "",
             task_reward_text = Map(task_data_map).getIn(["reward", "value"]),
-            task_goal_text = `${Map(task_data_map).getIn(["goal", "max"])} time per occurrence`
+            task_goal_text = `${Map(task_data_map).getIn(["goal", "max"])} times per ${type}`
 
         if (type === "day") {
             let day = parseInt(Map(task_schedule).get("day")),
@@ -218,13 +220,13 @@ export default class TaskDetailEditModal extends Component {
         else if (task_end_type === "on") {
             let end_date = new Date(parseInt(Map(task_end).get("endAt")))
 
-            task_end_text = `${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]} ${end_date.getFullYear()}`
+            task_end_text = `on ${this.daysInWeekText[end_date.getDay()]} ${end_date.getDate()} ${this.monthNames[end_date.getMonth()]} ${end_date.getFullYear()}`
         }
 
         else {
             let occurrences = Map(task_end).get("occurrence")
 
-            task_end_text = `${occurrences} occurrence`
+            task_end_text = `after ${occurrences} occurrences`
         }
 
         return (
@@ -548,11 +550,15 @@ class ScheduleRow extends React.PureComponent {
 
                         onPress={this._chooseEdittingField}
                     >
-                        <FontAwesomeIcon
-                            icon={faCalendarAlt}
-                            size={14}
-                            color="#2C2C2C"
-                        />
+                        <View
+                            style={{
+                                width: icon_size,
+                                justifyContent: "center",
+                                alignItems: "center"
+                            }}
+                        >
+                            {calendar_icon(icon_size, icon_color)}
+                        </View>
 
                         <Text
                             style={styles.normal_text}
@@ -572,11 +578,7 @@ class ScheduleRow extends React.PureComponent {
 
                         onPress={this._resetEditData}
                     >
-                        <FontAwesomeIcon
-                            icon={faTimes}
-                            size={14}
-                            color="rgba(0, 0, 0, 0.3)"
-                        />
+                        {close_icon(icon_size, icon_color)}
                     </TouchableOpacity>
                 </View>
             </View>
@@ -681,11 +683,7 @@ class CategoryRow extends React.PureComponent {
 
                         onPress={this._resetEditData}
                     >
-                        <FontAwesomeIcon
-                            icon={faTimes}
-                            size={14}
-                            color="rgba(0, 0, 0, 0.3)"
-                        />
+                        {close_icon(icon_size, icon_color)}
                     </TouchableOpacity>
                 </View>
             </View>
@@ -735,11 +733,15 @@ class PriorityRow extends React.PureComponent {
 
                         onPress={this._chooseEdittingField}
                     >
-                        <FontAwesomeIcon
-                            icon={faExclamationTriangle}
-                            size={14}
-                            color={this.props.task_priority_color}
-                        />
+                        <View
+                            style={{
+                                width: icon_size,
+                                justifyContent: "center",
+                                alignItems: "center"
+                            }}
+                        >
+                            {priority_icon(icon_size, icon_color)}
+                        </View>
 
                         <Text
                             style={{ ...styles.normal_text, ...{ color: this.props.task_priority_color } }}
@@ -759,11 +761,7 @@ class PriorityRow extends React.PureComponent {
 
                         onPress={this._resetEditData}
                     >
-                        <FontAwesomeIcon
-                            icon={faTimes}
-                            size={14}
-                            color="rgba(0, 0, 0, 0.3)"
-                        />
+                        {close_icon(icon_size, icon_color)}
                     </TouchableOpacity>
                 </View>
             </View>
@@ -813,11 +811,15 @@ class RepeatRow extends React.PureComponent {
 
                         onPress={this._chooseEdittingField}
                     >
-                        <FontAwesomeIcon
-                            icon={faRedoAlt}
-                            size={14}
-                            color="#2C2C2C"
-                        />
+                        <View
+                            style={{
+                                width: icon_size,
+                                justifyContent: "center",
+                                alignItems: "center"
+                            }}
+                        >
+                            {repeat_icon(icon_size, icon_color)}
+                        </View>
 
                         <Text
                             style={styles.normal_text}
@@ -837,11 +839,7 @@ class RepeatRow extends React.PureComponent {
 
                         onPress={this._resetEditData}
                     >
-                        <FontAwesomeIcon
-                            icon={faTimes}
-                            size={14}
-                            color="rgba(0, 0, 0, 0.3)"
-                        />
+                        {close_icon(icon_size, icon_color)}
                     </TouchableOpacity>
                 </View>
             </View>
@@ -891,11 +889,15 @@ class EndRow extends React.PureComponent {
 
                         onPress={this._chooseEdittingField}
                     >
-                        <FontAwesomeIcon
-                            icon={faHourglassEnd}
-                            size={14}
-                            color="#2C2C2C"
-                        />
+                        <View
+                            style={{
+                                width: icon_size,
+                                justifyContent: "center",
+                                alignItems: "center"
+                            }}
+                        >
+                            {end_icon(icon_size, icon_color)}
+                        </View>
 
                         <Text
                             style={styles.normal_text}
@@ -915,11 +917,7 @@ class EndRow extends React.PureComponent {
 
                         onPress={this._resetEditData}
                     >
-                        <FontAwesomeIcon
-                            icon={faTimes}
-                            size={14}
-                            color="rgba(0, 0, 0, 0.3)"
-                        />
+                        {close_icon(icon_size, icon_color)}
                     </TouchableOpacity>
                 </View>
             </View>
@@ -969,11 +967,15 @@ class RewardRow extends React.PureComponent {
 
                         onPress={this._chooseEdittingField}
                     >
-                        <FontAwesomeIcon
-                            icon={faTrophy}
-                            size={14}
-                            color="#2C2C2C"
-                        />
+                        <View
+                            style={{
+                                width: icon_size,
+                                justifyContent: "center",
+                                alignItems: "center"
+                            }}
+                        >
+                            {reward_icon(icon_size, icon_color)}
+                        </View>
 
                         <Text
                             style={styles.normal_text}
@@ -993,11 +995,7 @@ class RewardRow extends React.PureComponent {
 
                         onPress={this._resetEditData}
                     >
-                        <FontAwesomeIcon
-                            icon={faTimes}
-                            size={14}
-                            color="rgba(0, 0, 0, 0.3)"
-                        />
+                        {close_icon(icon_size, icon_color)}
                     </TouchableOpacity>
                 </View>
             </View>
@@ -1047,11 +1045,15 @@ class GoalRow extends React.PureComponent {
 
                         onPress={this._chooseEdittingField}
                     >
-                        <FontAwesomeIcon
-                            icon={faFlag}
-                            size={14}
-                            color="#2C2C2C"
-                        />
+                        <View
+                            style={{
+                                width: icon_size,
+                                justifyContent: "center",
+                                alignItems: "center"
+                            }}
+                        >
+                            {goal_icon(icon_size, icon_color)}
+                        </View>
 
                         <Text
                             style={styles.normal_text}
@@ -1071,11 +1073,7 @@ class GoalRow extends React.PureComponent {
 
                         onPress={this._resetEditData}
                     >
-                        <FontAwesomeIcon
-                            icon={faTimes}
-                            size={14}
-                            color="rgba(0, 0, 0, 0.3)"
-                        />
+                        {close_icon(icon_size, icon_color)}
                     </TouchableOpacity>
                 </View>
             </View>

@@ -280,7 +280,7 @@ export default class Settings extends React.Component {
             <View
               style={styles.separating_line}
             />
-            <CurrencySetting />
+            {/* <CurrencySetting /> */}
           </View>
 
           {/* <View

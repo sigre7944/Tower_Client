@@ -10,11 +10,14 @@ import {
     TextInput,
     Modal,
 } from 'react-native'
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+
 import {
-    faHourglassEnd
-} from '@fortawesome/free-solid-svg-icons'
-import { Map, List } from 'immutable'
+    end_icon
+} from "../../../../../../../../shared/icons";
+
+const icon_size = 14
+const icon_color = "#2C2C2C"
+
 import { styles } from './styles/styles';
 
 const window_width = Dimensions.get("window").width
@@ -38,11 +41,15 @@ export default class EndRow extends React.PureComponent {
                         alignItems: "center",
                     }}
                 >
-                    <FontAwesomeIcon
-                        icon={faHourglassEnd}
-                        size={14}
-                        color="#2C2C2C"
-                    />
+                    <View
+                        style={{
+                            width: icon_size,
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}
+                    >
+                        {end_icon(icon_size, icon_color)}
+                    </View>
                 </View>
 
 
