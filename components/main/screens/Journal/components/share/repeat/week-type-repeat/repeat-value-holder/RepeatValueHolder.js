@@ -13,10 +13,12 @@ import {
 
 import { styles } from './styles/styles'
 
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
-    faRedoAlt,
-} from '@fortawesome/free-solid-svg-icons'
+    repeat_icon
+} from "../../../../../../../../shared/icons";
+
+const icon_color = "#2C2C2C"
+const icon_size = 14
 
 const window_width = Dimensions.get("window").width
 
@@ -86,12 +88,15 @@ export default class RepeatValueHolder extends React.PureComponent {
                         alignItems: "center"
                     }}
                 >
-                    <FontAwesomeIcon
-                        icon={faRedoAlt}
-                        color="#2C2C2C"
-                        size={14}
-                    />
-
+                    <View
+                        style={{
+                            width: icon_size,
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}
+                    >
+                        {repeat_icon(icon_size, icon_color)}
+                    </View>
                     <Text
                         style={styles.title_text}
                     >

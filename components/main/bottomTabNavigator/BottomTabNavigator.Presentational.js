@@ -18,6 +18,16 @@ import {
 
 import { styles } from './styles/styles'
 
+import {
+    journal_icon,
+    reward_screen_icon,
+    progress_icon,
+    settings_icon
+} from "../../shared/icons";
+import { primary_colors } from "../../shared/styles/style";
+
+const icon_color = primary_colors.prim_1
+
 export default class BottomTabNavigator extends React.Component {
 
     state = {
@@ -37,7 +47,7 @@ export default class BottomTabNavigator extends React.Component {
         this.props.navigation.navigate({ routeName })
     }
 
-    componentDidMount(){
+    componentDidMount() {
         if ((this.props.routeName === "Day" || this.props.routeName === "Week" || this.props.routeName === "Month")) {
             this.setState({
                 should_AddTaskButton_be_displayed: true
@@ -180,12 +190,15 @@ class ScreenComponent extends React.Component {
                 >
                     {this.props.screen_route_name === "Journal" ?
                         <>
-                            < FontAwesomeIcon
-                                icon={faClipboardList}
-                                size={20}
-                                style={this.state.icon_style}
-                            />
-
+                            <View
+                                style={{
+                                    height: 30,
+                                    alignItems: "center",
+                                    justifyContent: "center"
+                                }}
+                            >
+                                {journal_icon(20, icon_color)}
+                            </View>
                             <Text
                                 style={this.state.icon_text_style}
                             >
@@ -196,12 +209,15 @@ class ScreenComponent extends React.Component {
                         <>
                             {this.props.screen_route_name === "Progress" ?
                                 <>
-                                    < FontAwesomeIcon
-                                        icon={faChartBar}
-                                        size={20}
-                                        style={this.state.icon_style}
-                                    />
-
+                                    <View
+                                        style={{
+                                            height: 30,
+                                            alignItems: "center",
+                                            justifyContent: "center"
+                                        }}
+                                    >
+                                        {progress_icon(20, icon_color)}
+                                    </View>
                                     <Text
                                         style={this.state.icon_text_style}
                                     >
@@ -214,12 +230,15 @@ class ScreenComponent extends React.Component {
                                 <>
                                     {this.props.screen_route_name === "Reward" ?
                                         <>
-                                            < FontAwesomeIcon
-                                                icon={faMoneyBill}
-                                                size={20}
-                                                style={this.state.icon_style}
-                                            />
-
+                                            <View
+                                                style={{
+                                                    height: 30,
+                                                    alignItems: "center",
+                                                    justifyContent: "center"
+                                                }}
+                                            >
+                                                {reward_screen_icon(24, icon_color)}
+                                            </View>
                                             <Text
                                                 style={this.state.icon_text_style}
                                             >
@@ -230,12 +249,15 @@ class ScreenComponent extends React.Component {
                                         :
 
                                         <>
-                                            < FontAwesomeIcon
-                                                icon={faSlidersH}
-                                                size={20}
-                                                style={this.state.icon_style}
-                                            />
-
+                                            <View
+                                                style={{
+                                                    height: 30,
+                                                    alignItems: "center",
+                                                    justifyContent: "center"
+                                                }}
+                                            >
+                                                {settings_icon(20, icon_color)}
+                                            </View>
                                             <Text
                                                 style={this.state.icon_text_style}
                                             >

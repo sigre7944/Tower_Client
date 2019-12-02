@@ -15,11 +15,13 @@ import {
     SafeAreaView
 } from 'react-native'
 
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
-    faTimes,
-    faCheck
-} from '@fortawesome/free-solid-svg-icons'
+    check_icon,
+    close_icon,
+} from "../../../../../../../shared/icons";
+
+const icon_size = 29
+const icon_color = "white"
 
 import { styles } from './styles/styles'
 
@@ -27,13 +29,18 @@ import { Map, fromJS, OrderedMap } from 'immutable'
 
 const window_height = Dimensions.get("window").height
 const window_width = Dimensions.get("window").width
-const easing = Easing.inOut(Easing.linear)
+const easing = Easing.in()
 const animation_duration = 250
 const short_id = require("shortid")
 
 export default class AddCategoryPanel extends React.PureComponent {
 
     anim_translate_y = new Animated.Value(window_height)
+    anim_opacity_value = this.anim_translate_y.interpolate({
+        inputRange: [0, window_height],
+        outputRange: [1, 0],
+        extrapolate: "clamp"
+    })
 
     state = {
         category_title: "",
@@ -64,26 +71,29 @@ export default class AddCategoryPanel extends React.PureComponent {
                 toValue: 0,
                 duration: animation_duration,
                 easing,
-                useNativeDriver: true
+                // useNativeDriver: true
             }
         ).start()
     }
 
-    _disappearAnim = () => {
+    _disappearAnim = (callback) => {
         Animated.timing(
             this.anim_translate_y,
             {
                 toValue: window_height,
                 duration: animation_duration,
                 easing,
-                useNativeDriver: true
+                // useNativeDriver: true
             }
-        ).start(() => { this.props._closeAddCategoryPanel() })
+        ).start(() => {
+            callback()
+        })
     }
 
     _close = () => {
-        // this._disappearAnim()
-        this.props._closeAddCategoryPanel()
+        this._disappearAnim(this.props._closeAddCategoryPanel)
+
+        // this.props._closeAddCategoryPanel()
     }
 
     _save = () => {
@@ -92,7 +102,7 @@ export default class AddCategoryPanel extends React.PureComponent {
                 quantity = Map(this.props.category_data).get("quantity"),
                 category_obj = fromJS({
                     id,
-                    name: this.state.category_title,
+                    name: this.state.category_title.trim(),
                     color: this.state.color,
                     quantity
                 }),
@@ -104,7 +114,7 @@ export default class AddCategoryPanel extends React.PureComponent {
                 }
 
             this.props.updateCategory(sending_data)
-            this.props._closeAddCategoryPanel()
+            this._close()
         }
     }
 
@@ -176,165 +186,157 @@ export default class AddCategoryPanel extends React.PureComponent {
 
                     }}
                 >
-                    <Animated.View
+                    <Animated.ScrollView
                         style={{
                             width: window_width,
                             height: window_height,
                             backgroundColor: "white",
                             transform: [{ translateY: this.anim_translate_y }],
-                            position: "absolute"
+                            position: "absolute",
+                            opacity: this.anim_opacity_value,
                         }}
+
+                        scrollEnabled={false}
+                        keyboardDismissMode="on-drag"
                     >
                         <SafeAreaView>
-                            <ScrollView
-                                scrollEnabled={false}
-                                keyboardDismissMode="on-drag"
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    marginHorizontal: 20,
+                                    marginTop: 15,
+                                }}
                             >
-                                <View
+                                <TouchableOpacity
                                     style={{
-                                        flexDirection: "row",
-                                        justifyContent: "space-between",
-                                        marginHorizontal: 20,
-                                        marginTop: 15,
+                                        width: 40,
+                                        height: 40,
+                                        justifyContent: "center",
+                                        alignItems: "center"
                                     }}
+                                    onPress={this._close}
                                 >
-                                    <TouchableOpacity
-                                        style={{
-                                            width: 40,
-                                            height: 40,
-                                            justifyContent: "center",
-                                            alignItems: "center"
-                                        }}
-                                        onPress={this._close}
-                                    >
-                                        <FontAwesomeIcon
-                                            icon={faTimes}
-                                            size={20}
-                                            color="#2C2C2C"
-                                        />
-                                    </TouchableOpacity>
+                                    {close_icon(icon_size, "#2C2C2C")}
+                                </TouchableOpacity>
 
-                                    <TouchableOpacity
-                                        style={{
-                                            width: 40,
-                                            height: 40,
-                                            justifyContent: "center",
-                                            alignItems: "center"
-                                        }}
-                                        onPress={this._save}
-                                    >
-                                        <FontAwesomeIcon
-                                            icon={faCheck}
-                                            size={20}
-                                            color={this.state.category_title.length > 0 ? "#05838B" : "#BDBDBD"}
-                                        />
-                                    </TouchableOpacity>
-                                </View>
-
-                                <Text
-                                    style={styles.title_text}
+                                <TouchableOpacity
+                                    style={{
+                                        width: 40,
+                                        height: 40,
+                                        justifyContent: "center",
+                                        alignItems: "center"
+                                    }}
+                                    onPress={this._save}
                                 >
-                                    Add category
+                                    {check_icon(icon_size, this.state.category_title.length > 0 ? "#05838B" : "#BDBDBD")}
+                                </TouchableOpacity>
+                            </View>
+
+                            <Text
+                                style={styles.title_text}
+                            >
+                                Edit category
                             </Text>
 
-                                <View
-                                    style={{
-                                        marginTop: 30,
-                                    }}
+                            <View
+                                style={{
+                                    marginTop: 30,
+                                }}
+                            >
+                                <Text
+                                    style={styles.small_text}
                                 >
-                                    <Text
-                                        style={styles.small_text}
-                                    >
-                                        Category Title
+                                    Category Title
                                 </Text>
 
-                                    <View
-                                        style={styles.button_container}
-                                    >
-                                        <TextInput
-                                            style={styles.text_input}
-                                            placeholder={Map(this.props.category_data).get("name")}
-                                            value={this.state.category_title}
-                                            onChange={this._onCategoryTitleChange}
-                                        />
-                                    </View>
-                                </View>
-
                                 <View
-                                    style={{
-                                        marginTop: 30,
-                                    }}
+                                    style={styles.button_container}
                                 >
-                                    <Text
-                                        style={styles.small_text}
-                                    >
-                                        Colour
+                                    <TextInput
+                                        style={styles.text_input}
+                                        placeholder={Map(this.props.category_data).get("name")}
+                                        value={this.state.category_title}
+                                        onChange={this._onCategoryTitleChange}
+                                    />
+                                </View>
+                            </View>
+
+                            <View
+                                style={{
+                                    marginTop: 30,
+                                }}
+                            >
+                                <Text
+                                    style={styles.small_text}
+                                >
+                                    Colour
                                 </Text>
 
-                                    <TouchableOpacity
-                                        style={styles.button_container}
+                                <TouchableOpacity
+                                    style={styles.button_container}
 
-                                        onPress={this._openColorPanel}
-                                    >
+                                    onPress={this._openColorPanel}
+                                >
 
-                                        {this.state.color === "no color" || this.state.color === "white" ?
+                                    {this.state.color === "no color" || this.state.color === "white" ?
+                                        <View
+                                            style={{
+                                                width: 24,
+                                                height: 24,
+                                                borderRadius: 12,
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                borderWidth: 1,
+                                                borderColor: "#2C2C2C",
+                                                marginBottom: 10,
+                                            }}
+                                        >
                                             <View
                                                 style={{
-                                                    width: 24,
-                                                    height: 24,
-                                                    borderRadius: 12,
-                                                    justifyContent: "center",
-                                                    alignItems: "center",
-                                                    borderWidth: 1,
-                                                    borderColor: "#2C2C2C",
-                                                    marginBottom: 10,
+                                                    flex: 1,
+                                                    width: 1,
+                                                    backgroundColor: "#2C2C2C",
+                                                    transform: [{ rotate: "45deg" }]
                                                 }}
                                             >
-                                                <View
-                                                    style={{
-                                                        flex: 1,
-                                                        width: 1,
-                                                        backgroundColor: "#2C2C2C",
-                                                        transform: [{ rotate: "45deg" }]
-                                                    }}
-                                                >
-                                                </View>
                                             </View>
-                                            :
-                                            <View
-                                                style={{
-                                                    width: 24,
-                                                    height: 24,
-                                                    borderRadius: 12,
-                                                    backgroundColor: this.state.color,
-                                                    marginBottom: 10,
-                                                }}
-                                            >
+                                        </View>
+                                        :
+                                        <View
+                                            style={{
+                                                width: 24,
+                                                height: 24,
+                                                borderRadius: 12,
+                                                backgroundColor: this.state.color,
+                                                marginBottom: 10,
+                                            }}
+                                        >
 
-                                            </View>
-                                        }
-                                    </TouchableOpacity>
-                                </View>
+                                        </View>
+                                    }
+                                </TouchableOpacity>
+                            </View>
 
-                                {this.state.should_color_panel_display ?
-                                    <ColorPanel
-                                        _closeColorPanel={this._closeColorPanel}
-                                        _setColor={this._setColor}
-                                    />
-                                    :
+                            {this.state.should_color_panel_display ?
+                                <ColorPanel
+                                    _closeColorPanel={this._closeColorPanel}
+                                    _setColor={this._setColor}
+                                />
+                                :
 
-                                    null
-                                }
+                                null
+                            }
 
-                                {this.state.category_title_exists ?
-                                    <NameExistsWarning
-                                        _closeTitleWarning={this._closeTitleWarning}
-                                    />
-                                    :
-                                    null
-                                }
+                            {this.state.category_title_exists ?
+                                <NameExistsWarning
+                                    _closeTitleWarning={this._closeTitleWarning}
+                                />
+                                :
+                                null
+                            }
 
-                                <View
+                            {/* <View
                                     style={{
                                         marginTop: 30,
                                     }}
@@ -353,10 +355,9 @@ export default class AddCategoryPanel extends React.PureComponent {
                                             Invite friends
                                     </Text>
                                     </TouchableOpacity>
-                                </View>
-                            </ScrollView>
+                                </View> */}
                         </SafeAreaView>
-                    </Animated.View>
+                    </Animated.ScrollView>
                 </View>
             </Modal>
         )
@@ -407,22 +408,6 @@ class NameExistsWarning extends React.PureComponent {
                         >
                             Category's title exists
                         </Text>
-                        <TouchableOpacity
-                            style={{
-                                marginTop: 18,
-                                height: 25,
-                                justifyContent: "center",
-                                alignItems: "center",
-                            }}
-
-                            onPress={this.props._closeTitleWarning}
-                        >
-                            <Text
-                                style={styles.warning_close_text}
-                            >
-                                Close
-                            </Text>
-                        </TouchableOpacity>
                     </View>
                 </View>
             </Modal>
@@ -431,6 +416,45 @@ class NameExistsWarning extends React.PureComponent {
 }
 
 class ColorPanel extends React.PureComponent {
+    scale_value = new Animated.Value(0.3)
+    opacity_value = this.scale_value.interpolate({
+        inputRange: [0.3, 0.5, 0.7, 1],
+        outputRange: [0.3, 0.5, 0.7, 1],
+        extrapolate: "clamp"
+    })
+
+    _animateStart = () => {
+        Animated.timing(
+            this.scale_value,
+            {
+                toValue: 1,
+                easing,
+                duration: animation_duration,
+                // useNativeDriver: true
+            }
+        ).start()
+    }
+
+    _animateEnd = (callback) => {
+        Animated.timing(
+            this.scale_value,
+            {
+                toValue: 0,
+                easing,
+                duration: animation_duration,
+                // useNativeDriver: true
+            }
+        ).start(() => { callback() })
+    }
+
+    _closeColorPanel = () => {
+        this._animateEnd(this.props._closeColorPanel)
+    }
+
+    componentDidMount() {
+        this._animateStart()
+    }
+
     render() {
         return (
             <Modal
@@ -452,12 +476,12 @@ class ColorPanel extends React.PureComponent {
                             opacity: 0.2
                         }}
 
-                        onPress={this.props._closeColorPanel}
+                        onPress={this._closeColorPanel}
                     >
 
                     </TouchableOpacity>
 
-                    <View
+                    <Animated.View
                         style={{
                             position: "absolute",
                             width: 200,
@@ -465,7 +489,9 @@ class ColorPanel extends React.PureComponent {
                             backgroundColor: "white",
                             borderRadius: 10,
                             padding: 32,
-                            justifyContent: "space-between"
+                            justifyContent: "space-between",
+                            transform: [{ scale: this.scale_value }],
+                            opacity: this.opacity_value
                         }}
                     >
                         <View
@@ -529,7 +555,7 @@ class ColorPanel extends React.PureComponent {
                                 {...this.props}
                             />
                         </View>
-                    </View>
+                    </Animated.View>
                 </View>
             </Modal>
         )

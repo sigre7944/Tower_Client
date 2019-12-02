@@ -14,23 +14,16 @@ import {
 
 import { primary_colors } from "../../../../../../shared/styles/style";
 
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
-    faHourglassEnd,
-} from '@fortawesome/free-solid-svg-icons'
-
-import AntDesign from "react-native-vector-icons/AntDesign";
-import Feather from "react-native-vector-icons/Feather";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import EvilIcons from "react-native-vector-icons/EvilIcons";
+    calendar_icon,
+    repeat_icon,
+    category_icon,
+    priority_icon,
+    check_icon
+} from "../../../../../../shared/icons";
 
 const icon_color = primary_colors.prim_1
 const icon_size = 21
-const calendar_icon = (icon_size, icon_color) => <AntDesign name="calendar" size={icon_size} color={icon_color} />
-const repeat_icon = (icon_size, icon_color) => <Feather name="repeat" size={icon_size} color={icon_color} />
-const category_icon = (icon_size, icon_color) => <Feather name="list" size={icon_size} color={icon_color} />
-const priority_icon = (icon_size, icon_color) => <MaterialCommunityIcons name="priority-high" size={icon_size} color={icon_color} />
-const check_icon = (icon_size, icon_color) => <Feather name="check" size={icon_size} color={icon_color} />
 
 import { styles } from "./styles/styles";
 

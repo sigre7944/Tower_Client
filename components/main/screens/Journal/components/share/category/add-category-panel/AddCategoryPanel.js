@@ -16,11 +16,13 @@ import {
     SafeAreaView
 } from 'react-native'
 
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
-    faTimes,
-    faCheck
-} from '@fortawesome/free-solid-svg-icons'
+    check_icon,
+    close_icon,
+} from "../../../../../../../shared/icons";
+
+const icon_size = 29
+const icon_color = "white"
 
 import { styles } from './styles/styles'
 
@@ -99,7 +101,7 @@ export default class AddCategoryPanel extends React.PureComponent {
             let id = `category-${short_id.generate()}`,
                 category_obj = fromJS({
                     id,
-                    name: this.state.category_title,
+                    name: this.state.category_title.trim(),
                     color: this.state.color,
                     quantity: 0
                 }),
@@ -208,11 +210,7 @@ export default class AddCategoryPanel extends React.PureComponent {
                                     }}
                                     onPress={this._close}
                                 >
-                                    <FontAwesomeIcon
-                                        icon={faTimes}
-                                        size={20}
-                                        color="#2C2C2C"
-                                    />
+                                    {close_icon(icon_size, "#2C2C2C")}
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
@@ -224,11 +222,7 @@ export default class AddCategoryPanel extends React.PureComponent {
                                     }}
                                     onPress={this._save}
                                 >
-                                    <FontAwesomeIcon
-                                        icon={faCheck}
-                                        size={20}
-                                        color={this.state.category_title.length > 0 ? "#05838B" : "#BDBDBD"}
-                                    />
+                                    {check_icon(icon_size, this.state.category_title.length > 0 ? "#05838B" : "#BDBDBD")}
                                 </TouchableOpacity>
                             </View>
 
@@ -388,22 +382,6 @@ class NameExistsWarning extends React.PureComponent {
                         >
                             Category's title exists
                         </Text>
-                        <TouchableOpacity
-                            style={{
-                                marginTop: 18,
-                                height: 25,
-                                justifyContent: "center",
-                                alignItems: "center",
-                            }}
-
-                            onPress={this.props._closeTitleWarning}
-                        >
-                            <Text
-                                style={styles.warning_close_text}
-                            >
-                                Close
-                            </Text>
-                        </TouchableOpacity>
                     </View>
                 </View>
             </Modal>

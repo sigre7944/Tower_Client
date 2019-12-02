@@ -57,7 +57,7 @@ export const styles = StyleSheet.create({
         fontFamily: CommonStyle.sf_ui_display_light_font,
         fontSize: 18,
         lineHeight: 21,
-        color: CommonStyle.text_icon_colors.ti_1,
+        color: "#EB5757",
         letterSpacing: -0.02,
     },
 

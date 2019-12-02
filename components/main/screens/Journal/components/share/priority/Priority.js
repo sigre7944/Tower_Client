@@ -23,6 +23,17 @@ import {
     faCheck
 } from '@fortawesome/free-solid-svg-icons'
 
+import {
+    check_icon,
+    close_icon,
+    priority_icon,
+    reward_icon,
+    question_icon
+} from "../../../../../../shared/icons";
+
+const icon_size = 14
+const icon_color = "#2C2C2C"
+
 import { styles } from './styles/styles'
 import { Map, fromJS } from "immutable"
 
@@ -487,11 +498,15 @@ export default class Priority extends React.PureComponent {
                                     alignItems: "center",
                                 }}
                             >
-                                <FontAwesomeIcon
-                                    icon={faExclamationTriangle}
-                                    size={14}
-                                    color="#2C2C2C"
-                                />
+                                <View
+                                    style={{
+                                        width: icon_size,
+                                        justifyContent: "center",
+                                        alignItems: "center"
+                                    }}
+                                >
+                                    {priority_icon(icon_size, icon_color)}
+                                </View>
 
                                 <Text
                                     style={styles.title}
@@ -510,11 +525,7 @@ export default class Priority extends React.PureComponent {
                                         marginLeft: 15,
                                     }}
                                 >
-                                    <FontAwesomeIcon
-                                        icon={faQuestion}
-                                        color="white"
-                                        size={7}
-                                    />
+                                    {question_icon(9, "white")}
                                 </TouchableOpacity>
                             </View>
 
@@ -621,11 +632,15 @@ export default class Priority extends React.PureComponent {
                                     alignItems: "center"
                                 }}
                             >
-                                <FontAwesomeIcon
-                                    icon={faTrophy}
-                                    size={14}
-                                    color="#2C2C2C"
-                                />
+                                <View
+                                    style={{
+                                        width: icon_size,
+                                        justifyContent: "center",
+                                        alignItems: "center"
+                                    }}
+                                >
+                                    {reward_icon(icon_size, icon_color)}
+                                </View>
 
                                 <Text
                                     style={styles.title}
@@ -670,20 +685,14 @@ export default class Priority extends React.PureComponent {
                                 style={styles.close_icon_holder}
                                 onPress={this._cancel}
                             >
-                                <FontAwesomeIcon
-                                    icon={faTimes}
-                                    color="white"
-                                />
+                                {close_icon(19, "white")}
                             </TouchableOpacity>
 
                             <TouchableOpacity
                                 style={styles.save_icon_holder}
                                 onPress={this._save}
                             >
-                                <FontAwesomeIcon
-                                    icon={faCheck}
-                                    color="white"
-                                />
+                                {check_icon(19, "white")}
                             </TouchableOpacity>
                         </View>
                     </ScrollView>

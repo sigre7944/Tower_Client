@@ -13,11 +13,10 @@ import { Map, fromJS } from 'immutable'
 
 import { styles } from './styles/styles'
 
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
-    faTimes,
-    faCheck
-} from '@fortawesome/free-solid-svg-icons'
+    check_icon,
+    close_icon
+} from "../../../../../../../shared/icons";
 
 const panel_width = 338
 const margin_top_for_calendar_row = 20
@@ -25,6 +24,9 @@ const margin_top_for_month_year_text = 30
 const calendar_total_height = margin_top_for_calendar_row * 6 + 32 * 6
 const animation_duration = 250
 const easing = Easing.in()
+
+const icon_color = "white"
+const icon_size = 19
 
 export default class DayCalendar extends React.Component {
     chosen_day = -1
@@ -166,20 +168,14 @@ export default class DayCalendar extends React.Component {
                             style={styles.close_icon_holder}
                             onPress={this.cancel}
                         >
-                            <FontAwesomeIcon
-                                icon={faTimes}
-                                color="white"
-                            />
+                            {close_icon(icon_size, icon_color)}
                         </TouchableOpacity>
 
                         <TouchableOpacity
                             style={styles.save_icon_holder}
                             onPress={this.save}
                         >
-                            <FontAwesomeIcon
-                                icon={faCheck}
-                                color="white"
-                            />
+                            {check_icon(icon_size, icon_color)}
                         </TouchableOpacity>
                     </View>
                 </View>

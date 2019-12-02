@@ -27,6 +27,15 @@ import {
     faCheck
 } from '@fortawesome/free-solid-svg-icons'
 
+import {
+    goal_icon,
+    close_icon,
+    check_icon
+} from "../../../../../../../shared/icons";
+
+const icon_color = "#2C2C2C"
+const icon_size = 14
+
 import { Map, fromJS } from 'immutable'
 
 const animation_duration = 250
@@ -488,20 +497,14 @@ export default class WeekTypeRepeat extends React.PureComponent {
                                 style={styles.close_button_container}
                                 onPress={this.close}
                             >
-                                <FontAwesomeIcon
-                                    icon={faTimes}
-                                    color="white"
-                                />
+                                {close_icon(19, "white")}
                             </TouchableOpacity>
 
                             <TouchableOpacity
                                 style={styles.save_button_container}
                                 onPress={this.save}
                             >
-                                <FontAwesomeIcon
-                                    icon={faCheck}
-                                    color="white"
-                                />
+                                {check_icon(19, "white")}
                             </TouchableOpacity>
                         </View>
 
@@ -536,11 +539,15 @@ class GoalHolder extends React.PureComponent {
                         alignItems: "center"
                     }}
                 >
-                    <FontAwesomeIcon
-                        icon={faFlag}
-                        color="#2C2C2C"
-                        size={14}
-                    />
+                    <View
+                        style={{
+                            width: icon_size,
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}
+                    >
+                        {goal_icon(icon_size, icon_color)}
+                    </View>
 
                     <Text
                         style={styles.title_text}

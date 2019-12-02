@@ -10,18 +10,20 @@ import {
 
 import { FlatList } from 'react-native-gesture-handler'
 
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import {
-    faList,
-    faPlus,
-    faTimes,
-    faCheck
-} from '@fortawesome/free-solid-svg-icons'
-
 import { styles } from './styles/styles'
 import { OrderedMap, Map, fromJS } from "immutable"
 
 import AddCategoryPanel from './add-category-panel/AddCategoryPanel.Container'
+
+import {
+    category_icon,
+    check_icon,
+    close_icon,
+    plus_icon
+} from "../../../../../../shared/icons";
+
+const icon_size = 14
+const icon_color = "#2C2C2C"
 
 const panel_width = 338
 const animation_duration = 250
@@ -291,11 +293,15 @@ export default class Category extends React.PureComponent {
                         marginTop: 30,
                     }}
                 >
-                    <FontAwesomeIcon
-                        icon={faList}
-                        color={"#2C2C2C"}
-                        size={14}
-                    />
+                    <View
+                        style={{
+                            width: icon_size,
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}
+                    >
+                        {category_icon(icon_size, icon_color)}
+                    </View>
 
                     <Text
                         style={styles.category_title}
@@ -349,11 +355,7 @@ export default class Category extends React.PureComponent {
                             borderColor: "rgba(0, 0, 0, 0.3)"
                         }}
                     >
-                        <FontAwesomeIcon
-                            icon={faPlus}
-                            color="rgba(0, 0, 0, 0.3)"
-                            size={7}
-                        />
+                        {plus_icon(9, "rgba(0, 0, 0, 0.3)")}
                     </View>
 
                     <Text
@@ -386,20 +388,14 @@ export default class Category extends React.PureComponent {
                         style={styles.close_icon_holder}
                         onPress={this._cancel}
                     >
-                        <FontAwesomeIcon
-                            icon={faTimes}
-                            color="white"
-                        />
+                        {close_icon(19, "white")}
                     </TouchableOpacity>
 
                     <TouchableOpacity
                         style={styles.save_icon_holder}
                         onPress={this._save}
                     >
-                        <FontAwesomeIcon
-                            icon={faCheck}
-                            color="white"
-                        />
+                        {check_icon(19, "white")}
                     </TouchableOpacity>
                 </View>
             </Animated.View>
