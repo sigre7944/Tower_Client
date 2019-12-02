@@ -22,7 +22,7 @@ import {
 const icon_size = 39
 const icon_color = "#BDBDBD"
 
-export default class SignInSignUpOptions extends React.PureComponent {
+export default class SignInScreen extends React.PureComponent {
     static navigationOptions = ({ navigation, navigationOptions }) => {
         return ({
             header: null,
@@ -32,6 +32,10 @@ export default class SignInSignUpOptions extends React.PureComponent {
 
     _goBack = () => {
         this.props.navigation.navigate("SignInSignUp")
+    }
+
+    _goToSignUpScreen = () => {
+        this.props.navigation.navigate("SignUpScreen")
     }
 
     render() {
@@ -98,6 +102,7 @@ export default class SignInSignUpOptions extends React.PureComponent {
                         <TextInput
                             style={styles.input_text}
                             placeholder="example@domain.com"
+                            keyboardType="email-address"
                         />
                     </View>
                 </View>
@@ -121,6 +126,7 @@ export default class SignInSignUpOptions extends React.PureComponent {
                         <TextInput
                             style={styles.input_text}
                             placeholder="Insert password here"
+                            secureTextEntry={true}
                         />
                     </View>
                 </View>
@@ -173,6 +179,8 @@ export default class SignInSignUpOptions extends React.PureComponent {
                         style={{
                             marginLeft: 5
                         }}
+
+                        onPress={this._goToSignUpScreen}
                     >
                         <Text
                             style={styles.sign_up_small_underline_text}

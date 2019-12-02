@@ -10,6 +10,7 @@ import EditMultipleTasks from "./components/edit-multiple-tasks-screen/EditMulti
 
 import SignInSignUpOptions from "./components/sign-in-sign-up-screen/SignInSignUpOptions";
 import SignInScreen from "./components/sign-in-screen/SignInScreen";
+import SignUpScreen from "./components/sign-up-screen/SignUpScreen";
 
 import * as Font from 'expo-font'
 
@@ -84,7 +85,8 @@ const AppStackNavigator = createStackNavigator({
   PurchaseHistory: { screen: PurchaseHistory },
   EditMultipleTasks: { screen: EditMultipleTasks },
   SignInSignUp: { screen: SignInSignUpOptions },
-  SignInScreen: { screen: SignInScreen }
+  SignInScreen: { screen: SignInScreen },
+  SignUpScreen: { screen: SignUpScreen }
 }, {
   initialRouteName: "DrawerNavigator",
   headerMode: "screen",

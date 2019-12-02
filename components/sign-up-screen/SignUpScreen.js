@@ -9,7 +9,8 @@ import {
     FlatList,
     Dimensions,
     Animated,
-    Image
+    Image,
+    ScrollView
 } from 'react-native'
 
 import { styles } from "./styles/styles";
@@ -20,9 +21,8 @@ import {
 
 const icon_size = 39
 const icon_color = "#BDBDBD"
-const logo_image = require("../../assets/pngs/logo.png")
 
-export default class SignInSignUpOptions extends React.PureComponent {
+export default class SignUpScreen extends React.PureComponent {
     static navigationOptions = ({ navigation, navigationOptions }) => {
         return ({
             header: null,
@@ -31,28 +31,23 @@ export default class SignInSignUpOptions extends React.PureComponent {
     }
 
     _goBack = () => {
-        this.props.navigation.navigate("Journal")
-    }
-
-    _goToSignInScreen = () => {
-        this.props.navigation.navigate("SignInScreen")
-    }
-
-    _goToSignUpScreen = () => {
-        this.props.navigation.navigate("SignUpScreen")
+        this.props.navigation.navigate("SignInSignUp")
     }
 
     render() {
         return (
-            <View
+            <ScrollView
                 style={{
                     flex: 1,
-                    backgroundColor: "white"
+                    backgroundColor: "white",
+                    paddingHorizontal: 32
                 }}
+
+                scrollEnabled={false}
+                keyboardDismissMode="on-drag"
             >
                 <View
                     style={{
-                        marginHorizontal: 32,
                         marginTop: 45
                     }}
                 >
@@ -66,85 +61,83 @@ export default class SignInSignUpOptions extends React.PureComponent {
                         {left_arrow_icon(icon_size, icon_color)}
                     </TouchableOpacity>
                 </View>
+
                 <View
                     style={{
-                        justifyContent: "center",
-                        alignItems: "center",
-                        marginTop: 42,
+                        marginTop: 15,
                     }}
                 >
+                    <Text
+                        style={styles.title_text}
+                    >
+                        Sign
+                    </Text>
+                    <Text
+                        style={styles.title_text}
+                    >
+                        Up
+                    </Text>
+                </View>
+
+                <View
+                    style={{
+                        marginTop: 53,
+                    }}
+                >
+                    <Text
+                        style={styles.input_title}
+                    >
+                        Email:
+                    </Text>
+
                     <View
                         style={{
-                            justifyContent: "center",
-                            alignItems: "center",
-                            width: 150,
-                            height: 150,
+                            marginTop: 12
                         }}
                     >
-                        <Image
-                            source={logo_image}
-                            style={{
-                                flex: 1
-                            }}
-                            resizeMode="contain"
+                        <TextInput
+                            style={styles.input_text}
+                            placeholder="example@domain.com"
+                            keyboardType="email-address"
                         />
                     </View>
                 </View>
 
                 <View
                     style={{
-                        marginTop: 97
+                        marginTop: 28,
                     }}
                 >
-                    <TouchableOpacity
-                        style={{ ...styles.button_container, ...{ backgroundColor: "#3B5998" } }}
+                    <Text
+                        style={styles.input_title}
                     >
-                        <Text
-                            style={styles.sign_in_text}
-                        >
-                            SIGN IN WITH FACEBOOK
-                        </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={{ ...styles.button_container, ...{ backgroundColor: "#BD5240", marginTop: 8 } }}
-                    >
-                        <Text
-                            style={styles.sign_in_text}
-                        >
-                            SIGN IN WITH GOOGLE
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-
-                <View
-                    style={{
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        marginTop: 32
-                    }}
-                >
-                    <View
-                        style={styles.separating_line}
-                    />
+                        Password:
+                    </Text>
 
                     <View
                         style={{
-                            marginHorizontal: 8
+                            marginTop: 12
                         }}
                     >
-                        <Text
-                            style={styles.or_text}
-                        >
-                            OR
-                        </Text>
+                        <TextInput
+                            style={styles.input_text}
+                            placeholder="Insert password here"
+                            secureTextEntry={true}
+                        />
                     </View>
-
-                    <View
-                        style={styles.separating_line}
-                    />
                 </View>
+
+                <TouchableOpacity
+                    style={{
+                        marginTop: 12
+                    }}
+                >
+                    <Text
+                        style={styles.forgot_password_text}
+                    >
+                        Forgot your password?
+                    </Text>
+                </TouchableOpacity>
 
                 <View
                     style={{
@@ -182,8 +175,6 @@ export default class SignInSignUpOptions extends React.PureComponent {
                         style={{
                             marginLeft: 5
                         }}
-
-                        onPress={this._goToSignUpScreen}
                     >
                         <Text
                             style={styles.sign_up_small_underline_text}
@@ -192,7 +183,7 @@ export default class SignInSignUpOptions extends React.PureComponent {
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </ScrollView>
         )
     }
 }
