@@ -141,6 +141,10 @@ export default class TrackingSection extends React.PureComponent {
                 }
             }
         }
+
+        else {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+        }
     }
 
     render() {
@@ -245,17 +249,30 @@ export default class TrackingSection extends React.PureComponent {
                                     You are almost there!
                             </Text>
 
-                                <TouchableOpacity
-                                    style={can_get_reward_bool ? styles.can_get_button_container : styles.cannot_get_button_container}
+                                {can_get_reward_bool ?
+                                    <TouchableOpacity
+                                        style={styles.can_get_button_container}
 
-                                    onPress={this._getReward}
-                                >
-                                    <Text
-                                        style={styles.get_text}
+                                        onPress={this._getReward}
                                     >
-                                        Get
-                                    </Text>
-                                </TouchableOpacity>
+                                        <Text
+                                            style={styles.get_text}
+                                        >
+                                            Get
+                                        </Text>
+                                    </TouchableOpacity>
+                                    :
+
+                                    <View
+                                        style={styles.cannot_get_button_container}
+                                    >
+                                        <Text
+                                            style={styles.get_text}
+                                        >
+                                            Get
+                                        </Text>
+                                    </View>
+                                }
                             </View>
 
                             <View

@@ -61,5 +61,5 @@ export const styles = StyleSheet.create({
         lineHeight: 19,
         letterSpacing: -0.02,
         color: "white"
-    }
+    },
 })

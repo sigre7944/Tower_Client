@@ -19,6 +19,14 @@ export const styles = StyleSheet.create({
         lineHeight: 29,
         letterSpacing: -0.02,
         color: CommonStyles.primary_colors.prim_1,
-        marginTop: 5,
+    },
+
+    currency: {
+        fontFamily: CommonStyles.sf_ui_display_light_font,
+        fontSize: 18,
+        lineHeight: 21,
+        letterSpacing: -0.02,
+        color: CommonStyles.primary_colors.prim_1,
+        marginLeft: 10
     }
 })

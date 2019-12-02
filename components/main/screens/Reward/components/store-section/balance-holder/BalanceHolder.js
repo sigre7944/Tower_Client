@@ -57,11 +57,27 @@ export default class BalanceHolder extends React.PureComponent {
                     Balance
                 </Text>
 
-                <Text
-                    style={styles.balance_value}
+                <View
+                    style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginTop: 15,
+                    }}
                 >
-                    {this.props.balance} {currency}
-                </Text>
+                    <Text
+                        style={styles.balance_value}
+                    >
+                        {this.props.balance}
+                    </Text>
+
+                    <Text
+                        style={
+                            styles.currency
+                        }
+                    >
+                        {currency}
+                    </Text>
+                </View>
             </View>
         )
     }

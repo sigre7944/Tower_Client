@@ -28,7 +28,6 @@ export default class TrackingSection extends React.PureComponent {
                 <View
                     style={styles.separating_line}
                 >
-
                 </View>
 
                 <Text

@@ -5,11 +5,18 @@ import {
     Dimensions,
     TouchableOpacity,
     FlatList,
+    Modal,
+    TouchableWithoutFeedback,
+    Animated,
+    Easing
 } from 'react-native';
 
 import { Map, fromJS, OrderedMap, isKeyed } from 'immutable'
 
 import AddEditReward from './add-edit-reward/AddEditReward.Container'
+
+import InsufficientWarning from "./insufficient-warning/InsufficientWarning";
+
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
     faPlus,
@@ -25,21 +32,21 @@ const reward_holder_width = (window_width - (22 * 2 + 23 * (number_of_columns - 
 
 export default class CRUDRewardSection extends React.PureComponent {
     edit_reward_data = {}
-    delete_reward_id = ""
 
     state = {
         should_flatlist_update: 0,
         reward_data: [],
         is_add_new_reward: false,
         is_edit_reward: false,
-        is_delete_reward: false,
+
+        should_display_insufficient: false
     }
 
     addNewReward = () => {
         this.setState({
             is_add_new_reward: true,
             is_edit_reward: false,
-            is_delete_reward: false
+            should_display_insufficient: false
         })
     }
 
@@ -47,27 +54,25 @@ export default class CRUDRewardSection extends React.PureComponent {
         this.setState({
             is_add_new_reward: false,
             is_edit_reward: true,
-            is_delete_reward: false
+            should_display_insufficient: false
         })
 
         this.edit_reward_data = edit_reward_data
     }
 
-    deleteReward = (reward_id) => {
+    _promptInsufficientFundWarning = () => {
         this.setState({
             is_add_new_reward: false,
             is_edit_reward: false,
-            is_delete_reward: true
+            should_display_insufficient: true
         })
-
-        this.delete_reward_id = reward_id
     }
 
     dismissAction = () => {
         this.setState({
             is_add_new_reward: false,
             is_edit_reward: false,
-            is_delete_reward: false,
+            should_display_insufficient: false
         })
     }
 
@@ -189,6 +194,11 @@ export default class CRUDRewardSection extends React.PureComponent {
                 }
             }
         }
+
+        else {
+            this._promptInsufficientFundWarning()
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+        }
     }
 
     _setFlatListRef = (ref) => {
@@ -211,7 +221,6 @@ export default class CRUDRewardSection extends React.PureComponent {
                 <RewardHolder
                     data={item[1]}
                     editReward={this.editReward}
-                    deleteReward={this.deleteReward}
                     _getReward={this._getReward}
                 />
             )
@@ -267,7 +276,7 @@ export default class CRUDRewardSection extends React.PureComponent {
                     windowSize={7}
                     maxToRenderPerBatch={7}
                     initialNumToRender={7}
-                    // removeClippedSubviews={true}
+                // removeClippedSubviews={true}
                 />
 
                 {this.state.is_add_new_reward ?
@@ -286,10 +295,21 @@ export default class CRUDRewardSection extends React.PureComponent {
 
                             :
 
-                            null
+                            <>
+                                {this.state.should_display_insufficient ?
+                                    <InsufficientWarning
+                                        dismissAction={this.dismissAction}
+                                    />
+                                    :
+
+                                    null
+                                }
+                            </>
                         }
                     </>
                 }
+
+
 
             </View>
         )
