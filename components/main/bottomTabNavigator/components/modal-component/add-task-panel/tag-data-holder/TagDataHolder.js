@@ -9,16 +9,25 @@ import {
 import { styles } from './styles/styles'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
-    faCalendarAlt,
-    faRedoAlt,
-    faFlag,
     faHourglassEnd,
-    faList,
-    faExclamationTriangle,
-    faTrophy
 } from '@fortawesome/free-solid-svg-icons'
 
 import { Map, List } from 'immutable'
+import AntDesign from "react-native-vector-icons/AntDesign";
+import Feather from "react-native-vector-icons/Feather";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import EvilIcons from "react-native-vector-icons/EvilIcons";
+
+const icon_color = "#6E6E6E"
+const icon_size = 19
+const calendar_icon = (icon_size, icon_color) => <AntDesign name="calendar" size={icon_size} color={icon_color} />
+const repeat_icon = (icon_size, icon_color) => <Feather name="repeat" size={icon_size} color={icon_color} />
+const category_icon = (icon_size, icon_color) => <Feather name="list" size={icon_size} color={icon_color} />
+const priority_icon = (icon_size, icon_color) => <MaterialCommunityIcons name="priority-high" size={icon_size} color={icon_color} />
+const goal_icon = (icon_size, icon_color) => <Feather name="flag" size={icon_size} color={icon_color} />
+const end_icon = (icon_size, icon_color) => <FontAwesomeIcon icon={faHourglassEnd} size={icon_size} color={icon_color} />
+const reward_icon = (icon_size, icon_color) => <EvilIcons name="trophy" size={icon_size} color={icon_color} />
+
 
 export default class TagDataHolder extends React.PureComponent {
 
@@ -118,11 +127,7 @@ class DayTagDataElement extends React.PureComponent {
                     <View
                         style={styles.day_tag_container}
                     >
-                        <FontAwesomeIcon
-                            icon={faCalendarAlt}
-                            color="#BDBDBD"
-                            size={14}
-                        />
+                        {calendar_icon(icon_size, icon_color)}
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
@@ -157,11 +162,8 @@ class DayTagDataElement extends React.PureComponent {
                         <View
                             style={styles.day_tag_container}
                         >
-                            <FontAwesomeIcon
-                                icon={faRedoAlt}
-                                color="#BDBDBD"
-                                size={14}
-                            />
+                            {repeat_icon(icon_size, icon_color)}
+
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
@@ -177,11 +179,8 @@ class DayTagDataElement extends React.PureComponent {
                         <View
                             style={styles.day_tag_container}
                         >
-                            <FontAwesomeIcon
-                                icon={faRedoAlt}
-                                color="#BDBDBD"
-                                size={14}
-                            />
+                            {repeat_icon(icon_size, icon_color)}
+
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
@@ -207,11 +206,7 @@ class DayTagDataElement extends React.PureComponent {
                         <View
                             style={styles.day_tag_container}
                         >
-                            <FontAwesomeIcon
-                                icon={faHourglassEnd}
-                                color="#BDBDBD"
-                                size={14}
-                            />
+                            {end_icon(14, icon_color)}
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
@@ -229,11 +224,8 @@ class DayTagDataElement extends React.PureComponent {
                         <View
                             style={styles.day_tag_container}
                         >
-                            <FontAwesomeIcon
-                                icon={faHourglassEnd}
-                                color="#BDBDBD"
-                                size={14}
-                            />
+                            {end_icon(14, icon_color)}
+
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
@@ -251,11 +243,8 @@ class DayTagDataElement extends React.PureComponent {
                         <View
                             style={styles.day_tag_container}
                         >
-                            <FontAwesomeIcon
-                                icon={faHourglassEnd}
-                                color="#BDBDBD"
-                                size={14}
-                            />
+                            {end_icon(14, icon_color)}
+
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
@@ -274,11 +263,8 @@ class DayTagDataElement extends React.PureComponent {
                     <View
                         style={styles.day_tag_container}
                     >
-                        <FontAwesomeIcon
-                            icon={faList}
-                            color="#BDBDBD"
-                            size={14}
-                        />
+                        {category_icon(icon_size, icon_color)}
+
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
@@ -296,11 +282,8 @@ class DayTagDataElement extends React.PureComponent {
                     <View
                         style={styles.day_tag_container}
                     >
-                        <FontAwesomeIcon
-                            icon={faExclamationTriangle}
-                            color="#BDBDBD"
-                            size={14}
-                        />
+                        {priority_icon(icon_size, icon_color)}
+
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
@@ -317,11 +300,8 @@ class DayTagDataElement extends React.PureComponent {
                     <View
                         style={styles.day_tag_container}
                     >
-                        <FontAwesomeIcon
-                            icon={faTrophy}
-                            color="#BDBDBD"
-                            size={14}
-                        />
+                        {reward_icon(24, icon_color)}
+
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
@@ -338,11 +318,8 @@ class DayTagDataElement extends React.PureComponent {
                     <View
                         style={styles.day_tag_container}
                     >
-                        <FontAwesomeIcon
-                            icon={faFlag}
-                            color="#BDBDBD"
-                            size={14}
-                        />
+                        {goal_icon(icon_size, icon_color)}
+
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
@@ -426,11 +403,8 @@ class WeekTagDataElement extends React.PureComponent {
                     <View
                         style={styles.day_tag_container}
                     >
-                        <FontAwesomeIcon
-                            icon={faCalendarAlt}
-                            color="#BDBDBD"
-                            size={14}
-                        />
+                        {calendar_icon(icon_size, icon_color)}
+
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
@@ -460,11 +434,9 @@ class WeekTagDataElement extends React.PureComponent {
                         <View
                             style={styles.day_tag_container}
                         >
-                            <FontAwesomeIcon
-                                icon={faRedoAlt}
-                                color="#BDBDBD"
-                                size={14}
-                            />
+
+                            {repeat_icon(icon_size, icon_color)}
+
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
@@ -480,11 +452,8 @@ class WeekTagDataElement extends React.PureComponent {
                         <View
                             style={styles.day_tag_container}
                         >
-                            <FontAwesomeIcon
-                                icon={faRedoAlt}
-                                color="#BDBDBD"
-                                size={14}
-                            />
+                            {repeat_icon(icon_size, icon_color)}
+
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
@@ -504,11 +473,8 @@ class WeekTagDataElement extends React.PureComponent {
                         <View
                             style={styles.day_tag_container}
                         >
-                            <FontAwesomeIcon
-                                icon={faHourglassEnd}
-                                color="#BDBDBD"
-                                size={14}
-                            />
+                            {end_icon(14, icon_color)}
+
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
@@ -526,11 +492,8 @@ class WeekTagDataElement extends React.PureComponent {
                         <View
                             style={styles.day_tag_container}
                         >
-                            <FontAwesomeIcon
-                                icon={faHourglassEnd}
-                                color="#BDBDBD"
-                                size={14}
-                            />
+                            {end_icon(14, icon_color)}
+
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
@@ -548,11 +511,8 @@ class WeekTagDataElement extends React.PureComponent {
                         <View
                             style={styles.day_tag_container}
                         >
-                            <FontAwesomeIcon
-                                icon={faHourglassEnd}
-                                color="#BDBDBD"
-                                size={14}
-                            />
+                            {end_icon(14, icon_color)}
+
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
@@ -571,11 +531,8 @@ class WeekTagDataElement extends React.PureComponent {
                     <View
                         style={styles.day_tag_container}
                     >
-                        <FontAwesomeIcon
-                            icon={faList}
-                            color="#BDBDBD"
-                            size={14}
-                        />
+                        {category_icon(icon_size, icon_color)}
+
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
@@ -593,11 +550,8 @@ class WeekTagDataElement extends React.PureComponent {
                     <View
                         style={styles.day_tag_container}
                     >
-                        <FontAwesomeIcon
-                            icon={faExclamationTriangle}
-                            color="#BDBDBD"
-                            size={14}
-                        />
+                        {priority_icon(icon_size, icon_color)}
+
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
@@ -614,11 +568,8 @@ class WeekTagDataElement extends React.PureComponent {
                     <View
                         style={styles.day_tag_container}
                     >
-                        <FontAwesomeIcon
-                            icon={faTrophy}
-                            color="#BDBDBD"
-                            size={14}
-                        />
+                        {reward_icon(24, icon_color)}
+
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
@@ -635,11 +586,8 @@ class WeekTagDataElement extends React.PureComponent {
                     <View
                         style={styles.day_tag_container}
                     >
-                        <FontAwesomeIcon
-                            icon={faFlag}
-                            color="#BDBDBD"
-                            size={14}
-                        />
+                        {goal_icon(icon_size, icon_color)}
+
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
@@ -704,11 +652,8 @@ class MonthTagDataElement extends React.PureComponent {
                     <View
                         style={styles.day_tag_container}
                     >
-                        <FontAwesomeIcon
-                            icon={faCalendarAlt}
-                            color="#BDBDBD"
-                            size={14}
-                        />
+                        {calendar_icon(icon_size, icon_color)}
+
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
@@ -726,11 +671,8 @@ class MonthTagDataElement extends React.PureComponent {
                     <View
                         style={styles.day_tag_container}
                     >
-                        <FontAwesomeIcon
-                            icon={faRedoAlt}
-                            color="#BDBDBD"
-                            size={14}
-                        />
+                        {repeat_icon(icon_size, icon_color)}
+
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
@@ -749,11 +691,8 @@ class MonthTagDataElement extends React.PureComponent {
                         <View
                             style={styles.day_tag_container}
                         >
-                            <FontAwesomeIcon
-                                icon={faHourglassEnd}
-                                color="#BDBDBD"
-                                size={14}
-                            />
+                            {end_icon(14, icon_color)}
+
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
@@ -771,11 +710,8 @@ class MonthTagDataElement extends React.PureComponent {
                         <View
                             style={styles.day_tag_container}
                         >
-                            <FontAwesomeIcon
-                                icon={faHourglassEnd}
-                                color="#BDBDBD"
-                                size={14}
-                            />
+                            {end_icon(14, icon_color)}
+
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
@@ -793,11 +729,8 @@ class MonthTagDataElement extends React.PureComponent {
                         <View
                             style={styles.day_tag_container}
                         >
-                            <FontAwesomeIcon
-                                icon={faHourglassEnd}
-                                color="#BDBDBD"
-                                size={14}
-                            />
+                            {end_icon(14, icon_color)}
+
                             <Text
                                 style={styles.day_tag_uncolorful_text}
                             >
@@ -816,11 +749,8 @@ class MonthTagDataElement extends React.PureComponent {
                     <View
                         style={styles.day_tag_container}
                     >
-                        <FontAwesomeIcon
-                            icon={faList}
-                            color="#BDBDBD"
-                            size={14}
-                        />
+                        {category_icon(icon_size, icon_color)}
+
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
@@ -838,11 +768,8 @@ class MonthTagDataElement extends React.PureComponent {
                     <View
                         style={styles.day_tag_container}
                     >
-                        <FontAwesomeIcon
-                            icon={faExclamationTriangle}
-                            color="#BDBDBD"
-                            size={14}
-                        />
+                        {priority_icon(icon_size, icon_color)}
+
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
@@ -859,11 +786,8 @@ class MonthTagDataElement extends React.PureComponent {
                     <View
                         style={styles.day_tag_container}
                     >
-                        <FontAwesomeIcon
-                            icon={faTrophy}
-                            color="#BDBDBD"
-                            size={14}
-                        />
+                        {reward_icon(24, icon_color)}
+
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
@@ -880,11 +804,8 @@ class MonthTagDataElement extends React.PureComponent {
                     <View
                         style={styles.day_tag_container}
                     >
-                        <FontAwesomeIcon
-                            icon={faFlag}
-                            color="#BDBDBD"
-                            size={14}
-                        />
+                        {goal_icon(icon_size, icon_color)}
+
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >

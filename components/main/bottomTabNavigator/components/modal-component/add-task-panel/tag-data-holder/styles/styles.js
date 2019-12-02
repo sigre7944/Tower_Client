@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
         height: 32,
         flexDirection: "row",
         borderWidth: 1,
-        borderColor: CommonStyle.text_icon_colors.ti_4,
+        borderColor: CommonStyle.text_icon_colors.ti_3,
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 30,
@@ -24,7 +24,7 @@ export const styles = StyleSheet.create({
         fontSize: 15,
         lineHeight: 18,
         letterSpacing: -0.02,
-        color: CommonStyle.text_icon_colors.ti_3,
+        color: CommonStyle.text_icon_colors.ti_1,
         marginLeft: 9,
     },
 

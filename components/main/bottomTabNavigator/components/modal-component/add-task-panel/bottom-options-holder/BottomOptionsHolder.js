@@ -12,16 +12,25 @@ import {
     ScrollView
 } from 'react-native';
 
+import { primary_colors } from "../../../../../../shared/styles/style";
+
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
-    faCalendarAlt,
-    faList,
-    faExclamationTriangle,
-    faCheck,
-    faRedoAlt
+    faHourglassEnd,
 } from '@fortawesome/free-solid-svg-icons'
 
-import { primary_colors } from "../../../../../../shared/styles/style";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import Feather from "react-native-vector-icons/Feather";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import EvilIcons from "react-native-vector-icons/EvilIcons";
+
+const icon_color = primary_colors.prim_1
+const icon_size = 21
+const calendar_icon = (icon_size, icon_color) => <AntDesign name="calendar" size={icon_size} color={icon_color} />
+const repeat_icon = (icon_size, icon_color) => <Feather name="repeat" size={icon_size} color={icon_color} />
+const category_icon = (icon_size, icon_color) => <Feather name="list" size={icon_size} color={icon_color} />
+const priority_icon = (icon_size, icon_color) => <MaterialCommunityIcons name="priority-high" size={icon_size} color={icon_color} />
+const check_icon = (icon_size, icon_color) => <Feather name="check" size={icon_size} color={icon_color} />
 
 import { styles } from "./styles/styles";
 
@@ -50,22 +59,22 @@ export default class BottomOptionsHolder extends React.PureComponent {
             >
                 <BottomOptionElement
                     chooseOption={this.props.chooseCalenderOption}
-                    icon={faCalendarAlt}
+                    icon={calendar_icon(icon_size, icon_color)}
                 />
 
                 <BottomOptionElement
                     chooseOption={this.props.chooseRepeatOption}
-                    icon={faRedoAlt}
+                    icon={repeat_icon(icon_size, icon_color)}
                 />
 
                 <BottomOptionElement
                     chooseOption={this.props.chosenCategoryOption}
-                    icon={faList}
+                    icon={category_icon(icon_size, icon_color)}
                 />
 
                 <BottomOptionElement
                     chooseOption={this.props.choosePriorityOption}
-                    icon={faExclamationTriangle}
+                    icon={priority_icon(icon_size, icon_color)}
                 />
 
                 <BottomConfirmElement
@@ -75,7 +84,7 @@ export default class BottomOptionsHolder extends React.PureComponent {
                     title_value={this.props.addTaskTitle}
                     description_value={this.props.addTaskDescription}
 
-                    icon={faCheck}
+                    icon={check_icon(28, "white")}
                 />
             </View>
         )
@@ -95,11 +104,7 @@ class BottomOptionElement extends React.PureComponent {
                 style={styles.option_container}
                 onPress={this._onPress}
             >
-                <FontAwesomeIcon
-                    icon={this.props.icon}
-                    color={primary_colors.prim_1}
-                    size={16}
-                />
+                {this.props.icon}
             </TouchableOpacity>
         )
     }
@@ -180,11 +185,7 @@ class BottomConfirmElement extends React.PureComponent {
 
                 onPress={this._createTask}
             >
-                <FontAwesomeIcon
-                    icon={this.props.icon}
-                    color={"white"}
-                    size={16}
-                />
+                {this.props.icon}
             </TouchableOpacity>
         )
     }
