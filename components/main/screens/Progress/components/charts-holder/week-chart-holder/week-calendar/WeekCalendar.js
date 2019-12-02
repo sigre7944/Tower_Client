@@ -9,15 +9,15 @@ import {
     Easing
 } from 'react-native'
 
-import { Map, fromJS } from 'immutable'
-
 import { styles } from './styles/styles'
 
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
-    faTimes,
-    faCheck
-} from '@fortawesome/free-solid-svg-icons'
+    check_icon,
+    close_icon
+} from "../../../../../../../shared/icons";
+
+const icon_size = 19
+const icon_color = "white"
 
 const panel_width = 338
 const margin_top_for_calendar_row = 20
@@ -40,7 +40,11 @@ export default class WeekCalendar extends React.Component {
     chosen_end_noWeekInMonth = -1
 
     calendar_scale_value = new Animated.Value(0.3)
-    calendar_opacity_value = new Animated.Value(0.3)
+    calendar_opacity_value = this.calendar_scale_value.interpolate({
+        inputRange: [0, 0.3, 0.5, 0.7, 1],
+        outputRange: [0, 0.3, 0.5, 0.7, 1],
+        extrapolate: "clamp"
+    })
 
     save = () => {
 
@@ -71,11 +75,12 @@ export default class WeekCalendar extends React.Component {
             )
         }
 
-        this.props.hideAction()
+        this.cancel()
     }
 
     cancel = () => {
-        this.props.hideAction()
+        this._animateEnd(this.props.hideAction)
+        // this.props.hideAction()
     }
 
     setData = (monday, sunday, week, start_month, end_month, chosen_month, start_year, end_year, chosen_year, start_noWeekInMonth, end_noWeekInMonth) => {
@@ -93,26 +98,29 @@ export default class WeekCalendar extends React.Component {
     }
 
     animateCalendar = () => {
-        Animated.parallel([
-            Animated.timing(
-                this.calendar_opacity_value,
-                {
-                    toValue: 1,
-                    duration: animation_duration,
-                    easing,
-                    useNativeDriver: true
-                }
-            ),
-            Animated.timing(
-                this.calendar_scale_value,
-                {
-                    toValue: 1,
-                    duration: animation_duration,
-                    easing,
-                    useNativeDriver: true
-                }
-            )
-        ]).start()
+        Animated.timing(
+            this.calendar_scale_value,
+            {
+                toValue: 1,
+                duration: animation_duration,
+                easing,
+                // useNativeDriver: true
+            }
+        ).start()
+    }
+
+    _animateEnd = (callback) => {
+        Animated.timing(
+            this.calendar_scale_value,
+            {
+                toValue: 0,
+                duration: animation_duration,
+                easing,
+                // useNativeDriver: true
+            }
+        ).start(() => {
+            callback()
+        })
     }
 
     componentDidMount() {
@@ -165,20 +173,14 @@ export default class WeekCalendar extends React.Component {
                             style={styles.close_icon_holder}
                             onPress={this.cancel}
                         >
-                            <FontAwesomeIcon
-                                icon={faTimes}
-                                color="white"
-                            />
+                            {close_icon(icon_size, icon_color)}
                         </TouchableOpacity>
 
                         <TouchableOpacity
                             style={styles.save_icon_holder}
                             onPress={this.save}
                         >
-                            <FontAwesomeIcon
-                                icon={faCheck}
-                                color="white"
-                            />
+                            {check_icon(icon_size, icon_color)}
                         </TouchableOpacity>
                     </View>
                 </View>

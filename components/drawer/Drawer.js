@@ -17,7 +17,6 @@ import { Map, List, OrderedMap } from 'immutable'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
     faUser,
-    faList,
     faInbox,
     faEdit,
     faTrashAlt,
@@ -26,6 +25,14 @@ import {
 import { styles } from './styles/styles'
 
 import Swipeable from 'react-native-gesture-handler/Swipeable'
+
+import {
+    category_icon,
+    plus_icon
+} from "../shared/icons";
+
+const icon_size = 18
+const icon_color = "white"
 
 const category_row_height = 42
 const window_width = Dimensions.get("window").width
@@ -709,17 +716,17 @@ class CategoryFlatlist extends React.PureComponent {
     _keyExtractor = (item, index) => `drawer-category-${item[0]}`
 
     _renderItem = ({ item, index }) => {
-        if (Map(item[1]).get("name") === "Inbox") {
-            return (
-                <InboxRow
-                    data={item[1]}
-                    index={index}
-                    current_category_index={this.state.current_category_index}
-                    last_category_index={this.state.last_category_index}
-                    _chooseCategoryIndex={this._chooseCategoryIndex}
-                />
-            )
-        }
+        // if (Map(item[1]).get("name") === "Inbox") {
+        //     return (
+        //         <InboxRow
+        //             data={item[1]}
+        //             index={index}
+        //             current_category_index={this.state.current_category_index}
+        //             last_category_index={this.state.last_category_index}
+        //             _chooseCategoryIndex={this._chooseCategoryIndex}
+        //         />
+        //     )
+        // }
         return (
             <CategoryRow
                 data={item[1]}
@@ -1010,11 +1017,15 @@ class CategoryRow extends React.PureComponent {
                                 alignItems: "center",
                             }}
                         >
-                            <FontAwesomeIcon
-                                icon={faList}
-                                color="white"
-                                size={18}
-                            />
+                            <View
+                                style={{
+                                    width: icon_size,
+                                    justifyContent: "center",
+                                    alignItems: "center"
+                                }}
+                            >
+                                {category_icon(icon_size, icon_color)}
+                            </View>
 
                             <Text
                                 style={{ ...styles.text, ...{ marginLeft: 16 } }}
@@ -1050,11 +1061,7 @@ class AddNewCategory extends React.PureComponent {
 
                 onPress={this.props._toggleAddNewCategory}
             >
-                <FontAwesomeIcon
-                    icon={faPlus}
-                    color="white"
-                    size={17}
-                />
+                {plus_icon(icon_size, icon_color)}
 
                 <Text
                     style={{ ...styles.text, ...{ marginLeft: 16 } }}

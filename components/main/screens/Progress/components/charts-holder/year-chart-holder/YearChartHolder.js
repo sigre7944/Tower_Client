@@ -127,7 +127,6 @@ export default class YearChartHolder extends React.PureComponent {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.props.year_chart_stats !== prevProps.year_chart_stats) {
-            console.log(this.props.year_chart_stats)
             this._updateYearChartData()
         }
     }

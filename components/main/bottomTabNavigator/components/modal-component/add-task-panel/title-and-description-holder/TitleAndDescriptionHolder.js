@@ -24,21 +24,9 @@ export default class TitleAndDescriptionHolder extends React.PureComponent {
             <View>
                 <TaskTitleElement
                     title_value={this.props.addTaskTitle}
+                    description_value={this.props.addTaskDescription}
                     {...this.props}
                 />
-
-                {/* <View
-                    style={{
-                        flex: 1,
-                        height: 1,
-                        borderWidth: 0.5,
-                        backgroundColor: "rgba(0, 0, 0, 0.15)",
-                        marginVertical: 15,
-                        marginHorizontal: 20,
-                    }}
-                >
-
-                </View> */}
 
                 <TaskDescriptionElement
                     title_value={this.props.addTaskTitle}
