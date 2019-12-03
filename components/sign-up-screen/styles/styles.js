@@ -51,7 +51,7 @@ export const styles = StyleSheet.create({
         backgroundColor: CommonStyles.primary_colors.prim_1
     },
 
-    sign_in_text: {
+    sign_up_text: {
         fontFamily: CommonStyles.sf_ui_display_light_font,
         fontSize: 16,
         lineHeight: 19,
@@ -60,7 +60,7 @@ export const styles = StyleSheet.create({
         textTransform: "uppercase"
     },
 
-    sign_up_small_text: {
+    sign_in_small_text: {
         fontFamily: CommonStyles.sf_ui_display_light_font,
         fontSize: 14,
         lineHeight: 17,
@@ -68,7 +68,7 @@ export const styles = StyleSheet.create({
         color: CommonStyles.text_icon_colors.ti_2
     },
 
-    sign_up_small_underline_text: {
+    sign_in_small_underline_text: {
         fontFamily: CommonStyles.sf_ui_display_light_font,
         fontSize: 14,
         lineHeight: 17,

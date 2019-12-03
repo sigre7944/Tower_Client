@@ -22,6 +22,8 @@ const mapStateToProps = (state, ownProps) => {
         year_chart_stats: state["year_chart_stats"],
 
         current_chosen_category: state["currentChosenCategory"],
+
+        generalSettings: state["generalSettings"]
     })
 }
 

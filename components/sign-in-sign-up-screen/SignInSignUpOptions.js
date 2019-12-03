@@ -151,17 +151,29 @@ export default class SignInSignUpOptions extends React.PureComponent {
                         marginTop: 32,
                     }}
                 >
-                    <TouchableOpacity
-                        style={styles.button_container}
-
-                        onPress={this._goToSignInScreen}
+                    <View
+                        style={{
+                            shadowOffset:{
+                                width: 0,
+                                height: 4,
+                            },
+                            shadowRadius: 8,
+                            shadowColor: "black",
+                            shadowOpacity: 0.25
+                        }}
                     >
-                        <Text
-                            style={styles.sign_in_text}
+                        <TouchableOpacity
+                            style={styles.button_container}
+
+                            onPress={this._goToSignInScreen}
                         >
-                            SIGN IN
+                            <Text
+                                style={styles.sign_in_text}
+                            >
+                                SIGN IN
                         </Text>
-                    </TouchableOpacity>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 <View

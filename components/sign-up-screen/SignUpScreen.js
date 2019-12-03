@@ -34,6 +34,10 @@ export default class SignUpScreen extends React.PureComponent {
         this.props.navigation.navigate("SignInSignUp")
     }
 
+    _goToSignInScreen = () => {
+        this.props.navigation.navigate("SignInScreen")
+    }
+
     render() {
         return (
             <ScrollView
@@ -42,7 +46,6 @@ export default class SignUpScreen extends React.PureComponent {
                     backgroundColor: "white",
                     paddingHorizontal: 32
                 }}
-
                 scrollEnabled={false}
                 keyboardDismissMode="on-drag"
             >
@@ -121,65 +124,136 @@ export default class SignUpScreen extends React.PureComponent {
                     >
                         <TextInput
                             style={styles.input_text}
-                            placeholder="Insert password here"
+                            placeholder="Insert your password"
                             secureTextEntry={true}
                         />
                     </View>
                 </View>
 
-                <TouchableOpacity
+                <View
                     style={{
-                        marginTop: 12
+                        marginTop: 28,
                     }}
                 >
                     <Text
-                        style={styles.forgot_password_text}
+                        style={styles.input_title}
                     >
-                        Forgot your password?
+                        Confirm password:
                     </Text>
-                </TouchableOpacity>
 
-                <View
+                    <View
+                        style={{
+                            marginTop: 12
+                        }}
+                    >
+                        <TextInput
+                            style={styles.input_text}
+                            placeholder="Insert your password again"
+                            secureTextEntry={true}
+                        />
+                    </View>
+                </View>
+
+                {/* <View
                     style={{
-                        marginTop: 32,
+                        marginTop: 28,
                     }}
                 >
-                    <TouchableOpacity
-                        style={styles.button_container}
-
-                        onPress={this._goToSignInScreen}
+                    <Text
+                        style={styles.input_title}
                     >
-                        <Text
-                            style={styles.sign_in_text}
-                        >
-                            SIGN IN
-                        </Text>
-                    </TouchableOpacity>
+                        Full name:
+                    </Text>
+
+                    <View
+                        style={{
+                            marginTop: 12
+                        }}
+                    >
+                        <TextInput
+                            style={styles.input_text}
+                            placeholder="Insert your full name"
+                        />
+                    </View>
                 </View>
 
                 <View
                     style={{
-                        marginTop: 32,
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center"
+                        marginTop: 28,
                     }}
                 >
                     <Text
-                        style={styles.sign_up_small_text}
+                        style={styles.input_title}
                     >
-                        New to Quint?
+                        Date of birth:
+                    </Text>
+
+                    <View
+                        style={{
+                            marginTop: 12
+                        }}
+                    >
+                        <TextInput
+                            style={styles.input_text}
+                            placeholder="Insert your password again"
+                            secureTextEntry={true}
+                        />
+                    </View>
+                </View> */}
+
+                <View
+                    style={{
+                        marginTop: 32,
+                    }}
+                >
+                    <View
+                        style={{
+                            shadowOffset: {
+                                width: 0,
+                                height: 4,
+                            },
+                            shadowRadius: 8,
+                            shadowColor: "black",
+                            shadowOpacity: 0.25
+                        }}
+                    >
+                        <TouchableOpacity
+                            style={styles.button_container}
+                        >
+                            <Text
+                                style={styles.sign_up_text}
+                            >
+                                Sign up
+                        </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                <View
+                    style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginVertical: 32
+                    }}
+                >
+                    <Text
+                        style={styles.sign_in_small_text}
+                    >
+                        Already a member?
                     </Text>
 
                     <TouchableOpacity
                         style={{
                             marginLeft: 5
                         }}
+
+                        onPress={this._goToSignInScreen}
                     >
                         <Text
-                            style={styles.sign_up_small_underline_text}
+                            style={styles.sign_in_small_underline_text}
                         >
-                            Sign up
+                            Sign in
                         </Text>
                     </TouchableOpacity>
                 </View>

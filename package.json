@@ -23,6 +23,7 @@
     "expo-av": "^5.0.2",
     "expo-file-system": "^5.0.1",
     "expo-font": "^5.0.1",
+    "firebase": "^7.5.0",
     "immutable": "^4.0.0-rc.12",
     "metro-config": "^0.57.0",
     "react": "16.8.3",
