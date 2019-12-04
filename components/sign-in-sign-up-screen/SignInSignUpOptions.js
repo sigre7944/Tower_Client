@@ -18,6 +18,12 @@ import {
     left_arrow_icon
 } from "../shared/icons";
 
+import * as Facebook from "expo-facebook";
+// import * as GoogleSignIn from 'expo-google-sign-in';
+// import { GoogleSignIn } from "expo";
+
+import { FACEBOOK_APP_ID } from "../../config/index";
+
 const icon_size = 39
 const icon_color = "#BDBDBD"
 const logo_image = require("../../assets/pngs/logo.png")
@@ -40,6 +46,31 @@ export default class SignInSignUpOptions extends React.PureComponent {
 
     _goToSignUpScreen = () => {
         this.props.navigation.navigate("SignUpScreen")
+    }
+
+    _logInWithFacebook = async () => {
+        try {
+            const {
+                type,
+                token,
+                expires,
+                permissions,
+                declinedPermissions,
+            } = await Facebook.logInWithReadPermissionsAsync(FACEBOOK_APP_ID, {
+                permissions: ['public_profile'],
+            });
+            if (type === 'success') {
+                console.log("success")
+                // Get the user's name using Facebook's Graph API
+                const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
+                Alert.alert('Logged in!', `Hi ${(await response.json()).name}!`);
+            } else {
+                // type === 'cancel'
+                console.log("cancel")
+            }
+        } catch ({ message }) {
+            alert(`Facebook Login Error: ${message}`);
+        }
     }
 
     render() {
@@ -98,6 +129,8 @@ export default class SignInSignUpOptions extends React.PureComponent {
                 >
                     <TouchableOpacity
                         style={{ ...styles.button_container, ...{ backgroundColor: "#3B5998" } }}
+
+                        onPress={this._logInWithFacebook}
                     >
                         <Text
                             style={styles.sign_in_text}
@@ -153,7 +186,7 @@ export default class SignInSignUpOptions extends React.PureComponent {
                 >
                     <View
                         style={{
-                            shadowOffset:{
+                            shadowOffset: {
                                 width: 0,
                                 height: 4,
                             },

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Tower",
-    "slug": "Tower",
+    "name": "Quint App",
+    "slug": "quintapp",
     "privacy": "public",
     "sdkVersion": "33.0.0",
     "platforms": [
@@ -24,11 +24,28 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.quint.expo.googlesignin",
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "com.googleusercontent.apps.722933801897-rum0bm6ef6c4gki6k8lhi487416r0ise"
+        }
+      }
+    },
+    "android": {
+      "package": "com.quint.expo.googlesignin",
+      "googleServicesFile": "./google-services.json"
     },
     "packagerOpts": {
       "config": "metro.config.js",
-      "sourceExts": ["js", "jsx", "ts", "tsx", "svg"]
-    }
+      "sourceExts": [
+        "js",
+        "jsx",
+        "ts",
+        "tsx",
+        "svg"
+      ]
+    },
+    "description": "Developing version of Quint"
   }
 }

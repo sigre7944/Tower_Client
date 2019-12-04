@@ -162,13 +162,10 @@ class BottomConfirmElement extends React.PureComponent {
             }
 
             this.props.addTaskThunk(sending_obj)
-
-            this.props._closeAddTaskPanel()
         }
 
-        else {
-            this.props._closeAddTaskPanel()
-        }
+        Keyboard.dismiss()
+        this.props._closeAddTaskPanel()
     }
 
     render() {

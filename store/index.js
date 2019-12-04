@@ -14,7 +14,6 @@ const persistConfig = {
     transforms: [immutableTransform()],
     key: 'root',
     storage: FSStorage(),
-    // stateReconciler: autoMergeLevel2Immutable,
     blacklist: ["toggleEditMultipleTasks"]
 }
 
@@ -22,7 +21,7 @@ const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 const sagaMiddleWare = createSagaMiddleware()
 
-export const store = createStore(rootReducer, applyMiddleware(batchDispatchMiddleware, thunk, sagaMiddleWare))
+export const store = createStore(persistedReducer, applyMiddleware(batchDispatchMiddleware, thunk, sagaMiddleWare))
 
 sagaMiddleWare.run(rootSaga)
 

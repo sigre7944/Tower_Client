@@ -103,21 +103,6 @@ let initial_currentMonthTask = fromJS({
         }
     })
 
-let testing_day_tasks = Map().asMutable()
-
-// for (let i = 0; i < 1000; i++) {
-//     let task_id = shortid.generate(),
-//         task_title = "title " + i,
-//         task_description = ""
-//     let new_task_data = Map(initial_currentDayTask).asMutable()
-//     new_task_data.update("title", (value) => task_title)
-//     new_task_data.update("id", (value) => task_id)
-//     new_task_data.update("description", (value) => task_description)
-
-//     testing_day_tasks.updateIn([task_id], {}, (value) => new_task_data)
-// }
-
-
 export const day_tasks = (state = Map(), action) => {
     switch (action.type) {
         case 'UPDATE_DAY_TASK':

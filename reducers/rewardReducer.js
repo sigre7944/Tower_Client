@@ -1,6 +1,6 @@
 import { Map, List, fromJS, OrderedMap } from 'immutable'
 
-export const balance = (state = 100, action) => {
+export const balance = (state = 0, action) => {
     switch (action.type) {
         case 'DEPOSIT_BALANCE_AMOUNT':
             return state + action.amount
@@ -15,14 +15,6 @@ export const balance = (state = 100, action) => {
             return state
     }
 }
-
-let rewards_map = fromJS({
-    reward_01: {
-        id: "reward_01",
-        name: "Testing obj",
-        value: "100",
-    }
-})
 
 export const rewards = (state = OrderedMap(), action) => {
     switch (action.type) {

@@ -77,4 +77,12 @@ export const styles = StyleSheet.create({
         textDecorationLine: "underline",
         color: CommonStyles.text_icon_colors.ti_1,
     },
+
+    small_instruction_password_text: {
+        fontFamily: CommonStyles.sf_ui_display_light_font,
+        fontSize: 12,
+        lineHeight: 15,
+        letterSpacing: -0.02,
+        color: CommonStyles.text_icon_colors.ti_1,
+    }
 })

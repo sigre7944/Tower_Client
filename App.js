@@ -1,4 +1,8 @@
 import React from 'react';
+import {
+  Image
+} from 'react-native';
+
 import MainNavigator from './components/main/Main' //Main screen
 import { Dimensions, Animated, Easing } from 'react-native'
 import { createStackNavigator, createAppContainer, createDrawerNavigator } from 'react-navigation'
@@ -12,13 +16,34 @@ import SignInSignUpOptions from "./components/sign-in-sign-up-screen/SignInSignU
 import SignInScreen from "./components/sign-in-screen/SignInScreen";
 import SignUpScreen from "./components/sign-up-screen/SignUpScreen";
 
-import * as Font from 'expo-font'
+import MainLoading from "./components/loading/MainLoading";
 
+import * as Font from 'expo-font'
+import { AppLoading } from "expo";
+import { Asset } from "expo-asset";
 import { PersistGate } from "redux-persist/lib/integration/react";
 import { persistor, store } from "./store/index";
 import * as FileSystem from "expo-file-system";
-import { CacheDir, DocumentDir } from "redux-persist-expo-fs-storage";
-import { cacheDirectory } from 'expo-file-system';
+import { DocumentDir } from "redux-persist-expo-fs-storage";
+
+import * as firebase from "firebase";
+
+import { FIREBASE_CONFIG } from "./config/index";
+
+firebase.initializeApp(FIREBASE_CONFIG)
+
+const logo = require('./assets/pngs/logo.png')
+const loading_screen = <MainLoading logo={logo} />
+
+function cacheImages(images) {
+  return images.map(image => {
+    if (typeof image === 'string') {
+      return Image.prefetch(image)
+    } else {
+      return Asset.fromModule(image).downloadAsync()
+    }
+  })
+}
 
 export default class App extends React.Component {
 
@@ -27,18 +52,7 @@ export default class App extends React.Component {
   currentDate = new Date()
 
   state = {
-    finished_loading_fonts: false
-  }
-
-  loadFonts = async () => {
-    let finished_loading = await Font.loadAsync({
-      'sf-ui-display-light': require('./assets/fonts/sf-ui-display/sf-ui-display-light.otf'),
-      'sf-ui-display-medium': require('./assets/fonts/sf-ui-display/sf-ui-display-medium.otf')
-    })
-
-    this.setState({
-      finished_loading_fonts: true
-    })
+    is_ready: false
   }
 
   reset = () => {
@@ -46,23 +60,52 @@ export default class App extends React.Component {
     FileSystem.deleteAsync(FileSystem.documentDirectory + 'reduxPersist').then(() => { console.log("reset!") })
   }
 
+  _loadAssetsAsync = async () => {
+    const imageAssets = cacheImages([
+      require('./assets/pngs/logo.png'),
+      require('./assets/pngs/no_main_reward_1x.png'),
+      require('./assets/pngs/premium_1x.png'),
+      require('./assets/pngs/have_no_reward_1x.png'),
+    ]);
+
+    const fontAssets = Font.loadAsync({
+      'sf-ui-display-light': require('./assets/fonts/sf-ui-display/sf-ui-display-light.otf'),
+      'sf-ui-display-medium': require('./assets/fonts/sf-ui-display/sf-ui-display-medium.otf')
+    })
+
+    await Promise.all([...imageAssets, fontAssets]);
+  }
+
+  _setReady = () => {
+    this.setState({
+      is_ready: true
+    })
+  }
+
+  _loadError = () => {
+
+  }
+
   componentDidMount() {
     // this.reset()
-    this.loadFonts()
   }
 
   render() {
     return (
       <>
         {
-          this.state.finished_loading_fonts ?
+          this.state.is_ready ?
             <Provider store={store}>
-              {/* <PersistGate loading={null} persistor={persistor}> */}
-              <AppContainer />
-              {/* </PersistGate> */}
+              <PersistGate loading={loading_screen} persistor={persistor}>
+                <AppContainer />
+              </PersistGate>
             </Provider>
             :
-            null
+            <AppLoading
+              startAsync={this._loadAssetsAsync}
+              onFinish={this._setReady}
+              onError={console.warn}
+            />
         }
       </>
 
