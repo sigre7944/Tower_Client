@@ -27,7 +27,7 @@ import * as FileSystem from "expo-file-system";
 import { DocumentDir } from "redux-persist-expo-fs-storage";
 
 import * as firebase from "firebase";
-
+import "firebase/firestore";
 import { FIREBASE_CONFIG } from "./config/index";
 
 firebase.initializeApp(FIREBASE_CONFIG)

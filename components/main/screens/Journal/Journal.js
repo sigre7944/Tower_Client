@@ -1,7 +1,7 @@
 import React from 'react';
 import { createMaterialTopTabNavigator } from 'react-navigation'
 
-import Day from './components/Daily/Daily'
+import Day from './components/Daily/Daily.Container'
 import Week from './components/Weekly/Weekly'
 import Month from './components/Monthly/Monthly'
 
