@@ -41,15 +41,17 @@ export default class SignUpScreen extends React.PureComponent {
 
   translate_y_value = new Animated.Value(0);
 
-  // to store response from user
-  response_from_server = {};
-
   state = {
     email: "",
     password: "",
     confirm_password: "",
     should_password_instruction_collapsed: true,
-    should_display_waiting_email_verification: false
+    should_display_waiting_email_verification: false,
+    should_display_success_banner: false,
+
+    should_email_warning_collapsed: true,
+    should_password_warning_collapsed: true,
+    should_confirm_password_warning_collapsed: true
   };
 
   _goBack = () => {
@@ -153,10 +155,24 @@ export default class SignUpScreen extends React.PureComponent {
     return password === confirm_password;
   };
 
-  _toggleShouldWaitingEmailVerification = () => {
-    this.setState(prevState => ({
-      should_display_waiting_email_verification: !prevState.should_display_waiting_email_verification
-    }));
+  _activeSuccessBanner = () => {
+    this.setState({
+      should_display_waiting_email_verification: true,
+      should_display_success_banner: true
+    });
+  };
+
+  _deactiveSuccessBanner = () => {
+    this.setState({
+      should_display_waiting_email_verification: true,
+      should_display_success_banner: false
+    });
+  };
+
+  _deactiveShouldWaitingEmailVerification = () => {
+    this.setState({
+      should_display_waiting_email_verification: false
+    });
   };
 
   _sendSignUpRequestToServer = (email, password) => {
@@ -179,24 +195,51 @@ export default class SignUpScreen extends React.PureComponent {
         confirm_password
       );
 
-    this.response_from_server.email = email;
-
-    this._toggleShouldWaitingEmailVerification();
-
     if (is_email_valid && is_password_valid && is_confirm_password_valid) {
+      this.setState({
+        should_email_warning_collapsed: true,
+        should_confirm_password_warning_collapsed: true
+      });
+
       try {
-        // let sign_up_response = await this._sendSignUpRequestToServer(
-        //   email,
-        //   password
-        // );
+        let sign_up_response = await this._sendSignUpRequestToServer(
+          email,
+          password
+        );
 
-        // this.response_from_server = sign_up_response.data;
-
-        this._toggleShouldWaitingEmailVerification();
+        this._activeSuccessBanner();
       } catch (err) {
         console.log(err);
+        this._deactiveSuccessBanner();
       }
     } else {
+      if (!is_email_valid) {
+        this.setState({
+          should_email_warning_collapsed: false
+        });
+      } else {
+        this.setState({
+          should_email_warning_collapsed: true
+        });
+      }
+      if (!is_password_valid) {
+        this.setState({
+          should_password_warning_collapsed: false
+        });
+      } else {
+        this.setState({
+          should_password_warning_collapsed: true
+        });
+      }
+      if (!is_confirm_password_valid) {
+        this.setState({
+          should_confirm_password_warning_collapsed: false
+        });
+      } else {
+        this.setState({
+          should_confirm_password_warning_collapsed: true
+        });
+      }
     }
   };
 
@@ -273,6 +316,18 @@ export default class SignUpScreen extends React.PureComponent {
                   onChange={this._onChangeEmail}
                   ref={this._setEmailRef}
                 />
+
+                <Collapsible
+                  collapsed={this.state.should_email_warning_collapsed}
+                  style={{
+                    marginTop: 5,
+                    height: 20
+                  }}
+                >
+                  <Text style={styles.small_warning_text}>
+                    Invalid email format.
+                  </Text>
+                </Collapsible>
               </View>
             </View>
             <View
@@ -309,6 +364,16 @@ export default class SignUpScreen extends React.PureComponent {
                   number and uppercase.
                 </Text>
               </Collapsible>
+
+              <Collapsible
+                collapsed={this.state.should_password_warning_collapsed}
+                style={{
+                  marginTop: 5,
+                  height: 20
+                }}
+              >
+                <Text style={styles.small_warning_text}>Invalid password.</Text>
+              </Collapsible>
             </View>
             <View
               style={{
@@ -330,6 +395,20 @@ export default class SignUpScreen extends React.PureComponent {
                   autoCorrect={false}
                   ref={this._setConfirmPassRef}
                 />
+
+                <Collapsible
+                  collapsed={
+                    this.state.should_confirm_password_warning_collapsed
+                  }
+                  style={{
+                    marginTop: 5,
+                    height: 20
+                  }}
+                >
+                  <Text style={styles.small_warning_text}>
+                    Fields don't match.
+                  </Text>
+                </Collapsible>
               </View>
             </View>
             <View
@@ -379,12 +458,14 @@ export default class SignUpScreen extends React.PureComponent {
 
         {this.state.should_display_waiting_email_verification ? (
           <WaitingForEmailVerificationScreen
-            response_from_server={this.response_from_server}
-            _toggleShouldWaitingEmailVerification={
-              this._toggleShouldWaitingEmailVerification
-            }
             email={this.state.email}
-            password={this.state.password}
+            should_display_success_banner={
+              this.state.should_display_success_banner
+            }
+            _deactiveShouldWaitingEmailVerification={
+              this._deactiveShouldWaitingEmailVerification
+            }
+            _goToSignInScreen={this._goToSignInScreen}
           />
         ) : null}
       </View>

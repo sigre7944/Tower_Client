@@ -32,58 +32,11 @@ const easing = Easing.in();
 const logo_image = require("../../../../assets/pngs/logo.png");
 
 export default class WaitingForEmailVerification extends React.PureComponent {
-  state = {
-    should_display_error_banner: false,
-    should_display_success_banner: false
-  };
+  state = {};
 
   _proceedToNextStageOfSignUp = () => {};
 
-  _signIn = (email, password) => {
-    return firebase.auth().signInWithEmailAndPassword(email, password);
-  };
-
-  componentDidMount() {
-    let { email, password } = this.props,
-      { uuid } = this.props.response_from_server;
-
-    try {
-      firebase
-        .firestore()
-        .collection("users")
-        .doc(uuid)
-        .onSnapshot(doc => {
-          let email_verified = doc.date().emailVerified;
-
-          if (email_verified) {
-            firebase
-              .auth()
-              .signInWithEmailAndPassword(email, password)
-              .then(response => {
-                if (uuid === response.user.uid) {
-                  this.setState({
-                    should_display_success_banner: true,
-                    should_display_error_banner: false
-                  });
-                }
-              })
-              .catch(err => {
-                console.log(err);
-
-                this.setState({
-                  should_display_error_banner: true,
-                  should_display_success_banner: false
-                });
-              });
-          }
-        });
-    } catch (err) {
-      this.setState({
-        should_display_error_banner: true,
-        should_display_success_banner: false
-      });
-    }
-  }
+  componentDidMount() {}
 
   componentDidUpdate(prevProps, prevState) {
     // If the connection settings are changed
@@ -120,115 +73,22 @@ export default class WaitingForEmailVerification extends React.PureComponent {
             }}
           ></View>
 
-          {this.state.should_display_success_banner ? (
-            <SuccessBanner />
+          {this.props.should_display_success_banner ? (
+            <SuccessBanner
+              _deactiveShouldWaitingEmailVerification={
+                this.props._deactiveShouldWaitingEmailVerification
+              }
+              _goToSignInScreen={this.props._goToSignInScreen}
+            />
           ) : (
-            <>
-              {this.state.should_display_error_banner ? (
-                <ErrorBanner />
-              ) : (
-                <AskForVerifyingEmailBanner />
-              )}
-            </>
+            <ErrorBanner
+              _deactiveShouldWaitingEmailVerification={
+                this.props._deactiveShouldWaitingEmailVerification
+              }
+            />
           )}
-          
         </View>
       </Modal>
-    );
-  }
-}
-
-class AskForVerifyingEmailBanner extends React.PureComponent {
-  waiting_time = 1000 * 60 * 3; // 3 minutes
-
-  scale_value = new Animated.Value(0);
-  opacity_value = this.scale_value.interpolate({
-    inputRange: [0, 0.3, 0.5, 0.7, 1],
-    outputRange: [0, 0.3, 0.5, 0.7, 1],
-    extrapolate: "clamp"
-  });
-
-  state = {
-    should_display_cancel_button: false
-  };
-
-  _startAnimate = () => {
-    Animated.timing(this.scale_value, {
-      toValue: 0,
-      duration: anim_duration,
-      easing,
-      useNativeDriver: true
-    });
-  };
-
-  componentDidMount() {
-    this._startAnimate();
-
-    setTimeout(() => {
-      this.setState({
-        should_display_cancel_button: true
-      });
-    }, this.waiting_time);
-  }
-  render() {
-    return (
-      <Animated.View
-        style={{
-          position: "absolute",
-          backgroundColor: "white",
-          paddingVertical: 22,
-          paddingHorizontal: 22,
-          width: 300,
-          borderRadius: 10,
-          opacity: this.opacity_value,
-          transform: [{ scale: this.scale_value }]
-        }}
-      >
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center"
-          }}
-        >
-          <ActivityIndicator size="large" color="#05838B" />
-        </View>
-
-        <View
-          style={{
-            marginTop: 20,
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <Text style={styles.normal_text}>
-            A verification email has been sent to {this.props.email}
-          </Text>
-        </View>
-
-        <View
-          style={{
-            marginTop: 5,
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <Text style={styles.normal_text}>
-            Please verify your email before proceeding ...
-          </Text>
-        </View>
-
-        {this.state.should_display_cancel_button ? (
-          <View
-            style={{
-              marginTop: 15
-            }}
-          >
-            <TouchableOpacity style={styles.cancel_sign_up_button}>
-              <Text style={styles.cancel_sign_up_text}>CANCEL SIGN UP</Text>
-            </TouchableOpacity>
-          </View>
-        ) : null}
-      </Animated.View>
     );
   }
 }
@@ -243,16 +103,22 @@ class SuccessBanner extends React.PureComponent {
 
   _startAnimate = () => {
     Animated.timing(this.scale_value, {
-      toValue: 0,
+      toValue: 1,
       duration: anim_duration,
       easing,
       useNativeDriver: true
-    });
+    }).start();
+  };
+
+  _cancelAndGoToSignIn = () => {
+    this.props._deactiveShouldWaitingEmailVerification();
+    this.props._goToSignInScreen();
   };
 
   componentDidMount() {
     this._startAnimate();
   }
+
   render() {
     return (
       <Animated.View
@@ -271,7 +137,6 @@ class SuccessBanner extends React.PureComponent {
           style={{
             justifyContent: "center",
             alignItems: "center",
-            width: 100,
             height: 100
           }}
         >
@@ -286,13 +151,14 @@ class SuccessBanner extends React.PureComponent {
 
         <View
           style={{
-            marginTop: 10,
+            marginTop: 20,
             alignItems: "center",
             justifyContent: "center"
           }}
         >
-          <Text style={styles.welcome_text}>
-            Welcome to Quint App, {this.props.email}
+          <Text style={styles.normal_text}>
+            A verification email has been sent to {this.props.email}. Please
+            verify your email before logging in.
           </Text>
         </View>
 
@@ -301,7 +167,10 @@ class SuccessBanner extends React.PureComponent {
             marginTop: 15
           }}
         >
-          <TouchableOpacity style={styles.cancel_sign_up_button}>
+          <TouchableOpacity
+            style={styles.cancel_sign_up_button}
+            onPress={this._cancelAndGoToSignIn}
+          >
             <Text style={styles.cancel_sign_up_text}>CANCEL</Text>
           </TouchableOpacity>
         </View>
@@ -320,11 +189,11 @@ class ErrorBanner extends React.PureComponent {
 
   _startAnimate = () => {
     Animated.timing(this.scale_value, {
-      toValue: 0,
+      toValue: 1,
       duration: anim_duration,
       easing,
       useNativeDriver: true
-    });
+    }).start();
   };
 
   componentDidMount() {
@@ -338,7 +207,7 @@ class ErrorBanner extends React.PureComponent {
           backgroundColor: "white",
           paddingVertical: 22,
           paddingHorizontal: 22,
-          width: 300,
+          width: 250,
           borderRadius: 10,
           opacity: this.opacity_value,
           transform: [{ scale: this.scale_value }]
@@ -360,8 +229,13 @@ class ErrorBanner extends React.PureComponent {
             justifyContent: "center"
           }}
         >
-          <Text style={{ ...styles.normal_text, ...{ color: "#EB5757" } }}>
-            Something went wrong
+          <Text
+            style={{
+              ...styles.normal_text,
+              ...{ color: "#EB5757", fontSize: 18, lineHeight: 21 }
+            }}
+          >
+            Something went wrong :(
           </Text>
         </View>
 
@@ -370,7 +244,10 @@ class ErrorBanner extends React.PureComponent {
             marginTop: 15
           }}
         >
-          <TouchableOpacity style={styles.cancel_sign_up_button}>
+          <TouchableOpacity
+            style={styles.cancel_sign_up_button}
+            onPress={this.props._deactiveShouldWaitingEmailVerification}
+          >
             <Text style={styles.cancel_sign_up_text}>CANCEL</Text>
           </TouchableOpacity>
         </View>
