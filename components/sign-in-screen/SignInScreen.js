@@ -67,6 +67,11 @@ export default class SignInScreen extends React.PureComponent {
     this.props.navigation.navigate("SignUpScreen");
   };
 
+  _goToDrawer = () => {
+    this.props.navigation.navigate("Journal");
+    this.props.navigation.dispatch(DrawerActions.openDrawer());
+  };
+
   _hideErrorBanner = () => {
     this.setState({
       should_display_error_banner: false,
@@ -88,6 +93,8 @@ export default class SignInScreen extends React.PureComponent {
             should_display_error_banner: true,
             error_msg: "Invalid email/password."
           });
+        } else {
+          this._goToDrawer()
         }
       })
       .catch(err => {
