@@ -99,9 +99,9 @@ export default class App extends React.Component {
       <>
         {this.state.is_ready ? (
           <Provider store={store}>
-            <PersistGate loading={loading_screen} persistor={persistor}>
+            {/* <PersistGate loading={loading_screen} persistor={persistor}> */}
               <AppContainer />
-            </PersistGate>
+            {/* </PersistGate> */}
           </Provider>
         ) : (
           <AppLoading

@@ -109,6 +109,8 @@ export const day_tasks = (state = Map(), action) => {
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
         case 'DELETE_DAY_TASK':
+            let new_state = state.delete(action.id)
+            console.log(new_state === state)
             return state.delete(action.id)
 
         case 'DELETE_ALL_DAY_TASKS_WITH_CATEGORY':

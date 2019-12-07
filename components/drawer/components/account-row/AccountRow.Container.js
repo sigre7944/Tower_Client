@@ -9,7 +9,8 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  updateGeneralSettings: data => dispatch(updateGeneralSettings(data))
+  updateGeneralSettings: (keyPath, notSetValue, updater) =>
+    dispatch(updateGeneralSettings(keyPath, notSetValue, updater))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AccountRow);

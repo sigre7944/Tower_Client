@@ -870,7 +870,7 @@ class InboxRow extends React.Component {
     }
 }
 
-class CategoryRow extends React.PureComponent {
+class CategoryRow extends React.Component {
 
     translate_x = new Animated.Value(0)
     old_translate_x = 0

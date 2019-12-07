@@ -92,10 +92,11 @@ export default class Drawer extends React.PureComponent {
     //     console.log(err);
     //   });
 
-    Notifications.cancelAllScheduledNotificationsAsync().then((response) => {
-      // console.log(response)
-    })
-    .catch(err => console.log(err))
+    Notifications.cancelAllScheduledNotificationsAsync()
+      .then(response => {
+        // console.log(response)
+      })
+      .catch(err => console.log(err));
 
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
@@ -107,9 +108,7 @@ export default class Drawer extends React.PureComponent {
             .get()
             .then(response => {
               let sending_data = { ...response.data(), ...{ uuid: user.uid } };
-              this.props.updateGeneralSettings(
-                ["account"],
-                {},
+              this.props.updateGeneralSettings(["account"], {}, value =>
                 fromJS(sending_data)
               );
             })

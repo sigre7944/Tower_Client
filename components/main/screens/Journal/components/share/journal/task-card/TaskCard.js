@@ -665,7 +665,12 @@ export default class TaskCard extends React.PureComponent {
 
             if (this.props.flag === "uncompleted") {
                 if (general_settings.get("vibration")) {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+                    // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).then((response) => {
+                    //     console.log(response)
+                    // })
+                    // .catch(err => {
+                    //     console.log(err)
+                    // })
                 }
 
                 if (general_settings.get("sound")) {
@@ -675,7 +680,12 @@ export default class TaskCard extends React.PureComponent {
 
             else {
                 if (general_settings.get("vibration")) {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+                    // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).then((response) => {
+                    //     console.log(response)
+                    // })
+                    // .catch(err => {
+                    //     console.log(err)
+                    // })
                 }
             }
 
