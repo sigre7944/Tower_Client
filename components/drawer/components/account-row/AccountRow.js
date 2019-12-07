@@ -93,7 +93,7 @@ export default class Drawer extends React.PureComponent {
     //   });
 
     Notifications.cancelAllScheduledNotificationsAsync().then((response) => {
-      console.log(response)
+      // console.log(response)
     })
     .catch(err => console.log(err))
 

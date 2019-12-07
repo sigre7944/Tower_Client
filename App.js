@@ -77,18 +77,9 @@ export default class App extends React.Component {
     const fontAssets = Font.loadAsync({
       "sf-ui-display-light": require("./assets/fonts/sf-ui-display/sf-ui-display-light.otf"),
       "sf-ui-display-medium": require("./assets/fonts/sf-ui-display/sf-ui-display-medium.otf")
-    })
-      .then(response => {
-        console.log("font response here");
-        console.log(response);
-      })
-      .catch(err => {
-        console.log("font error here");
+    });
 
-        console.log(err);
-      });
-
-    await Promise.all([...imageAssets]);
+    await Promise.all([...imageAssets, fontAssets]);
   };
 
   _setReady = () => {
