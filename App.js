@@ -24,7 +24,6 @@ import { Asset } from "expo-asset";
 import { PersistGate } from "redux-persist/lib/integration/react";
 import { persistor, store } from "./store/index";
 import * as FileSystem from "expo-file-system";
-import { DocumentDir } from "redux-persist-expo-fs-storage";
 
 import * as firebase from "firebase";
 import "firebase/firestore";

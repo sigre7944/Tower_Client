@@ -18,12 +18,7 @@ import {
 
 import { styles } from "./styles/styles";
 
-import axios from "axios";
-import { SERVER_URL } from "../../../../config";
-
-import { Map } from "immutable";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import * as firebase from "firebase";
 
 const window_width = Dimensions.get("window").width;
 const anim_duration = 250;
@@ -32,27 +27,6 @@ const easing = Easing.in();
 const logo_image = require("../../../../assets/pngs/logo.png");
 
 export default class WaitingForEmailVerification extends React.PureComponent {
-  state = {};
-
-  _proceedToNextStageOfSignUp = () => {};
-
-  componentDidMount() {}
-
-  componentDidUpdate(prevProps, prevState) {
-    // If the connection settings are changed
-    if (this.props.generalSettings !== prevProps.generalSettings) {
-      // Handle cases when the device reaches internet or not
-      let is_internet_reachable = Map(this.props.generalSettings).getIn([
-        "net_info",
-        "is_internet_reachable"
-      ]);
-
-      if (is_internet_reachable) {
-      } else {
-      }
-    }
-  }
-
   render() {
     return (
       <Modal transparent={true}>
@@ -85,6 +59,7 @@ export default class WaitingForEmailVerification extends React.PureComponent {
               _deactiveShouldWaitingEmailVerification={
                 this.props._deactiveShouldWaitingEmailVerification
               }
+              error_msg={this.props.error_msg}
             />
           )}
         </View>
@@ -235,7 +210,7 @@ class ErrorBanner extends React.PureComponent {
               ...{ color: "#EB5757", fontSize: 18, lineHeight: 21 }
             }}
           >
-            Something went wrong :(
+            {this.props.error_msg}
           </Text>
         </View>
 

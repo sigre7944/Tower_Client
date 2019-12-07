@@ -8,7 +8,8 @@ import {
   Animated,
   ScrollView,
   UIManager,
-  Keyboard
+  Keyboard,
+  ActivityIndicator
 } from "react-native";
 
 import { styles } from "./styles/styles";
@@ -21,7 +22,7 @@ import { SERVER_URL } from "../../config";
 
 import Collapsible from "react-native-collapsible";
 
-import WaitingForEmailVerificationScreen from "./components/waiting-for-email-verification-screen/WaitingForEmailVerification.Container";
+import WaitingForEmailVerificationScreen from "./components/waiting-for-email-verification-screen/WaitingForEmailVerification";
 
 const icon_size = 39;
 const icon_color = "#BDBDBD";
@@ -51,7 +52,11 @@ export default class SignUpScreen extends React.PureComponent {
 
     should_email_warning_collapsed: true,
     should_password_warning_collapsed: true,
-    should_confirm_password_warning_collapsed: true
+    should_confirm_password_warning_collapsed: true,
+
+    error_msg: "Somethings went wrong :(",
+
+    should_replace_with_activity_indicator: false
   };
 
   _goBack = () => {
@@ -171,14 +176,18 @@ export default class SignUpScreen extends React.PureComponent {
 
   _deactiveShouldWaitingEmailVerification = () => {
     this.setState({
-      should_display_waiting_email_verification: false
+      should_display_waiting_email_verification: false,
+      should_replace_with_activity_indicator: false
     });
   };
 
   _sendSignUpRequestToServer = (email, password) => {
     return axios({
-      method: "post",
+      method: "POST",
       url: SERVER_URL + "auth?action=signup",
+      headers: {
+        "Content-Type": "application/json"
+      },
       data: {
         email,
         password
@@ -196,9 +205,11 @@ export default class SignUpScreen extends React.PureComponent {
       );
 
     if (is_email_valid && is_password_valid && is_confirm_password_valid) {
+
       this.setState({
         should_email_warning_collapsed: true,
-        should_confirm_password_warning_collapsed: true
+        should_confirm_password_warning_collapsed: true,
+        should_replace_with_activity_indicator: true
       });
 
       try {
@@ -206,11 +217,16 @@ export default class SignUpScreen extends React.PureComponent {
           email,
           password
         );
-
         this._activeSuccessBanner();
       } catch (err) {
-        console.log(err);
-        this._deactiveSuccessBanner();
+        if (String(err).indexOf("code 409")) {
+          this.setState({
+            error_msg: "Email already exists."
+          });
+          this._deactiveSuccessBanner();
+        } else {
+          this._deactiveSuccessBanner();
+        }
       }
     } else {
       if (!is_email_valid) {
@@ -274,7 +290,7 @@ export default class SignUpScreen extends React.PureComponent {
             transform: [{ translateY: this.translate_y_value }]
           }}
         >
-          <ScrollView scrollEnabled={false} keyboardDismissMode="on-drag">
+          <ScrollView>
             <View
               style={{
                 marginTop: 45
@@ -431,7 +447,11 @@ export default class SignUpScreen extends React.PureComponent {
                   style={styles.button_container}
                   onPress={this._signUp}
                 >
-                  <Text style={styles.sign_up_text}> Sign up </Text>
+                  {this.state.should_replace_with_activity_indicator ? (
+                    <ActivityIndicator color="white" size="small" />
+                  ) : (
+                    <Text style={styles.sign_up_text}> Sign up </Text>
+                  )}
                 </TouchableOpacity>
               </View>
             </View>
@@ -466,6 +486,7 @@ export default class SignUpScreen extends React.PureComponent {
               this._deactiveShouldWaitingEmailVerification
             }
             _goToSignInScreen={this._goToSignInScreen}
+            error_msg={this.state.error_msg}
           />
         ) : null}
       </View>
