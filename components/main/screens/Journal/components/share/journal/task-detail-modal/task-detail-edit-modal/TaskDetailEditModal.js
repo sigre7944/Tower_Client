@@ -980,7 +980,7 @@ class RewardRow extends React.PureComponent {
                         <Text
                             style={styles.normal_text}
                         >
-                            {this.props.task_reward_text} €
+                            {this.props.task_reward_text} pts
                         </Text>
                     </TouchableOpacity>
 

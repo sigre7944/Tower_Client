@@ -667,7 +667,7 @@ export default class Priority extends React.PureComponent {
                                 <Text
                                     style={styles.currency}
                                 >
-                                    €
+                                    pts
                                 </Text>
                             </View>
                         </View>

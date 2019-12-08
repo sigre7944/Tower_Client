@@ -60,7 +60,7 @@ export default class RewardRow extends React.PureComponent {
                     <Text
                         style={styles.text}
                     >
-                        {this.props.reward_text} €
+                        {this.props.reward_text} pts
                     </Text>
                 </View>
             </View>

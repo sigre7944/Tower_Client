@@ -16,7 +16,7 @@ import { styles } from './styles/styles'
 
 const window_width = Dimensions.get("window").width
 
-export default class YearChartHolder extends React.PureComponent {
+export default class YearChartHolder extends React.Component {
 
     y_data = []
     number_of_ticks = 0

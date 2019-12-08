@@ -698,17 +698,17 @@ class CategoryFlatlist extends React.PureComponent {
     _keyExtractor = (item, index) => `drawer-category-${item[0]}`
 
     _renderItem = ({ item, index }) => {
-        // if (Map(item[1]).get("name") === "Inbox") {
-        //     return (
-        //         <InboxRow
-        //             data={item[1]}
-        //             index={index}
-        //             current_category_index={this.state.current_category_index}
-        //             last_category_index={this.state.last_category_index}
-        //             _chooseCategoryIndex={this._chooseCategoryIndex}
-        //         />
-        //     )
-        // }
+        if (Map(item[1]).get("name") === "Inbox") {
+            return (
+                <InboxRow
+                    data={item[1]}
+                    index={index}
+                    current_category_index={this.state.current_category_index}
+                    last_category_index={this.state.last_category_index}
+                    _chooseCategoryIndex={this._chooseCategoryIndex}
+                />
+            )
+        }
         return (
             <CategoryRow
                 data={item[1]}

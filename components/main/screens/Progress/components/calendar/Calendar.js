@@ -152,8 +152,9 @@ export default class Calendar extends React.Component {
                         getItemLayout={this._getItemLayout}
                         initialScrollIndex={this.start_index}
                         ref={this._setRef}
-                        initialNumToRender={5}
-                        windowSize={5}
+                        initialNumToRender={3}
+                        windowSize={3}
+                        maxToRenderPerBatch={3}
 
                         day_stats={this.props.day_stats}
                         week_stats={this.props.week_stats}

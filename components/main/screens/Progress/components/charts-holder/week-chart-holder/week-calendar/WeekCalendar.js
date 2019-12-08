@@ -361,8 +361,10 @@ class Calendar extends React.Component {
                         getItemLayout={this._getItemLayout}
                         initialScrollIndex={this.start_index}
                         ref={this._setRef}
-                        initialNumToRender={5}
-                        windowSize={5}
+                        removeClippedSubviews={true}
+                        initialNumToRender={3}
+                        windowSize={3}
+                        maxToRenderPerBatch={3}
                     />
                 </View>
                 <View

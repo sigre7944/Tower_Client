@@ -303,7 +303,7 @@ class DayTagDataElement extends React.PureComponent {
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
-                            {`${value} €`}
+                            {`${value} pts`}
                         </Text>
                     </View>
             })
@@ -572,7 +572,7 @@ class WeekTagDataElement extends React.PureComponent {
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
-                            {`${value} €`}
+                            {`${value} pts`}
                         </Text>
                     </View>
             })
@@ -791,7 +791,7 @@ class MonthTagDataElement extends React.PureComponent {
                         <Text
                             style={styles.day_tag_uncolorful_text}
                         >
-                            {`${value} €`}
+                            {`${value} pts`}
                         </Text>
                     </View>
             })

@@ -273,9 +273,9 @@ export default class CRUDRewardSection extends React.PureComponent {
                         marginTop: 22
                     }}
 
-                    windowSize={7}
-                    maxToRenderPerBatch={7}
-                    initialNumToRender={7}
+                    windowSize={5}
+                    maxToRenderPerBatch={5}
+                    initialNumToRender={5}
                 // removeClippedSubviews={true}
                 />
 
