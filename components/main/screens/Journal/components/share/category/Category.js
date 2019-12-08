@@ -61,9 +61,9 @@ export default class Category extends React.PureComponent {
   };
 
   _chooseCategoryRow = (category_index, category_id) => {
-    if (this.state.current_category_index !== category_index) {
-      this.chosen_category_id = category_id;
+    this.chosen_category_id = category_id;
 
+    if (this.state.current_category_index !== category_index) {
       this.setState(
         prevState => ({
           current_category_index: category_index,
