@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
     },
 
     y_axis_text: {
-        fontFamily: CommonStyles.sf_ui_display_light_font,
+        // fontFamily: CommonStyles.sf_ui_display_light_font,
         fontSize: 14,
         color: CommonStyles.text_icon_colors.ti_1
     },

@@ -89,5 +89,23 @@ export const styles = StyleSheet.create({
     lineHeight: 15,
     letterSpacing: -0.02,
     color: "#EB5757"
+  },
+
+  referral_check_container: {
+    width: 52,
+    height: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 2,
+    marginLeft: 20,
+    backgroundColor: CommonStyles.primary_colors.prim_1
+  },
+
+  referral_check_text: {
+    fontFamily: CommonStyles.sf_ui_display_light_font,
+    fontSize: 12,
+    lineHeight: 15,
+    letterSpacing: -0.02,
+    color: "white"
   }
 });

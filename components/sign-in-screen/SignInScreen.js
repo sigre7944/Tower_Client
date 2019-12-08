@@ -94,7 +94,7 @@ export default class SignInScreen extends React.PureComponent {
             error_msg: "Invalid email/password."
           });
         } else {
-          this._goToDrawer()
+          this._goToDrawer();
         }
       })
       .catch(err => {
@@ -103,6 +103,16 @@ export default class SignInScreen extends React.PureComponent {
           this.setState({
             should_display_error_banner: true,
             error_msg: "Invalid email."
+          });
+        } else if (code === "auth/wrong-password") {
+          this.setState({
+            should_display_error_banner: true,
+            error_msg: "Wrong password."
+          });
+        } else if (code === "auth/user-not-found") {
+          this.setState({
+            should_display_error_banner: true,
+            error_msg: "User not found."
           });
         } else {
           this.setState({

@@ -14,13 +14,15 @@ import {
 
 import { styles } from "./styles/styles";
 
-import { left_arrow_icon } from "../shared/icons";
+import { left_arrow_icon, check_icon, close_icon } from "../shared/icons";
 
 import axios from "axios";
 
 import { SERVER_URL } from "../../config";
 
 import Collapsible from "react-native-collapsible";
+
+import * as firebase from "firebase";
 
 import WaitingForEmailVerificationScreen from "./components/waiting-for-email-verification-screen/WaitingForEmailVerification";
 
@@ -46,6 +48,7 @@ export default class SignUpScreen extends React.PureComponent {
     email: "",
     password: "",
     confirm_password: "",
+    referral_code: "",
     should_password_instruction_collapsed: true,
     should_display_waiting_email_verification: false,
     should_display_success_banner: false,
@@ -56,7 +59,11 @@ export default class SignUpScreen extends React.PureComponent {
 
     error_msg: "Somethings went wrong :(",
 
-    should_replace_with_activity_indicator: false
+    should_replace_with_activity_indicator: false,
+
+    should_referral_code_inform_collapsed: true,
+    referral_code_inform_text: null,
+    referral_code_inform_icon: null
   };
 
   _goBack = () => {
@@ -95,16 +102,10 @@ export default class SignUpScreen extends React.PureComponent {
     });
   };
 
-  _setEmailRef = r => {
-    this.email_input_ref = r;
-  };
-
-  _setPassRef = r => {
-    this.password_input_ref = r;
-  };
-
-  _setConfirmPassRef = r => {
-    this.confirm_password_input_ref = r;
+  _onChangeReferralCode = ({ nativeEvent }) => {
+    this.setState({
+      referral_code: nativeEvent.text
+    });
   };
 
   _onPassFocus = () => {
@@ -181,7 +182,7 @@ export default class SignUpScreen extends React.PureComponent {
     });
   };
 
-  _sendSignUpRequestToServer = (email, password) => {
+  _sendSignUpRequestToServer = (email, password, used_referral_code) => {
     return axios({
       method: "POST",
       url: SERVER_URL + "auth?action=signup",
@@ -190,13 +191,14 @@ export default class SignUpScreen extends React.PureComponent {
       },
       data: {
         email,
-        password
+        password,
+        used_referral_code
       }
     });
   };
 
   _signUp = async () => {
-    let { email, password, confirm_password } = this.state,
+    let { email, password, confirm_password, referral_code } = this.state,
       is_email_valid = this._validateEmail(email),
       is_password_valid = this._validatePassword(password),
       is_confirm_password_valid = this._checkIfConfirmPasswordValid(
@@ -205,7 +207,6 @@ export default class SignUpScreen extends React.PureComponent {
       );
 
     if (is_email_valid && is_password_valid && is_confirm_password_valid) {
-
       this.setState({
         should_email_warning_collapsed: true,
         should_confirm_password_warning_collapsed: true,
@@ -215,7 +216,8 @@ export default class SignUpScreen extends React.PureComponent {
       try {
         let sign_up_response = await this._sendSignUpRequestToServer(
           email,
-          password
+          password,
+          referral_code
         );
         this._activeSuccessBanner();
       } catch (err) {
@@ -259,6 +261,65 @@ export default class SignUpScreen extends React.PureComponent {
     }
   };
 
+  _checkReferralCode = () => {
+    let input_referral_code = this.state.referral_code;
+
+    firebase
+      .firestore()
+      .collection("referralCodes")
+      .doc(input_referral_code)
+      .get()
+      .then(response => {
+        if (response.data()) {
+          this.setState({
+            referral_code_inform_icon: check_icon(15, "#05838B"),
+            referral_code_inform_text: (
+              <Text
+                style={{
+                  ...styles.referral_check_text,
+                  ...{ color: "#05838B" }
+                }}
+              >
+                Code available.
+              </Text>
+            ),
+            should_referral_code_inform_collapsed: false
+          });
+        } else {
+          this.setState({
+            referral_code_inform_icon: close_icon(15, "#EB5757"),
+            referral_code_inform_text: (
+              <Text
+                style={{
+                  ...styles.referral_check_text,
+                  ...{ color: "#EB5757" }
+                }}
+              >
+                Code doesn't exist.
+              </Text>
+            ),
+            should_referral_code_inform_collapsed: false
+          });
+        }
+      })
+      .catch(err => {
+        this.setState({
+          referral_code_inform_icon: close_icon(15, "#EB5757"),
+          referral_code_inform_text: (
+            <Text
+              style={{
+                ...styles.referral_check_text,
+                ...{ color: "#EB5757" }
+              }}
+            >
+              Something wrong with the code :(
+            </Text>
+          ),
+          should_referral_code_inform_collapsed: false
+        });
+      });
+  };
+
   componentDidMount() {
     this.keyboardWillHideListener = Keyboard.addListener(
       "keyboardWillHide",
@@ -290,7 +351,7 @@ export default class SignUpScreen extends React.PureComponent {
             transform: [{ translateY: this.translate_y_value }]
           }}
         >
-          <ScrollView>
+          <ScrollView showsVerticalScrollIndicator={false}>
             <View
               style={{
                 marginTop: 45
@@ -330,7 +391,6 @@ export default class SignUpScreen extends React.PureComponent {
                   keyboardType="email-address"
                   value={this.state.email}
                   onChange={this._onChangeEmail}
-                  ref={this._setEmailRef}
                 />
 
                 <Collapsible
@@ -365,7 +425,6 @@ export default class SignUpScreen extends React.PureComponent {
                   onChange={this._onChangePassword}
                   onFocus={this._onPassFocus}
                   onBlur={this._onPassBlur}
-                  ref={this._setPassRef}
                 />
               </View>
               <Collapsible
@@ -409,7 +468,6 @@ export default class SignUpScreen extends React.PureComponent {
                   value={this.state.confirm_password}
                   onChange={this._onChangeConfirmPassword}
                   autoCorrect={false}
-                  ref={this._setConfirmPassRef}
                 />
 
                 <Collapsible
@@ -424,6 +482,67 @@ export default class SignUpScreen extends React.PureComponent {
                   <Text style={styles.small_warning_text}>
                     Fields don't match.
                   </Text>
+                </Collapsible>
+              </View>
+            </View>
+
+            <View
+              style={{
+                marginTop: 28
+              }}
+            >
+              <Text style={styles.input_title}> Referral code: </Text>
+              <View
+                style={{
+                  marginTop: 12
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center"
+                  }}
+                >
+                  <TextInput
+                    style={{ ...styles.input_text, ...{ flex: 1 } }}
+                    placeholder="e.g: AbCd12"
+                    value={this.state.referral_code}
+                    onChange={this._onChangeReferralCode}
+                    maxLength={6}
+                  />
+
+                  <TouchableOpacity
+                    style={styles.referral_check_container}
+                    onPress={this._checkReferralCode}
+                  >
+                    <Text style={styles.referral_check_text}>Check</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <Collapsible
+                  collapsed={this.state.should_referral_code_inform_collapsed}
+                  style={{
+                    marginTop: 5,
+                    height: 20
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center"
+                    }}
+                  >
+                    {this.state.referral_code_inform_icon}
+                    <View
+                      style={{
+                        marginLeft: 5
+                      }}
+                    >
+                      {/* <Text style={styles.small_warning_text}> */}
+                      {this.state.referral_code_inform_text}
+                      {/* </Text> */}
+                    </View>
+                  </View>
                 </Collapsible>
               </View>
             </View>

@@ -82,7 +82,7 @@ export default class Drawer extends React.PureComponent {
     //   },
     //   {
     //     time: new Date().getTime() + 10000,
-    //     // repeat: "second"
+    //     repeat: "minute"
     //   }
     // )
     //   .then(response => {
@@ -113,19 +113,22 @@ export default class Drawer extends React.PureComponent {
               );
             })
             .catch(err => {
-              console.log(err);
+              // TO DO
             });
         } else {
-          console.log("sign out");
-          firebase.auth().signOut();
+          firebase
+            .auth()
+            .signOut()
+            .then(() => {
+              console.log("sign out");
+            })
+            .catch(err => {
+              // TO DO
+            });
         }
       } else {
       }
     });
-  }
-
-  componentWillUnmount() {
-    console.log("account row will unmount");
   }
 
   render() {
