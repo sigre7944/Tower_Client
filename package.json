@@ -62,7 +62,8 @@
     "redux-thunk": "^2.3.0",
     "rn-fetch-blob": "^0.11.2",
     "shortid": "^2.2.15",
-    "uuid": "^3.3.3"
+    "uuid": "^3.3.3",
+    "expo-haptics": "~7.0.0"
   },
   "devDependencies": {
     "babel-jest": "^24.9.0",

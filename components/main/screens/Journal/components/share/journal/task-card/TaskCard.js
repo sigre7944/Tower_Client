@@ -8,7 +8,7 @@ import {
     Switch
 } from 'react-native'
 
-import { Haptics } from "expo";
+import * as Haptics from "expo-haptics";
 
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
@@ -19,9 +19,6 @@ import { Map, List, fromJS } from 'immutable'
 import { Audio } from "expo-av";
 
 import { styles } from './styles/styles'
-
-// const completing_sound = new Audio.Sound()
-// completing_sound.loadAsync(require("../../../../../../../../assets/sounds/Completing01.mp3"))
 
 export default class TaskCard extends React.PureComponent {
     priority_order = {
@@ -665,12 +662,7 @@ export default class TaskCard extends React.PureComponent {
 
             if (this.props.flag === "uncompleted") {
                 if (general_settings.get("vibration")) {
-                    // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).then((response) => {
-                    //     console.log(response)
-                    // })
-                    // .catch(err => {
-                    //     console.log(err)
-                    // })
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
                 }
 
                 if (general_settings.get("sound")) {
@@ -680,12 +672,7 @@ export default class TaskCard extends React.PureComponent {
 
             else {
                 if (general_settings.get("vibration")) {
-                    // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).then((response) => {
-                    //     console.log(response)
-                    // })
-                    // .catch(err => {
-                    //     console.log(err)
-                    // })
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
                 }
             }
 

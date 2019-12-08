@@ -38,6 +38,7 @@ export default class SignInSignUpOptions extends React.PureComponent {
 
     _goBack = () => {
         this.props.navigation.navigate("Journal")
+        this.props.navigation.dispatch(DrawerActions.openDrawer())
     }
 
     _goToSignInScreen = () => {

@@ -23,7 +23,7 @@ import {
     faEdit
 } from "@fortawesome/free-solid-svg-icons";
 import { styles } from "./styles/styles";
-import { Haptics } from "expo";
+import * as Haptics from "expo-haptics";
 import { Audio } from "expo-av";
 
 const window_width = Dimensions.get("window").width

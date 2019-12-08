@@ -207,7 +207,9 @@ export default class Category extends React.PureComponent {
                 toValue: 1,
                 duration: animation_duration,
                 easing,
-                useNativeDriver: edit ? false : true
+                // useNativeDriver: edit ? false : true,
+                useNativeDriver: true
+
             }
         ).start()
     }
@@ -219,7 +221,8 @@ export default class Category extends React.PureComponent {
                 toValue: 0,
                 duration: animation_duration,
                 easing,
-                useNativeDriver: edit ? false : true
+                // useNativeDriver: edit ? false : true
+                useNativeDriver: true
             }
         ).start(() => {
             callback()
