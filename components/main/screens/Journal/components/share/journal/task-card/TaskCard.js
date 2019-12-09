@@ -10,6 +10,8 @@ import {
 
 import * as Haptics from "expo-haptics";
 
+import PremiumAd from "../../../../../../../shared/components/premium-ad/PremiumAd";
+
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faRedoAlt } from "@fortawesome/free-solid-svg-icons";
 import { Map, List, fromJS } from "immutable";
@@ -33,11 +35,25 @@ export default class TaskCard extends React.PureComponent {
   };
 
   state = {
-    checked_complete: false
+    checked_complete: false,
+
+    is_task_card_able_to_edit: false,
+
+    should_display_premium_ad: false
   };
 
   _openModal = () => {
-    this.props.openModal(this.props.task_data);
+    if (this.state.is_task_card_able_to_edit) {
+      this.props.openModal(this.props.task_data);
+    } else {
+      this._toggleShouldDisplayPremiumAd();
+    }
+  };
+
+  _toggleShouldDisplayPremiumAd = () => {
+    this.setState(prevState => ({
+      should_display_premium_ad: !prevState.should_display_premium_ad
+    }));
   };
 
   getWeek = date => {
@@ -1207,82 +1223,90 @@ export default class TaskCard extends React.PureComponent {
   };
 
   _checkComplete = () => {
-    if (this.props.is_chosen_date_today) {
-      let sending_obj = {};
+    if (this.state.is_task_card_able_to_edit) {
+      if (this.props.is_chosen_date_today) {
+        let sending_obj = {};
 
-      sending_obj.completed_task_data = this._doUpdateOnCompletedTask(
-        this.props.flag,
-        this.props.type,
-        "inc"
-      );
+        sending_obj.completed_task_data = this._doUpdateOnCompletedTask(
+          this.props.flag,
+          this.props.type,
+          "inc"
+        );
 
-      sending_obj.chart_data = this._doUpdateOnChartStats(
-        this.props.flag,
-        "inc"
-      );
+        sending_obj.chart_data = this._doUpdateOnChartStats(
+          this.props.flag,
+          "inc"
+        );
 
-      let reward_value = parseFloat(
-        Map(this.props.task_data).getIn(["reward", "value"])
-      );
+        let reward_value = parseFloat(
+          Map(this.props.task_data).getIn(["reward", "value"])
+        );
 
-      sending_obj.balance_data = this._updateBalanceData(
-        reward_value,
-        this.props.flag,
-        "inc"
-      );
+        sending_obj.balance_data = this._updateBalanceData(
+          reward_value,
+          this.props.flag,
+          "inc"
+        );
 
-      this.props.updateBulkThunk(sending_obj);
+        this.props.updateBulkThunk(sending_obj);
 
-      let general_settings = Map(this.props.generalSettings);
+        let general_settings = Map(this.props.generalSettings);
 
-      if (this.props.flag === "uncompleted") {
-        if (general_settings.get("vibration")) {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        if (this.props.flag === "uncompleted") {
+          if (general_settings.get("vibration")) {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          }
+
+          if (general_settings.get("sound")) {
+            this._playingSound();
+          }
+        } else {
+          if (general_settings.get("vibration")) {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          }
         }
 
-        if (general_settings.get("sound")) {
-          this._playingSound();
-        }
-      } else {
-        if (general_settings.get("vibration")) {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        }
+        this.setState(prevState => ({
+          checked_complete: !prevState.checked_complete
+        }));
       }
-
-      this.setState(prevState => ({
-        checked_complete: !prevState.checked_complete
-      }));
+    } else {
+      this._toggleShouldDisplayPremiumAd();
     }
   };
 
   _unCheckComplete = () => {
-    if (this.props.is_chosen_date_today) {
-      let sending_obj = {};
+    if (this.state.is_task_card_able_to_edit) {
+      if (this.props.is_chosen_date_today) {
+        let sending_obj = {};
 
-      sending_obj.completed_task_data = this._doUpdateOnCompletedTask(
-        this.props.flag,
-        this.props.type,
-        "dec"
-      );
+        sending_obj.completed_task_data = this._doUpdateOnCompletedTask(
+          this.props.flag,
+          this.props.type,
+          "dec"
+        );
 
-      sending_obj.chart_data = this._doUpdateOnChartStats(
-        this.props.flag,
-        "dec"
-      );
+        sending_obj.chart_data = this._doUpdateOnChartStats(
+          this.props.flag,
+          "dec"
+        );
 
-      let reward_value = parseFloat(
-        Map(this.props.task_data).getIn(["reward", "value"])
-      );
+        let reward_value = parseFloat(
+          Map(this.props.task_data).getIn(["reward", "value"])
+        );
 
-      sending_obj.balance_data = this._updateBalanceData(
-        reward_value,
-        this.props.flag,
-        "dec"
-      );
+        sending_obj.balance_data = this._updateBalanceData(
+          reward_value,
+          this.props.flag,
+          "dec"
+        );
 
-      this.props.updateBulkThunk(sending_obj);
+        this.props.updateBulkThunk(sending_obj);
 
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+    } else {
+      this._toggleShouldDisplayPremiumAd();
     }
   };
 
@@ -1295,6 +1319,39 @@ export default class TaskCard extends React.PureComponent {
       await completing_sound.playAsync();
     } catch (error) {}
   };
+
+  _checkIfTaskIsAbleToEdit = () => {
+    let task_plan = Map(this.props.task_data).get("plan"),
+      account_plan = Map(this.props.generalSettings).getIn([
+        "account",
+        "package",
+        "plan"
+      ]),
+      is_task_card_able_to_edit = false;
+
+    if (task_plan === "free") {
+      is_task_card_able_to_edit = true;
+    } else {
+      is_task_card_able_to_edit = account_plan === task_plan;
+    }
+
+    this.setState({
+      is_task_card_able_to_edit
+    });
+  };
+
+  componentDidMount() {
+    this._checkIfTaskIsAbleToEdit();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      Map(this.props.generalSettings).getIn(["account", "package", "plan"]) ||
+      Map(prevProps.generalSettings).getIn(["account", "package", "plan"])
+    ) {
+      this._checkIfTaskIsAbleToEdit();
+    }
+  }
 
   render() {
     let priorities_map = Map(this.props.priorities),
@@ -1313,11 +1370,18 @@ export default class TaskCard extends React.PureComponent {
 
     if (flag === "completed") {
       task_title_style = styles.completed_task_title;
-      goal_tracking_style = styles.completed_goal_tracking
+      goal_tracking_style = styles.completed_goal_tracking;
+    }
+
+    let is_task_card_able_to_edit = this.state.is_task_card_able_to_edit,
+      container_style = styles.container;
+
+    if (!is_task_card_able_to_edit) {
+      container_style = styles.unable_to_edit_container;
     }
 
     return (
-      <View style={styles.container}>
+      <View style={container_style}>
         <View
           style={{
             flexDirection: "row",
@@ -1370,20 +1434,31 @@ export default class TaskCard extends React.PureComponent {
           }}
         >
           {this.props.flag === "uncompleted" ? (
-            <TouchableOpacity
-              style={{
-                width: 58,
-                height: 62,
-                justifyContent: "center",
-                alignItems: "center"
-              }}
-              onPress={this._unCheckComplete}
-            >
-              <FontAwesomeIcon icon={faRedoAlt} size={18} color="#BDBDBD" />
-            </TouchableOpacity>
+            <>
+              {this.props.current_goal_value > 0 ? (
+                <TouchableOpacity
+                  style={{
+                    width: 58,
+                    height: 62,
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                  onPress={this._unCheckComplete}
+                >
+                  <FontAwesomeIcon icon={faRedoAlt} size={18} color="#BDBDBD" />
+                </TouchableOpacity>
+              ) : null}
+            </>
           ) : null}
           <CategoryColorCircle category_color={task_category_color} />
         </View>
+
+        {this.state.should_display_premium_ad ? (
+          <PremiumAd
+            dismissAction={this._toggleShouldDisplayPremiumAd}
+            motivation_text="The task was disabled due to Free plan."
+          />
+        ) : null}
       </View>
     );
   }

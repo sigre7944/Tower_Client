@@ -24,6 +24,7 @@ const margin_top_for_month_year_text = 30;
 const calendar_total_height = margin_top_for_calendar_row * 6 + 32 * 6;
 const animation_duration = 250;
 const easing = Easing.in();
+const outer_panel_padding = 7;
 
 export default class WeekCalendar extends React.Component {
   chosen_monday = -1;
@@ -492,7 +493,11 @@ class Calendar extends React.Component {
           position: "relative"
         }}
       >
-        <View>
+        <View
+          style={{
+            marginHorizontal: outer_panel_padding
+          }}
+        >
           <FlatList
             data={this.month_data}
             extraData={this.state.should_flatlist_update}
@@ -519,8 +524,8 @@ class Calendar extends React.Component {
               margin_top_for_month_year_text + 21 + margin_top_for_calendar_row,
             flexDirection: "row",
             alignItems: "center",
-            left: 5,
-            right: 5
+            left: outer_panel_padding,
+            right: outer_panel_padding
           }}
         >
           <WeekText text="Week" />
@@ -748,7 +753,8 @@ class MonthHolder extends React.Component {
         <View
           style={{
             marginTop: margin_top_for_calendar_row + 32,
-            height: calendar_total_height
+            height: calendar_total_height,
+            width: panel_width,
           }}
         >
           <FlatList
@@ -945,6 +951,9 @@ class WeekRowHolder extends React.Component {
           data={this.props.week_data}
           extraData={this.state.should_flatlist_update}
           numColumns={8}
+          contentContainerStyle={{
+            width: panel_width - 2 * outer_panel_padding
+          }}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
           scrollEnabled={false}

@@ -31,7 +31,6 @@ const window_width = Dimensions.get("window").width
 export default class PurchaseHistory extends React.PureComponent {
     static navigationOptions = ({ navigation, navigationOptions }) => ({
         header: <PurchaseHistoryHeader navigation={navigation} />,
-        swipeable: false
     })
 
     state = {

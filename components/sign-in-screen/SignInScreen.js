@@ -33,7 +33,6 @@ export default class SignInScreen extends React.PureComponent {
   static navigationOptions = ({ navigation, navigationOptions }) => {
     return {
       header: null,
-      swipeable: false
     };
   };
 

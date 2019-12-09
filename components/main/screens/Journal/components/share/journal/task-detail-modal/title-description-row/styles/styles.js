@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
         fontSize: 15,
         lineHeight: 18,
         letterSpacing: -0.02,
-        color: CommonStyles.text_icon_colors.ti_3,
+        color: CommonStyles.text_icon_colors.ti_2,
         marginTop: 16,
     }
 })

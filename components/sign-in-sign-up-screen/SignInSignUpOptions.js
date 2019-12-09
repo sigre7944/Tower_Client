@@ -32,7 +32,6 @@ export default class SignInSignUpOptions extends React.PureComponent {
     static navigationOptions = ({ navigation, navigationOptions }) => {
         return ({
             header: null,
-            swipeable: false
         })
     }
 

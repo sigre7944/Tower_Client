@@ -16,7 +16,7 @@ const mapStateToProps = state => {
       categories: state["categories"],
       current_chosen_category: state["currentChosenCategory"],
       deleted_tasks: state["deleted_day_tasks"],
-      sortSettings: state["sortSettings"]
+      sortSettings: state["sortSettings"],
     };
   } else if (currentChosenJournalType === "week") {
     return {
@@ -29,7 +29,7 @@ const mapStateToProps = state => {
       categories: state["categories"],
       current_chosen_category: state["currentChosenCategory"],
       deleted_tasks: state["deleted_week_tasks"],
-      sortSettings: state["sortSettings"]
+      sortSettings: state["sortSettings"],
     };
   }
 
@@ -43,7 +43,7 @@ const mapStateToProps = state => {
     categories: state["categories"],
     current_chosen_category: state["currentChosenCategory"],
     deleted_tasks: state["deleted_month_tasks"],
-    sortSettings: state["sortSettings"]
+    sortSettings: state["sortSettings"],
   };
 };
 

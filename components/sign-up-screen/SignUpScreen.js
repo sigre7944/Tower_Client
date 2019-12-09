@@ -39,7 +39,6 @@ export default class SignUpScreen extends React.PureComponent {
   static navigationOptions = ({ navigation, navigationOptions }) => {
     return {
       header: null,
-      swipeable: false
     };
   };
 
@@ -266,28 +265,46 @@ export default class SignUpScreen extends React.PureComponent {
   _checkReferralCode = () => {
     let input_referral_code = this.state.referral_code;
 
-    firebase
-      .firestore()
-      .collection("referralCodes")
-      .doc(input_referral_code)
-      .get()
-      .then(response => {
-        if (response.data()) {
-          this.setState({
-            referral_code_inform_icon: check_icon(15, "#05838B"),
-            referral_code_inform_text: (
-              <Text
-                style={{
-                  ...styles.referral_check_text,
-                  ...{ color: "#05838B" }
-                }}
-              >
-                Code available.
-              </Text>
-            ),
-            should_referral_code_inform_collapsed: false
-          });
-        } else {
+    if (input_referral_code.length > 0 && input_referral_code.trim() !== "") {
+      firebase
+        .firestore()
+        .collection("referralCodes")
+        .doc(input_referral_code)
+        .get()
+        .then(response => {
+          if (response.data()) {
+            this.setState({
+              referral_code_inform_icon: check_icon(15, "#05838B"),
+              referral_code_inform_text: (
+                <Text
+                  style={{
+                    ...styles.referral_check_text,
+                    ...{ color: "#05838B" }
+                  }}
+                >
+                  Code available.
+                </Text>
+              ),
+              should_referral_code_inform_collapsed: false
+            });
+          } else {
+            this.setState({
+              referral_code_inform_icon: close_icon(15, "#EB5757"),
+              referral_code_inform_text: (
+                <Text
+                  style={{
+                    ...styles.referral_check_text,
+                    ...{ color: "#EB5757" }
+                  }}
+                >
+                  Code doesn't exist.
+                </Text>
+              ),
+              should_referral_code_inform_collapsed: false
+            });
+          }
+        })
+        .catch(err => {
           this.setState({
             referral_code_inform_icon: close_icon(15, "#EB5757"),
             referral_code_inform_text: (
@@ -297,29 +314,13 @@ export default class SignUpScreen extends React.PureComponent {
                   ...{ color: "#EB5757" }
                 }}
               >
-                Code doesn't exist.
+                Something wrong with the code :(
               </Text>
             ),
             should_referral_code_inform_collapsed: false
           });
-        }
-      })
-      .catch(err => {
-        this.setState({
-          referral_code_inform_icon: close_icon(15, "#EB5757"),
-          referral_code_inform_text: (
-            <Text
-              style={{
-                ...styles.referral_check_text,
-                ...{ color: "#EB5757" }
-              }}
-            >
-              Something wrong with the code :(
-            </Text>
-          ),
-          should_referral_code_inform_collapsed: false
         });
-      });
+    }
   };
 
   componentDidMount() {

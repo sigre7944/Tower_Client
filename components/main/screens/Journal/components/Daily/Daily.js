@@ -5,6 +5,10 @@ import NetInfo from "@react-native-community/netinfo";
 import { fromJS } from "immutable";
 
 export default class Daily extends React.Component {
+  static navigationOptions = ({ navigation, navigationOptions }) => ({
+    swipeEnabled: false
+})
+
   componentDidMount() {
     // This code will run only in native
     // this.unsubscribe_net_info = NetInfo.addEventListener(state => {

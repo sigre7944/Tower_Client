@@ -30,7 +30,7 @@ import AntDesignIcon from "react-native-vector-icons/AntDesign";
 import Calendar from "../main/screens/Journal/components/share/calendar/Calendar";
 import Category from "../main/screens/Journal/components/share/category/Category.Container";
 import Collapsible from "react-native-collapsible";
-
+import TaskCardUI from "./components/task-card-ui/TaskCardUI.Container";
 import DeleteMultiple from "./components/delete-multiple/DeleteMultiple.Container";
 
 const window_width = Dimensions.get("window").width;
@@ -38,8 +38,7 @@ const window_width = Dimensions.get("window").width;
 export default class EditMultipleTasks extends React.PureComponent {
   static navigationOptions = ({ navigation, navigationOptions }) => {
     return {
-      header: null,
-      swipeable: false
+      header: null
     };
   };
 
@@ -674,7 +673,6 @@ class TaskCardsFlatlist extends React.PureComponent {
       this.props.priorities !== prevProps.priorities ||
       this.props.deleted_tasks !== prevProps.deleted_tasks
     ) {
-
       let sort_settings = List(this.props.sortSettings);
 
       if (sort_settings.get(0)) {
@@ -1523,140 +1521,15 @@ class TaskCard extends React.PureComponent {
     return (
       <View>
         {this.update_obj.should_render ? (
-          <View style={styles.task_card_container}>
-            <View
-              style={{
-                flexDirection: "row",
-                flex: 1
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center"
-                }}
-              >
-                <PriorityColorBar priority_color={task_priority_color} />
-
-                <TouchableOpacity
-                  style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: 62,
-                    paddingHorizontal: 15
-                  }}
-                  onPress={this._checkComplete}
-                >
-                  <CheckBox checked_complete={this.state.checked_complete} />
-                </TouchableOpacity>
-              </View>
-              <TouchableOpacity
-                style={{
-                  marginLeft: 15,
-                  flex: 1,
-                  justifyContent: "center"
-                }}
-                onPress={this._openModal}
-              >
-                <Text style={styles.task_title}>{this.update_obj.title}</Text>
-
-                <Text style={styles.goal_tracking}>
-                  {this.update_obj.current_goal_value} /{" "}
-                  {this.update_obj.goal_value}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center"
-              }}
-            >
-              <CategoryColorCircle category_color={task_category_color} />
-            </View>
-          </View>
+          <TaskCardUI
+            checked_complete={this.state.checked_complete}
+            task_category_color={task_category_color}
+            task_priority_color={task_priority_color}
+            update_obj={this.update_obj}
+            _checkComplete={this._checkComplete}
+          />
         ) : null}
       </View>
-    );
-  }
-}
-
-class PriorityColorBar extends React.PureComponent {
-  render() {
-    return (
-      <View
-        style={{
-          width: 9,
-          backgroundColor: this.props.priority_color,
-          borderRadius: 30,
-          height: 62,
-          marginLeft: 1
-        }}
-      ></View>
-    );
-  }
-}
-
-class CheckBox extends React.PureComponent {
-  render() {
-    let complete_box_container_style = styles.complete_box_container_unchosen;
-
-    if (this.props.checked_complete) {
-      complete_box_container_style = styles.complete_box_container_chosen;
-    }
-
-    return (
-      <View style={complete_box_container_style}>
-        {this.props.checked_complete ? (
-          <FontAwesomeIcon icon={faCheck} color="white" />
-        ) : null}
-
-        <View></View>
-      </View>
-    );
-  }
-}
-
-class CategoryColorCircle extends React.PureComponent {
-  render() {
-    return (
-      <>
-        {this.props.category_color === "white" ||
-        this.props.category_color === "no color" ? (
-          <View
-            style={{
-              width: 12,
-              height: 12,
-              borderRadius: 6,
-              borderWidth: 1,
-              borderColor: "#2C2C2C",
-              justifyContent: "center",
-              alignItems: "center",
-              marginHorizontal: 15
-            }}
-          >
-            <View
-              style={{
-                flex: 1,
-                width: 1,
-                backgroundColor: "#2C2C2C",
-                transform: [{ rotate: "45deg" }]
-              }}
-            ></View>
-          </View>
-        ) : (
-          <View
-            style={{
-              backgroundColor: this.props.category_color,
-              marginHorizontal: 15,
-              width: 12,
-              height: 12,
-              borderRadius: 6
-            }}
-          ></View>
-        )}
-      </>
     );
   }
 }

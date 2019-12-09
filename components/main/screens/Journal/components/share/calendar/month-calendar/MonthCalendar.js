@@ -24,6 +24,7 @@ const margin_top_for_month_year_text = 30;
 const calendar_total_height = margin_top_for_calendar_row * 3 + 45 * 3;
 const animation_duration = 250;
 const easing = Easing.in();
+const outer_panel_padding = 7;
 
 export default class MonthCalendar extends React.Component {
   chosen_month = -1;
@@ -62,7 +63,11 @@ export default class MonthCalendar extends React.Component {
   };
 
   cancel = () => {
-    this._animateEndCalendar(this.props.hideAction, this.props.edit, this.props.edit_multiple);
+    this._animateEndCalendar(
+      this.props.hideAction,
+      this.props.edit,
+      this.props.edit_multiple
+    );
   };
 
   setData = (month, year) => {
@@ -330,7 +335,11 @@ class Calendar extends React.Component {
           position: "relative"
         }}
       >
-        <View>
+        <View
+          style={{
+            marginHorizontal: outer_panel_padding,
+          }}
+        >
           <FlatList
             data={this.year_data}
             extraData={this.state.should_flatlist_update}
@@ -339,7 +348,7 @@ class Calendar extends React.Component {
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             decelerationRate={0}
-            snapToInterval={338}
+            snapToInterval={panel_width}
             snapToAlignment="start"
             getItemLayout={this._getItemLayout}
             initialScrollIndex={this.start_index}
@@ -429,7 +438,8 @@ class YearHolder extends React.Component {
         <View
           style={{
             marginTop: margin_top_for_calendar_row,
-            height: calendar_total_height
+            height: calendar_total_height,
+            width: panel_width,
           }}
         >
           <FlatList
@@ -437,7 +447,7 @@ class YearHolder extends React.Component {
             extraData={this.state.should_flatlist_update}
             numColumns={4}
             columnWrapperStyle={{
-              width: panel_width - 10,
+              width: panel_width - 2 * outer_panel_padding,
               marginTop: margin_top_for_calendar_row
             }}
             keyExtractor={this._keyExtractor}

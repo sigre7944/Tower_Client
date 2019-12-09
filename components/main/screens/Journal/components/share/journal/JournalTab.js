@@ -196,6 +196,11 @@ export default class JournalTab extends React.PureComponent {
             current_chosen_category={this.props.current_chosen_category}
             deleted_tasks={this.props.deleted_tasks}
             sortSettings={this.props.sortSettings}
+            plan={Map(this.props.generalSettings).getIn([
+              "account",
+              "package",
+              "plan"
+            ])}
           />
         </View>
 
@@ -239,6 +244,11 @@ class FlatlistGroup extends React.PureComponent {
             current_chosen_category={this.props.current_chosen_category}
             deleted_tasks={this.props.deleted_tasks}
             sortSettings={this.props.sortSettings}
+            plan={Map(this.props.generalSettings).getIn([
+              "account",
+              "package",
+              "plan"
+            ])}
           />
         </View>
       );
@@ -254,6 +264,11 @@ class FlatlistGroup extends React.PureComponent {
             openModal={this.props.openModal}
             current_chosen_category={this.props.current_chosen_category}
             sortSettings={this.props.sortSettings}
+            plan={Map(this.props.generalSettings).getIn([
+              "account",
+              "package",
+              "plan"
+            ])}
           />
         </View>
       );
@@ -299,7 +314,8 @@ class FlatlistGroup extends React.PureComponent {
         prevProps.current_chosen_category ||
       this.props.deleted_tasks !== prevProps.deleted_tasks ||
       this.props.chosen_date_data !== prevProps.chosen_date_data ||
-      this.props.sortSettings !== prevProps.sortSettings
+      this.props.sortSettings !== prevProps.sortSettings ||
+      this.props.plan !== prevProps.plan
     ) {
       this._updateData();
     }
@@ -338,6 +354,11 @@ class UncompletedTaskCardHolder extends React.PureComponent {
         chosen_date_data={this.props.chosen_date_data}
         openModal={this.props.openModal}
         deleted_task_data={Map(this.props.deleted_tasks).get(item[0])}
+        plan={Map(this.props.generalSettings).getIn([
+          "account",
+          "package",
+          "plan"
+        ])}
       />
     );
   };
@@ -428,7 +449,8 @@ class UncompletedTaskCardHolder extends React.PureComponent {
         prevProps.current_chosen_category ||
       this.props.deleted_tasks !== prevProps.deleted_tasks ||
       this.props.chosen_date_data !== prevProps.chosen_date_data ||
-      this.props.sortSettings !== prevProps.sortSettings
+      this.props.sortSettings !== prevProps.sortSettings ||
+      this.props.plan !== prevProps.plan
     ) {
       let sort_settings = List(this.props.sortSettings);
 

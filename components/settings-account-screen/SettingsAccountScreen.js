@@ -25,7 +25,6 @@ import * as firebase from "firebase";
 export default class SettingsAccountScreen extends React.PureComponent {
   static navigationOptions = ({ navigation, navigationOptions }) => ({
     header: <Header navigation={navigation} />,
-    swipeable: false
   });
 
   month_names = [

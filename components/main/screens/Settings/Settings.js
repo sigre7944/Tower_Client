@@ -31,7 +31,7 @@ export default class Settings extends React.Component {
   static navigationOptions = ({ navigation, navigationOptions }) => {
     return {
       header: <SettingHeader navigation={navigation} />,
-      swipeable: false
+      swipeEnabled: false
     };
   };
 

@@ -17,7 +17,7 @@ export default class Progress extends React.PureComponent {
   static navigationOptions = ({ navigation, navigationOptions }) => {
     return {
       header: <ProgressHeader navigation={navigation} />,
-      swipeable: false
+      swipeEnabled: false
     };
   };
 
