@@ -1,4 +1,5 @@
 import { connect } from 'react-redux'
+import { updateGeneralSettings } from "../shared/actions/otherAction";
 import SettingsAccountScreen from './SettingsAccountScreen'
 
 const mapStateToProps = (state) => ({
@@ -6,6 +7,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
+    updateGeneralSettings: (keyPath, notSetValue, updater) => dispatch(updateGeneralSettings(keyPath, notSetValue, updater))
 })
 
 export default connect(
