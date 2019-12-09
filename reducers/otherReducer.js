@@ -141,10 +141,19 @@ let initial_general_settings = fromJS({
   vibration: true,
 
   package_limitations: {
-    plan: "free",
-    number_of_tasks_per_category: 10,
-    number_of_categories: 10,
-    
+    free: {
+      number_of_tasks_per_category: 1,
+      number_of_categories: 5,
+      number_of_rewards: 5,
+      chart_change_calendar_available: false
+    },
+
+    premium: {
+      number_of_tasks_per_category: 99,
+      number_of_categories: 99,
+      number_of_rewards: 99,
+      chart_change_calendar_available: true
+    }
   },
 
   currency: "EUR",

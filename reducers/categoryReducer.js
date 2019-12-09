@@ -23,7 +23,7 @@ let initialState = fromJS(
       color: "#F78096",
       quantity: 0,
       plan: "free",
-      createdAt: Date.now()
+      created_at: Date.now()
     }
   },
   (key, value, path) => {
