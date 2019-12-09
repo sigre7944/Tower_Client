@@ -91,7 +91,9 @@ export default class SettingsAccountScreen extends React.PureComponent {
       .then(() => {
         let sending_data = {
           isLoggedIn: false,
-          plan: "free"
+          package: {
+            plan: "free"
+          }
         };
         this.props.updateGeneralSettings(["account"], {}, value =>
           fromJS(sending_data)
@@ -100,7 +102,7 @@ export default class SettingsAccountScreen extends React.PureComponent {
         this._goBackToSettings();
       })
       .catch(err => {
-        console.log(err);
+        // TO DO
       });
   };
 

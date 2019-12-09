@@ -132,11 +132,21 @@ let initial_general_settings = fromJS({
   },
   account: {
     isLoggedIn: false,
-    plan: "free"
+    package: {
+      plan: "free"
+    }
   },
 
   sound: true,
   vibration: true,
+
+  package_limitations: {
+    plan: "free",
+    number_of_tasks_per_category: 10,
+    number_of_categories: 10,
+    
+  },
+
   currency: "EUR",
   exchange_rates: {
     EUR: {

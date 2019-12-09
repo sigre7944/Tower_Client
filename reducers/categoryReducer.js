@@ -21,7 +21,9 @@ let initialState = fromJS(
       id: `cate_0`,
       name: "Inbox",
       color: "#F78096",
-      quantity: 0
+      quantity: 0,
+      plan: "free",
+      createdAt: Date.now()
     }
   },
   (key, value, path) => {

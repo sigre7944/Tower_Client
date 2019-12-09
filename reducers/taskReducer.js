@@ -33,7 +33,9 @@ let initial_currentMonthTask = fromJS({
 
     goal: {
         max: 1
-    }
+    },
+
+    plan: "free"
 }),
     initial_currentWeekTask = fromJS({
         schedule: {
@@ -70,7 +72,9 @@ let initial_currentMonthTask = fromJS({
 
         goal: {
             max: 1
-        }
+        },
+
+        plan: "free"
     }),
 
     initial_currentDayTask = fromJS({
@@ -100,7 +104,9 @@ let initial_currentMonthTask = fromJS({
 
         goal: {
             max: 1
-        }
+        },
+
+        plan: "free"
     })
 
 export const day_tasks = (state = Map(), action) => {
