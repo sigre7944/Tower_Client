@@ -8,22 +8,18 @@ import {
   TextInput,
   FlatList,
   Dimensions,
-  Animated,
-  Image
+  Animated
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
-import Constants from "expo-constants";
-import * as Permissions from "expo-permissions";
+
 import { styles } from "./styles/styles";
 
-import { user_icon, plus_icon } from "../../../shared/icons";
+import { user_icon } from "../../../shared/icons";
 
 import * as firebase from "firebase";
 
 import { fromJS } from "immutable";
-import axios from "axios";
 import { Notifications } from "expo";
-import { SERVER_URL } from "../../../../config";
+import * as Permissions from "expo-permissions";
 
 export default class AccountRow extends React.PureComponent {
   state = {
@@ -41,32 +37,6 @@ export default class AccountRow extends React.PureComponent {
   _goToProfileScreen = () => {
     this.props.navigation.dispatch(DrawerActions.closeDrawer());
     this.props.navigation.navigate("SettingsAccountScreen");
-  };
-
-  getPermissionAsync = async () => {
-    if (Constants.platform.ios) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      if (status !== "granted") {
-        alert("Sorry, we need camera roll permissions to make this work!");
-      }
-    }
-  };
-
-  _pickImage = async () => {
-    try {
-      let permission = await this.getPermissionAsync();
-
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1
-      });
-
-      if (!result.cancelled) {
-        this.setState({ image: result.uri });
-      }
-    } catch (err) {}
   };
 
   componentDidMount() {
