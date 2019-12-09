@@ -1,5 +1,4 @@
 import React from "react";
-import { DrawerActions } from "react-navigation-drawer";
 import {
   TouchableOpacity,
   Text,
@@ -60,17 +59,11 @@ export default class SignInScreen extends React.PureComponent {
   };
 
   _goBack = () => {
-    this.props.navigation.dispatch(DrawerActions.openDrawer());
-    this.props.navigation.navigate("Journal");
+    this.props.navigation.navigate("DrawerNavigator");
   };
 
   _goToSignUpScreen = () => {
     this.props.navigation.navigate("SignUpScreen");
-  };
-
-  _goToDrawer = () => {
-    this.props.navigation.dispatch(DrawerActions.openDrawer());
-    this.props.navigation.navigate("Journal");
   };
 
   _hideErrorBanner = () => {
@@ -95,7 +88,7 @@ export default class SignInScreen extends React.PureComponent {
             error_msg: "Invalid email/password."
           });
         } else {
-          this._goToDrawer();
+          this._goBack();
         }
       })
       .catch(err => {

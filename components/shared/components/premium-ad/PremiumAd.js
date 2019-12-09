@@ -105,8 +105,8 @@ export default class PremiumAd extends React.PureComponent {
                 style={{marginBottom: 10}}
               >
                 <Text style={styles.motivation_text}>
-                  {/* {this.props.motivation_text} */}
-                  You've reached Free plan's limits
+                  {this.props.motivation_text}
+                  {/* You've reached Free plan's limits */}
                 </Text>
               </View>
 

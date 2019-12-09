@@ -411,7 +411,7 @@ export default class AddEditReward extends React.PureComponent {
         {this.state.should_display_premium_ad ? (
           <PremiumAd
             dismissAction={this._toggleShouldDisplayPremiumAd}
-            motivation_text=""
+            motivation_text="You've reached Free plan's limits"
           />
         ) : null}
       </Modal>

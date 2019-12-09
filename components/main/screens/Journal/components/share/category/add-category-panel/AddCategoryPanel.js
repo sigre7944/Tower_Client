@@ -344,7 +344,7 @@ export default class AddCategoryPanel extends React.PureComponent {
               {this.state.should_display_premium_ad ? (
                 <PremiumAd
                   dismissAction={this._closePremiumAd}
-                  motivation_text=""
+                  motivation_text="You've reached Free plan's limits"
                 />
               ) : null}
             </SafeAreaView>

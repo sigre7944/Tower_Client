@@ -86,7 +86,7 @@ export default class TitleAndDescriptionHolder extends React.PureComponent {
                 ? this._toggleShouldDisplayPremiumAdTitle
                 : this._toggleShouldDisplayPremiumAdDescription
             }
-            motivation_text=""
+            motivation_text="You've reached Free plan's limits"
           />
         ) : null}
       </View>

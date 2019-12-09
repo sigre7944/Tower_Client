@@ -93,7 +93,7 @@ export default class BottomOptionsHolder extends React.PureComponent {
         {this.state.should_display_premium_ad ? (
           <PremiumAd
             dismissAction={this._toggleShouldDisplayPremiumAd}
-            motivation_text=""
+            motivation_text="You've reached Free plan's limits"
           />
         ) : null}
       </View>
