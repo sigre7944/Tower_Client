@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -7,11 +7,13 @@ import {
   ScrollView,
   Switch,
   Picker
-} from 'react-native';
+} from "react-native";
 
 import SettingHeader from "./components/header/SettingHeader";
 
 import PremiumAdvert from "./components/premium-advert/PremiumAdvert";
+
+import UserAccount from "./components/user-account/UserAccount.Container";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
@@ -22,50 +24,42 @@ import { Map } from "immutable";
 
 import CurrencySetting from "./components/currency-setting/CurrencySetting.Container";
 
-const window_width = Dimensions.get("window").width
-const premium_1x_image = require("../../../../assets/pngs/premium_1x.png")
+const window_width = Dimensions.get("window").width;
+const premium_1x_image = require("../../../../assets/pngs/premium_1x.png");
 
 export default class Settings extends React.Component {
   static navigationOptions = ({ navigation, navigationOptions }) => {
-    return ({
+    return {
       header: <SettingHeader navigation={navigation} />,
       swipeable: false
-    })
-  }
+    };
+  };
 
   state = {
     should_display_premium_advert: false
-  }
+  };
 
   _onSoundChange = () => {
-    this.props.updateGeneralSettings(
-      ["sound"],
-      true,
-      (value) => !value
-    )
-  }
+    this.props.updateGeneralSettings(["sound"], true, value => !value);
+  };
 
   _onVibrationChange = () => {
-    this.props.updateGeneralSettings(
-      ["vibration"],
-      true,
-      (value) => !value
-    )
-  }
+    this.props.updateGeneralSettings(["vibration"], true, value => !value);
+  };
 
   _togglePremiumAdvert = () => {
     this.setState(prevState => ({
       should_display_premium_advert: !prevState.should_display_premium_advert
-    }))
-  }
+    }));
+  };
 
   componentDidMount() {
     const didFocusScreen = this.props.navigation.addListener(
-      'didFocus',
+      "didFocus",
       payload => {
-        this.props.changeRouteAction(payload.state.routeName)
+        this.props.changeRouteAction(payload.state.routeName);
       }
-    )
+    );
   }
 
   render() {
@@ -73,65 +67,13 @@ export default class Settings extends React.Component {
       <View
         style={{
           backgroundColor: "white",
-          flex: 1,
+          flex: 1
         }}
       >
         <ScrollView>
-          <TouchableOpacity
-            style={{
-              flexDirection: "row",
-              height: 92,
-              width: window_width,
-              alignItems: "center",
-              justifyContent: "space-between",
-              paddingHorizontal: 22,
-              paddingVertical: 22,
-              marginTop: 20,
-              shadowOffset: {
-                width: 4,
-                height: 4
-              },
-              shadowRadius: 15,
-              shadowColor: "rgb(0, 0, 0)",
-              shadowOpacity: 0.08,
-              backgroundColor: "white"
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center"
-              }}
-            >
-              <View
-                style={styles.user_icon_container}
-              >
-                <MaterialCommunityIcons
-                  name="account"
-                  color="white"
-                  size={30}
-                />
-              </View>
-
-              <View
-                style={{
-                  marginLeft: 15
-                }}
-              >
-                <Text
-                  style={styles.normal_text}
-                >
-                  Sign in or Sign up
-              </Text>
-              </View>
-            </View>
-
-            <Feather
-              name="chevron-right"
-              size={21}
-              color="#6E6E6E"
-            />
-          </TouchableOpacity>
+          <UserAccount 
+            navigation={this.props.navigation}
+          />
 
           <TouchableOpacity
             style={{
@@ -152,7 +94,6 @@ export default class Settings extends React.Component {
               shadowOpacity: 0.08,
               backgroundColor: "white"
             }}
-
             onPress={this._togglePremiumAdvert}
           >
             <View
@@ -161,14 +102,8 @@ export default class Settings extends React.Component {
                 alignItems: "center"
               }}
             >
-              <View
-                style={styles.plan_icon_container}
-              >
-                <Ionicons
-                  name="ios-star-outline"
-                  color="#05838B"
-                  size={26}
-                />
+              <View style={styles.plan_icon_container}>
+                <Ionicons name="ios-star-outline" color="#05838B" size={26} />
               </View>
 
               <View
@@ -176,22 +111,14 @@ export default class Settings extends React.Component {
                   marginLeft: 15
                 }}
               >
-                <Text
-                  style={styles.normal_text}
-                >
-                  Upgrade to Premium
-                </Text>
+                <Text style={styles.normal_text}>Upgrade to Premium</Text>
 
                 <View
                   style={{
                     marginTop: 2
                   }}
                 >
-                  <Text
-                    style={styles.small_text}
-                  >
-                    Unlock special features
-                </Text>
+                  <Text style={styles.small_text}>Unlock special features</Text>
                 </View>
               </View>
             </View>
@@ -207,14 +134,10 @@ export default class Settings extends React.Component {
             style={{
               paddingHorizontal: 22,
               marginTop: 32,
-              marginBottom: 22,
+              marginBottom: 22
             }}
           >
-            <Text
-              style={styles.normal_text}
-            >
-              Preference
-            </Text>
+            <Text style={styles.normal_text}>Preference</Text>
           </View>
 
           <View
@@ -222,7 +145,7 @@ export default class Settings extends React.Component {
               backgroundColor: "white",
               shadowOffset: {
                 width: 0,
-                height: 2,
+                height: 2
               },
               shadowRadius: 8,
               shadowColor: "black",
@@ -240,11 +163,7 @@ export default class Settings extends React.Component {
                 paddingVertical: 18
               }}
             >
-              <Text
-                style={styles.normal_text}
-              >
-                Sound
-              </Text>
+              <Text style={styles.normal_text}>Sound</Text>
 
               <Switch
                 value={Map(this.props.generalSettings).get("sound")}
@@ -257,9 +176,7 @@ export default class Settings extends React.Component {
               />
             </View>
 
-            <View
-              style={styles.separating_line}
-            />
+            <View style={styles.separating_line} />
 
             <View
               style={{
@@ -272,11 +189,7 @@ export default class Settings extends React.Component {
                 paddingVertical: 18
               }}
             >
-              <Text
-                style={styles.normal_text}
-              >
-                Vibration
-              </Text>
+              <Text style={styles.normal_text}>Vibration</Text>
 
               <Switch
                 value={Map(this.props.generalSettings).get("vibration")}
@@ -289,9 +202,7 @@ export default class Settings extends React.Component {
               />
             </View>
 
-            <View
-              style={styles.separating_line}
-            />
+            <View style={styles.separating_line} />
             {/* <CurrencySetting /> */}
           </View>
 
@@ -405,14 +316,10 @@ export default class Settings extends React.Component {
             style={{
               paddingHorizontal: 22,
               marginTop: 32,
-              marginBottom: 22,
+              marginBottom: 22
             }}
           >
-            <Text
-              style={styles.normal_text}
-            >
-              Support us
-            </Text>
+            <Text style={styles.normal_text}>Support us</Text>
           </View>
 
           <View
@@ -420,12 +327,12 @@ export default class Settings extends React.Component {
               backgroundColor: "white",
               shadowOffset: {
                 width: 0,
-                height: 2,
+                height: 2
               },
               shadowRadius: 8,
               shadowColor: "black",
               shadowOpacity: 0.12,
-              marginBottom: 32,
+              marginBottom: 32
             }}
           >
             <TouchableOpacity
@@ -439,22 +346,12 @@ export default class Settings extends React.Component {
                 paddingVertical: 18
               }}
             >
-              <Text
-                style={styles.normal_text}
-              >
-                Write a review
-              </Text>
+              <Text style={styles.normal_text}>Write a review</Text>
 
-              <Feather
-                name="chevron-right"
-                size={21}
-                color="#6E6E6E"
-              />
+              <Feather name="chevron-right" size={21} color="#6E6E6E" />
             </TouchableOpacity>
 
-            <View
-              style={styles.separating_line}
-            />
+            <View style={styles.separating_line} />
 
             <TouchableOpacity
               style={{
@@ -467,31 +364,19 @@ export default class Settings extends React.Component {
                 paddingVertical: 18
               }}
             >
-              <Text
-                style={styles.normal_text}
-              >
-                Feedback
-              </Text>
+              <Text style={styles.normal_text}>Feedback</Text>
 
-              <Feather
-                name="chevron-right"
-                size={21}
-                color="#6E6E6E"
-              />
+              <Feather name="chevron-right" size={21} color="#6E6E6E" />
             </TouchableOpacity>
           </View>
         </ScrollView>
 
-        {this.state.should_display_premium_advert ?
+        {this.state.should_display_premium_advert ? (
           <PremiumAdvert
             dismissAction={this._togglePremiumAdvert}
             premium_1x_image={premium_1x_image}
           />
-
-          :
-
-          null
-        }
+        ) : null}
       </View>
     );
   }

@@ -17,7 +17,7 @@ import EditMultipleTasks from "./components/edit-multiple-tasks-screen/EditMulti
 import SignInSignUpOptions from "./components/sign-in-sign-up-screen/SignInSignUpOptions";
 import SignInScreen from "./components/sign-in-screen/SignInScreen";
 import SignUpScreen from "./components/sign-up-screen/SignUpScreen";
-
+import SettingsAccountScreen from "./components/settings-account-screen/SettingsAccountScreen.Container";
 import MainLoading from "./components/loading/MainLoading";
 
 import * as Font from "expo-font";
@@ -100,7 +100,7 @@ export default class App extends React.Component {
         {this.state.is_ready ? (
           <Provider store={store}>
             {/* <PersistGate loading={loading_screen} persistor={persistor}> */}
-              <AppContainer />
+            <AppContainer />
             {/* </PersistGate> */}
           </Provider>
         ) : (
@@ -138,7 +138,8 @@ const AppStackNavigator = createStackNavigator(
     EditMultipleTasks: { screen: EditMultipleTasks },
     SignInSignUp: { screen: SignInSignUpOptions },
     SignInScreen: { screen: SignInScreen },
-    SignUpScreen: { screen: SignUpScreen }
+    SignUpScreen: { screen: SignUpScreen },
+    SettingsAccountScreen: { screen: SettingsAccountScreen }
   },
   {
     initialRouteName: "DrawerNavigator",

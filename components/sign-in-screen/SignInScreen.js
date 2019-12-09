@@ -60,7 +60,8 @@ export default class SignInScreen extends React.PureComponent {
   };
 
   _goBack = () => {
-    this.props.navigation.navigate("SignInSignUp");
+    this.props.navigation.dispatch(DrawerActions.openDrawer());
+    this.props.navigation.navigate("Journal");
   };
 
   _goToSignUpScreen = () => {
@@ -68,8 +69,8 @@ export default class SignInScreen extends React.PureComponent {
   };
 
   _goToDrawer = () => {
-    this.props.navigation.navigate("Journal");
     this.props.navigation.dispatch(DrawerActions.openDrawer());
+    this.props.navigation.navigate("Journal");
   };
 
   _hideErrorBanner = () => {

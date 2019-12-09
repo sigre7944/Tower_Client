@@ -8,7 +8,14 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 21,
     letterSpacing: -0.02,
-    color: "white",
-    marginLeft: 16
+    color: "white"
+  },
+
+  email_text: {
+    fontFamily: CommonStyles.sf_ui_display_light_font,
+    fontSize: 18,
+    lineHeight: 21,
+    letterSpacing: -0.02,
+    color: "white"
   }
 });

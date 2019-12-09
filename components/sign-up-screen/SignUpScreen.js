@@ -1,4 +1,5 @@
 import React from "react";
+import { DrawerActions } from "react-navigation-drawer";
 import {
   TouchableOpacity,
   Text,
@@ -67,7 +68,8 @@ export default class SignUpScreen extends React.PureComponent {
   };
 
   _goBack = () => {
-    this.props.navigation.navigate("SignInSignUp");
+    this.props.navigation.dispatch(DrawerActions.openDrawer());
+    this.props.navigation.navigate("Journal");
   };
 
   _goToSignInScreen = () => {
@@ -215,9 +217,9 @@ export default class SignUpScreen extends React.PureComponent {
 
       try {
         let sign_up_response = await this._sendSignUpRequestToServer(
-          email,
-          password,
-          referral_code
+          email.trim(),
+          password.trim(),
+          referral_code.trim()
         );
         this._activeSuccessBanner();
       } catch (err) {

@@ -132,9 +132,6 @@ let initial_general_settings = fromJS({
   },
   account: {
     isLoggedIn: false,
-    userId: "",
-    email: "",
-    deviceId: "",
     plan: "free"
   },
 

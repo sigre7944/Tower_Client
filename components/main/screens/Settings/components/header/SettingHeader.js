@@ -31,13 +31,13 @@ export default class SettingHeader extends React.PureComponent {
                 >
                     <TouchableOpacity
                         style={styles.end_icon_container}
-                        onPress={this._openDrawer}
+                        // onPress={this._openDrawer}
                     >
-                        <FontAwesomeIcon
+                        {/* <FontAwesomeIcon
                             icon={faBars}
                             size={20}
                             color={"#BDBDBD"}
-                        />
+                        /> */}
                     </TouchableOpacity>
 
                     <View>
