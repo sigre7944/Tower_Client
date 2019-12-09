@@ -190,7 +190,6 @@
                 value: reward_value,
                 latest_timestamp: latest_timestamp,
                 quantity: 1,
-                currency: "euro",
             }
         }
     }

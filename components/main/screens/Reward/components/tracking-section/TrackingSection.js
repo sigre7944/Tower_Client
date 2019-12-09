@@ -10,7 +10,7 @@ import {
 
 import { Map, fromJS, OrderedMap, isKeyed } from 'immutable'
 import { styles } from "./styles/styles";
-import { Haptics } from "expo";
+import * as Haptics from "expo-haptics";
 import { Audio } from "expo-av";
 
 const window_width = Dimensions.get("window").width

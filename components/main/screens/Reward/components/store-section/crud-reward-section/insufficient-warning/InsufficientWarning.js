@@ -96,7 +96,7 @@ export default class InsufficientWarning extends React.PureComponent {
                         <Text
                             style={{ ...styles.warning_text, ...{ color: "#EB5757", fontSize: 21, lineHeight: 24 } }}
                         >
-                            Insufficient fund!
+                            Insufficient points!
                         </Text>
 
                         <Text

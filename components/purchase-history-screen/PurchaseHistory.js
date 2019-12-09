@@ -289,7 +289,7 @@ class PurchasedItem extends React.PureComponent {
                     <Text
                         style={styles.item_value}
                     >
-                        {`${item_value} €`}
+                        {`${item_value} pts`}
                     </Text>
 
                     <Text
