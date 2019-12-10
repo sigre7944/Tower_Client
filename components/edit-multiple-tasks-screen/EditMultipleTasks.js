@@ -1527,6 +1527,7 @@ class TaskCard extends React.PureComponent {
             task_priority_color={task_priority_color}
             update_obj={this.update_obj}
             _checkComplete={this._checkComplete}
+            task_data={this.props.task_data}
           />
         ) : null}
       </View>

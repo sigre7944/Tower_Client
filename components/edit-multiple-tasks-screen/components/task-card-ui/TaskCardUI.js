@@ -84,6 +84,12 @@ export default class TaskCardUI extends React.PureComponent {
       container_style = styles.unable_to_edit_task_card_container;
     }
 
+    let title = this.props.update_obj.title;
+
+    if (title.length > 24) {
+      title = String(title).substring(0, 24) + "...";
+    }
+
     return (
       <View style={container_style}>
         <View
@@ -119,7 +125,7 @@ export default class TaskCardUI extends React.PureComponent {
               justifyContent: "center"
             }}
           >
-            <Text style={styles.task_title}>{this.props.update_obj.title}</Text>
+            <Text style={styles.task_title}>{title}</Text>
 
             <Text style={styles.goal_tracking}>
               {this.props.update_obj.current_goal_value} /

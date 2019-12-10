@@ -14,7 +14,6 @@ import {
     Animated,
     Easing
 } from 'react-native'
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 
 import { Map, List } from 'immutable'
 import { styles } from './styles/styles';

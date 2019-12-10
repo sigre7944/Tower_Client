@@ -1380,6 +1380,12 @@ export default class TaskCard extends React.PureComponent {
       container_style = styles.unable_to_edit_container;
     }
 
+    let title = this.props.title;
+
+    if (title.length > 24) {
+      title = String(title).substring(0, 24) + "...";
+    }
+
     return (
       <View style={container_style}>
         <View
@@ -1419,7 +1425,7 @@ export default class TaskCard extends React.PureComponent {
             }}
             onPress={this._openModal}
           >
-            <Text style={task_title_style}>{this.props.title}</Text>
+            <Text style={task_title_style}>{title}</Text>
 
             <Text style={goal_tracking_style}>
               {this.props.current_goal_value} / {this.props.goal_value}
