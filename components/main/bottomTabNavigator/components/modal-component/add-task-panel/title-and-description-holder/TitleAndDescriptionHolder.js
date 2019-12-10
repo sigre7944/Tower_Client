@@ -183,6 +183,12 @@ class TaskTitleElement extends React.PureComponent {
             "plan"
           ]);
         }
+      } else {
+        assigned_plan = Map(this.props.generalSettings).getIn([
+          "account",
+          "package",
+          "plan"
+        ]);
       }
 
       // Check if plan is free or premium
@@ -354,6 +360,12 @@ class TaskDescriptionElement extends React.PureComponent {
             "plan"
           ]);
         }
+      } else {
+        assigned_plan = Map(this.props.generalSettings).getIn([
+          "account",
+          "package",
+          "plan"
+        ]);
       }
 
       // Check if plan is free or premium

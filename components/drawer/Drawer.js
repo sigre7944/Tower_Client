@@ -1544,7 +1544,7 @@ class CategoryRow extends React.Component {
         {this.state.should_display_premium_ad ? (
           <PremiumAd
             dismissAction={this._toggleShouldDisplayPremiumAd}
-            motivation_text="The category was disabled due to Free plan."
+            motivation_text="The category was disabled due to Free plan"
           />
         ) : null}
       </Swipeable>

@@ -39,88 +39,51 @@ export default class AccountRow extends React.PureComponent {
     this.props.navigation.navigate("SettingsAccountScreen");
   };
 
-  componentDidMount() {
-    Notifications.addListener(event_subscription => {
-      console.log(event_subscription);
+  _updateAccountRedux = (data, is_logged_in) => {
+    let sending_data = {
+      ...data,
+      ...{ isLoggedIn: is_logged_in }
+    };
+
+    this.props.updateGeneralSettings(["account"], {}, value =>
+      fromJS(sending_data)
+    );
+  };
+
+  _updateAccountLogInState = (email, is_logged_in) => {
+    let email_name = String(email).substring(0, String(email).indexOf("@"));
+
+    if (email_name.length > 24) {
+      email_name = email_name.substring(0, 24) + "...";
+    }
+
+    this.setState({
+      is_logged_in: true,
+      account_email: email_name
     });
+  };
 
-    // Notifications.scheduleLocalNotificationAsync(
-    //   {
-    //     title: "Title of local noti",
-    //     body: "Body of local noti",
-    //     data: {
-    //       test: "test"
-    //     }
-    //   },
-    //   {
-    //     time: new Date().getTime() + 10000,
-    //     repeat: "minute"
-    //   }
-    // )
-    //   .then(response => {
-    //     console.log(response);
-    //   })
-    //   .catch(err => {
-    //     console.log(err);
-    //   });
-
-    Notifications.cancelAllScheduledNotificationsAsync()
-      .then(response => {
-        // console.log(response)
-      })
-      .catch(err => console.log(err));
-
+  componentDidMount() {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         if (user.emailVerified) {
-          firebase
-            .firestore()
-            .collection("users")
-            .doc(user.uid)
-            .get()
-            .then(response => {
-              let sending_data = {
-                ...response.data(),
-                ...{ isLoggedIn: true }
-              };
-              this.props.updateGeneralSettings(["account"], {}, value =>
-                fromJS(sending_data)
-              );
-              let email = response.data().email;
-              let email_name = String(email).substring(
-                0,
-                String(email).indexOf("@")
-              );
-
-              if (email_name.length > 24) {
-                email_name = email_name.substring(0, 24) + "...";
-              }
-
-              this.setState({
-                is_logged_in: true,
-                account_email: email_name
+          try {
+            firebase
+              .firestore()
+              .collection("users")
+              .doc(user.uid)
+              .onSnapshot(doc => {
+                this._updateAccountRedux(doc.data(), true);
+                this._updateAccountLogInState(user.email, false);
               });
-            })
-            .catch(err => {
-              // TO DO
-            });
+          } catch (err) {}
         } else {
           firebase
             .auth()
             .signOut()
             .then(() => {
-              let sending_data = {
-                isLoggedIn: false,
-                package: {
-                  plan: "free"
-                }
-              };
-              this.props.updateGeneralSettings(["account"], {}, value =>
-                fromJS(sending_data)
-              );
-              this.setState({
-                is_logged_in: false
-              });
+              this._updateAccountRedux({ package: { plan: "free" } }, false);
+              this._updateAccountLogInState("", false);
             })
             .catch(err => {
               // TO DO
@@ -130,7 +93,7 @@ export default class AccountRow extends React.PureComponent {
         let sending_data = {
           isLoggedIn: false,
           package: {
-            plan: "premium"
+            plan: "free"
           }
         };
         this.props.updateGeneralSettings(["account"], {}, value =>

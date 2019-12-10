@@ -1,6 +1,6 @@
 import React from "react";
 
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, SafeAreaView } from "react-native";
 import AddTaskButton from "./components/AddTaskButton";
 import OverlayModal from "./components/modal-component/OverlayModal.Container";
 
@@ -68,7 +68,7 @@ export default class BottomTabNavigator extends React.Component {
 
   render() {
     return (
-      <>
+      <SafeAreaView>
         <View
           style={{
             height: 60,
@@ -117,7 +117,7 @@ export default class BottomTabNavigator extends React.Component {
             />
           </View>
         </View>
-      </>
+      </SafeAreaView>
     );
   }
 }

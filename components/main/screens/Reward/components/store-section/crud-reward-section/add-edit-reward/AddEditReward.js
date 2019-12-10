@@ -104,50 +104,85 @@ export default class AddEditReward extends React.PureComponent {
     }));
   };
 
+  _checkIfCanChoose = () => {
+    let account_plan = this.props.account_plan,
+      category_plan = Map(this.props.data).get("plan"),
+      can_choose = false;
+
+    if (category_plan === "free") {
+      can_choose = true;
+    } else {
+      can_choose = account_plan === category_plan;
+    }
+
+    this.setState({
+      can_choose
+    });
+  };
+
   _save = () => {
     if (
       this.state.reward_title.length > 0 &&
       this.state.reward_value.length > 0
     ) {
       if (this.props.edit) {
-        let edit_reward_data_map = Map(this.props.edit_reward_data),
-          sending_obj = {
-            edit_reward_data: {
-              keyPath: [edit_reward_data_map.get("id")],
-              notSetValue: {},
-              updater: value =>
-                fromJS({
-                  id: edit_reward_data_map.get("id"),
-                  name: this.state.reward_title,
-                  value: parseFloat(this.state.reward_value),
-                  created_at: edit_reward_data_map.get("created_at")
-                })
-            },
+        let edit_reward_id = Map(this.props.edit_reward_data).get("id");
 
-            update_main_reward_data: {
-              should_update: this.state.is_main,
-              id: edit_reward_data_map.get("id"),
-              current_main_reward: this.props.main_reward
-            }
-          };
+        let new_reward_data = Map(this.props.edit_reward_data).asMutable();
+
+        new_reward_data.update("name", v => this.state.reward_title);
+        new_reward_data.update("value", v =>
+          parseFloat(this.state.reward_value)
+        );
+
+        let sending_obj = {
+          edit_reward_data: {
+            keyPath: [edit_reward_id],
+            notSetValue: {},
+            updater: value => new_reward_data.toMap()
+          },
+
+          update_main_reward_data: {
+            should_update: this.state.is_main,
+            id: edit_reward_id,
+            current_main_reward: this.props.main_reward
+          }
+        };
 
         this.props.editRewardAndMainReward(sending_obj);
 
         this._cancel();
       } else {
-        let plan = Map(this.props.generalSettings).getIn([
+        // Every user will have a fixed default number of rewards, which will be always available.
+        // If the current number of rewards don't exceed the limit, we will assign the new reward with
+        // free plan. After the limit, we assign normally based on user's plan.
+
+        let free_plan_number_of_rewards = Map(
+          this.props.generalSettings
+        ).getIn(["package_limitations", "free", "number_of_rewards"]);
+
+        let current_number_of_rewards = OrderedMap(this.props.rewards).size;
+
+        let assigned_plan = "free";
+
+        // If current number of rewards doesnt exceed the limit
+        if (current_number_of_rewards < free_plan_number_of_rewards) {
+          assigned_plan = "free";
+        }
+        // If it does
+        else {
+          assigned_plan = Map(this.props.generalSettings).getIn([
             "account",
             "package",
             "plan"
-          ]),
-          number_of_rewards = Map(this.props.generalSettings).getIn([
-            "package_limitations",
-            plan,
-            "number_of_rewards"
-          ]),
-          current_number_of_rewards = OrderedMap(this.props.rewards).size;
+          ]);
+        }
 
-        if (current_number_of_rewards < number_of_rewards) {
+        let assigned_plan_number_of_rewards = Map(
+          this.props.generalSettings
+        ).getIn(["package_limitations", assigned_plan, "number_of_rewards"]);
+
+        if (current_number_of_rewards < assigned_plan_number_of_rewards) {
           let reward_id = `reward-${shortid.generate()}`,
             sending_obj = {
               new_reward_data: {
@@ -158,7 +193,8 @@ export default class AddEditReward extends React.PureComponent {
                     id: reward_id,
                     name: this.state.reward_title,
                     value: parseFloat(this.state.reward_value),
-                    created_at: new Date().getTime()
+                    created_at: new Date().getTime(),
+                    plan: assigned_plan
                   })
               },
               update_main_reward_data: {

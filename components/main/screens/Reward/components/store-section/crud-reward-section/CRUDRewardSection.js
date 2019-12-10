@@ -23,6 +23,8 @@ import { styles } from "./styles/styles";
 import * as Haptics from "expo-haptics";
 import { Audio } from "expo-av";
 
+import PremiumAd from "../../../../../../shared/components/premium-ad/PremiumAd";
+
 const window_width = Dimensions.get("window").width;
 const number_of_columns = 2;
 const reward_holder_width =
@@ -248,6 +250,11 @@ export default class CRUDRewardSection extends React.PureComponent {
           data={item[1]}
           editReward={this.editReward}
           _getReward={this._getReward}
+          account_plan={Map(this.props.generalSettings).getIn([
+            "account",
+            "package",
+            "plan"
+          ])}
         />
       );
     }
@@ -332,18 +339,63 @@ export default class CRUDRewardSection extends React.PureComponent {
 }
 
 class RewardHolder extends React.PureComponent {
+  state = {
+    can_choose: false,
+    should_display_premium_ad: false
+  };
+
+  _toggleShouldDisplayPremiumAd = () => {
+    this.setState(prevState => ({
+      should_display_premium_ad: !prevState.should_display_premium_ad
+    }));
+  };
+
   _editReward = () => {
-    this.props.editReward(this.props.data);
+    if (this.state.can_choose) {
+      this.props.editReward(this.props.data);
+    } else {
+      this._toggleShouldDisplayPremiumAd();
+    }
   };
 
   _getReward = () => {
-    let data_map = Map(this.props.data);
-    this.props._getReward(
-      data_map.get("id"),
-      data_map.get("name"),
-      data_map.get("value")
-    );
+    if (this.state.can_choose) {
+      let data_map = Map(this.props.data);
+      this.props._getReward(
+        data_map.get("id"),
+        data_map.get("name"),
+        data_map.get("value")
+      );
+    } else {
+      this._toggleShouldDisplayPremiumAd();
+    }
   };
+
+  _checkIfCanChoose = () => {
+    let account_plan = this.props.account_plan,
+      reward_plan = Map(this.props.data).get("plan"),
+      can_choose = false;
+
+    if (reward_plan === "free") {
+      can_choose = true;
+    } else {
+      can_choose = account_plan === reward_plan;
+    }
+
+    this.setState({
+      can_choose
+    });
+  };
+
+  componentDidMount() {
+    this._checkIfCanChoose();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.account_plan !== prevProps.account_plan) {
+      this._checkIfCanChoose();
+    }
+  }
 
   render() {
     let reward_value = Map(this.props.data).get("value"),
@@ -352,62 +404,75 @@ class RewardHolder extends React.PureComponent {
     return (
       <View
         style={{
-          ...{ width: reward_holder_width },
-          ...styles.reward_holder_container
+          opacity: this.state.can_choose ? 1 : 0.5
         }}
       >
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "flex-end",
-            width: reward_holder_width
+            ...{ width: reward_holder_width },
+            ...styles.reward_holder_container
           }}
         >
-          <TouchableOpacity
+          <View
             style={{
-              height: 24,
-              width: 24,
-              alignItems: "flex-start",
-              justifyContent: "flex-end"
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              width: reward_holder_width
             }}
-            onPress={this._editReward}
           >
-            <FontAwesomeIcon icon={faEdit} color="#05838B" size={14} />
+            <TouchableOpacity
+              style={{
+                height: 24,
+                width: 24,
+                alignItems: "flex-start",
+                justifyContent: "flex-end"
+              }}
+              onPress={this._editReward}
+            >
+              <FontAwesomeIcon icon={faEdit} color="#05838B" size={14} />
+            </TouchableOpacity>
+          </View>
+
+          <View
+            style={{
+              marginTop: 10,
+              alignItems: "center",
+              paddingHorizontal: 10
+            }}
+          >
+            <Text style={reward_name}>{reward_name}</Text>
+          </View>
+
+          <View
+            style={{
+              marginTop: 22,
+              alignItems: "center",
+              paddingHorizontal: 10
+            }}
+          >
+            <Text style={styles.reward_value}>{reward_value}</Text>
+            <View
+              style={{
+                marginTop: 5
+              }}
+            >
+              <Text style={styles.currency_text}>pts</Text>
+            </View>
+          </View>
+          <TouchableOpacity
+            style={styles.reward_get_button_container}
+            onPress={this._getReward}
+          >
+            <Text style={styles.reward_get_text}>Get</Text>
           </TouchableOpacity>
         </View>
 
-        <View
-          style={{
-            marginTop: 10,
-            alignItems: "center",
-            paddingHorizontal: 10
-          }}
-        >
-          <Text style={reward_name}>{reward_name}</Text>
-        </View>
-
-        <View
-          style={{
-            marginTop: 22,
-            alignItems: "center",
-            paddingHorizontal: 10
-          }}
-        >
-          <Text style={styles.reward_value}>{reward_value}</Text>
-          <View
-            style={{
-              marginTop: 5
-            }}
-          >
-            <Text style={styles.currency_text}>pts</Text>
-          </View>
-        </View>
-        <TouchableOpacity
-          style={styles.reward_get_button_container}
-          onPress={this._getReward}
-        >
-          <Text style={styles.reward_get_text}>Get</Text>
-        </TouchableOpacity>
+        {this.state.should_display_premium_ad ? (
+          <PremiumAd
+            dismissAction={this._toggleShouldDisplayPremiumAd}
+            motivation_text="The reward was disabled due to Free plan"
+          />
+        ) : null}
       </View>
     );
   }
