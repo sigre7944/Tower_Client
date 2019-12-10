@@ -131,21 +131,65 @@ class TaskTitleElement extends React.PureComponent {
       let new_task = Map(this.props.task_data);
       let category_id = new_task.get("category");
 
-      // Check if plan is free or premium
-      let plan = Map(this.props.generalSettings).getIn([
-          "account",
-          "package",
-          "plan"
-        ]),
-        number_of_tasks_per_category = Map(this.props.generalSettings).getIn([
-          "package_limitations",
-          plan,
-          "number_of_tasks_per_category"
-        ]);
-
       let category_quantity = OrderedMap(this.props.categories).getIn([
         category_id,
         "quantity"
+      ]);
+
+      // Check if the category belongs to default ones (based on the free plan's limitations).
+      // For example, Free plan allows 5 categories to be used, then the first 4 created categories
+      // will be the default ones (including Inbox). Thus, the default tasks, which will be valid when they are
+      // created in side those categories.
+
+      // default number of free categories.
+      let free_number_of_categories = Map(this.props.generalSettings).getIn([
+        "package_limitations",
+        "free",
+        "number_of_categories"
+      ]);
+
+      let category_index = 0;
+
+      OrderedMap(this.props.categories)
+        .keySeq()
+        .every((key, index) => {
+          if (key === category_id) {
+            category_index = index;
+            return false;
+          }
+          return true;
+        });
+
+      let assigned_plan = "free";
+
+      // If the category belongs to one of the defaults
+      if (category_index + 1 <= free_number_of_categories) {
+        // Check if the current number of tasks in the category exceeds the limit.
+        let free_number_of_tasks_per_category = Map(
+          this.props.generalSettings
+        ).getIn([
+          "package_limitations",
+          "free",
+          "number_of_tasks_per_category"
+        ]);
+
+        // If the current number of tasks in the category doesnt exceed
+        if (category_quantity < free_number_of_tasks_per_category) {
+          assigned_plan = "free";
+        } else {
+          assigned_plan = Map(this.props.generalSettings).getIn([
+            "account",
+            "package",
+            "plan"
+          ]);
+        }
+      }
+
+      // Check if plan is free or premium
+      let number_of_tasks_per_category = Map(this.props.generalSettings).getIn([
+        "package_limitations",
+        assigned_plan,
+        "number_of_tasks_per_category"
       ]);
 
       if (category_quantity < number_of_tasks_per_category) {
@@ -159,7 +203,7 @@ class TaskTitleElement extends React.PureComponent {
         );
         new_task_with_id.update("type", value => this.props.currentAnnotation);
         new_task_with_id.update("created_at", value => Date.now());
-        new_task_with_id.update("plan", value => plan);
+        new_task_with_id.update("plan", value => assigned_plan);
 
         let priority_value = Map(this.props.task_data).getIn([
             "priority",
@@ -258,22 +302,67 @@ class TaskDescriptionElement extends React.PureComponent {
       let new_task = Map(this.props.task_data);
       let category_id = new_task.get("category");
 
-      // Check if plan is free or premium
-      let plan = Map(this.props.generalSettings).getIn([
-          "account",
-          "package",
-          "plan"
-        ]),
-        number_of_tasks_per_category = Map(this.props.generalSettings).getIn([
-          "package_limitations",
-          plan,
-          "number_of_tasks_per_category"
-        ]);
-
       let category_quantity = OrderedMap(this.props.categories).getIn([
         category_id,
         "quantity"
       ]);
+
+      // Check if the category belongs to default ones (based on the free plan's limitations).
+      // For example, Free plan allows 5 categories to be used, then the first 4 created categories
+      // will be the default ones (including Inbox). Thus, the default tasks, which will be valid when they are
+      // created in side those categories.
+
+      // default number of free categories.
+      let free_number_of_categories = Map(this.props.generalSettings).getIn([
+        "package_limitations",
+        "free",
+        "number_of_categories"
+      ]);
+
+      let category_index = 0;
+
+      OrderedMap(this.props.categories)
+        .keySeq()
+        .every((key, index) => {
+          if (key === category_id) {
+            category_index = index;
+            return false;
+          }
+          return true;
+        });
+
+      let assigned_plan = "free";
+
+      // If the category belongs to one of the defaults
+      if (category_index + 1 <= free_number_of_categories) {
+        // Check if the current number of tasks in the category exceeds the limit.
+        let free_number_of_tasks_per_category = Map(
+          this.props.generalSettings
+        ).getIn([
+          "package_limitations",
+          "free",
+          "number_of_tasks_per_category"
+        ]);
+
+        // If the current number of tasks in the category doesnt exceed
+        if (category_quantity < free_number_of_tasks_per_category) {
+          assigned_plan = "free";
+        } else {
+          assigned_plan = Map(this.props.generalSettings).getIn([
+            "account",
+            "package",
+            "plan"
+          ]);
+        }
+      }
+
+      // Check if plan is free or premium
+      let number_of_tasks_per_category = Map(this.props.generalSettings).getIn([
+        "package_limitations",
+        assigned_plan,
+        "number_of_tasks_per_category"
+      ]);
+
       if (category_quantity < number_of_tasks_per_category) {
         let new_task_with_id = Map(this.props.task_data).asMutable();
         new_task_with_id.update("id", value => task_id);
@@ -285,7 +374,7 @@ class TaskDescriptionElement extends React.PureComponent {
         );
         new_task_with_id.update("type", value => this.props.currentAnnotation);
         new_task_with_id.update("created_at", value => Date.now());
-        new_task_with_id.update("plan", value => plan);
+        new_task_with_id.update("plan", value => assigned_plan);
 
         let priority_value = Map(this.props.task_data).getIn([
             "priority",

@@ -130,7 +130,7 @@ export default class AccountRow extends React.PureComponent {
         let sending_data = {
           isLoggedIn: false,
           package: {
-            plan: "free"
+            plan: "premium"
           }
         };
         this.props.updateGeneralSettings(["account"], {}, value =>
