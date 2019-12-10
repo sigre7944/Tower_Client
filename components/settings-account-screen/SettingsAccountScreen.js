@@ -24,7 +24,7 @@ import * as firebase from "firebase";
 
 export default class SettingsAccountScreen extends React.PureComponent {
   static navigationOptions = ({ navigation, navigationOptions }) => ({
-    header: <Header navigation={navigation} />,
+    header: <Header navigation={navigation} />
   });
 
   month_names = [
@@ -50,7 +50,8 @@ export default class SettingsAccountScreen extends React.PureComponent {
     expiry_timestamp: 0,
     renewal_timestamp: 0,
     plan: "free",
-    billed: false
+    billed: false,
+    full_name: ""
   };
 
   getPermissionAsync = async () => {
@@ -116,6 +117,7 @@ export default class SettingsAccountScreen extends React.PureComponent {
 
     this.setState({
       uuid: account.get("uuid"),
+      full_name: account.get("fullName"),
       email,
       referral_code: account.get("referralCode"),
       expiry_timestamp: parseInt(account.get("expiryTimestamp")),
@@ -199,6 +201,21 @@ export default class SettingsAccountScreen extends React.PureComponent {
               }}
             >
               {this.state.email}
+            </Text>
+          </View>
+
+          <View style={styles.separate_line} />
+
+          <View style={styles.row_container}>
+            <Text style={styles.normal_text}>Full name</Text>
+
+            <Text
+              style={{
+                ...styles.highlight_text,
+                ...{ fontSize: 18, lineHeight: 21 }
+              }}
+            >
+              {this.state.full_name}
             </Text>
           </View>
 

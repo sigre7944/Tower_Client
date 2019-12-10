@@ -20,7 +20,6 @@ const window_width = Dimensions.get("window").width;
 
 export default class Settings extends React.PureComponent {
   state = {
-    account_email: ""
   };
 
   _goToAccountScreen = () => {
@@ -37,12 +36,7 @@ export default class Settings extends React.PureComponent {
       "isLoggedIn"
     ]);
 
-    let email = Map(this.props.generalSettings).getIn(["account", "email"]);
-    let email_name = String(email).substring(0, String(email).indexOf("@"));
-
-    if (email_name.length > 24) {
-      email_name = email_name.substring(0, 24) + "...";
-    }
+    let full_name = Map(this.props.generalSettings).getIn(["account", "fullName"]);
 
     return (
       <>
@@ -87,7 +81,7 @@ export default class Settings extends React.PureComponent {
                   marginLeft: 15
                 }}
               >
-                <Text style={styles.normal_text}>{email_name}</Text>
+                <Text style={styles.normal_text}>{full_name}</Text>
               </View>
             </View>
 
