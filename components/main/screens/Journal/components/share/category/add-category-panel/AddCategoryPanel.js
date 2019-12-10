@@ -107,30 +107,44 @@ export default class AddCategoryPanel extends React.PureComponent {
       this.state.category_title.length > 0 &&
       !this._checkIfCategoryNameExists(this.state.category_title.trim())
     ) {
-      //Check if the plan is free or premium to see the limits
-
-      let plan = Map(this.props.generalSettings).getIn([
-        "account",
-        "package",
-        "plan"
-      ]);
-
-      let number_of_categories = Map(this.props.generalSettings).getIn([
+      // Every user will have a fixed default number of categories, which will be always available.
+      // If the current number of categories don't exceed the limit, we will assign the new category with
+      // free plan. After the limit, we assign normally based on user's plan.
+      let free_number_of_categories = Map(this.props.generalSettings).getIn([
         "package_limitations",
-        plan,
+        "free",
         "number_of_categories"
       ]);
 
       let current_number_of_categories = OrderedMap(this.props.categories).size;
 
-      if (current_number_of_categories < number_of_categories) {
+      let assigned_plan = "free";
+
+      // If current number of categories doesnt exceed the limit
+      if (current_number_of_categories < free_number_of_categories) {
+        assigned_plan = "free";
+      }
+      // If it does
+      else {
+        assigned_plan = Map(this.props.generalSettings).getIn([
+          "account",
+          "package",
+          "plan"
+        ]);
+      }
+
+      let assigned_plan_number_of_categories = Map(
+        this.props.generalSettings
+      ).getIn(["package_limitations", assigned_plan, "number_of_categories"]);
+
+      if (current_number_of_categories < assigned_plan_number_of_categories) {
         let id = `category-${short_id.generate()}`,
           category_obj = fromJS({
             id,
             name: this.state.category_title.trim(),
             color: this.state.color,
             quantity: 0,
-            plan,
+            plan: assigned_plan,
             created_at: Date.now()
           }),
           sending_data = {

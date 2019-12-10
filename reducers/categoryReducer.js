@@ -34,6 +34,9 @@ let initialState = fromJS(
 export const categories = (state = initialState, action) => {
   switch (action.type) {
     case "UPDATE_CATEGORY":
+      console.log(
+        state.updateIn(action.keyPath, action.notSetValue, action.updater)
+      );
       return state.updateIn(action.keyPath, action.notSetValue, action.updater);
 
     case "DELETE_CATEGORY":
