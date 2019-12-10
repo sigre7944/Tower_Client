@@ -80,7 +80,7 @@ export default class SettingsAccountScreen extends React.PureComponent {
   };
 
   _goBackToSettings = () => {
-    this.props.navigation.navigate("Settings");
+    this.props.navigation.navigate("DrawerNavigator");
   };
 
   _logOut = () => {

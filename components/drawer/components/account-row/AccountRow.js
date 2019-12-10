@@ -27,7 +27,7 @@ export default class AccountRow extends React.PureComponent {
   state = {
     is_logged_in: false,
     account_email: "",
-
+    account_name: "",
     image: null,
 
     should_display_change_plan_banner: false,
@@ -47,6 +47,7 @@ export default class AccountRow extends React.PureComponent {
 
   _goToProfileScreen = () => {
     this.props.navigation.dispatch(DrawerActions.closeDrawer());
+    this.props.navigation.navigate("Settings");
     this.props.navigation.navigate("SettingsAccountScreen");
   };
 
@@ -61,16 +62,11 @@ export default class AccountRow extends React.PureComponent {
     );
   };
 
-  _updateAccountLogInState = (email, is_logged_in) => {
-    let email_name = String(email).substring(0, String(email).indexOf("@"));
-
-    if (email_name.length > 24) {
-      email_name = email_name.substring(0, 24) + "...";
-    }
-
+  _updateAccountLogInState = (full_name, email, is_logged_in) => {
     this.setState({
       is_logged_in,
-      account_email: email_name
+      account_name: full_name,
+      account_email: email
     });
   };
 
@@ -116,7 +112,11 @@ export default class AccountRow extends React.PureComponent {
                 this._shouldDisplayChangePlanBanner(doc.data().package.plan);
 
                 this._updateAccountRedux(doc.data(), true);
-                this._updateAccountLogInState(user.email, false);
+                this._updateAccountLogInState(
+                  user.displayName,
+                  user.email,
+                  true
+                );
               },
               err => {
                 // TO DO
@@ -129,7 +129,7 @@ export default class AccountRow extends React.PureComponent {
             .then(() => {
               this._unsuscribeToDb(user.uid);
               this._updateAccountRedux({ package: { plan: "free" } }, false);
-              this._updateAccountLogInState("", false);
+              this._updateAccountLogInState("", "", false);
             })
             .catch(err => {
               // TO DO
@@ -137,7 +137,7 @@ export default class AccountRow extends React.PureComponent {
         }
       } else {
         this._updateAccountRedux({ package: { plan: "free" } }, false);
-        this._updateAccountLogInState("", false);
+        this._updateAccountLogInState("", "", false);
       }
     });
   }
@@ -206,7 +206,7 @@ export default class AccountRow extends React.PureComponent {
                 marginLeft: 16
               }}
             >
-              <Text style={styles.email_text}>{this.state.account_email}</Text>
+              <Text style={styles.email_text}>{this.state.account_name}</Text>
             </View>
           </TouchableOpacity>
         )}

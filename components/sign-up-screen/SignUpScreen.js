@@ -38,13 +38,14 @@ const window_width = Dimensions.get("window").width;
 export default class SignUpScreen extends React.PureComponent {
   static navigationOptions = ({ navigation, navigationOptions }) => {
     return {
-      header: null,
+      header: null
     };
   };
 
   translate_y_value = new Animated.Value(0);
 
   state = {
+    full_name: "",
     email: "",
     password: "",
     confirm_password: "",
@@ -53,6 +54,7 @@ export default class SignUpScreen extends React.PureComponent {
     should_display_waiting_email_verification: false,
     should_display_success_banner: false,
 
+    should_full_name_warning_collapsed: true,
     should_email_warning_collapsed: true,
     should_password_warning_collapsed: true,
     should_confirm_password_warning_collapsed: true,
@@ -83,6 +85,12 @@ export default class SignUpScreen extends React.PureComponent {
   _validatePassword = password => {
     let regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})/;
     return regex.test(String(password));
+  };
+
+  _onChangeFullName = ({ nativeEvent }) => {
+    this.setState({
+      full_name: nativeEvent.text
+    });
   };
 
   _onChangeEmail = ({ nativeEvent }) => {
@@ -183,7 +191,12 @@ export default class SignUpScreen extends React.PureComponent {
     });
   };
 
-  _sendSignUpRequestToServer = (email, password, used_referral_code) => {
+  _sendSignUpRequestToServer = (
+    full_name,
+    email,
+    password,
+    used_referral_code
+  ) => {
     return axios({
       method: "POST",
       url: SERVER_URL + "auth?action=signup",
@@ -191,6 +204,7 @@ export default class SignUpScreen extends React.PureComponent {
         "Content-Type": "application/json"
       },
       data: {
+        full_name,
         email,
         password,
         used_referral_code
@@ -198,17 +212,34 @@ export default class SignUpScreen extends React.PureComponent {
     });
   };
 
+  _validateFullName = full_name => {
+    return full_name.length > 0 && full_name !== "";
+  };
+
   _signUp = async () => {
-    let { email, password, confirm_password, referral_code } = this.state,
-      is_email_valid = this._validateEmail(email),
+    let {
+        full_name,
+        email,
+        password,
+        confirm_password,
+        referral_code
+      } = this.state,
+      is_full_name_valid = this._validateFullName(full_name.trim()),
+      is_email_valid = this._validateEmail(email.trim()),
       is_password_valid = this._validatePassword(password),
       is_confirm_password_valid = this._checkIfConfirmPasswordValid(
         this.state.password,
         confirm_password
       );
 
-    if (is_email_valid && is_password_valid && is_confirm_password_valid) {
+    if (
+      is_full_name_valid &&
+      is_email_valid &&
+      is_password_valid &&
+      is_confirm_password_valid
+    ) {
       this.setState({
+        should_full_name_warning_collapsed: true,
         should_email_warning_collapsed: true,
         should_confirm_password_warning_collapsed: true,
         should_replace_with_activity_indicator: true
@@ -216,8 +247,9 @@ export default class SignUpScreen extends React.PureComponent {
 
       try {
         let sign_up_response = await this._sendSignUpRequestToServer(
+          full_name.trim(),
           email.trim(),
-          password.trim(),
+          password,
           referral_code.trim()
         );
         this._activeSuccessBanner();
@@ -232,6 +264,15 @@ export default class SignUpScreen extends React.PureComponent {
         }
       }
     } else {
+      if (!is_full_name_valid) {
+        this.setState({
+          should_full_name_warning_collapsed: false
+        });
+      } else {
+        this.setState({
+          should_full_name_warning_collapsed: true
+        });
+      }
       if (!is_email_valid) {
         this.setState({
           should_email_warning_collapsed: false
@@ -377,9 +418,43 @@ export default class SignUpScreen extends React.PureComponent {
               <Text style={styles.title_text}> Sign </Text>
               <Text style={styles.title_text}> Up </Text>
             </View>
+
             <View
               style={{
                 marginTop: 53
+              }}
+            >
+              <Text style={styles.input_title}> Full name: </Text>
+              <View
+                style={{
+                  marginTop: 12
+                }}
+              >
+                <TextInput
+                  style={styles.input_text}
+                  placeholder="Type your full name (max 30 chars)"
+                  value={this.state.full_name}
+                  onChange={this._onChangeFullName}
+                  maxLength={30}
+                />
+
+                <Collapsible
+                  collapsed={this.state.should_full_name_warning_collapsed}
+                  style={{
+                    marginTop: 5,
+                    height: 20
+                  }}
+                >
+                  <Text style={styles.small_warning_text}>
+                    This field can't be blank
+                  </Text>
+                </Collapsible>
+              </View>
+            </View>
+
+            <View
+              style={{
+                marginTop: 28
               }}
             >
               <Text style={styles.input_title}> Email: </Text>
