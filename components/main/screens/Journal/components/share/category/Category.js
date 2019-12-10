@@ -8,7 +8,7 @@ import { styles } from "./styles/styles";
 import { OrderedMap, Map, fromJS } from "immutable";
 
 import AddCategoryPanel from "./add-category-panel/AddCategoryPanel.Container";
-
+import PremiumAd from "../../../../../../shared/components/premium-ad/PremiumAd";
 import {
   category_icon,
   check_icon,
@@ -68,7 +68,7 @@ export default class Category extends React.PureComponent {
         prevState => ({
           current_category_index: category_index,
           last_category_index: prevState.current_category_index
-          //   should_flatlist_update: prevState.should_flatlist_update + 1
+          // should_flatlist_update: prevState.should_flatlist_update + 1
         }),
         () => {
           this._scrollToRow(category_index);
@@ -166,6 +166,7 @@ export default class Category extends React.PureComponent {
         _chooseCategoryRow={this._chooseCategoryRow}
         current_category_index={this.state.current_category_index}
         last_category_index={this.state.last_category_index}
+        generalSettings={this.props.generalSettings}
       />
     );
   };
@@ -269,6 +270,10 @@ export default class Category extends React.PureComponent {
     ) {
       this._cancel();
     }
+
+    // if(this.props.generalSettings !== prevProps.generalSettings){
+
+    // }
   }
 
   render() {
@@ -392,19 +397,70 @@ export default class Category extends React.PureComponent {
 }
 
 class CategoryRow extends React.Component {
+  state = {
+    can_choose: false,
+    should_display_premium_ad: false
+  };
+
   shouldComponentUpdate(nextProps, nextState) {
     return (
       this.props.category_index === nextProps.current_category_index ||
-      this.props.category_index === nextProps.last_category_index
+      this.props.category_index === nextProps.last_category_index ||
+      Map(this.props.generalSettings).getIn(["account", "package", "plan"]) !==
+        Map(nextProps.generalSettings).getIn(["account", "package", "plan"]) ||
+      this.state !== nextState
     );
   }
 
-  _chooseCategoryRow = () => {
-    this.props._chooseCategoryRow(
-      this.props.category_index,
-      Map(this.props.data).get("id")
-    );
+  _toggleShouldDisplayPremiumAd = () => {
+    this.setState(prevState => ({
+      should_display_premium_ad: !prevState.should_display_premium_ad
+    }));
   };
+
+  _chooseCategoryRow = () => {
+    if (this.state.can_choose) {
+      this.props._chooseCategoryRow(
+        this.props.category_index,
+        Map(this.props.data).get("id")
+      );
+    } else {
+      this._toggleShouldDisplayPremiumAd();
+    }
+  };
+
+  _checkIfCanChoose = () => {
+    let account_plan = Map(this.props.generalSettings).getIn([
+        "account",
+        "package",
+        "plan"
+      ]),
+      category_plan = Map(this.props.data).get("plan"),
+      can_choose = false;
+
+    if (category_plan === "free") {
+      can_choose = true;
+    } else {
+      can_choose = account_plan === category_plan;
+    }
+
+    this.setState({
+      can_choose
+    });
+  };
+
+  componentDidMount() {
+    this._checkIfCanChoose();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      Map(this.props.generalSettings).getIn(["account", "package", "plan"]) !==
+      Map(prevProps.generalSettings).getIn(["account", "package", "plan"])
+    ) {
+      this._checkIfCanChoose();
+    }
+  }
 
   render() {
     let chosen =
@@ -415,65 +471,77 @@ class CategoryRow extends React.Component {
       chosen_button_container_style = styles.chosen_button_container;
     }
 
+    let can_choose = this.state.can_choose;
+
     return (
-      <TouchableOpacity
+      <View
         style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          height: 45
+          opacity: can_choose ? 1 : 0.3
         }}
-        onPress={this._chooseCategoryRow}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginTop: 20
-          }}
+        <TouchableOpacity
+          style={styles.category_row_container}
+          onPress={this._chooseCategoryRow}
         >
-          {Map(this.props.data).get("color") === "no color" ||
-          Map(this.props.data).get("color") === "white" ? (
-            <View
-              style={{
-                width: 14,
-                height: 14,
-                borderRadius: 7,
-                borderWidth: 1,
-                borderColor: "#2C2C2C",
-                justifyContent: "center",
-                alignItems: "center"
-              }}
-            >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: 20
+            }}
+          >
+            {Map(this.props.data).get("color") === "no color" ||
+            Map(this.props.data).get("color") === "white" ? (
               <View
                 style={{
-                  flex: 1,
-                  width: 1,
-                  backgroundColor: "#2C2C2C",
-                  transform: [{ rotate: "45deg" }]
+                  width: 14,
+                  height: 14,
+                  borderRadius: 7,
+                  borderWidth: 1,
+                  borderColor: "#2C2C2C",
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+              >
+                <View
+                  style={{
+                    flex: 1,
+                    width: 1,
+                    backgroundColor: "#2C2C2C",
+                    transform: [{ rotate: "45deg" }]
+                  }}
+                ></View>
+              </View>
+            ) : (
+              <View
+                style={{
+                  width: 14,
+                  height: 14,
+                  borderRadius: 7,
+                  backgroundColor: Map(this.props.data).get("color")
                 }}
               ></View>
-            </View>
-          ) : (
-            <View
-              style={{
-                width: 14,
-                height: 14,
-                borderRadius: 7,
-                backgroundColor: Map(this.props.data).get("color")
-              }}
-            ></View>
-          )}
+            )}
 
-          <Text style={styles.category_text}>
-            {Map(this.props.data).get("name")}
-          </Text>
-        </View>
+            <Text style={styles.category_text}>
+              {Map(this.props.data).get("name")}
+            </Text>
+          </View>
 
-        <View style={chosen_button_container_style}>
-          {chosen ? <View style={styles.inner_button_container}></View> : null}
-        </View>
-      </TouchableOpacity>
+          <View style={chosen_button_container_style}>
+            {chosen ? (
+              <View style={styles.inner_button_container}></View>
+            ) : null}
+          </View>
+
+          {this.state.should_display_premium_ad ? (
+            <PremiumAd
+              dismissAction={this._toggleShouldDisplayPremiumAd}
+              motivation_text="The category was disabled due to Free plan."
+            />
+          ) : null}
+        </TouchableOpacity>
+      </View>
     );
   }
 }

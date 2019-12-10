@@ -35,7 +35,6 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   chooseCategory: category => dispatch(chooseCategory(category)),
   deleteTasksAndHistory: data => dispatch(deleteTasksAndHistory(data)),
   deleteOnlyTasks: data => dispatch(deleteOnlyTasks(data)),
-  updateGeneralSettings: data => dispatch(updateGeneralSettings(data))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Drawer);
