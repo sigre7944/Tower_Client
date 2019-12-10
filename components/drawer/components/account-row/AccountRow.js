@@ -17,16 +17,27 @@ import { user_icon } from "../../../shared/icons";
 
 import * as firebase from "firebase";
 
-import { fromJS } from "immutable";
+import { fromJS, Map } from "immutable";
 import { Notifications } from "expo";
 import * as Permissions from "expo-permissions";
+import ChangePlanToPremium from "../../../shared/components/change-plan-to-premium/ChangePlanToPremium";
+import ChangePlanToFree from "../../../shared/components/change-plan-to-free/ChangePlanToFree";
 
 export default class AccountRow extends React.PureComponent {
   state = {
     is_logged_in: false,
     account_email: "",
 
-    image: null
+    image: null,
+
+    should_display_change_plan_banner: false,
+    change_plan_banner: "premium"
+  };
+
+  _toggleShouldDisplayChangePlanBanner = () => {
+    this.setState(prevState => ({
+      should_display_change_plan_banner: !prevState.should_display_change_plan_banner
+    }));
   };
 
   _goToSignInSignUp = () => {
@@ -58,30 +69,65 @@ export default class AccountRow extends React.PureComponent {
     }
 
     this.setState({
-      is_logged_in: true,
+      is_logged_in,
       account_email: email_name
     });
   };
+
+  _shouldDisplayChangePlanBanner = new_plan => {
+    let current_plan = Map(this.props.generalSettings).getIn([
+      "account",
+      "package",
+      "plan"
+    ]);
+
+    if (current_plan !== new_plan) {
+      if (new_plan === "free") {
+        this.setState(prevState => ({
+          should_display_change_plan_banner: !prevState.should_display_change_plan_banner,
+          change_plan_banner: new_plan
+        }));
+      } else {
+        this.setState(prevState => ({
+          should_display_change_plan_banner: !prevState.should_display_change_plan_banner,
+          change_plan_banner: new_plan
+        }));
+      }
+    }
+  };
+
+  _unsuscribeToDb = uuid =>
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(uuid)
+      .onSnapshot(doc => {});
 
   componentDidMount() {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         if (user.emailVerified) {
-          try {
-            firebase
-              .firestore()
-              .collection("users")
-              .doc(user.uid)
-              .onSnapshot(doc => {
+          firebase
+            .firestore()
+            .collection("users")
+            .doc(user.uid)
+            .onSnapshot(
+              doc => {
+                this._shouldDisplayChangePlanBanner(doc.data().package.plan);
+
                 this._updateAccountRedux(doc.data(), true);
                 this._updateAccountLogInState(user.email, false);
-              });
-          } catch (err) {}
+              },
+              err => {
+                // TO DO
+              }
+            );
         } else {
           firebase
             .auth()
             .signOut()
             .then(() => {
+              this._unsuscribeToDb(user.uid);
               this._updateAccountRedux({ package: { plan: "free" } }, false);
               this._updateAccountLogInState("", false);
             })
@@ -90,18 +136,8 @@ export default class AccountRow extends React.PureComponent {
             });
         }
       } else {
-        let sending_data = {
-          isLoggedIn: false,
-          package: {
-            plan: "free"
-          }
-        };
-        this.props.updateGeneralSettings(["account"], {}, value =>
-          fromJS(sending_data)
-        );
-        this.setState({
-          is_logged_in: false
-        });
+        this._updateAccountRedux({ package: { plan: "free" } }, false);
+        this._updateAccountLogInState("", false);
       }
     });
   }
@@ -174,6 +210,20 @@ export default class AccountRow extends React.PureComponent {
             </View>
           </TouchableOpacity>
         )}
+
+        {this.state.should_display_change_plan_banner ? (
+          <>
+            {this.state.change_plan_banner === "free" ? (
+              <ChangePlanToFree
+                dismissAction={this._toggleShouldDisplayChangePlanBanner}
+              />
+            ) : (
+              <ChangePlanToPremium
+                dismissAction={this._toggleShouldDisplayChangePlanBanner}
+              />
+            )}
+          </>
+        ) : null}
       </>
     );
   }
