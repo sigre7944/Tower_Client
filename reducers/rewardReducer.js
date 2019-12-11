@@ -1,33 +1,28 @@
-import { Map, List } from 'immutable'
+import { Map, List, fromJS, OrderedMap } from 'immutable'
 
-export const balance = (state = 4000, action) => {
+export const balance = (state = 1000, action) => {
     switch (action.type) {
-        case 'DEPOSIT_AMOUNT':
+        case 'DEPOSIT_BALANCE_AMOUNT':
             return state + action.amount
 
-        case 'WITHDRAW_AMOUNT':
+        case 'WITHDRAW_BALANCE_AMOUNT':
             return state - action.amount
+
+        case 'UPDATE_BALANCE_AMOUNT':
+            return action.amount
 
         default:
             return state
     }
 }
 
-let rewards_map = Map().asMutable()
-rewards_map.set("is_add_button", {
-    is_add_button: true
-})
-
-export const rewards = (state = rewards_map, action) => {
+export const rewards = (state = OrderedMap(), action) => {
     switch (action.type) {
-        case "CREATE_REWARD":
-            return state.set(action.id, action.data)
+        case "UPDATE_KEYPATH_REWARD":
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
-        case "UPDATE_REWARD":
-            return state.update(action.id, (value) => action.data)
-
-        case "DELETE_REWARD":
-            return state.delete(action.id)
+        case "DELETE_KEYPATH_REWARD":
+            return state.deleteIn(action.keyPath)
 
         default:
             return state
@@ -44,16 +39,13 @@ export const main_reward = (state = "", action) => {
     }
 }
 
-export const purchase_history = (state = Map(), action) => {
+export const purchase_history = (state = OrderedMap(), action) => {
     switch (action.type) {
-        case "ADD_PURCHASE_ITEM":
-            return state.setIn([action.timestamp, action.id], action.data)
+        case "UPDATE_KEYPATH_PURCHASE_ITEM":
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
-        case "UPDATE_PURCHASE_ITEM":
-            return state.updateIn([action.timestamp, action.id], action.data, (value) => action.data)
-
-        case "REMOVE_PURCHASE_ITEM":
-            return state.deleteIn([action.timestamp, action.id])
+        case "DELETE_KEYPATH_PURCHASE_ITEM":
+            return state.deleteIn(action.keyPath)
 
         case "REMOVE_PURCHASE_TIMESTAMP":
             return state.delete(action.timestamp)

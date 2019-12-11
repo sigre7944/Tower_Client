@@ -1,8 +1,3 @@
-// export const updateTask = (type, data) => ({
-//     type,
-//     data
-// })
-
 export const updateTask = (type, keyPath, notSetValue, updater) => ({
     type,
     keyPath,
@@ -10,9 +5,19 @@ export const updateTask = (type, keyPath, notSetValue, updater) => ({
     updater
 })
 
+export const returnNewTasks = (type, data) => ({
+    type,
+    data
+})
+
 export const deleteTask = (type, id) => ({
     type,
     id
+})
+
+export const deleteKeyPathTask = (type, keyPath) => ({
+    type,
+    keyPath
 })
 
 export const deleteAllTasksInCategory = (type, category_id) => ({
@@ -23,4 +28,8 @@ export const deleteAllTasksInCategory = (type, category_id) => ({
 export const returnNewCompletedTask = (type, data) => ({
     type,
     data
+})
+
+export const resetNewTask = (type) => ({
+    type
 })

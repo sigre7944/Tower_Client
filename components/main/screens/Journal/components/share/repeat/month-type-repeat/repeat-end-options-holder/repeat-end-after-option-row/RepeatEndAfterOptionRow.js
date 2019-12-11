@@ -7,7 +7,7 @@ import {
     TextInput,
 } from 'react-native';
 
-import {styles} from './styles/styles'
+import { styles } from './styles/styles'
 
 export default class RepeatEndAfterOptionRow extends React.Component {
 
@@ -23,24 +23,20 @@ export default class RepeatEndAfterOptionRow extends React.Component {
 
     _chooseEndOption = () => {
         this.props.chooseEndOption(this.props.index)
-        this.setState({
-            is_text_input_readable: true
-        }, () => {
-            this._text_input_ref.focus()
-        })
+        this._text_input_ref.focus()
     }
 
     _setTextInputRef = (r) => {
         this._text_input_ref = r
     }
 
+    _onFocus = () => {
+        this.props.chooseEndOption(this.props.index)
+    }
+
     componentDidUpdate(prevProps, prevState) {
         if (this.props.index === this.props.last_index && this.props.last_index !== prevProps.last_index) {
-            this.setState({
-                is_text_input_readable: false,
-            }, () => {
-                this._text_input_ref.blur()
-            })
+            this._text_input_ref.blur()
         }
     }
 
@@ -93,14 +89,15 @@ export default class RepeatEndAfterOptionRow extends React.Component {
 
                         <TextInput
                             style={input_text_style}
-                            editable={this.state.is_text_input_readable}
                             maxLength={2}
-                            keyboardType="numbers-and-punctuation"
+                            keyboardType="number-pad"
                             placeholder="1"
                             value={this.props.after_occurrence_value}
                             onChange={this.props._onChangeAfterOccurrenceValue}
                             ref={this._setTextInputRef}
                             autoCorrect={false}
+
+                            onFocus={this._onFocus}
                         />
 
                         <View

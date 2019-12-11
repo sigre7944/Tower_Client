@@ -1,40 +1,22 @@
-import {createMaterialTopTabNavigator} from 'react-navigation'
+import React from "react";
+import { createMaterialTopTabNavigator } from "react-navigation";
 
-import Daily from './components/Daily/Daily.Container'
-import Weekly from './components/Weekly/Weekly'
-import Monthly from './components/Monthly/Monthly'
+import Day from "./components/Daily/Daily.Container";
+import Week from "./components/Weekly/Weekly";
+import Month from "./components/Monthly/Monthly";
 
-import CustomTabBarComponent from './custom-tab-bar-component/CustomTabBarComponent'
+import CustomTabBarComponent from "./custom-tab-bar-component/CustomTabBarComponent.Container";
 
-const JournalTopNavigator = createMaterialTopTabNavigator({
-    Day: {screen: Daily},
-    Week: {screen: Weekly},
-    Month: {screen: Monthly}
-},
-{
+const JournalTopNavigator = createMaterialTopTabNavigator(
+  {
+    Day: { screen: Day, navigationOptions: { header: null } },
+    Week: { screen: Week, navigationOptions: { header: null } },
+    Month: { screen: Month, navigationOptions: { header: null } }
+  },
+  {
     initialRouteName: "Day",
-    // tabBarOptions: {
-    //     upperCaseLabel: false,
-    //     labelStyle: {
-    //         color: 'black',
-    //         fontSize: 18
-    //     },
-    //     style: {
-    //         backgroundColor: 'white',
-    //         shadowColor: 'transparent',
-    //     },
-    //     tabStyle: {
-    //     },
-    //     indicatorStyle: {
-    //         top: 0,
-    //         backgroundColor: '#54BAAC',
-    //         height: 3,
-    //         borderRadius: 30,
-    //         alignContent: "center",
-    //     },
-        
-    // },
     tabBarComponent: CustomTabBarComponent
-})
+  }
+);
 
 export default JournalTopNavigator;

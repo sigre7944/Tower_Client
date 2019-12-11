@@ -11,10 +11,12 @@ import RepeatEndNeverOptionRow from './repeat-end-never-option-row/RepeatEndNeve
 import RepeatEndOnOptionRow from './repeat-end-on-option-row/RepeatEndOnOptionRow'
 import RepeatEndAfterOptionRow from './repeat-end-after-option-row/RepeatEndAfterOptionRow'
 
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
-    faHourglassEnd,
-} from '@fortawesome/free-solid-svg-icons'
+    end_icon
+} from "../../../../../../../../shared/icons";
+
+const icon_color = "#2C2C2C"
+const icon_size = 14
 
 export default class RepeatEndOptionsHolder extends React.PureComponent {
     render() {
@@ -28,11 +30,15 @@ export default class RepeatEndOptionsHolder extends React.PureComponent {
                         alignItems: "center"
                     }}
                 >
-                    <FontAwesomeIcon
-                        icon={faHourglassEnd}
-                        color="#2C2C2C"
-                        size={14}
-                    />
+                    <View
+                        style={{
+                            width: icon_size,
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}
+                    >
+                        {end_icon(icon_size, icon_color)}
+                    </View>
 
                     <Text
                         style={styles.title_text}
@@ -67,6 +73,7 @@ export default class RepeatEndOptionsHolder extends React.PureComponent {
                     last_index={this.props.last_index}
                     after_occurrence_value={this.props.after_occurrence_value}
                     _onChangeAfterOccurrenceValue={this.props._onChangeAfterOccurrenceValue}
+
                 />
             </View>
         )

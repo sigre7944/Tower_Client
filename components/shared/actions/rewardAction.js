@@ -1,16 +1,13 @@
-export const createReward = (id, data) => ({
-    type: "CREATE_REWARD",
-    id,
-    data
+export const updateKeyPathReward = (keyPath, notSetValue, updater) => ({
+    type: "UPDATE_KEYPATH_REWARD",
+    keyPath,
+    notSetValue,
+    updater
 })
-export const updateReward = (id, data) => ({
-    type: "UPDATE_REWARD",
-    id,
-    data
-})
-export const deleteReward = (id) => ({
-    type: "DELETE_REWARD",
-    id
+
+export const deleteKeyPathReward = (keyPath) => ({
+    type: "DELETE_KEYPATH_REWARD",
+    keyPath
 })
 
 
@@ -24,35 +21,23 @@ export const updateMainReward = (id) => ({
 
 
 
-
-
-export const addPurchaseItem = (timestamp, id, data) => ({
-    type: "ADD_PURCHASE_ITEM",
-    id,
-    timestamp,
-    data
+export const updatePurchaseItem = (keyPath, notSetValue, updater) => ({
+    type: "UPDATE_KEYPATH_PURCHASE_ITEM",
+    keyPath,
+    notSetValue,
+    updater
 })
-export const updatePurchaseItem = (timestamp, id, data) => ({
-    type: "UPDATE_PURCHASE_ITEM",
-    id,
-    timestamp,
-    data
-})
-export const deletePurchaseItem = (timestamp, id) => ({
-    type: "UPDATE_PURCHASE_ITEM",
-    timestamp,
-    id
+
+export const deleteKeyPathPurchaseHistory = (keyPath) => ({
+    type: "DELETE_KEYPATH_PURCHASE_ITEM",
+    keyPath,
 })
 
 
 
 
 
-export const depositBalance = (amount) => ({
-    type: "DEPOSIT_AMOUNT",
-    amount
-})
-export const withdrawBalance = (amount) => ({
-    type: "WITHDRAW_AMOUNT",
+export const updateBalance = (type, amount) => ({
+    type,
     amount
 })

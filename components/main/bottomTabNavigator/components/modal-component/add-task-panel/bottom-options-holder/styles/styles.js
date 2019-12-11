@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: CommonStyle.primary_color,
+        backgroundColor: CommonStyle.primary_colors.prim_1,
         borderTopLeftRadius: 10,
         shadowOffset: {
             width: 0,

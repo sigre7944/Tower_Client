@@ -1,21 +1,130 @@
-import { Map, fromJS } from 'immutable'
+import { Map, fromJS, OrderedMap } from 'immutable'
+
+const uuidv1 = require('uuid')
+const shortid = require('shortid')
+
+let date = new Date(),
+    timestamp = date.getTime()
+
+let initial_currentMonthTask = fromJS({
+    schedule: {
+        month: date.getMonth(),
+        year: date.getFullYear()
+    },
+    category: "cate_0",
+    repeat: {
+        type: "monthly-m",
+        interval: {
+            value: 1
+        }
+    },
+    end: {
+        type: "after",
+        occurrence: 1
+    },
+
+    priority: {
+        value: "pri_01",
+    },
+
+    reward: {
+        value: 5,
+    },
+
+    goal: {
+        max: 1
+    },
+
+    // plan: "free",
+    // created_at: Date.now()
+}),
+    initial_currentWeekTask = fromJS({
+        schedule: {
+            monday: getMonday(date).getDate(),
+            sunday: getSunday(date).getDate(),
+            week: getWeek(date),
+            start_month: getMonday(date).getMonth(),
+            end_month: getSunday(date).getMonth(),
+            chosen_month: date.getMonth(),
+            start_year: getMonday(date).getFullYear(),
+            end_year: getSunday(date).getFullYear(),
+            chosen_year: date.getFullYear(),
+            start_noWeekInMonth: getNoWeekInMonth(getMonday(date)),
+            end_noWeekInMonth: getNoWeekInMonth(getSunday(date)),
+        },
+        category: "cate_0",
+        repeat: {
+            type: "weekly-w",
+            interval: {
+                value: 1
+            }
+        },
+        end: {
+            type: "after",
+            occurrence: 1
+        },
+        priority: {
+            value: "pri_01",
+        },
+
+        reward: {
+            value: 5,
+        },
+
+        goal: {
+            max: 1
+        },
+
+        // plan: "free",
+        // created_at: Date.now()
+    }),
+
+    initial_currentDayTask = fromJS({
+        schedule: {
+            day: date.getDate(),
+            month: date.getMonth(),
+            year: date.getFullYear()
+        },
+        category: "cate_0",
+        repeat: {
+            type: "daily",
+            interval: {
+                value: 1
+            }
+        },
+        end: {
+            type: "after",
+            occurrence: 1
+        },
+        priority: {
+            value: "pri_01",
+        },
+
+        reward: {
+            value: 5
+        },
+
+        goal: {
+            max: 1
+        },
+
+        // plan: "free",
+        // created_at: Date.now()
+    })
 
 export const day_tasks = (state = Map(), action) => {
     switch (action.type) {
-        case 'ADD_NEW_DAY_TASK':
-            return state.set(action.data.id, action.data)
-
-        case 'ADD_EDIT_DAY_TASK':
-            return state.update(action.data.id, (value) => action.data)
-
-        case 'EDIT_DAY_TASK':
-            return state.updateIn(action.keyPath, (value) => action.data)
+        case 'UPDATE_DAY_TASK':
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
         case 'DELETE_DAY_TASK':
             return state.delete(action.id)
 
         case 'DELETE_ALL_DAY_TASKS_WITH_CATEGORY':
-            return state.filterNot((task) => task.category === action.id)
+            return state.filterNot((task) => Map(task).get("category") === action.id)
+
+        case 'RETURN_NEW_DAY_TASKS':
+            return action.data.toMap()
 
         default:
             return state
@@ -24,20 +133,17 @@ export const day_tasks = (state = Map(), action) => {
 
 export const week_tasks = (state = Map(), action) => {
     switch (action.type) {
-        case 'ADD_NEW_WEEK_TASK':
-            return state.set(action.data.id, action.data)
-
-        case 'ADD_EDIT_WEEK_TASK':
-            return state.update(action.data.id, (value) => action.data)
-
-        case 'EDIT_WEEK_TASK':
-            return state.updateIn(action.keyPath, (value) => action.data)
+        case 'UPDATE_WEEK_TASK':
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
         case 'DELETE_WEEK_TASK':
             return state.delete(action.id)
 
         case 'DELETE_ALL_WEEK_TASKS_WITH_CATEGORY':
-            return state.filterNot((task) => task.category === action.id)
+            return state.filterNot((task) => Map(task).get("category") === action.id)
+
+        case 'RETURN_NEW_WEEK_TASKS':
+            return action.data.toMap()
 
         default:
             return state
@@ -46,20 +152,17 @@ export const week_tasks = (state = Map(), action) => {
 
 export const month_tasks = (state = Map(), action) => {
     switch (action.type) {
-        case 'ADD_NEW_MONTH_TASK':
-            return state.set(action.data.id, action.data)
-
-        case 'ADD_EDIT_MONTH_TASK':
-            return state.update(action.data.id, (value) => action.data)
-
-        case 'EDIT_MONTH_TASK':
-            return state.updateIn(action.keyPath, (value) => action.data)
+        case 'UPDATE_MONTH_TASK':
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
         case 'DELETE_MONTH_TASK':
             return state.delete(action.id)
 
         case 'DELETE_ALL_MONTH_TASKS_WITH_CATEGORY':
-            return state.filterNot((task) => task.category === action.id)
+            return state.filterNot((task) => Map(task).get("category") === action.id)
+
+        case 'RETURN_NEW_MONTH_TASKS':
+            return action.data.toMap()
 
         default:
             return state
@@ -69,10 +172,13 @@ export const month_tasks = (state = Map(), action) => {
 export const completed_day_tasks = (state = Map(), action) => {
     switch (action.type) {
         case 'UPDATE_COMPLETED_DAY_TASK':
-            return state.set(action.data.get("id"), action.data)
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
         case 'DELETE_COMPLETED_DAY_TASK':
             return state.delete(action.id)
+
+        case 'DELETE_KEYPATH_COMPLETED_DAY_TASK':
+            return state.deleteIn(action.keyPath)
 
         case 'DELETE_ALL_COMPLETED_DAY_TASKS_WITH_CATEGORY':
             return state.filterNot((task) => task.get("category") === action.id)
@@ -88,10 +194,13 @@ export const completed_day_tasks = (state = Map(), action) => {
 export const completed_week_tasks = (state = Map(), action) => {
     switch (action.type) {
         case 'UPDATE_COMPLETED_WEEK_TASK':
-            return state.set(action.data.get("id"), action.data)
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
         case 'DELETE_COMPLETED_WEEK_TASK':
             return state.delete(action.id)
+
+        case 'DELETE_KEYPATH_COMPLETED_WEEK_TASK':
+            return state.deleteIn(action.keyPath)
 
         case 'DELETE_ALL_COMPLETED_WEEK_TASKS_WITH_CATEGORY':
             return state.filterNot((task) => task.get("category") === action.id)
@@ -108,10 +217,13 @@ export const completed_week_tasks = (state = Map(), action) => {
 export const completed_month_tasks = (state = Map(), action) => {
     switch (action.type) {
         case 'UPDATE_COMPLETED_MONTH_TASK':
-            return state.set(action.data.get("id"), action.data)
+            return state.updateIn(action.keyPath, action.notSetValue, action.updater)
 
         case 'DELETE_COMPLETED_MONTH_TASK':
             return state.delete(action.id)
+
+        case 'DELETE_KEYPATH_COMPLETED_MONTH_TASK':
+            return state.deleteIn(action.keyPath)
 
         case 'DELETE_ALL_COMPLETED_MONTH_TASKS_WITH_CATEGORY':
             return state.filterNot((task) => task.get("category") === action.id)
@@ -142,6 +254,13 @@ function getMonday(date) {
     return new Date(new Date(date).getTime() - (diff * 86400 * 1000))
 }
 
+function getSunday(date) {
+    let monday = getMonday(new Date(date))
+    let sunday = new Date(monday)
+    sunday.setDate(monday.getDate() + 6)
+    return sunday
+}
+
 function getNoWeekInMonth(date) {
     let nearest_monday_timestamp = getMonday(date).getTime()
     let first_monday_of_month_timestamp = getMonday(new Date(date.getFullYear(), date.getMonth(), 1)).getTime()
@@ -149,92 +268,15 @@ function getNoWeekInMonth(date) {
     return Math.floor((nearest_monday_timestamp - first_monday_of_month_timestamp) / (7 * 86400 * 1000)) + 1
 }
 
-let date = new Date(),
-    timestamp = date.getTime()
-
-let initial_currentMonthTask = fromJS({
-    schedule: {
-        month: date.getMonth(),
-        year: date.getFullYear()
-    },
-    category: "cate_0",
-    repeat: {
-        type: "monthly-m",
-        interval: {
-            value: 1
-        }
-    },
-    end: {
-        type: "never"
-    },
-    priority: {
-        value: "pri_01",
-        reward: 0,
-    },
-    goal: {
-        max: 1
-    }
-}),
-    initial_currentWeekTask = fromJS({
-        schedule: {
-            day: getMonday(date).getDate(),
-            week: getWeek(date),
-            month: getMonday(date).getMonth(),
-            year: getMonday(date).getFullYear(),
-            noWeekInMonth: getNoWeekInMonth(date),
-        },
-        category: "cate_0",
-        repeat: {
-            type: "weekly-w",
-            interval: {
-                value: 1
-            }
-        },
-        end: {
-            type: "never"
-        },
-        priority: {
-            value: "pri_01",
-            reward: 0,
-        },
-        goal: {
-            max: 1
-        }
-    }),
-
-    initial_currentDayTask = fromJS({
-        schedule: {
-            day: date.getDate(),
-            month: date.getMonth(),
-            year: date.getFullYear()
-        },
-        category: "cate_0",
-        repeat: {
-            type: "daily",
-            interval: {
-                value: 1
-            }
-        },
-        end: {
-            type: "never"
-        },
-        priority: {
-            value: "pri_01",
-            reward: 0,
-        },
-        goal: {
-            max: 1
-        }
-    })
-
 
 export const currentMonthTask = (state = initial_currentMonthTask, action) => {
     switch (action.type) {
-        // case 'UPDATE_NEW_MONTH_TASK':
-        //     return { ...state, ...action.data }
 
         case 'UPDATE_NEW_MONTH_TASK':
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
+
+        case 'RESET_NEW_MONTH_TASK':
+            return Map(initial_currentMonthTask).toMap()
 
         default:
             return state
@@ -243,11 +285,12 @@ export const currentMonthTask = (state = initial_currentMonthTask, action) => {
 
 export const currentDayTask = (state = initial_currentDayTask, action) => {
     switch (action.type) {
-        // case 'UPDATE_NEW_DAY_TASK':
-        //     return { ...state, ...action.data }
 
         case 'UPDATE_NEW_DAY_TASK':
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
+
+        case 'RESET_NEW_DAY_TASK':
+            return Map(initial_currentDayTask).toMap()
 
         default:
             return state
@@ -256,11 +299,12 @@ export const currentDayTask = (state = initial_currentDayTask, action) => {
 
 export const currentWeekTask = (state = initial_currentWeekTask, action) => {
     switch (action.type) {
-        // case 'UPDATE_NEW_WEEK_TASK':
-        //     return { ...state, ...action.data }
 
         case 'UPDATE_NEW_WEEK_TASK':
             return state.updateIn(action.keyPath, action.notSetValue, action.updater)
+
+        case 'RESET_NEW_WEEK_TASK':
+            return Map(initial_currentWeekTask).toMap()
 
         default:
             return state

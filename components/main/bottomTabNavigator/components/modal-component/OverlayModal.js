@@ -4,26 +4,31 @@ import {
     View,
     Modal,
     TouchableWithoutFeedback,
-    Dimensions
+    Dimensions,
+    Animated,
+    Easing
 } from 'react-native';
 
 import AddTaskPanel from './add-task-panel/AddTaskPanel'
 import Calendar from '../../../screens/Journal/components/share/calendar/Calendar'
 
-import Category from '../../../../shared/category/Category.Container'
-import Priority from '../../../../shared/priority/Priority.Container'
+import Category from '../../../screens/Journal/components/share/category/Category.Container'
+import Priority from '../../../screens/Journal/components/share/priority/Priority.Container'
 
-import Repeat from '../../../screens/Journal/components/share/repeat/Repeat.Container'
+import Repeat from '../../../screens/Journal/components/share/repeat/Repeat'
 
 import { Map, fromJS } from 'immutable'
 
 class DismissElement extends React.PureComponent {
     _onPress = () => {
         if (this.props.addTaskMenuChosen) {
-            this.props.toggleAddTask()
+            // this.props.toggleAddTask()
+            this.props._toggleShouldCallEndAnimationFromParent()
         }
 
-        this.props.disableAllTabs()
+        else {
+            this.props._toggleShouldCallEndAnimationFromParent()
+        }
     }
 
     render() {
@@ -54,11 +59,24 @@ export default class OverlayModal extends Component {
         priorityChosen: false,
         addTaskMenuChosen: true,
 
-        shouldCallBackKeyboard: false
+        should_animate_end_animation: true,
+        should_call_end_animation_from_parent: true
     }
 
     setCurrentAnnotation = (annotation) => {
         this.setState({ currentAnnotation: annotation })
+    }
+
+    _toggleShouldCallEndAnimationFromParent = () => {
+        this.setState(prevState => ({
+            should_call_end_animation_from_parent: !prevState.should_call_end_animation_from_parent
+        }))
+    }
+
+    _toggleShouldAnimateEndAnimation = () => {
+        this.setState(prevState => ({
+            should_animate_end_animation: !prevState.should_animate_end_animation
+        }))
     }
 
     disableAllTabs = () => {
@@ -77,7 +95,9 @@ export default class OverlayModal extends Component {
             repeatChosen: false,
             categoryChosen: false,
             priorityChosen: false,
+
             addTaskMenuChosen: false,
+            is_task_menu_chosen_ready: true
         }))
     }
 
@@ -138,9 +158,7 @@ export default class OverlayModal extends Component {
 
     componentDidMount() {
         let currentDayTask = Map(this.props.currentDayTask)
-        if (!currentDayTask.has("startTime") ||
-            !currentDayTask.has("trackingTime") ||
-            !currentDayTask.has("schedule") ||
+        if (!currentDayTask.has("schedule") ||
             !currentDayTask.has("category") ||
             !currentDayTask.has("repeat") ||
             !currentDayTask.has("end") ||
@@ -152,17 +170,6 @@ export default class OverlayModal extends Component {
 
             let sending_obj = {
                 type,
-
-                startTime_data: {
-                    keyPath: ["startTime"],
-                    notSetValue: timestamp,
-                    updater: (value) => timestamp
-                },
-                trackingTime_data: {
-                    keyPath: ["trackingTime"],
-                    notSetValue: timestamp,
-                    updater: (value) => timestamp
-                },
                 schedule_data: {
                     keyPath: ["schedule"],
                     notSetValue: fromJS({
@@ -199,23 +206,34 @@ export default class OverlayModal extends Component {
                 end_data: {
                     keyPath: ["end"],
                     notSetValue: fromJS({
-                        type: "never"
+                        type: "after",
+                        occurrence: 1
                     }),
                     updater: (value) => fromJS({
-                        type: "never"
+                        type: "after",
+                        occurrence: 1
                     })
                 },
                 priority_data: {
                     keyPath: ["priority"],
                     notSetValue: fromJS({
                         value: "pri_01",
-                        reward: 0,
                     }),
                     updater: (value) => fromJS({
                         value: "pri_01",
-                        reward: 0,
                     })
                 },
+
+                reward_data: {
+                    keyPath: ["reward"],
+                    notSetValue: fromJS({
+                        value: 5,
+                    }),
+                    updater: (value) => fromJS({
+                        value: 5,
+                    })
+                },
+
                 goal_data: {
                     keyPath: ["goal"],
                     notSetValue: fromJS({
@@ -233,9 +251,7 @@ export default class OverlayModal extends Component {
         }
 
         let currentWeekTask = this.props.currentWeekTask
-        if (!currentWeekTask.has("startTime") ||
-            !currentWeekTask.has("trackingTime") ||
-            !currentWeekTask.has("schedule") ||
+        if (!currentWeekTask.has("schedule") ||
             !currentWeekTask.has("category") ||
             !currentWeekTask.has("repeat") ||
             !currentWeekTask.has("end") ||
@@ -249,16 +265,6 @@ export default class OverlayModal extends Component {
             let sending_obj = {
                 type,
 
-                startTime_data: {
-                    keyPath: ["startTime"],
-                    notSetValue: timestamp,
-                    updater: (value) => timestamp
-                },
-                trackingTime_data: {
-                    keyPath: ["trackingTime"],
-                    notSetValue: timestamp,
-                    updater: (value) => timestamp
-                },
                 schedule_data: {
                     keyPath: ["schedule"],
                     notSetValue: fromJS({
@@ -299,23 +305,34 @@ export default class OverlayModal extends Component {
                 end_data: {
                     keyPath: ["end"],
                     notSetValue: fromJS({
-                        type: "never"
+                        type: "after",
+                        occurrence: 1
                     }),
                     updater: (value) => fromJS({
-                        type: "never"
+                        type: "after",
+                        occurrence: 1
                     })
                 },
                 priority_data: {
                     keyPath: ["priority"],
                     notSetValue: fromJS({
                         value: "pri_01",
-                        reward: 0,
                     }),
                     updater: (value) => fromJS({
                         value: "pri_01",
-                        reward: 0,
                     })
                 },
+
+                reward_data: {
+                    keyPath: ["reward"],
+                    notSetValue: fromJS({
+                        value: 5,
+                    }),
+                    updater: (value) => fromJS({
+                        value: 5,
+                    })
+                },
+
                 goal_data: {
                     keyPath: ["goal"],
                     notSetValue: fromJS({
@@ -333,9 +350,7 @@ export default class OverlayModal extends Component {
         }
 
         let currentMonthTask = this.props.currentMonthTask
-        if (!currentMonthTask.has("startTime") ||
-            !currentMonthTask.has("trackingTime") ||
-            !currentMonthTask.has("schedule") ||
+        if (!currentMonthTask.has("schedule") ||
             !currentMonthTask.has("category") ||
             !currentMonthTask.has("repeat") ||
             !currentMonthTask.has("end") ||
@@ -347,17 +362,6 @@ export default class OverlayModal extends Component {
 
             let sending_obj = {
                 type,
-
-                startTime_data: {
-                    keyPath: ["startTime"],
-                    notSetValue: timestamp,
-                    updater: (value) => timestamp
-                },
-                trackingTime_data: {
-                    keyPath: ["trackingTime"],
-                    notSetValue: timestamp,
-                    updater: (value) => timestamp
-                },
                 schedule_data: {
                     keyPath: ["schedule"],
                     notSetValue: fromJS({
@@ -392,23 +396,35 @@ export default class OverlayModal extends Component {
                 end_data: {
                     keyPath: ["end"],
                     notSetValue: fromJS({
-                        type: "never"
+                        type: "after",
+                        occurrence: 1
                     }),
                     updater: (value) => fromJS({
-                        type: "never"
+                        type: "after",
+                        occurrence: 1
                     })
                 },
                 priority_data: {
                     keyPath: ["priority"],
                     notSetValue: fromJS({
                         value: "pri_01",
-                        reward: 0,
                     }),
                     updater: (value) => fromJS({
                         value: "pri_01",
-                        reward: 0,
+                        reward: 5,
                     })
                 },
+
+                reward_data: {
+                    keyPath: ["reward"],
+                    notSetValue: fromJS({
+                        value: 5,
+                    }),
+                    updater: (value) => fromJS({
+                        value: 5,
+                    })
+                },
+
                 goal_data: {
                     keyPath: ["goal"],
                     notSetValue: fromJS({
@@ -421,6 +437,12 @@ export default class OverlayModal extends Component {
             }
 
             this.props.updateThunk(sending_obj)
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.should_animate_end_animation !== prevState.should_animate_end_animation) {
+            this.disableAllTabs()
         }
     }
 
@@ -441,8 +463,8 @@ export default class OverlayModal extends Component {
 
                     <DismissElement
                         toggleAddTask={this.props.toggleAddTask}
-                        disableAllTabs={this.disableAllTabs}
                         addTaskMenuChosen={this.state.addTaskMenuChosen}
+                        _toggleShouldCallEndAnimationFromParent={this._toggleShouldCallEndAnimationFromParent}
                     />
 
                     {
@@ -457,6 +479,8 @@ export default class OverlayModal extends Component {
                                 currentAnnotation={this.state.currentAnnotation}
 
                                 toggleAddTask={this.props.toggleAddTask}
+
+                                should_call_end_animation_from_parent={this.state.should_call_end_animation_from_parent}
                             />
                             :
 
@@ -465,7 +489,8 @@ export default class OverlayModal extends Component {
                                 {this.state.calendarChosen ?
                                     <Calendar
                                         currentAnnotation={this.state.currentAnnotation}
-                                        disableAllTabs={this.disableAllTabs}
+                                        hideAction={this._toggleShouldAnimateEndAnimation}
+                                        should_call_end_animation_from_parent={this.state.should_call_end_animation_from_parent}
                                         edit={false}
                                     />
 
@@ -477,7 +502,8 @@ export default class OverlayModal extends Component {
                                             <Category
                                                 currentAnnotation={this.state.currentAnnotation}
                                                 edit={false}
-                                                hideAction={this.disableAllTabs}
+                                                hideAction={this._toggleShouldAnimateEndAnimation}
+                                                should_call_end_animation_from_parent={this.state.should_call_end_animation_from_parent}
                                             />
                                             :
 
@@ -487,7 +513,8 @@ export default class OverlayModal extends Component {
                                                     <Repeat
                                                         currentAnnotation={this.state.currentAnnotation}
                                                         edit={false}
-                                                        hideAction={this.disableAllTabs}
+                                                        hideAction={this._toggleShouldAnimateEndAnimation}
+                                                        should_call_end_animation_from_parent={this.state.should_call_end_animation_from_parent}
                                                     />
 
                                                     :
@@ -498,7 +525,8 @@ export default class OverlayModal extends Component {
                                                             <Priority
                                                                 currentAnnotation={this.state.currentAnnotation}
                                                                 edit={false}
-                                                                hideAction={this.disableAllTabs}
+                                                                hideAction={this._toggleShouldAnimateEndAnimation}
+                                                                should_call_end_animation_from_parent={this.state.should_call_end_animation_from_parent}
                                                             />
 
                                                             :

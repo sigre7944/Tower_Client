@@ -18,14 +18,7 @@ export const updateTitle = (title) => ({
     title
 })
 
-// export const updateType = (type, task_type) => ({
-//     type,
-//     data: {
-//         type: task_type
-//     }
-// })
-
-export const updateType = (type, keyPath, notSetValue, updater ) => ({
+export const updateType = (type, keyPath, notSetValue, updater) => ({
     type,
     keyPath,
     notSetValue,
@@ -40,4 +33,32 @@ export const updateDescription = (description) => ({
 export const changeAnnotation = (annotation) => ({
     type: "CHANGE_CURRENT_ANNOTATION",
     annotation
+})
+
+export const returnNewChosenDateData = (type, data) => ({
+    type,
+    data
+})
+
+export const updateCurrentChosenJournalType = (data) => ({
+    type: "UPDATE_CURRENT_CHOSEN_JOURNAL_TYPE",
+    data
+})
+
+export const returnNewSortSettings = (data) => ({
+    type: "RETURN_NEW_SORT_SETTINGS",
+    data
+})
+
+
+export const updateGeneralSettings = (keyPath, notSetValue, updater) => ({
+    type: "UPDATE_GENERAL_SETTINGS",
+    keyPath,
+    notSetValue,
+    updater
+})
+
+export const returnNewGeneralSettings = (data) => ({
+    type: "RETURN_NEW_GENERAL_SETTINGS",
+    data
 })

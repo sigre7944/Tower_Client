@@ -1,368 +1,499 @@
-import React from 'react';
+import React from "react";
 import {
-    View,
-    Text,
-    Dimensions,
-    TouchableOpacity,
-    FlatList,
-} from 'react-native';
+  View,
+  Text,
+  Dimensions,
+  TouchableOpacity,
+  FlatList,
+  Modal,
+  TouchableWithoutFeedback,
+  Animated,
+  Easing
+} from "react-native";
 
-import { Map, fromJS } from 'immutable'
+import { Map, fromJS, OrderedMap, isKeyed } from "immutable";
 
-import AddEditReward from './add-edit-reward.js/AddEditReward.Container'
-import DeleteReward from './delete-reward/DeleteReward.Container'
+import AddEditReward from "./add-edit-reward/AddEditReward.Container";
 
-export default class TrackingSection extends React.PureComponent {
-    edit_reward_data = {}
-    delete_reward_id = ""
+import InsufficientWarning from "./insufficient-warning/InsufficientWarning";
 
-    state = {
-        should_flatlist_update: 0,
-        reward_data: [],
-        is_add_new_reward: false,
-        is_edit_reward: false,
-        is_delete_reward: false
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faPlus, faEdit } from "@fortawesome/free-solid-svg-icons";
+import { styles } from "./styles/styles";
+import * as Haptics from "expo-haptics";
+import { Audio } from "expo-av";
+
+import PremiumAd from "../../../../../../shared/components/premium-ad/PremiumAd";
+
+const window_width = Dimensions.get("window").width;
+const number_of_columns = 2;
+const reward_holder_width =
+  (window_width - (22 * 2 + 23 * (number_of_columns - 1))) / number_of_columns; //22 = paddingHorizontal value, 23 = margin between 2 cols
+
+export default class CRUDRewardSection extends React.PureComponent {
+  edit_reward_data = {};
+
+  state = {
+    should_flatlist_update: 0,
+    reward_data: [],
+    is_add_new_reward: false,
+    is_edit_reward: false,
+
+    should_display_insufficient: false
+  };
+
+  addNewReward = () => {
+    this.setState({
+      is_add_new_reward: true,
+      is_edit_reward: false,
+      should_display_insufficient: false
+    });
+  };
+
+  editReward = edit_reward_data => {
+    this.setState({
+      is_add_new_reward: false,
+      is_edit_reward: true,
+      should_display_insufficient: false
+    });
+
+    this.edit_reward_data = edit_reward_data;
+  };
+
+  _promptInsufficientFundWarning = () => {
+    this.setState({
+      is_add_new_reward: false,
+      is_edit_reward: false,
+      should_display_insufficient: true
+    });
+  };
+
+  dismissAction = () => {
+    this.setState({
+      is_add_new_reward: false,
+      is_edit_reward: false,
+      should_display_insufficient: false
+    });
+  };
+
+  _playingSound = async () => {
+    try {
+      const completing_sound = new Audio.Sound();
+      await completing_sound.loadAsync(
+        require("../../../../../../../assets/sounds/GetReward01.wav")
+      );
+      await completing_sound.playAsync();
+    } catch (error) {
+      console.log(error);
     }
+  };
 
-    addNewReward = () => {
-        this.setState({
-            is_add_new_reward: true,
-            is_edit_reward: false,
-            is_delete_reward: false
-        })
-    }
+  _getReward = (reward_id, reward_name, reward_value) => {
+    let purchase_history_map = OrderedMap(this.props.purchase_history),
+      rewards = OrderedMap(this.props.rewards),
+      balance = parseFloat(this.props.balance);
 
-    editReward = (edit_reward_data) => {
-        this.setState({
-            is_add_new_reward: false,
-            is_edit_reward: true,
-            is_delete_reward: false
-        })
-
-        this.edit_reward_data = edit_reward_data
-    }
-
-    deleteReward = (reward_id) => {
-        this.setState({
-            is_add_new_reward: false,
-            is_edit_reward: false,
-            is_delete_reward: true
-        })
-
-        this.delete_reward_id = reward_id
-    }
-
-    dismissAction = () => {
-        this.setState({
-            is_add_new_reward: false,
-            is_edit_reward: false,
-            is_delete_reward: false,
-        })
-    }
-
-    getReward = (reward_id, reward_value) => {
-        let purchase_history = Map(this.props.purchase_history),
-            rewards = Map(this.props.rewards),
-            balance = parseInt(this.props.balance)
-
-        // Can buy when have enough balance
-        if (balance >= reward_value) {
-            if (rewards.has(reward_id)) {
-                let date = new Date(),
-                    day_timestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
-
-                if (purchase_history.has(day_timestamp)) {
-                    let purchase_timestamp_data = Map(purchase_history.get(day_timestamp))
-
-                    if (purchase_timestamp_data.has(reward_id)) {
-                        let item_data = Map(purchase_timestamp_data.get(reward_id)).toMap().asMutable()
-                        item_data.update("quantity", (value) => value + 1)
-                        item_data.update("latest_timestamp", (value) => new Date().getTime())
-
-                        let sending_obj = {
-                            purchase_item_data: {
-                                timestamp: day_timestamp,
-                                id: reward_id,
-                                data: item_data
-                            },
-
-                            amount: reward_value
-                        }
-
-                        this.props.updatePurchaseItemThunk(sending_obj)
-                    }
-
-                    else {
-                        let item_data = Map().asMutable()
-                        item_data.set("id", reward_id)
-                        item_data.set("quantity", 1)
-                        item_data.set("latest_timestamp", new Date().getTime())
-
-                        let sending_obj = {
-                            purchase_item_data: {
-                                timestamp: day_timestamp,
-                                id: reward_id,
-                                data: item_data
-                            },
-
-                            amount: reward_value
-                        }
-
-                        this.props.addPurchaseItemThunk(sending_obj)
-                    }
-                }
-
-                else {
-                    let timestamp_obj = {
-                        id: reward_id,
-                        latest_timestamp: new Date().getTime(),
-                        quantity: 1
-                    }
-
-                    let sending_obj = {
-                        purchase_item_data: {
-                            timestamp: day_timestamp,
-                            id: reward_id,
-                            data: fromJS(timestamp_obj)
-                        },
-
-                        amount: reward_value
-                    }
-
-                    this.props.addPurchaseItemThunk(sending_obj)
-                }
+    // Can buy when have enough balance
+    if (balance >= reward_value) {
+      if (rewards.has(reward_id)) {
+        let date = new Date(),
+          day_timestamp = new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate()
+          ).getTime(),
+          day_timestamp_toString = day_timestamp.toString(),
+          timestamp_without_seconds =
+            day_timestamp +
+            date.getHours() * 3600 * 1000 +
+            date.getMinutes() * 60 * 1000,
+          timestamp_without_seconds_toString = timestamp_without_seconds.toString(),
+          sending_obj = {
+            purchase_item_data: {},
+            balance_data: {
+              type: "WITHDRAW_BALANCE_AMOUNT",
+              amount: reward_value
             }
+          };
+
+        if (
+          purchase_history_map.hasIn([
+            day_timestamp_toString,
+            timestamp_without_seconds_toString,
+            reward_id,
+            "quantity"
+          ])
+        ) {
+          sending_obj.purchase_item_data = {
+            keyPath: [
+              day_timestamp_toString,
+              timestamp_without_seconds_toString,
+              reward_id,
+              "quantity"
+            ],
+            notSetValue: 0,
+            updater: value => value + 1
+          };
+        } else {
+          if (
+            purchase_history_map.hasIn([
+              day_timestamp_toString,
+              timestamp_without_seconds_toString
+            ])
+          ) {
+            let updater_data = OrderedMap(
+              purchase_history_map.getIn([
+                day_timestamp_toString,
+                timestamp_without_seconds_toString
+              ])
+            ).asMutable();
+
+            updater_data.set(
+              reward_id,
+              fromJS({
+                id: reward_id,
+                value: reward_value,
+                name: reward_name,
+                quantity: 1,
+                latest_timestamp: timestamp_without_seconds
+              })
+            );
+
+            sending_obj.purchase_item_data = {
+              keyPath: [
+                day_timestamp_toString,
+                timestamp_without_seconds_toString
+              ],
+              notSetValue: {},
+              updater: value => updater_data.toOrderedMap()
+            };
+          } else {
+            if (purchase_history_map.has(day_timestamp_toString)) {
+              let updater_data = {};
+
+              updater_data[reward_id] = {
+                id: reward_id,
+                value: reward_value,
+                name: reward_name,
+                quantity: 1,
+                latest_timestamp: timestamp_without_seconds
+              };
+
+              sending_obj.purchase_item_data = {
+                keyPath: [
+                  day_timestamp_toString,
+                  timestamp_without_seconds_toString
+                ],
+                notSetValue: {},
+                updater: value =>
+                  fromJS(updater_data, (key, value, path) => {
+                    return isKeyed(value)
+                      ? value.toOrderedMap()
+                      : value.toList();
+                  })
+              };
+            } else {
+              let updater_data = {};
+              updater_data[timestamp_without_seconds_toString] = {};
+              updater_data[timestamp_without_seconds_toString][reward_id] = {
+                id: reward_id,
+                value: reward_value,
+                name: reward_name,
+                quantity: 1,
+                latest_timestamp: timestamp_without_seconds
+              };
+
+              sending_obj.purchase_item_data = {
+                keyPath: [day_timestamp_toString],
+                notSetValue: {},
+                updater: value =>
+                  fromJS(updater_data, (key, value, path) => {
+                    return isKeyed(value)
+                      ? value.toOrderedMap()
+                      : value.toList();
+                  })
+              };
+            }
+          }
         }
-    }
 
-    _setFlatListRef = (ref) => {
-        this._flatlistReft = ref
-    }
+        this.props.updatePurchaseItemThunk(sending_obj);
 
-    _keyExtractor = (item, index) => `reward_${index}`
+        let general_settings = Map(this.props.generalSettings);
 
-    _renderItem = ({ item, index }) => {
-        if (item["is_add_button"]) {
-            return (
-                <AddRewardHolder
-                    addNewReward={this.addNewReward}
-                />
-            )
+        if (general_settings.get("vibration")) {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         }
 
-        else {
-            return (
-                <RewardHolder
-                    data={item}
-                    editReward={this.editReward}
-                    deleteReward={this.deleteReward}
-                    getReward={this.getReward}
-                />
-            )
+        if (general_settings.get("sound")) {
+          this._playingSound();
         }
+      }
+    } else {
+      this._promptInsufficientFundWarning();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
+  };
 
-    render() {
-        return (
-            <View
-                style={{
-                    marginTop: 22,
-                }}
-            >
-                <FlatList
-                    data={Map(this.props.rewards).valueSeq().toArray()}
-                    extraData={this.state.should_flatlist_update}
-                    keyExtractor={this._keyExtractor}
-                    renderItem={this._renderItem}
-                    numColumns={2}
-                    ref={this._setFlatListRef}
-                    columnWrapperStyle={{
-                        justifyContent: "space-between"
-                    }}
-                />
+  _setFlatListRef = ref => {
+    this._flatlistReft = ref;
+  };
 
-                {this.state.is_add_new_reward ?
-                    <AddEditReward
-                        dismissAction={this.dismissAction}
-                    />
-                    :
+  _keyExtractor = (item, index) => `reward-CRUD-Store-${item[0]}`;
 
-                    <>
-                        {this.state.is_edit_reward ?
-                            <AddEditReward
-                                dismissAction={this.dismissAction}
-                                edit={true}
-                                edit_reward_data={this.edit_reward_data}
-                            />
-
-                            :
-
-                            <>
-                                {this.state.is_delete_reward ?
-                                    <DeleteReward
-                                        dismissAction={this.dismissAction}
-                                        reward_id={this.delete_reward_id}
-                                    />
-
-                                    :
-
-                                    null
-                                }
-                            </>
-                        }
-                    </>
-                }
-
-            </View>
-        )
+  _renderItem = ({ item, index }) => {
+    if (item[0] === "is_add_button") {
+      return <AddRewardHolder addNewReward={this.addNewReward} />;
+    } else {
+      return (
+        <RewardHolder
+          data={item[1]}
+          editReward={this.editReward}
+          _getReward={this._getReward}
+          account_plan={Map(this.props.generalSettings).getIn([
+            "account",
+            "package",
+            "plan"
+          ])}
+        />
+      );
     }
+  };
+
+  _updateRewardData = () => {
+    let rewards_map = OrderedMap(this.props.rewards),
+      reward_data = [];
+
+    reward_data.push([
+      "is_add_button",
+      {
+        is_add_button: true
+      }
+    ]);
+
+    rewards_map.entrySeq().forEach((entry, index) => {
+      reward_data.push(entry);
+    });
+
+    this.setState({
+      reward_data
+    });
+  };
+
+  componentDidMount() {
+    this._updateRewardData();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.rewards !== prevProps.rewards) {
+      this._updateRewardData();
+    }
+  }
+
+  render() {
+    return (
+      <View
+        style={{
+          marginTop: 22
+        }}
+      >
+        <FlatList
+          data={this.state.reward_data}
+          extraData={this.state.should_flatlist_update}
+          keyExtractor={this._keyExtractor}
+          renderItem={this._renderItem}
+          numColumns={2}
+          ref={this._setFlatListRef}
+          columnWrapperStyle={{
+            justifyContent: "space-between",
+            marginTop: 22
+          }}
+          windowSize={5}
+          maxToRenderPerBatch={5}
+          initialNumToRender={5}
+          // removeClippedSubviews={true}
+        />
+
+        {this.state.is_add_new_reward ? (
+          <AddEditReward dismissAction={this.dismissAction} />
+        ) : (
+          <>
+            {this.state.is_edit_reward ? (
+              <AddEditReward
+                dismissAction={this.dismissAction}
+                edit={true}
+                edit_reward_data={this.edit_reward_data}
+              />
+            ) : (
+              <>
+                {this.state.should_display_insufficient ? (
+                  <InsufficientWarning dismissAction={this.dismissAction} />
+                ) : null}
+              </>
+            )}
+          </>
+        )}
+      </View>
+    );
+  }
 }
 
-
 class RewardHolder extends React.PureComponent {
-    _editReward = () => {
-        this.props.editReward(this.props.data)
+  state = {
+    can_choose: false,
+    should_display_premium_ad: false
+  };
+
+  _toggleShouldDisplayPremiumAd = () => {
+    this.setState(prevState => ({
+      should_display_premium_ad: !prevState.should_display_premium_ad
+    }));
+  };
+
+  _editReward = () => {
+    if (this.state.can_choose) {
+      this.props.editReward(this.props.data);
+    } else {
+      this._toggleShouldDisplayPremiumAd();
+    }
+  };
+
+  _getReward = () => {
+    if (this.state.can_choose) {
+      let data_map = Map(this.props.data);
+      this.props._getReward(
+        data_map.get("id"),
+        data_map.get("name"),
+        data_map.get("value")
+      );
+    } else {
+      this._toggleShouldDisplayPremiumAd();
+    }
+  };
+
+  _checkIfCanChoose = () => {
+    let account_plan = this.props.account_plan,
+      reward_plan = Map(this.props.data).get("plan"),
+      can_choose = false;
+
+    if (reward_plan === "free") {
+      can_choose = true;
+    } else {
+      can_choose = account_plan === reward_plan;
     }
 
-    _deleteReward = () => {
-        this.props.deleteReward(this.props.data.id)
-    }
+    this.setState({
+      can_choose
+    });
+  };
 
-    _getReward = () => {
-        this.props.getReward(this.props.data.id, this.props.data.value)
-    }
+  componentDidMount() {
+    this._checkIfCanChoose();
+  }
 
-    render() {
-        return (
-            <View
-                style={{
-                    width: (Dimensions.get("window").width - 67) / 2,
-                    height: 185,
-                    alignItems: "center",
-                    backgroundColor: "rgba(0, 0, 0, 0.05)",
-                    marginBottom: 22,
-                    borderRadius: 10,
-                }}
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.account_plan !== prevProps.account_plan) {
+      this._checkIfCanChoose();
+    }
+  }
+
+  render() {
+    let reward_value = Map(this.props.data).get("value"),
+      reward_name = Map(this.props.data).get("name");
+
+    return (
+      <View
+        style={{
+          opacity: this.state.can_choose ? 1 : 0.5
+        }}
+      >
+        <View
+          style={{
+            ...{ width: reward_holder_width },
+            ...styles.reward_holder_container
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              width: reward_holder_width
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                height: 24,
+                width: 24,
+                alignItems: "flex-start",
+                justifyContent: "flex-end"
+              }}
+              onPress={this._editReward}
             >
-                <View
-                    style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        width: (Dimensions.get("window").width - 67) / 2 - 14,
-                        marginTop: 7,
-                    }}
-                >
-                    <TouchableOpacity
-                        onPress={this._editReward}
-                    >
-                        <Text
-                            style={{
-                                fontSize: 9,
-                            }}
-                        >
-                            Edit
-                        </Text>
-                    </TouchableOpacity>
+              <FontAwesomeIcon icon={faEdit} color="#05838B" size={14} />
+            </TouchableOpacity>
+          </View>
 
-                    <TouchableOpacity
-                        onPress={this._deleteReward}
-                    >
-                        <Text
-                            style={{
-                                fontSize: 9,
-                            }}
-                        >
-                            Del
-                    </Text>
-                    </TouchableOpacity>
-                </View>
+          <View
+            style={{
+              marginTop: 10,
+              alignItems: "center",
+              paddingHorizontal: 10
+            }}
+          >
+            <Text style={reward_name}>{reward_name}</Text>
+          </View>
 
-                <Text
-                    style={{
-                        fontSize: 16,
-                        lineHeight: 19,
-                        fontWeight: "500",
-                        color: "rgba(0, 0, 0, 0.5)",
-                        textAlign: "center",
-                        marginTop: 5,
-                        letterSpacing: -0.02
-                    }}
-                >
-                    {this.props.data.name}
-                </Text>
-
-                <Text
-                    style={{
-                        fontWeight: "500",
-                        fontSize: 24,
-                        lineHeight: 28,
-                        textAlign: "center",
-                        letterSpacing: -0.02,
-                        color: "rgba(0, 0, 0, 0.87)",
-                        marginTop: 21,
-                    }}
-                >
-                    {this.props.data.value} €
-                </Text>
-
-                <TouchableOpacity
-                    style={{
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: 110,
-                        height: 36,
-                        backgroundColor: "rgba(0, 0, 0, 0.87)",
-                        borderRadius: 28,
-                        marginTop: 28,
-                    }}
-
-                    onPress={this._getReward}
-                >
-                    <Text
-                        style={{
-                            color: "white",
-                            lineHeight: 19,
-                            fontSize: 16,
-                            fontWeight: "500"
-                        }}
-                    >
-                        Get
-                    </Text>
-                </TouchableOpacity>
+          <View
+            style={{
+              marginTop: 22,
+              alignItems: "center",
+              paddingHorizontal: 10
+            }}
+          >
+            <Text style={styles.reward_value}>{reward_value}</Text>
+            <View
+              style={{
+                marginTop: 5
+              }}
+            >
+              <Text style={styles.currency_text}>pts</Text>
             </View>
-        )
-    }
+          </View>
+          <TouchableOpacity
+            style={styles.reward_get_button_container}
+            onPress={this._getReward}
+          >
+            <Text style={styles.reward_get_text}>Get</Text>
+          </TouchableOpacity>
+        </View>
+
+        {this.state.should_display_premium_ad ? (
+          <PremiumAd
+            dismissAction={this._toggleShouldDisplayPremiumAd}
+            motivation_text="The reward was disabled due to Free plan"
+          />
+        ) : null}
+      </View>
+    );
+  }
 }
 
 class AddRewardHolder extends React.PureComponent {
+  addNewReward = () => {
+    this.props.addNewReward();
+  };
 
-    addNewReward = () => {
-        this.props.addNewReward()
-    }
-
-    render() {
-        return (
-            <TouchableOpacity
-                style={{
-                    width: (Dimensions.get("window").width - 67) / 2,
-                    height: 185,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: "rgba(0, 0, 0, 0.05)",
-                    marginBottom: 22,
-                    borderRadius: 10
-                }}
-
-                onPress={this.addNewReward}
-            >
-                <Text
-                    style={{
-                        color: "#FFFFFF"
-                    }}
-                >
-                    Add
-                </Text>
-            </TouchableOpacity>
-        )
-    }
+  render() {
+    return (
+      <TouchableOpacity
+        style={{
+          ...{ width: reward_holder_width },
+          ...styles.add_button_container
+        }}
+        onPress={this.addNewReward}
+      >
+        <FontAwesomeIcon icon={faPlus} color="white" size={45} />
+      </TouchableOpacity>
+    );
+  }
 }

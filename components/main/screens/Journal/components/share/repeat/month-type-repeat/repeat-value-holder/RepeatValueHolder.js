@@ -13,11 +13,12 @@ import {
 
 import { styles } from './styles/styles'
 
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
-    faRedoAlt,
-} from '@fortawesome/free-solid-svg-icons'
+    repeat_icon
+} from "../../../../../../../../shared/icons";
 
+const icon_color = "#2C2C2C"
+const icon_size = 14
 const window_width = Dimensions.get("window").width
 
 export default class RepeatValueHolder extends React.PureComponent {
@@ -30,10 +31,6 @@ export default class RepeatValueHolder extends React.PureComponent {
         if (this._text_input_ref) {
             this._text_input_ref.focus()
         }
-    }
-
-    _onFocus = () => {
-        this.props._dontAnimateRepeatWhenFocusInput()
     }
 
 
@@ -53,11 +50,15 @@ export default class RepeatValueHolder extends React.PureComponent {
                         alignItems: "center"
                     }}
                 >
-                    <FontAwesomeIcon
-                        icon={faRedoAlt}
-                        color="#2C2C2C"
-                        size={14}
-                    />
+                    <View
+                        style={{
+                            width: icon_size,
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}
+                    >
+                        {repeat_icon(icon_size, icon_color)}
+                    </View>
 
                     <Text
                         style={styles.title_text}
@@ -91,11 +92,10 @@ export default class RepeatValueHolder extends React.PureComponent {
                         <TextInput
                             style={every_input_style}
                             maxLength={2}
-                            keyboardType="numbers-and-punctuation"
+                            keyboardType="number-pad"
                             value={this.props.repeat_input_value}
                             onChange={this.props._onChangeRepeatInput}
                             ref={this._setRef}
-                            onFocus={this._onFocus}
                             autoCorrect={false}
                         />
                     </View>

@@ -20,7 +20,7 @@ export const styles = StyleSheet.create({
         width: 85,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: CommonStyle.secondary_color,
+        backgroundColor: CommonStyle.primary_colors.prim_3,
         borderRadius: 30,
     },
 
@@ -28,13 +28,13 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         lineHeight: 19,
         letterSpacing: -0.02,
-        color: CommonStyle.unchosen_secondary_color
+        color: CommonStyle.text_icon_colors.ti_3
     },
 
     chosen_annotation_text: {
         fontSize: 16,
         lineHeight: 19,
         letterSpacing: -0.02,
-        color: CommonStyle.primary_color
+        color: CommonStyle.primary_colors.prim_1
     }
 })

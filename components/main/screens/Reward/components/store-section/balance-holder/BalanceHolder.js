@@ -7,34 +7,77 @@ import {
     TouchableOpacity
 } from 'react-native';
 
+import { Map } from "immutable";
+import { styles } from "./styles/styles";
+
+const euro_symbol = "\u20AC"
+const dollar_symbol = "\u0024"
+const pound_symbol = "\u00A3"
+const yen_symbol = "\u00A5"
+
 export default class BalanceHolder extends React.PureComponent {
 
+    // shouldComponentUpdate(nextProps, nextState) {
+    //     let old_currency = Map(this.props.generalSettings).get("currency"),
+    //         new_currency = Map(nextProps.generalSettings).get("currency")
+    //     return old_currency !== new_currency
+    // }
+
     render() {
+        // let currency = Map(this.props.generalSettings).get("currency"),
+        //     currency_symbol = euro_symbol
+
+        // if (currency === "EUR") {
+        //     currency_symbol = euro_symbol
+        // }
+
+        // else if (currency === "USD") {
+        //     currency_symbol = dollar_symbol
+        // }
+
+        // else if (currency === "GBP") {
+        //     currency_symbol = pound_symbol
+        // }
+
+        // else {
+        //     currency_symbol = yen_symbol
+        // }
+
+        let currency = "point"
+
+        if (this.props.balance > 1) {
+            currency = "points"
+        }
+
         return (
             <View>
                 <Text
-                    style={{
-                        fontSize: 16,
-                        lineHeight: 19,
-                        letterSpacing: -0.02,
-                        color: "rgba(0, 0, 0, 0.15)"
-                    }}
+                    style={styles.balance_title}
                 >
                     Balance
                 </Text>
 
-                <Text
+                <View
                     style={{
-                        marginTop: 3,
-                        fontWeight: "500",
-                        fontSize: 24,
-                        lineHeight: 28,
-                        letterSpacing: -0.02,
-                        color: "rgba(0, 0, 0, 0.87)"
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginTop: 15,
                     }}
                 >
-                    {this.props.balance} €
-                </Text>
+                    <Text
+                        style={styles.balance_value}
+                    >
+                        {this.props.balance}
+                    </Text>
+
+                    <Text
+                        style={
+                            styles.currency
+                        }
+                    >
+                        {currency}
+                    </Text>
+                </View>
             </View>
         )
     }

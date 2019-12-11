@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
         fontSize: 12,
         lineHeight: 14,
         letterSpacing: -0.02,
-        color: CommonStyle.unchosen_secondary_color
+        color: CommonStyle.text_icon_colors.ti_3
     },
 
     title_description_text_input: {
@@ -20,6 +20,6 @@ export const styles = StyleSheet.create({
         fontSize: 18,
         lineHeight: 21,
         letterSpacing: -0.02,
-        color: CommonStyle.unchosen_dark_grey_color
+        color: CommonStyle.text_icon_colors.ti_1
     }
 })

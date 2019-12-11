@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import {
     View,
     Text,
+    TouchableWithoutFeedback,
     TouchableOpacity,
     Modal,
     Dimensions,
@@ -33,7 +34,7 @@ export default class RepeatEndOnOptionRow extends React.Component {
     }
 
     _chooseEndOption = () => {
-        let {chosen_day, chosen_month, chosen_year} = this.props
+        let { chosen_day, chosen_month, chosen_year } = this.props
         this.props.chooseEndOption(this.props.index)
         this.setState(prevState => ({
             is_date_picker_chosen: true,
@@ -191,18 +192,18 @@ export default class RepeatEndOnOptionRow extends React.Component {
                             position: "relative"
                         }}
                     >
-                        <TouchableOpacity
-                            style={{
-                                flex: 1,
-                                width: window_width,
-                                backgroundColor: "black",
-                                opacity: 0.2
-                            }}
-
+                        <TouchableWithoutFeedback
                             onPress={this.closeDatePicker}
                         >
-
-                        </TouchableOpacity>
+                            <View
+                                style={{
+                                    flex: 1,
+                                    width: window_width,
+                                    backgroundColor: "black",
+                                    opacity: 0.2
+                                }}
+                            />
+                        </TouchableWithoutFeedback>
 
                         <DatePickerWheel
                             day={this.state.selected_day}

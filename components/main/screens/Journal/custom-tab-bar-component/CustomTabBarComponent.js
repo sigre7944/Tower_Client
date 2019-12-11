@@ -30,9 +30,11 @@ export default class CustomTabBarComponent extends React.PureComponent {
             },
         ).start()
 
-        this.props.navigation.navigate("Day")
         this.setState({
             current_index: 0
+        }, () => {
+            this.props.navigation.navigate("Day")
+            this.props.updateCurrentChosenJournalType("day")
         })
     }
     goToWeekScreen = () => {
@@ -46,9 +48,11 @@ export default class CustomTabBarComponent extends React.PureComponent {
             }
         ).start()
 
-        this.props.navigation.navigate("Week")
         this.setState({
             current_index: 1
+        }, () => {
+            this.props.navigation.navigate("Week")
+            this.props.updateCurrentChosenJournalType("week")
         })
     }
 
@@ -63,17 +67,23 @@ export default class CustomTabBarComponent extends React.PureComponent {
             }
         ).start()
 
-        this.props.navigation.navigate("Month")
         this.setState({
             current_index: 2
+        }, () => {
+            this.props.navigation.navigate("Month")
+            this.props.updateCurrentChosenJournalType("month")
         })
+    }
+
+    componentDidMount(){
+        this.goToDayScreen()
     }
 
     render() {
         return (
             <View
                 style={{
-                    height: 71,
+                    height: 41,
                     justifyContent: "center",
                 }}
             >
@@ -90,11 +100,11 @@ export default class CustomTabBarComponent extends React.PureComponent {
                         style={{
                             height: 3,
                             width: 52,
-                            backgroundColor: "#54BAAC",
+                            backgroundColor: "#05838B",
                             borderRadius: 30,
                             transform: [{ translateX: this.translate_x }],
                         }}
-                        
+
                     >
                     </Animated.View>
                 </View>
@@ -103,7 +113,7 @@ export default class CustomTabBarComponent extends React.PureComponent {
                     style={{
                         flexDirection: "row",
                         alignItems: "center",
-                        flex: 1
+                        flex: 1,
                     }}
                 >
                     <TouchableOpacity

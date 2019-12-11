@@ -1,17 +1,17 @@
 import { connect } from 'react-redux'
-import {updatePurchaseItemThunk, addPurchaseItemThunk} from './actions/getRewardActionThunk'
+import { updatePurchaseItemThunk } from './actions/getRewardActionThunk'
 import TrackingSection from './TrackingSection'
 
 const mapStateToProps = (state, ownProps) => ({
-    main_reward: state.get("main_reward"),
-    rewards: state.get("rewards"),
-    balance: state.get("balance"),
-    purchase_history: state.get("purchase_history")
+    main_reward: state["main_reward"],
+    rewards: state["rewards"],
+    balance: state["balance"],
+    purchase_history: state["purchase_history"],
+    generalSettings: state["generalSettings"]
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    addPurchaseItemThunk: (sending_obj) => dispatch(addPurchaseItemThunk(sending_obj)),
-    updatePurchaseItemThunk: (sending_obj) => dispatch(updatePurchaseItemThunk(sending_obj))
+    updatePurchaseItemThunk: (data) => dispatch(updatePurchaseItemThunk(data))
 })
 
 export default connect(

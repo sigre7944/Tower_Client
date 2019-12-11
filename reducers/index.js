@@ -1,5 +1,5 @@
-// import { combineReducers } from 'redux'
-import { combineReducers } from 'redux-immutable'
+// import { combineReducers as immutableCombineReducers } from 'redux-immutable'
+import { combineReducers } from "redux";
 import { priorities } from './priorityReducer'
 
 import {
@@ -26,16 +26,18 @@ import {
     currentRoute,
     currentWeekInMonth,
     headerPressed,
-    headerText
+    headerText,
+    // toggleEditMultipleTasks,
+    chosenDayDateData,
+    chosenWeekDateData,
+    chosenMonthDateData,
+    currentChosenJournalType,
+    sortSettings,
+    generalSettings
 } from './otherReducer'
 
 import {
-    day_stats,
-    month_stats,
-    week_stats
-} from './statsReducer'
-
-import {
+    day_chart_stats,
     month_chart_stats,
     week_chart_stats,
     year_chart_stats
@@ -47,6 +49,14 @@ import {
     main_reward,
     purchase_history
 } from './rewardReducer'
+
+import {
+    deleted_day_tasks,
+    deleted_week_tasks,
+    deleted_month_tasks
+} from "./deletedTasksReducer";
+
+import { } from "immutable";
 
 const rootReducer = combineReducers({
     currentRoute,
@@ -73,10 +83,7 @@ const rootReducer = combineReducers({
     addTaskTitle,
     currentChosenCategory,
 
-    day_stats,
-    month_stats,
-    week_stats,
-
+    day_chart_stats,
     month_chart_stats,
     week_chart_stats,
     year_chart_stats,
@@ -84,7 +91,20 @@ const rootReducer = combineReducers({
     rewards,
     balance,
     main_reward,
-    purchase_history
+    purchase_history,
+
+    deleted_day_tasks,
+    deleted_week_tasks,
+    deleted_month_tasks,
+
+    // toggleEditMultipleTasks,
+    chosenDayDateData,
+    chosenWeekDateData,
+    chosenMonthDateData,
+    currentChosenJournalType,
+
+    sortSettings,
+    generalSettings
 })
 
 export default rootReducer

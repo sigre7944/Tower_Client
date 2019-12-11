@@ -10,7 +10,8 @@ import {
     Animated,
     Easing,
     KeyboardAvoidingView,
-    ScrollView
+    ScrollView,
+    UIManager
 } from 'react-native';
 
 import { styles } from './styles/styles'
@@ -18,25 +19,38 @@ import { styles } from './styles/styles'
 import RepeatValueHolder from './repeat-value-holder/RepeatValueHolder'
 import RepeatEndOptionsHolder from './repeat-end-options-holder/RepeatEndOptionsHolder'
 
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import {
-    faFlag,
-    faTimes,
-    faCheck
-} from '@fortawesome/free-solid-svg-icons'
+    goal_icon,
+    close_icon,
+    check_icon
+} from "../../../../../../../shared/icons";
+
+const icon_color = "#2C2C2C"
+const icon_size = 14
 
 import { Map, fromJS } from 'immutable'
 
 const animation_duration = 250
-const easing = Easing.inOut(Easing.linear)
+const easing = Easing.in()
 const window_width = Dimensions.get("window").width
 const margin_bottom_of_last_row = 35
+const extra_margin_from_keyboard = 10
+const window_height = Dimensions.get("window").height
 
 export default class WeekTypeRepeat extends React.PureComponent {
 
     repeat_opacity_value = new Animated.Value(0.3)
-    repeat_scale_value = new Animated.Value(0.3)
+    repeat_scale_value = this.repeat_opacity_value.interpolate({
+        inputRange: [0, 0.3, 0.5, 0.7, 1],
+        outputRange: [0, 0.3, 0.5, 0.7, 1],
+        extrapolate: "clamp"
+    })
+
+    translate_y = new Animated.Value(0)
+
     date = new Date()
+
+    currently_focused_input = TextInput.State
 
     state = {
         repeat_input_value: "1",
@@ -44,8 +58,6 @@ export default class WeekTypeRepeat extends React.PureComponent {
         after_occurrence_value: "1",
 
         goal_value: "1",
-
-        should_animate_translate_y: true,
 
         end_current_index: 0,
 
@@ -115,47 +127,72 @@ export default class WeekTypeRepeat extends React.PureComponent {
         }
     }
 
-    animateRepeat = () => {
-        Animated.parallel([
-            Animated.timing(
-                this.repeat_opacity_value,
-                {
-                    toValue: 1,
-                    duration: animation_duration,
-                    easing,
-                    useNativeDriver: true
-                }
-            ),
-            Animated.timing(
-                this.repeat_scale_value,
-                {
-                    toValue: 1,
-                    duration: animation_duration,
-                    easing,
-                    useNativeDriver: true
-                }
-            )
-        ]).start()
+    animateRepeat = (edit) => {
+        Animated.timing(
+            this.repeat_opacity_value,
+            {
+                toValue: 1,
+                duration: animation_duration,
+                easing,
+                useNativeDriver: edit ? false : true
+            }
+        ).start()
     }
 
-    _dontAnimateRepeatWhenFocusInput = () => {
-        this.setState({
-            should_animate_translate_y: false
-        })
+    _animateRepeat = (callback, edit) => {
+        Animated.timing(
+            this.repeat_opacity_value,
+            {
+                toValue: 0,
+                duration: animation_duration,
+                easing,
+                useNativeDriver: edit ? false : true
+            }
+        ).start(() => { callback() })
     }
 
     _keyboardWillHideHandler = (e) => {
-        this.setState({
-            should_animate_translate_y: true
-        })
-
         this._resetRepeatInput()
         this._resetAfterOccurrenceInput()
         this._resetGoalValueInput()
+
+        Animated.timing(
+            this.translate_y,
+            {
+                toValue: 0,
+                duration: e.duration,
+                useNativeDriver: true
+            }
+        ).start()
+    }
+
+    _keyboardWillShowHandler = (e) => {
+        let keyboard_height = e.endCoordinates.height,
+            keyboard_duration = e.duration
+        let currently_focused_input = this.currently_focused_input.currentlyFocusedField()
+
+        UIManager.measure(currently_focused_input, (originX, originY, width, height, pageX, pageY) => {
+            let input_height = height,
+                input_py = pageY
+
+            let gap = (window_height - keyboard_height) - (input_py + input_height) - extra_margin_from_keyboard
+
+            if (gap < 0) {
+                Animated.timing(
+                    this.translate_y,
+                    {
+                        toValue: gap,
+                        duration: keyboard_duration,
+                        useNativeDriver: true
+                    }
+                ).start()
+            }
+
+        })
     }
 
     close = () => {
-        this.props.hideAction()
+        this._animateRepeat(this.props.hideAction, this.props.edit)
     }
 
     save = () => {
@@ -194,7 +231,7 @@ export default class WeekTypeRepeat extends React.PureComponent {
         let sending_data = {
             repeat_data: {
                 keyPath: ["repeat"],
-                notSetValue: fromJS(repeat_value_data),
+                notSetValue: {},
                 updater: (value) => fromJS(repeat_value_data)
             },
             goal_data: {
@@ -204,72 +241,101 @@ export default class WeekTypeRepeat extends React.PureComponent {
             },
             end_data: {
                 keyPath: ["end"],
-                notSetValue: fromJS(end_value_data),
+                notSetValue: {},
                 updater: (value) => fromJS(end_value_data)
             }
         }
 
-        this.props.updateThunk(sending_data)
-
-        this.props.hideAction()
-    }
-
-    initializeData = () => {
-        let current_task_map = Map(this.props.currentTask),
-            goal_value = current_task_map.getIn(["goal", "max"]).toString(),
-            end_type = current_task_map.getIn(["end", "type"]),
-            repeat_value = "1",
-            end_current_index = 0,
-            end_at_chosen_day = this.date.getDate(),
-            end_at_chosen_month = this.date.getMonth(),
-            end_at_chosen_year = this.date.getFullYear(),
-            after_occurrence_value = "1"
-
-        repeat_value = current_task_map.getIn(["repeat", "interval", "value"]).toString()
-
-        if (end_type === "never") {
-            end_current_index = 0
-        }
-
-        else if (end_type === "on") {
-            let timestamp = current_task_map.getIn(["end", "endAt"]),
-                date = new Date(timestamp)
-
-            end_at_chosen_day = date.getDate()
-            end_at_chosen_month = date.getMonth()
-            end_at_chosen_year = date.getFullYear()
-
-            end_current_index = 1
+        if (this.props.edit) {
+            this.props._editFieldData(sending_data.repeat_data.keyPath, sending_data.repeat_data.notSetValue, sending_data.repeat_data.updater)
+            this.props._editFieldData(sending_data.goal_data.keyPath, sending_data.goal_data.notSetValue, sending_data.goal_data.updater)
+            this.props._editFieldData(sending_data.end_data.keyPath, sending_data.end_data.notSetValue, sending_data.end_data.updater)
         }
 
         else {
-            after_occurrence_value = current_task_map.getIn(["end", "occurrence"]).toString()
-            end_current_index = 2
+            this.props.updateThunk(sending_data)
         }
 
-        this.chooseEndOption(end_current_index)
+        this.close()
+    }
 
-        this.setState({
-            repeat_input_value: repeat_value,
-            goal_value,
-            end_current_index,
-            end_at_chosen_day,
-            end_at_chosen_month,
-            end_at_chosen_year,
-            after_occurrence_value,
-        })
+    initializeData = (task_data) => {
+        if (task_data) {
+
+
+            let current_task_map = Map(task_data),
+                goal_value = current_task_map.getIn(["goal", "max"]).toString(),
+                end_type = current_task_map.getIn(["end", "type"]),
+                repeat_value = "1",
+                end_current_index = 0,
+                end_at_chosen_day = this.date.getDate(),
+                end_at_chosen_month = this.date.getMonth(),
+                end_at_chosen_year = this.date.getFullYear(),
+                after_occurrence_value = "1"
+
+            repeat_value = current_task_map.getIn(["repeat", "interval", "value"]).toString()
+
+            if (end_type === "never") {
+                end_current_index = 0
+            }
+
+            else if (end_type === "on") {
+                let timestamp = current_task_map.getIn(["end", "endAt"]),
+                    date = new Date(timestamp)
+
+                end_at_chosen_day = date.getDate()
+                end_at_chosen_month = date.getMonth()
+                end_at_chosen_year = date.getFullYear()
+
+                end_current_index = 1
+            }
+
+            else {
+                after_occurrence_value = current_task_map.getIn(["end", "occurrence"]).toString()
+                end_current_index = 2
+            }
+
+            this.chooseEndOption(end_current_index)
+
+            this.setState({
+                repeat_input_value: repeat_value,
+                goal_value,
+                end_current_index,
+                end_at_chosen_day,
+                end_at_chosen_month,
+                end_at_chosen_year,
+                after_occurrence_value,
+            })
+        }
+        else {
+            return
+        }
     }
 
     componentDidMount() {
-        this.animateRepeat()
+        this.animateRepeat(this.props.edit)
 
         this._keyboardWillHideListener = Keyboard.addListener("keyboardWillHide", this._keyboardWillHideHandler)
+        this._keyboardWillShowListener = Keyboard.addListener("keyboardWillShow", this._keyboardWillShowHandler)
 
-        this.initializeData()
+        if (this.props.edit) {
+            this.initializeData(this.props.edit_task_data)
+        }
+
+        else {
+            this.initializeData(this.props.currentTask)
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.should_call_end_animation_from_parent !== prevProps.should_call_end_animation_from_parent) {
+            this.close()
+        }
     }
 
     componentWillUnmount() {
         Keyboard.removeListener("keyboardWillHide", this._keyboardWillHideHandler)
+        Keyboard.removeListener("keyboardWillShow", this._keyboardWillShowHandler)
     }
 
     render() {
@@ -282,12 +348,14 @@ export default class WeekTypeRepeat extends React.PureComponent {
                     backgroundColor: 'white',
                     borderRadius: 10,
                     opacity: this.repeat_opacity_value,
-                    overflow: "hidden"
+                    overflow: "hidden",
+                    paddingVertical: 5,
                 }}
             >
-                <KeyboardAvoidingView
-                    behavior={"position"}
-                    enabled={this.state.should_animate_translate_y}
+                <Animated.View
+                    style={{
+                        transform: [{ translateY: this.translate_y }]
+                    }}
                 >
                     <ScrollView
                         keyboardDismissMode="on-drag"
@@ -297,7 +365,6 @@ export default class WeekTypeRepeat extends React.PureComponent {
                         <RepeatValueHolder
                             repeat_input_value={this.state.repeat_input_value}
                             _onChangeRepeatInput={this._onChangeRepeatInput}
-                            _dontAnimateRepeatWhenFocusInput={this._dontAnimateRepeatWhenFocusInput}
                         />
 
                         {/* Separating line */}
@@ -344,26 +411,19 @@ export default class WeekTypeRepeat extends React.PureComponent {
                                 style={styles.close_button_container}
                                 onPress={this.close}
                             >
-                                <FontAwesomeIcon
-                                    icon={faTimes}
-                                    color="white"
-                                />
+                                {close_icon(19, "white")}
+
                             </TouchableOpacity>
 
                             <TouchableOpacity
                                 style={styles.save_button_container}
                                 onPress={this.save}
                             >
-                                <FontAwesomeIcon
-                                    icon={faCheck}
-                                    color="white"
-                                />
+                                {check_icon(19, "white")}
                             </TouchableOpacity>
                         </View>
-
                     </ScrollView>
-                </KeyboardAvoidingView>
-
+                </Animated.View>
             </Animated.View >
         )
     }
@@ -393,11 +453,15 @@ class GoalHolder extends React.PureComponent {
                         alignItems: "center"
                     }}
                 >
-                    <FontAwesomeIcon
-                        icon={faFlag}
-                        color="#2C2C2C"
-                        size={14}
-                    />
+                    <View
+                        style={{
+                            width: icon_size,
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}
+                    >
+                        {goal_icon(icon_size, icon_color)}
+                    </View>
 
                     <Text
                         style={styles.title_text}
@@ -418,7 +482,7 @@ class GoalHolder extends React.PureComponent {
                 >
                     <TextInput
                         style={styles.every_option_input}
-                        keyboardType="numbers-and-punctuation"
+                        keyboardType="number-pad"
                         maxLength={2}
                         placeholder="1"
                         value={this.props.goal_value}
@@ -435,7 +499,7 @@ class GoalHolder extends React.PureComponent {
                         <Text
                             style={styles.every_option_text}
                         >
-                            times per day
+                            times per month
                         </Text>
                     </View>
                 </TouchableOpacity>

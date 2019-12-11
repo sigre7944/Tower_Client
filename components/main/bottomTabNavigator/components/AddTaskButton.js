@@ -5,8 +5,15 @@ import {
     TouchableHighlight,
 } from 'react-native';
 
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import { primary_color } from '../../../shared/styles/style'
+import { primary_colors } from '../../../shared/styles/style'
+
+import {
+    plus_icon
+} from "../../../shared/icons";
+
+const icon_size = 18
+const icon_color = "white"
+
 export default class AddTaskButton extends React.PureComponent {
     _onPress = () => {
         this.props.toggleAddTask()
@@ -20,7 +27,7 @@ export default class AddTaskButton extends React.PureComponent {
                     height: 56,
                     width: 56,
                     borderRadius: 56,
-                    backgroundColor: primary_color,
+                    backgroundColor: primary_colors.prim_1,
                     alignItems: 'center',
                     justifyContent: 'center',
                     position: 'absolute',
@@ -28,13 +35,7 @@ export default class AddTaskButton extends React.PureComponent {
                     zIndex: 10,
                 }}
             >
-                <FontAwesome
-                    name="plus"
-                    style={{
-                        color: "#FFFFFF",
-                        fontSize: 18,
-                    }}
-                />
+                {plus_icon(icon_size, icon_color)}
             </TouchableHighlight>
         )
     }

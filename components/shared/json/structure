@@ -1,52 +1,75 @@
-- Map structures for stats to work:
-    + Day: Map {
-        // 0:00:00 of the day (Number)
-        day_timestamp: Map {
-            current: List [0, 0, 0, 0]
-        }
-    }
+!!!! All properties are strings
 
-    + Week: {
-        // Monday of the week
-        week_timestamp: {
-            current: [0, 0, 0, 0]
-        }
-    }
-
-    + Month: {
-        // Day 1 of the month
-        month_timestamp: {
-            current: [0, 0, 0, 0]
-        }
-    }
+!!!! timestamps are using ISO 8601 date yyyy-mm-ddThh:mm:ss.mmmZ - new Date(year, month, day)
 
 - Map structures for charts to work:
+    + Day chart: Map {
+        // String
+        day_timestamp: Map {
+            // total points - sum of completions * priority value
+            totalPoints: 0
+
+            // total completions in week
+            current: [0, 0, 0, 0],
+
+            task_type_completions: [0, 0, 0] // day - week- month
+        }
+    }
+
     + Week chart: Map {
-        // Monday of the week (Number)
+        // Monday of the week (String)
         week_timestamp:  Map {
-            // sunday
-            0: Map {
-                current: List [0, 0, 0, 0]
-            }
+            // total points - sum of completions * priority value
+            totalPoints: 0
+
+            // total completions in week
+            current: [0, 0, 0, 0]
+
+            // Sunday - Saturday
+            completed_priority_array: List [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
+
+            task_type_completions: [0, 0, 0] // day - week- month
         }
     }
 
     + Month chart: {
         // Day 1 of the month
         month_timestamp: Map {
-            // First day of month
-            1: Map {
-                current: List [0, 0, 0, 0]
-            }
+            // total points - sum of completions * priority value
+            totalPoints: 0
+
+            // total completions in month
+            current: [0, 0, 0, 0]
+
+            // 1 - the last day of month
+            completed_priority_array: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], ...],
+
+            task_type_completions: [0, 0, 0] // day - week- month
         }
     }
 
     + Year chart: {
         // 2019
         year: {
-            // January
-            0: {
-                current: [0, 0, 0, 0]
+            // total points - sum of completions * priority value
+            totalPoints: 0
+
+            // total completions in year
+            current: [0, 0, 0, 0]
+
+            // January - December
+            completed_priority_array: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], ...],
+
+            task_type_completions: [0, 0, 0] // day - week- month
+        }
+    }
+
+- Structures for deleted tasks: 
+    + Day Deleted Tasks: Map {
+        + task_id: {
+            timestamp: {
+                category: task_category,
+                priority_value: task_priority_value
             }
         }
     }
@@ -55,13 +78,19 @@
     + Day type: Map {
         task_id: Map {
             id: task_id,
-            category: category_id,
-            priority_value: priority_value,
-            
+            category: task_category // when delete a category, to avoid iteration (N*M) of categories of tasks in deleted category (current category of task)
             //String
             completed_day_timestamp: Map {
+                // total points - sum of completions * priority value
+                totalPoints: 0
+
+                // Total equals the sum of day_completed_array
                 current: 0,
-                priority_value: priority_value
+                
+                // latest priority (equals priority of the task in that timestamp)
+                current_priority_value: priority_value,
+
+                completed_priority_array: [0, 0, 0, 0]
             }
         }
     }
@@ -69,20 +98,21 @@
     + Week type: {
         task_id: Map {
             id: task_id,
-            category: category_id,
-
-            // Always the most updated value
-            priority_value: priority_value,
-            
+            category: task_category // when delete a category, to avoid iteration (N*M) of categories of tasks in deleted category (current category of task)
             completed_week_timestamp: Map {
+                // total points - sum of completions * priority value
+                totalPoints: 0
+
+                // total points in each day of the week
+                total_points_array: List [0, 0, 0, 0, 0, 0, 0],
+
                 // Total equals the sum of day_completed_array
                 current: 0,
 
                 // Sunday - Saturday
-                day_completed_array: List [0, 0, 0, 0, 0, 0, 0]
-
-                // Sunday - Saturday
-                priority_value_array: List [priority_value, priority_value, priority_value, priority_value, priority_value, priority_value, priority_value]
+                completed_priority_array: List [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
+                // latest priority (equals priority of the task in that timestamp)
+                current_priority_value: priority_value,
             }
         }
     }
@@ -90,40 +120,83 @@
     + Month type: {
         task_id: {
             id: task_id,
-            category: category_id,
-
+            category: task_category // when delete a category, to avoid iteration (N*M) of categories of tasks in deleted category (current category of task)
             completed_month_timestamp: {
+                // total points - sum of completions * priority value
+                totalPoints: 0
+
+                // total points in each day of the month
+                total_points_array: List [0, 0, 0, 0, 0, 0, 0, ...],
+
                 // Total equals the sum of day_completed_array
                 current: 0,
 
-                // Always the most updated value
-                priority_value: priority_value,
-
                 // 1 - the last day of month
-                day_completed_array: [0, 0, 0, 0, 0, 0, 0, ...]
+                completed_priority_array: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], ...]
 
-                // 1 - the last day of month
-                priority_value_array: [priority_value, priority_value, priority_value, priority_value, priority_value, priority_value, priority_value, ...]
+                // latest priority (equals priority of the task in that timestamp)
+                current_priority_value: priority_value,
+            }
+        }
+    }
+
+    + gen: {
+        task_id: {
+            id: task_id,
+            category: task_category,
+
+            completed_month_timestamp: {
+                completed_week_timestamp: {
+                    totalPoints: 0,
+
+                    completed_day_timestamp: {
+                        totalPoints: 0,
+                        current: 0,
+                        completed_priority_array: [0, 0, 0, 0],
+                        current_priority_value: task_priority
+                    }
+                }
             }
         }
     }
 
 
-- Category structure: Map {
-    category_id: {
+- Rewards structure : OrderedMap {
+    reward_id: Map {
+        id: reward_id,
+        name: reward_name,
+        value: reward_value,
+        currency: "euro",
+        created_at: new Date().getTime()
+    }
+}
+
+- Category structure: OrderedMap {
+    category_id: Map {
         id: category_id,
+        name: "",
         color: "red",
         quantity: 3
     }
 }
 
-
-- Purchase History structure: Map {
-    timestamp: Map {
-        id: Map {
-            id: reward_id,
-            lastest_timestamp: 100000,
-            quantity: 2
+- Purchase History structure: OrderedMap {
+    timestamp: OrderedMap {
+        //with involved day, month, year, hours and minutes
+        latest_timestamp : {
+            id: Map {
+                id: reward_id,
+                name: reward_name,
+                value: reward_value,
+                latest_timestamp: latest_timestamp,
+                quantity: 1,
+            }
         }
     }
+}
+
+- Chosen Date Data: Map {
+    day: 0,
+    month: 0,
+    year: 0
 }
