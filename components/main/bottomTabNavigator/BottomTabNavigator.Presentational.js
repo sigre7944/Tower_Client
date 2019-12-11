@@ -1,6 +1,12 @@
 import React from "react";
 
-import { View, Text, TouchableOpacity, SafeAreaView } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  Keyboard
+} from "react-native";
 import AddTaskButton from "./components/AddTaskButton";
 import OverlayModal from "./components/modal-component/OverlayModal.Container";
 
@@ -24,10 +30,18 @@ export default class BottomTabNavigator extends React.Component {
     should_AddTaskButton_be_displayed: false
   };
 
-  toggleAddTask = () => {
-    this.setState(prevState => ({
-      addTaskClicked: !prevState.addTaskClicked
-    }));
+  toggleAddTask = should_go_to_login_screen => {
+    this.setState(
+      prevState => ({
+        addTaskClicked: !prevState.addTaskClicked
+      }),
+      () => {
+        if (should_go_to_login_screen) {
+          Keyboard.dismiss()
+          this.props.navigation.navigate("SignInScreen");
+        }
+      }
+    );
   };
 
   chooseNewScreen = routeName => {
@@ -77,7 +91,11 @@ export default class BottomTabNavigator extends React.Component {
           }}
         >
           {this.state.addTaskClicked ? (
-            <OverlayModal toggleAddTask={this.toggleAddTask} />
+            <OverlayModal
+              toggleAddTask={this.toggleAddTask}
+              navigation={this.props.navigation}
+              addTaskClicked={this.state.addTaskClicked}
+            />
           ) : null}
 
           {this.state.should_AddTaskButton_be_displayed ? (

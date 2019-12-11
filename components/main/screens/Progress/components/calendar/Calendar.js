@@ -14,7 +14,7 @@ import { Map, fromJS, List } from "immutable";
 
 import { styles } from "./styles/styles";
 
-import PremiumAd from "../../../../../shared/components/premium-ad/PremiumAd";
+import PremiumAd from "../../../../../shared/components/premium-ad/PremiumAd.Container";
 
 const panel_width = Dimensions.get("window").width;
 const margin_top_for_calendar_row = 20;
@@ -124,6 +124,17 @@ export default class Calendar extends React.Component {
     this.setState(prevState => ({
       should_display_premium_ad: !prevState.should_display_premium_ad
     }));
+  };
+
+  _goToLogin = () => {
+    this.setState(
+      {
+        should_display_premium_ad: false
+      },
+      () => {
+        this.props.navigation.navigate("SignInScreen");
+      }
+    );
   };
 
   componentDidMount() {
@@ -238,7 +249,7 @@ export default class Calendar extends React.Component {
         {this.state.should_display_premium_ad ? (
           <PremiumAd
             dismissAction={this._toggleDisplayPremiumAd}
-            motivation_text=""
+            _goToLogin={this._goToLogin}
           />
         ) : null}
       </View>
@@ -318,7 +329,7 @@ class MonthHolder extends React.Component {
     if (this.props.chart_change_calendar_available) {
       this.props.scrollToMonth(this.props.present_month_index);
     } else {
-      this.props._toggleDisplayPremiumAd()
+      this.props._toggleDisplayPremiumAd();
     }
   };
 

@@ -23,7 +23,7 @@ const icon_size = 14;
 const icon_color = "#2C2C2C";
 
 import { styles } from "./styles/styles";
-import PremiumAd from "../../../../../../../shared/components/premium-ad/PremiumAd";
+import PremiumAd from "../../../../../../../shared/components/premium-ad/PremiumAd.Container";
 import { Map, fromJS, OrderedMap } from "immutable";
 
 const shortid = require("shortid");
@@ -232,6 +232,17 @@ export default class AddEditReward extends React.PureComponent {
     });
   };
 
+  _goToLogin = () => {
+    this.setState(
+      {
+        should_display_premium_ad: false
+      },
+      () => {
+        this.props.dismissAction(true);
+      }
+    );
+  };
+
   componentDidMount() {
     this._animate();
 
@@ -263,7 +274,7 @@ export default class AddEditReward extends React.PureComponent {
                 flex: 1,
                 width: Dimensions.get("window").width,
                 backgroundColor: "black",
-                opacity: 0.5
+                opacity: 0.2
               }}
             ></View>
           </TouchableWithoutFeedback>
@@ -448,6 +459,7 @@ export default class AddEditReward extends React.PureComponent {
           <PremiumAd
             dismissAction={this._toggleShouldDisplayPremiumAd}
             motivation_text="You've reached Free plan's limits"
+            _goToLogin={this._goToLogin}
           />
         ) : null}
       </Modal>

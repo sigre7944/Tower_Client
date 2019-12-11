@@ -1,6 +1,13 @@
 import React from "react";
 
-import { View, Text, TouchableOpacity, Animated, Easing } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Animated,
+  Easing,
+  Keyboard
+} from "react-native";
 
 import { FlatList } from "react-native-gesture-handler";
 
@@ -8,7 +15,7 @@ import { styles } from "./styles/styles";
 import { OrderedMap, Map, fromJS } from "immutable";
 
 import AddCategoryPanel from "./add-category-panel/AddCategoryPanel.Container";
-import PremiumAd from "../../../../../../shared/components/premium-ad/PremiumAd";
+import PremiumAd from "../../../../../../shared/components/premium-ad/PremiumAd.Container";
 import {
   category_icon,
   check_icon,
@@ -37,7 +44,6 @@ export default class Category extends React.PureComponent {
   start_index = 0;
 
   chosen_category_id = "";
-
   state = {
     should_flatlist_update: 0,
     current_category_index: 0,
@@ -53,11 +59,18 @@ export default class Category extends React.PureComponent {
     });
   };
 
-  _closeAddCategoryPanel = () => {
-    this.setState({
-      should_display_add_category_panel: false,
-      can_close_add_category_panel: false
-    });
+  _closeAddCategoryPanel = should_go_to_login => {
+    this.setState(
+      {
+        should_display_add_category_panel: false,
+        can_close_add_category_panel: false
+      },
+      () => {
+        if (should_go_to_login) {
+          this.props.hideAction(should_go_to_login);
+        }
+      }
+    );
   };
 
   _chooseCategoryRow = (category_index, category_id) => {
@@ -167,6 +180,8 @@ export default class Category extends React.PureComponent {
         current_category_index={this.state.current_category_index}
         last_category_index={this.state.last_category_index}
         generalSettings={this.props.generalSettings}
+        toggleAddTask={this.props.toggleAddTask}
+        navigation={this.props.navigation}
       />
     );
   };
@@ -270,10 +285,6 @@ export default class Category extends React.PureComponent {
     ) {
       this._cancel();
     }
-
-    // if(this.props.generalSettings !== prevProps.generalSettings){
-
-    // }
   }
 
   render() {
@@ -412,6 +423,19 @@ class CategoryRow extends React.Component {
     );
   }
 
+  _goToLogin = () => {
+    this.setState(
+      {
+        should_display_premium_ad: false
+      },
+      () => {
+        Keyboard.dismiss();
+        this.props.toggleAddTask();
+        this.props.navigation.navigate("SignInScreen");
+      }
+    );
+  };
+
   _toggleShouldDisplayPremiumAd = () => {
     this.setState(prevState => ({
       should_display_premium_ad: !prevState.should_display_premium_ad
@@ -538,6 +562,7 @@ class CategoryRow extends React.Component {
             <PremiumAd
               dismissAction={this._toggleShouldDisplayPremiumAd}
               motivation_text="The category was disabled due to Free plan."
+              _goToLogin={this._goToLogin}
             />
           ) : null}
         </TouchableOpacity>

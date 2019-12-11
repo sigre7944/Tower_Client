@@ -145,7 +145,7 @@ let initial_general_settings = fromJS({
       number_of_tasks_per_category: 2,
       number_of_categories: 2,
       number_of_rewards: 2,
-      chart_change_calendar_available: true
+      chart_change_calendar_available: false
     },
 
     premium: {

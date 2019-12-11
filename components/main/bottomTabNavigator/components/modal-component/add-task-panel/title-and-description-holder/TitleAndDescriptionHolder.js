@@ -12,7 +12,7 @@ import {
   ScrollView
 } from "react-native";
 
-import PremiumAd from "../../../../../../shared/components/premium-ad/PremiumAd";
+import PremiumAd from "../../../../../../shared/components/premium-ad/PremiumAd.Container";
 
 import { styles } from "./styles/styles";
 
@@ -56,6 +56,19 @@ export default class TitleAndDescriptionHolder extends React.PureComponent {
     this.description_text_input_ref.focus();
   };
 
+  _goToLogin = () => {
+    this.setState(
+      {
+        should_display_premium_ad: false
+      },
+      () => {
+        Keyboard.dismiss();
+        this.props._closeAddTaskPanel();
+        this.props.navigation.navigate("SignInScreen");
+      }
+    );
+  };
+
   render() {
     return (
       <View>
@@ -87,6 +100,7 @@ export default class TitleAndDescriptionHolder extends React.PureComponent {
                 : this._toggleShouldDisplayPremiumAdDescription
             }
             motivation_text="You've reached Free plan's limits"
+            _goToLogin={this._goToLogin}
           />
         ) : null}
       </View>
@@ -108,7 +122,7 @@ class TaskTitleElement extends React.PureComponent {
 
   _onLayout = () => {
     setTimeout(() => {
-      this.textInputRef.focus();
+      if (this.textInputRef) this.textInputRef.focus();
     }, 50);
   };
 

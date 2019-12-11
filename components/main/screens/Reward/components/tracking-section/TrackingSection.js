@@ -6,7 +6,7 @@ import { Map, fromJS, OrderedMap, isKeyed } from "immutable";
 import { styles } from "./styles/styles";
 import * as Haptics from "expo-haptics";
 import { Audio } from "expo-av";
-import PremiumAd from "../../../../../shared/components/premium-ad/PremiumAd";
+import PremiumAd from "../../../../../shared/components/premium-ad/PremiumAd.Container";
 
 const window_width = Dimensions.get("window").width;
 const no_main_reward_1x = require("../../../../../../assets/pngs/no_main_reward_1x.png");
@@ -210,6 +210,17 @@ export default class TrackingSection extends React.PureComponent {
     });
   };
 
+  _goToLogin = () => {
+    this.setState(
+      {
+        should_display_premium_ad: false
+      },
+      () => {
+        this.props.navigation.navigate("SignInScreen");
+      }
+    );
+  };
+
   componentDidMount() {
     this._checkIfCanChoose();
   }
@@ -399,6 +410,7 @@ export default class TrackingSection extends React.PureComponent {
               <PremiumAd
                 dismissAction={this._toggleShouldDisplayPremiumAd}
                 motivation_text="The reward was disabled due to Free plan"
+                _goToLogin={this._goToLogin}
               />
             ) : null}
           </View>

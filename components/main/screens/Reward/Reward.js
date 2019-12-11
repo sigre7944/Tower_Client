@@ -48,10 +48,10 @@ export default class Reward extends React.PureComponent {
 
   _renderItem = ({ item, index }) => {
     if (item.id === "tracking-main-reward") {
-      return <TrackingSection />;
+      return <TrackingSection navigation={this.props.navigation} />;
     }
 
-    return <StoreSection />;
+    return <StoreSection navigation={this.props.navigation} />;
   };
 
   _checkIfThereIsAnyRewards = () => {
@@ -167,6 +167,7 @@ export default class Reward extends React.PureComponent {
         {this.state.should_display_add_new_reward_modal ? (
           <AddEditReward
             dismissAction={this._toggleShouldDisplayNewRewardModal}
+            navigation={this.props.navigation}
           />
         ) : null}
       </View>

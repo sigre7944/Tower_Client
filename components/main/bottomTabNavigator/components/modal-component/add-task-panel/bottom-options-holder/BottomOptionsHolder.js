@@ -27,7 +27,7 @@ const icon_size = 21;
 
 import { styles } from "./styles/styles";
 
-import PremiumAd from "../../../../../../shared/components/premium-ad/PremiumAd";
+import PremiumAd from "../../../../../../shared/components/premium-ad/PremiumAd.Container";
 
 import { Map, List, fromJS, OrderedMap } from "immutable";
 
@@ -42,6 +42,19 @@ export default class BottomOptionsHolder extends React.PureComponent {
     this.setState(prevState => ({
       should_display_premium_ad: !prevState.should_display_premium_ad
     }));
+  };
+
+  _goToLogin = () => {
+    this.setState(
+      {
+        should_display_premium_ad: false
+      },
+      () => {
+        Keyboard.dismiss();
+        this.props._closeAddTaskPanel();
+        this.props.navigation.navigate("SignInScreen");
+      }
+    );
   };
 
   render() {
@@ -94,6 +107,7 @@ export default class BottomOptionsHolder extends React.PureComponent {
           <PremiumAd
             dismissAction={this._toggleShouldDisplayPremiumAd}
             motivation_text="You've reached Free plan's limits"
+            _goToLogin={this._goToLogin}
           />
         ) : null}
       </View>

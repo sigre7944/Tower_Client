@@ -24,7 +24,7 @@ import { styles } from "./styles/styles";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 
 import { category_icon, plus_icon } from "../shared/icons";
-import PremiumAd from "../shared/components/premium-ad/PremiumAd";
+import PremiumAd from "../shared/components/premium-ad/PremiumAd.Container";
 
 const icon_size = 18;
 const icon_color = "white";
@@ -74,10 +74,18 @@ export default class Drawer extends React.PureComponent {
     return new Date(new Date(date).getTime() - diff * 86400 * 1000);
   };
 
-  _toggleAddNewCategory = () => {
-    this.setState(prevState => ({
-      add_new_category_bool: !prevState.add_new_category_bool
-    }));
+  _toggleAddNewCategory = should_go_to_login => {
+    this.setState(
+      prevState => ({
+        add_new_category_bool: !prevState.add_new_category_bool
+      }),
+      () => {
+        if (should_go_to_login) {
+          this.props.navigation.dispatch(DrawerActions.closeDrawer());
+          this.props.navigation.navigate("SignInScreen");
+        }
+      }
+    );
   };
 
   _setEditCategoryData = data => {
@@ -1207,6 +1215,7 @@ class CategoryFlatlist extends React.PureComponent {
         _chooseCategoryIndex={this._chooseCategoryIndex}
         _toggleDeleteWarning={this.props._toggleDeleteWarning}
         account_plan={this.props.account_plan}
+        navigation={this.props.navigation}
       />
     );
   };
@@ -1439,6 +1448,17 @@ class CategoryRow extends React.Component {
     });
   };
 
+  _goToLogin = () => {
+    this.setState(
+      {
+        should_display_premium_ad: false
+      },
+      () => {
+        this.props.navigation.navigate("SignInScreen");
+      }
+    );
+  };
+
   componentDidMount() {
     this._checkIfCanChoose();
   }
@@ -1545,6 +1565,7 @@ class CategoryRow extends React.Component {
           <PremiumAd
             dismissAction={this._toggleShouldDisplayPremiumAd}
             motivation_text="The category was disabled due to Free plan"
+            _goToLogin={this._goToLogin}
           />
         ) : null}
       </Swipeable>
@@ -1553,6 +1574,9 @@ class CategoryRow extends React.Component {
 }
 
 class AddNewCategory extends React.PureComponent {
+  _toggleAddNewCategory = () => {
+    this.props._toggleAddNewCategory();
+  };
   render() {
     return (
       <TouchableOpacity
@@ -1563,7 +1587,7 @@ class AddNewCategory extends React.PureComponent {
           flexDirection: "row",
           alignItems: "center"
         }}
-        onPress={this.props._toggleAddNewCategory}
+        onPress={this._toggleAddNewCategory}
       >
         {plus_icon(icon_size, icon_color)}
 

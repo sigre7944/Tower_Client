@@ -195,13 +195,13 @@ export default class SignInScreen extends React.PureComponent {
           </View>
         </View>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={{
             marginTop: 12
           }}
         >
           <Text style={styles.forgot_password_text}>Forgot your password?</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <View
           style={{
