@@ -41,7 +41,13 @@ export default class PremiumAd extends React.PureComponent {
   });
 
   state = {
-    is_logged_in: false
+    is_logged_in: false,
+    number_of_tasks_per_category_free: "0",
+    number_of_categories_free: "0",
+    number_of_rewards_free: "0",
+    number_of_tasks_per_category_premium: "0",
+    number_of_categories_premium: "0",
+    number_of_rewards_premium: "0"
   };
 
   _startAnim = () => {
@@ -87,9 +93,53 @@ export default class PremiumAd extends React.PureComponent {
     }
   };
 
+  _updateNumbers = () => {
+    let generalSettings = Map(this.props.generalSettings),
+      number_of_tasks_per_category_free = generalSettings.getIn([
+        "package_limitations",
+        "free",
+        "number_of_tasks_per_category"
+      ]),
+      number_of_categories_free = generalSettings.getIn([
+        "package_limitations",
+        "free",
+        "number_of_categories"
+      ]),
+      number_of_rewards_free = generalSettings.getIn([
+        "package_limitations",
+        "free",
+        "number_of_rewards"
+      ]),
+      number_of_tasks_per_category_premium = generalSettings.getIn([
+        "package_limitations",
+        "premium",
+        "number_of_tasks_per_category"
+      ]),
+      number_of_categories_premium = generalSettings.getIn([
+        "package_limitations",
+        "premium",
+        "number_of_categories"
+      ]),
+      number_of_rewards_premium = generalSettings.getIn([
+        "package_limitations",
+        "premium",
+        "number_of_rewards"
+      ]);
+
+    this.setState({
+      number_of_tasks_per_category_free,
+      number_of_categories_free,
+      number_of_rewards_free,
+      number_of_tasks_per_category_premium,
+      number_of_categories_premium,
+      number_of_rewards_premium
+    });
+  };
+
   componentDidMount() {
     this._startAnim();
     this._updateLoggedIn();
+    this._updateNumbers();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -98,6 +148,13 @@ export default class PremiumAd extends React.PureComponent {
       Map(prevProps.generalSettings).getIn(["account", "isLoggedIn"])
     ) {
       this._updateLoggedIn();
+    }
+
+    if (
+      Map(this.props.generalSettings).getIn(["package_limitations"]) ||
+      Map(prevProps.generalSettings).getIn(["package_limitations"])
+    ) {
+      this._updateNumbers();
     }
   }
 
@@ -199,7 +256,8 @@ export default class PremiumAd extends React.PureComponent {
                     }}
                   >
                     <Text style={styles.benefit_text}>
-                      Up to 99 tasks per category.
+                      Up to {this.state.number_of_tasks_per_category_premium}{" "}
+                      tasks per category.
                     </Text>
                   </View>
                 </View>
@@ -215,7 +273,8 @@ export default class PremiumAd extends React.PureComponent {
                     }}
                   >
                     <Text style={styles.versus_text}>
-                      (5 tasks per category in Free plan)
+                      ({this.state.number_of_tasks_per_category_free} tasks per
+                      category in Free plan)
                     </Text>
                   </View>
                 </View>
@@ -243,7 +302,8 @@ export default class PremiumAd extends React.PureComponent {
                     }}
                   >
                     <Text style={styles.benefit_text}>
-                      Up to 99 categories and rewards.
+                      Up to {this.state.number_of_categories_premium} categories
+                      and rewards.
                     </Text>
                   </View>
                 </View>
@@ -259,7 +319,8 @@ export default class PremiumAd extends React.PureComponent {
                     }}
                   >
                     <Text style={styles.versus_text}>
-                      (5 categories and rewards in Free plan)
+                      ({this.state.number_of_rewards_free} categories and
+                      rewards in Free plan)
                     </Text>
                   </View>
                 </View>
