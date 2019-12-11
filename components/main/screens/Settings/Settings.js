@@ -10,19 +10,12 @@ import {
 } from "react-native";
 
 import SettingHeader from "./components/header/SettingHeader";
-
-import PremiumAdvert from "./components/premium-advert/PremiumAdvert";
-
 import UserAccount from "./components/user-account/UserAccount.Container";
-
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import PremiumRow from "./components/premium-row/PremiumRow.Container";
 import Feather from "react-native-vector-icons/Feather";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import { styles } from "./styles/styles";
 
 import { Map } from "immutable";
-
-import CurrencySetting from "./components/currency-setting/CurrencySetting.Container";
 
 const window_width = Dimensions.get("window").width;
 const premium_1x_image = require("../../../../assets/pngs/premium_1x.png");
@@ -35,9 +28,7 @@ export default class Settings extends React.Component {
     };
   };
 
-  state = {
-    should_display_premium_advert: false
-  };
+  state = {};
 
   _onSoundChange = () => {
     this.props.updateGeneralSettings(["sound"], true, value => !value);
@@ -45,12 +36,6 @@ export default class Settings extends React.Component {
 
   _onVibrationChange = () => {
     this.props.updateGeneralSettings(["vibration"], true, value => !value);
-  };
-
-  _togglePremiumAdvert = () => {
-    this.setState(prevState => ({
-      should_display_premium_advert: !prevState.should_display_premium_advert
-    }));
   };
 
   componentDidMount() {
@@ -71,64 +56,12 @@ export default class Settings extends React.Component {
         }}
       >
         <ScrollView>
-          <UserAccount 
+          <UserAccount navigation={this.props.navigation} />
+
+          <PremiumRow
             navigation={this.props.navigation}
+            _togglePremiumAdvert={this._togglePremiumAdvert}
           />
-
-          <TouchableOpacity
-            style={{
-              flexDirection: "row",
-              height: 92,
-              width: window_width,
-              alignItems: "center",
-              justifyContent: "space-between",
-              paddingHorizontal: 22,
-              paddingVertical: 22,
-              marginTop: 32,
-              shadowOffset: {
-                width: 4,
-                height: 4
-              },
-              shadowRadius: 15,
-              shadowColor: "rgb(0, 0, 0)",
-              shadowOpacity: 0.08,
-              backgroundColor: "white"
-            }}
-            onPress={this._togglePremiumAdvert}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center"
-              }}
-            >
-              <View style={styles.plan_icon_container}>
-                <Ionicons name="ios-star-outline" color="#05838B" size={26} />
-              </View>
-
-              <View
-                style={{
-                  marginLeft: 15
-                }}
-              >
-                <Text style={styles.normal_text}>Upgrade to Premium</Text>
-
-                <View
-                  style={{
-                    marginTop: 2
-                  }}
-                >
-                  <Text style={styles.small_text}>Unlock special features</Text>
-                </View>
-              </View>
-            </View>
-
-            {/* <Feather
-              name="chevron-right"
-              size={21}
-              color="#6E6E6E"
-            /> */}
-          </TouchableOpacity>
 
           <View
             style={{
@@ -370,13 +303,6 @@ export default class Settings extends React.Component {
             </TouchableOpacity>
           </View>
         </ScrollView>
-
-        {this.state.should_display_premium_advert ? (
-          <PremiumAdvert
-            dismissAction={this._togglePremiumAdvert}
-            premium_1x_image={premium_1x_image}
-          />
-        ) : null}
       </View>
     );
   }

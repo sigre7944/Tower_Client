@@ -20,8 +20,6 @@ import { Map, OrderedMap, List, getIn, hasIn, fromJS } from "immutable";
 import { styles } from "./styles/styles";
 
 import * as Haptics from "expo-haptics";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import IoniconsIcon from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -407,6 +405,7 @@ export default class EditMultipleTasks extends React.PureComponent {
             _checkTaskToEdit={this._checkTaskToEdit}
             _unCheckTaskToEdit={this._unCheckTaskToEdit}
             sortSettings={this.props.sortSettings}
+            navigation={this.props.navigation}
           />
         </View>
 
@@ -586,6 +585,7 @@ class TaskCardsFlatlist extends React.PureComponent {
         priorities={this.props.priorities}
         _checkTaskToEdit={this.props._checkTaskToEdit}
         _unCheckTaskToEdit={this.props._unCheckTaskToEdit}
+        navigation={this.props.navigation}
       />
     );
   };
@@ -1528,6 +1528,7 @@ class TaskCard extends React.PureComponent {
             update_obj={this.update_obj}
             _checkComplete={this._checkComplete}
             task_data={this.props.task_data}
+            navigation={this.props.navigation}
           />
         ) : null}
       </View>

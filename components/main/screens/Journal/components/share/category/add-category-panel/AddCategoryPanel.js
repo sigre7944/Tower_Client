@@ -3,9 +3,7 @@ import React from "react";
 import {
   View,
   Text,
-  ScrollView,
-  KeyboardAvoidingView,
-  FlatList,
+  Keyboard,
   TouchableOpacity,
   TouchableWithoutFeedback,
   TextInput,
@@ -23,7 +21,7 @@ const icon_color = "white";
 
 import { styles } from "./styles/styles";
 
-import PremiumAd from "../../../../../../../shared/components/premium-ad/PremiumAd";
+import PremiumAd from "../../../../../../../shared/components/premium-ad/PremiumAd.Container";
 
 import { Map, fromJS, OrderedMap } from "immutable";
 
@@ -87,7 +85,6 @@ export default class AddCategoryPanel extends React.PureComponent {
 
   _close = () => {
     this._disappearAnim(this.props._closeAddCategoryPanel);
-    // this.props._closeAddCategoryPanel()
   };
 
   _displayPremiumAd = () => {
@@ -162,6 +159,17 @@ export default class AddCategoryPanel extends React.PureComponent {
         this._displayPremiumAd();
       }
     }
+  };
+
+  _goToLogin = () => {
+    this.setState(
+      {
+        should_display_premium_ad: false
+      },
+      () => {
+        this.props._closeAddCategoryPanel(true)
+      }
+    );
   };
 
   _checkIfCategoryNameExists = name => {
@@ -359,6 +367,7 @@ export default class AddCategoryPanel extends React.PureComponent {
                 <PremiumAd
                   dismissAction={this._closePremiumAd}
                   motivation_text="You've reached Free plan's limits"
+                  _goToLogin={this._goToLogin}
                 />
               ) : null}
             </SafeAreaView>

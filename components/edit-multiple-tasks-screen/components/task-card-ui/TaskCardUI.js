@@ -16,7 +16,7 @@ import {
 } from "react-native";
 
 import { styles } from "./styles/styles";
-import PremiumAd from "../../../shared/components/premium-ad/PremiumAd";
+import PremiumAd from "../../../shared/components/premium-ad/PremiumAd.Container";
 import { Map, List, fromJS } from "immutable";
 
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -53,7 +53,7 @@ export default class TaskCardUI extends React.PureComponent {
       is_task_card_able_to_edit = false;
 
     if (task_plan === "free") {
-      is_task_card_able_to_edit = true;
+      is_task_card_able_to_edit = false;
     } else {
       is_task_card_able_to_edit = account_plan === task_plan;
     }
@@ -61,6 +61,17 @@ export default class TaskCardUI extends React.PureComponent {
     this.setState({
       is_task_card_able_to_edit
     });
+  };
+
+  _goToLogin = () => {
+    this.setState(
+      {
+        should_display_premium_ad: false
+      },
+      () => {
+        this.props.navigation.navigate("SignInScreen");
+      }
+    );
   };
 
   componentDidMount() {
@@ -149,6 +160,7 @@ export default class TaskCardUI extends React.PureComponent {
           <PremiumAd
             dismissAction={this._toggleShouldDisplayPremiumAd}
             motivation_text="The task was disabled due to Free plan."
+            _goToLogin={this._goToLogin}
           />
         ) : null}
       </View>

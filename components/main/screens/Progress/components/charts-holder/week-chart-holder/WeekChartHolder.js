@@ -15,7 +15,7 @@ import { Map, List } from "immutable";
 import { styles } from "./styles/styles";
 
 import WeekCalendar from "./week-calendar/WeekCalendar";
-import PremiumAd from "../../../../../../shared/components/premium-ad/PremiumAd";
+import PremiumAd from "../../../../../../shared/components/premium-ad/PremiumAd.Container";
 
 const window_width = Dimensions.get("window").width;
 
@@ -232,6 +232,17 @@ export default class WeekChartHolder extends React.Component {
     }));
   };
 
+  _goToLogin = () => {
+    this.setState(
+      {
+        should_display_premium_ad: false
+      },
+      () => {
+        this.props.navigation.navigate("SignInScreen");
+      }
+    );
+  };
+
   componentDidMount() {
     let current_date = new Date(),
       monday = this.getMonday(current_date),
@@ -377,7 +388,7 @@ export default class WeekChartHolder extends React.Component {
             {this.state.should_display_premium_ad ? (
               <PremiumAd
                 dismissAction={this._toggleShouldDisplayPremiumAd}
-                motivation_text={""}
+                _goToLogin={this._goToLogin}
               />
             ) : null}
           </>

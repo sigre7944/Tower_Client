@@ -17,14 +17,7 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: CommonStyles.primary_colors.prim_1,
-    borderRadius: 4,
-    shadowColor: "black",
-    shadowOffset: {
-      width: 0,
-      height: 4
-    },
-    shadowRadius: 8,
-    shadowOpacity: 0.15
+    borderRadius: 4
   },
 
   upgrade_button_normal_text: {

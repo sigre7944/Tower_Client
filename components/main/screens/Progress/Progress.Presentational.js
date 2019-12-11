@@ -58,6 +58,7 @@ export default class Progress extends React.PureComponent {
         <Calendar
           _setChosenMonthFromCalendar={this._setChosenMonthFromCalendar}
           _setChosenYearFromCalendar={this._setChosenYearFromCalendar}
+          navigation={this.props.navigation}
         />
       );
     } else if (item.id === "summary-holder") {
@@ -69,7 +70,7 @@ export default class Progress extends React.PureComponent {
       );
     }
 
-    return <ChartsHolder />;
+    return <ChartsHolder navigation={this.props.navigation} />;
   };
 
   componentDidMount() {
