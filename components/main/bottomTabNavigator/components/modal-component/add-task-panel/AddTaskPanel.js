@@ -5,7 +5,8 @@ import {
   Animated,
   Easing,
   Keyboard,
-  ScrollView
+  ScrollView,
+  Platform
 } from "react-native";
 
 import TaskAnnotationTypeHolder from "./task-annotation-type-holder/TaskAnnotationTypeHolder.Container";
@@ -61,7 +62,7 @@ export default class AddTaskPanel extends Component {
   translateY_value = new Animated.Value(0);
   opacity_value = this.translateY_value.interpolate({
     inputRange: [-80, 0],
-    outputRange: [1, 0],
+    outputRange: [1, 1],
     extrapolate: "clamp"
   });
 
@@ -97,15 +98,33 @@ export default class AddTaskPanel extends Component {
     this._animateEnd(this.props.toggleAddTask);
   };
 
+  _toDoWhenKeyboardDidShow = e => {
+    // Animated.timing(this.translateY_value, {
+    //   // toValue: -e.endCoordinates.height,
+    //   toValue: 0,
+    //   duration: e.duration,
+    //   easing: Easing.in()
+    //   // useNativeDriver: true
+    // }).start();
+  };
+
   componentDidMount() {
-    this.keyboardWillShowListener = Keyboard.addListener(
-      "keyboardWillShow",
-      this.toDoWhenWillShowKeyboard
-    );
+    if (Platform.OS === "ios") {
+      this.keyboardWillShowListener = Keyboard.addListener(
+        "keyboardWillShow",
+        this.toDoWhenWillShowKeyboard
+      );
+    } else {
+      this.keyboardDidShowListener = Keyboard.addListener(
+        "keyboardDidShow",
+        this._toDoWhenKeyboardDidShow
+      );
+    }
   }
 
   componentWillUnmount() {
     Keyboard.removeListener("keyboardWillShow", this.toDoWhenWillShowKeyboard);
+    Keyboard.removeListener("keyboardDidShow", this._toDoWhenKeyboardDidShow);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -125,7 +144,7 @@ export default class AddTaskPanel extends Component {
           width: Dimensions.get("window").width,
           bottom: 0,
           transform: [{ translateY: this.translateY_value }],
-          height: 409,
+          height: "50%",
           backgroundColor: "white",
           borderTopRightRadius: 20,
           borderTopLeftRadius: 20,

@@ -142,9 +142,9 @@ let initial_general_settings = fromJS({
 
   package_limitations: {
     free: {
-      number_of_tasks_per_category: 2,
-      number_of_categories: 2,
-      number_of_rewards: 2,
+      number_of_tasks_per_category: 22,
+      number_of_categories: 22,
+      number_of_rewards: 22,
       chart_change_calendar_available: false
     },
 
