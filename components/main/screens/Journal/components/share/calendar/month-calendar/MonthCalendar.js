@@ -15,16 +15,19 @@ import { styles } from "./styles/styles";
 
 import { check_icon, close_icon } from "../../../../../../../shared/icons";
 
-const icon_color = "white";
-const icon_size = 19;
+import { normalize } from "../../../../../../../shared/helpers";
 
-const panel_width = 338;
-const margin_top_for_calendar_row = 20;
-const margin_top_for_month_year_text = 30;
-const calendar_total_height = margin_top_for_calendar_row * 3 + 45 * 3;
+const icon_color = "white";
+const icon_size = normalize(19, "width");
+
+const panel_width = normalize(338, "width");
+const margin_top_for_calendar_row = normalize(20, "height");
+const margin_top_for_month_year_text = normalize(30, "height");
+const calendar_total_height =
+  margin_top_for_calendar_row * 3 + normalize(45, "height") * 3;
 const animation_duration = 250;
 const easing = Easing.in();
-const outer_panel_padding = 7;
+const outer_panel_padding = normalize(7, "width");
 
 export default class MonthCalendar extends React.Component {
   chosen_month = -1;
@@ -146,11 +149,11 @@ export default class MonthCalendar extends React.Component {
 
           <View
             style={{
-              marginTop: 28,
-              marginHorizontal: 30,
+              marginTop: normalize(28, "height"),
+              marginHorizontal: normalize(30, "width"),
               flexDirection: "row",
               justifyContent: "flex-end",
-              marginBottom: 35
+              marginBottom: normalize(35, "height")
             }}
           >
             <TouchableOpacity
@@ -337,7 +340,7 @@ class Calendar extends React.Component {
       >
         <View
           style={{
-            marginHorizontal: outer_panel_padding,
+            marginHorizontal: outer_panel_padding
           }}
         >
           <FlatList
@@ -439,7 +442,7 @@ class YearHolder extends React.Component {
           style={{
             marginTop: margin_top_for_calendar_row,
             height: calendar_total_height,
-            width: panel_width,
+            width: panel_width
           }}
         >
           <FlatList

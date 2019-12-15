@@ -1,18 +1,10 @@
-import React, { Component } from "react";
+import React from "react";
 
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  Dimensions,
-  KeyboardAvoidingView,
-  Animated,
-  Keyboard,
-  ScrollView
-} from "react-native";
+import { View, Dimensions, Keyboard, TouchableOpacity } from "react-native";
 
 import { primary_colors } from "../../../../../../shared/styles/style";
+
+import { normalize } from "../../../../../../shared/helpers";
 
 import {
   calendar_icon,
@@ -61,7 +53,7 @@ export default class BottomOptionsHolder extends React.PureComponent {
     return (
       <View
         style={{
-          height: 57,
+          height: normalize(57, "height"),
           width: Dimensions.get("window").width,
           backgroundColor: "white",
           flexDirection: "row",
@@ -76,22 +68,22 @@ export default class BottomOptionsHolder extends React.PureComponent {
       >
         <BottomOptionElement
           chooseOption={this.props.chooseCalenderOption}
-          icon={calendar_icon(icon_size, icon_color)}
+          icon={calendar_icon(normalize(icon_size, "width"), icon_color)}
         />
 
         <BottomOptionElement
           chooseOption={this.props.chooseRepeatOption}
-          icon={repeat_icon(icon_size, icon_color)}
+          icon={repeat_icon(normalize(icon_size, "width"), icon_color)}
         />
 
         <BottomOptionElement
           chooseOption={this.props.chosenCategoryOption}
-          icon={category_icon(icon_size, icon_color)}
+          icon={category_icon(normalize(icon_size, "width"), icon_color)}
         />
 
         <BottomOptionElement
           chooseOption={this.props.choosePriorityOption}
-          icon={priority_icon(icon_size, icon_color)}
+          icon={priority_icon(normalize(icon_size, "width"), icon_color)}
         />
 
         <BottomConfirmElement
@@ -99,7 +91,7 @@ export default class BottomOptionsHolder extends React.PureComponent {
           {...this.props}
           title_value={this.props.addTaskTitle}
           description_value={this.props.addTaskDescription}
-          icon={check_icon(28, "white")}
+          icon={check_icon(normalize(28, "width"), "white")}
           _toggleShouldDisplayPremiumAd={this._toggleShouldDisplayPremiumAd}
         />
 

@@ -16,6 +16,8 @@ import TagDataHolder from "./tag-data-holder/TagDataHolder.Container";
 
 import BottomOptionsHolder from "./bottom-options-holder/BottomOptionsHolder.Container";
 
+import { normalize } from "../../../../../shared/helpers";
+
 export default class AddTaskPanel extends Component {
   taskTextInputRef = React.createRef();
 
@@ -62,7 +64,7 @@ export default class AddTaskPanel extends Component {
   translateY_value = new Animated.Value(0);
   opacity_value = this.translateY_value.interpolate({
     inputRange: [-80, 0],
-    outputRange: [1, 1],
+    outputRange: Platform.OS === "android" ? [1, 1] : [1, 0],
     extrapolate: "clamp"
   });
 
@@ -79,19 +81,21 @@ export default class AddTaskPanel extends Component {
       toValue: -e.endCoordinates.height,
       duration: e.duration,
       easing: Easing.in()
-      // useNativeDriver: true
     }).start();
   };
 
   _animateEnd = callback => {
-    Animated.timing(this.translateY_value, {
-      toValue: 0,
-      duration: 250,
-      easing: Easing.in()
-      // useNativeDriver: true
-    }).start(() => {
+    if (Platform.OS === "android") {
       callback();
-    });
+    } else {
+      Animated.timing(this.translateY_value, {
+        toValue: 0,
+        duration: 250,
+        easing: Easing.in()
+      }).start(() => {
+        callback();
+      });
+    }
   };
 
   _close = () => {
@@ -100,11 +104,10 @@ export default class AddTaskPanel extends Component {
 
   _toDoWhenKeyboardDidShow = e => {
     // Animated.timing(this.translateY_value, {
-    //   // toValue: -e.endCoordinates.height,
     //   toValue: 0,
     //   duration: e.duration,
-    //   easing: Easing.in()
-    //   // useNativeDriver: true
+    //   easing: Easing.in(),
+    //   useNativeDriver: true
     // }).start();
   };
 
@@ -144,7 +147,11 @@ export default class AddTaskPanel extends Component {
           width: Dimensions.get("window").width,
           bottom: 0,
           transform: [{ translateY: this.translateY_value }],
-          height: "50%",
+          // 25 for status bar, 48 for soft menu bar (largest size)
+          height:
+            Platform.OS === "android"
+              ? normalize(409, "height") - 25 - 48
+              : normalize(409, "height"),
           backgroundColor: "white",
           borderTopRightRadius: 20,
           borderTopLeftRadius: 20,

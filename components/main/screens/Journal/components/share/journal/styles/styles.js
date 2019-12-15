@@ -1,26 +1,25 @@
-import {
-    StyleSheet,
-} from 'react-native'
+import { StyleSheet } from "react-native";
 
-import * as CommonStyles from '../../../../../../../shared/styles/style'
+import * as CommonStyles from "../../../../../../../shared/styles/style";
+import { normalize } from "../../../../../../../shared/helpers";
 
 export const styles = StyleSheet.create({
-    completed_container: {
-        width: 100,
-        height: 28,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: CommonStyles.primary_colors.prim_3,
-        borderRadius: 15,
-        marginVertical: 25,
-        marginLeft: 25
-    },
+  completed_container: {
+    width: normalize(100, "width"),
+    height: normalize(28, "width"),
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: CommonStyles.primary_colors.prim_3,
+    borderRadius: 15,
+    marginVertical: normalize(25, "height"),
+    marginLeft: normalize(25, "width")
+  },
 
-    completed_text: {
-        fontFamily: CommonStyles.sf_ui_display_light_font,
-        fontSize: 15,
-        lineHeight: 18,
-        letterSpacing: -0.02,
-        color: CommonStyles.primary_colors.prim_1
-    }
-})
+  completed_text: {
+    fontFamily: CommonStyles.sf_ui_display_light_font,
+    fontSize: normalize(15, "width"),
+    lineHeight: normalize(18, "height"),
+    letterSpacing: -0.02,
+    color: CommonStyles.primary_colors.prim_1
+  }
+});

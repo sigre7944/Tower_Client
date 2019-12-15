@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView, FlatList, Dimensions } from "react-native";
+import { View, Text, FlatList, Dimensions } from "react-native";
 
 import TaskCard from "./task-card/TaskCard.Container";
 import TaskDetailModal from "./task-detail-modal/TaskDetailModal.Container";
@@ -470,7 +470,7 @@ class UncompletedTaskCardHolder extends React.PureComponent {
         data={this.state.data}
         extraData={this.state.should_flatlist_update}
         showsVerticalScrollIndicator={false}
-        // removeClippedSubviews={true}
+        removeClippedSubviews={true}
 
         renderItem={this._renderItem}
         keyExtractor={this._keyExtractor}
@@ -1489,7 +1489,7 @@ class CompletedTaskCardHolder extends React.PureComponent {
         data={this.state.data}
         extraData={this.state.should_flatlist_update}
         showsVerticalScrollIndicator={false}
-        // removeClippedSubviews={true}
+        removeClippedSubviews={true}
 
         renderItem={this._renderItem}
         keyExtractor={this._keyExtractor}

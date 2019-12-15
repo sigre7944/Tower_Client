@@ -3,8 +3,8 @@ import React, { Component } from "react";
 import {
   View,
   Modal,
-  TouchableWithoutFeedback,
   Dimensions,
+  TouchableWithoutFeedback
 } from "react-native";
 
 import AddTaskPanel from "./add-task-panel/AddTaskPanel";

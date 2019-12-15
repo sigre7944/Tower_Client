@@ -4,6 +4,7 @@ import {
 } from 'react-native'
 
 import * as CommonStyle from '../../../../../../../shared/styles/style'
+import { normalize } from "../../../../../../../shared/helpers";
 
 export const styles = StyleSheet.create({
     option_container: {
