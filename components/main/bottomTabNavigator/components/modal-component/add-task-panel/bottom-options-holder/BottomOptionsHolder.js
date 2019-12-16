@@ -15,7 +15,7 @@ import {
 } from "../../../../../../shared/icons";
 
 const icon_color = primary_colors.prim_1;
-const icon_size = 21;
+const icon_size = normalize(21, "width");
 
 import { styles } from "./styles/styles";
 
@@ -68,22 +68,22 @@ export default class BottomOptionsHolder extends React.PureComponent {
       >
         <BottomOptionElement
           chooseOption={this.props.chooseCalenderOption}
-          icon={calendar_icon(normalize(icon_size, "width"), icon_color)}
+          icon={calendar_icon(icon_size, icon_color)}
         />
 
         <BottomOptionElement
           chooseOption={this.props.chooseRepeatOption}
-          icon={repeat_icon(normalize(icon_size, "width"), icon_color)}
+          icon={repeat_icon(icon_size, icon_color)}
         />
 
         <BottomOptionElement
           chooseOption={this.props.chosenCategoryOption}
-          icon={category_icon(normalize(icon_size, "width"), icon_color)}
+          icon={category_icon(icon_size, icon_color)}
         />
 
         <BottomOptionElement
           chooseOption={this.props.choosePriorityOption}
-          icon={priority_icon(normalize(icon_size, "width"), icon_color)}
+          icon={priority_icon(icon_size, icon_color)}
         />
 
         <BottomConfirmElement

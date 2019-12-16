@@ -7,7 +7,7 @@ import { plus_icon } from "../../../shared/icons";
 
 import { normalize } from "../../../shared/helpers";
 
-const icon_size = 18;
+const icon_size = normalize(18, "width");
 const icon_color = "white";
 
 export default class AddTaskButton extends React.PureComponent {
@@ -30,7 +30,7 @@ export default class AddTaskButton extends React.PureComponent {
           zIndex: 10
         }}
       >
-        {plus_icon(normalize(icon_size, "width"), icon_color)}
+        {plus_icon(icon_size, icon_color)}
       </TouchableOpacity>
     );
   }

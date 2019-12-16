@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
     borderColor: CommonStyle.text_icon_colors.ti_3,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 30,
+    borderRadius: normalize(30, "width"),
     marginLeft: normalize(17, "width"),
     marginTop: normalize(26, "height")
   },
@@ -33,7 +33,7 @@ export const styles = StyleSheet.create({
     borderColor: CommonStyle.text_icon_colors.ti_3,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 30,
+    borderRadius: normalize(30, "width"),
     marginLeft: normalize(17, "width"),
     marginTop: normalize(26, "height")
   },
@@ -46,7 +46,7 @@ export const styles = StyleSheet.create({
     borderColor: CommonStyle.text_icon_colors.ti_3,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 30,
+    borderRadius: normalize(30, "width"),
     marginLeft: normalize(17, "width"),
     marginTop: normalize(26, "height")
   }

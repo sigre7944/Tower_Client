@@ -1,25 +1,14 @@
 import React from "react";
 import { DrawerActions } from "react-navigation-drawer";
-import {
-  TouchableOpacity,
-  Text,
-  View,
-  Modal,
-  TextInput,
-  FlatList,
-  Dimensions,
-  Animated
-} from "react-native";
+import { TouchableOpacity, Text, View } from "react-native";
 
 import { styles } from "./styles/styles";
 
 import { user_icon } from "../../../shared/icons";
-
+import { normalize } from "../../../shared/helpers";
 import * as firebase from "firebase";
 
 import { fromJS, Map } from "immutable";
-import { Notifications } from "expo";
-import * as Permissions from "expo-permissions";
 import ChangePlanToPremium from "../../../shared/components/change-plan-to-premium/ChangePlanToPremium";
 import ChangePlanToFree from "../../../shared/components/change-plan-to-free/ChangePlanToFree";
 
@@ -148,29 +137,29 @@ export default class AccountRow extends React.PureComponent {
         {!this.state.is_logged_in ? (
           <TouchableOpacity
             style={{
-              marginTop: 45,
+              marginTop: normalize(45, "height"),
               flexDirection: "row",
               alignItems: "center",
-              marginHorizontal: 22
+              marginHorizontal: normalize(22, "width")
             }}
             onPress={this._goToSignInSignUp}
           >
             <View
               style={{
-                width: 34,
-                height: 34,
+                width: normalize(34, "width"),
+                height: normalize(34, "width"),
                 justifyContent: "center",
                 alignItems: "center",
-                borderRadius: 17,
+                borderRadius: normalize(34, "width"),
                 backgroundColor: "white"
               }}
             >
-              {user_icon(26, "#05838B")}
+              {user_icon(normalize(26, "width"), "#05838B")}
             </View>
 
             <View
               style={{
-                marginLeft: 16
+                marginLeft: normalize(16, "width")
               }}
             >
               <Text style={styles.sign_in_sign_up_text}>
@@ -181,29 +170,29 @@ export default class AccountRow extends React.PureComponent {
         ) : (
           <TouchableOpacity
             style={{
-              marginTop: 45,
+              marginTop: normalize(45, "height"),
               flexDirection: "row",
               alignItems: "center",
-              marginHorizontal: 22
+              marginHorizontal: normalize(22, "width")
             }}
             onPress={this._goToProfileScreen}
           >
             <View
               style={{
-                width: 34,
-                height: 34,
+                width: normalize(34, "width"),
+                height: normalize(34, "width"),
                 justifyContent: "center",
                 alignItems: "center",
-                borderRadius: 17,
+                borderRadius: normalize(34, "width"),
                 backgroundColor: "white"
               }}
             >
-              {user_icon(26, "#05838B")}
+              {user_icon(normalize(26, "width"), "#05838B")}
             </View>
 
             <View
               style={{
-                marginLeft: 16
+                marginLeft: normalize(16, "width")
               }}
             >
               <Text style={styles.email_text}>{this.state.account_name}</Text>

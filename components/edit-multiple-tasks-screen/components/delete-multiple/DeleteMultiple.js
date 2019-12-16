@@ -1,21 +1,13 @@
 import React from 'react';
-import { DrawerActions } from 'react-navigation-drawer'
 import {
     TouchableOpacity,
     Text,
     View,
-    Modal,
-    TextInput,
-    FlatList,
-    Dimensions,
-    Animated
 } from 'react-native'
 
 import { Map, List, OrderedMap, fromJS } from 'immutable'
-
+import { normalize } from "../../../shared/helpers";
 import { styles } from "./styles/styles";
-const window_width = Dimensions.get("window").width
-
 
 export default class DeleteMultiple extends React.PureComponent {
     month_names = ["January", "Febuary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
@@ -831,11 +823,11 @@ export default class DeleteMultiple extends React.PureComponent {
             <View
                 style={{
                     position: "absolute",
-                    borderRadius: 20,
-                    width: 320,
+                    borderRadius: normalize(20, "width"),
+                    width: normalize(320, "width"),
                     backgroundColor: "white",
-                    paddingHorizontal: 22,
-                    paddingVertical: 22,
+                    paddingHorizontal: normalize(22, "width"),
+                    paddingVertical: normalize(22, "height"),
                 }}
             >
                 {/* <Text
@@ -847,8 +839,8 @@ export default class DeleteMultiple extends React.PureComponent {
                 <TouchableOpacity
                     style={{
                         flexDirection: "row",
-                        paddingVertical: 5,
-                        borderRadius: 5,
+                        paddingVertical: normalize(5, "height"),
+                        borderRadius: normalize(5, "width"),
                         justifyContent: "center",
                         alignItems: "center",
                         backgroundColor: "#EB5757",
@@ -865,7 +857,7 @@ export default class DeleteMultiple extends React.PureComponent {
 
                 <View
                     style={{
-                        marginTop: 5
+                        marginTop: normalize(5, "height")
                     }}
                 >
                     <Text
@@ -878,12 +870,12 @@ export default class DeleteMultiple extends React.PureComponent {
                 <TouchableOpacity
                     style={{
                         flexDirection: "row",
-                        paddingVertical: 5,
-                        borderRadius: 5,
+                        paddingVertical: normalize(5, "height"),
+                        borderRadius: normalize(5, "width"),
                         justifyContent: "center",
                         alignItems: "center",
                         backgroundColor: "#F2994A",
-                        marginTop: 15,
+                        marginTop: normalize(15, "height"),
                     }}
 
                     onPress={this._deleteRecord}
@@ -897,7 +889,7 @@ export default class DeleteMultiple extends React.PureComponent {
 
                 <View
                     style={{
-                        marginTop: 5
+                        marginTop: normalize(5, "height")
                     }}
                 >
                     <Text
@@ -917,12 +909,12 @@ export default class DeleteMultiple extends React.PureComponent {
                 <TouchableOpacity
                     style={{
                         flexDirection: "row",
-                        paddingHorizontal: 10,
-                        paddingVertical: 5,
-                        borderRadius: 5,
+                        paddingHorizontal: normalize(10, "width"),
+                        paddingVertical: normalize(5, "height"),
+                        borderRadius: normalize(5, "width"),
                         justifyContent: "center",
                         alignItems: "center",
-                        marginTop: 15,
+                        marginTop: normalize(15, "height"),
                     }}
 
                     onPress={this.props.hideAction}

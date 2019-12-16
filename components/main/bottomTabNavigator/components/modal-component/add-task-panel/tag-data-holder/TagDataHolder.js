@@ -18,7 +18,7 @@ import {
 import { normalize } from "../../../../../../shared/helpers";
 
 const icon_color = "#6E6E6E";
-const icon_size = 19;
+const icon_size = normalize(19, "width");
 
 export default class TagDataHolder extends React.PureComponent {
   render() {
@@ -146,7 +146,7 @@ class DayTagDataElement extends React.PureComponent {
       this.setState({
         render_component: (
           <View style={styles.day_tag_container}>
-            {calendar_icon(normalize(icon_size, "width"), icon_color)}
+            {calendar_icon(icon_size, icon_color)}
             <Text style={styles.day_tag_uncolorful_text}>
               {`${this.daysInWeekText[date.getDay()]} ${date.getDate()} ${
                 this.monthNames[date.getMonth()]
@@ -180,7 +180,7 @@ class DayTagDataElement extends React.PureComponent {
         this.setState({
           render_component: (
             <View style={styles.day_tag_container}>
-              {repeat_icon(normalize(icon_size, "width"), icon_color)}
+              {repeat_icon(icon_size, icon_color)}
 
               <Text style={styles.day_tag_uncolorful_text}>
                 {`every ${value} week ${string}`}
@@ -192,7 +192,7 @@ class DayTagDataElement extends React.PureComponent {
         this.setState({
           render_component: (
             <View style={styles.day_tag_container}>
-              {repeat_icon(normalize(icon_size, "width"), icon_color)}
+              {repeat_icon(icon_size, icon_color)}
 
               <Text style={styles.day_tag_uncolorful_text}>
                 {type === "daily"
@@ -257,7 +257,7 @@ class DayTagDataElement extends React.PureComponent {
       this.setState({
         render_component: (
           <View style={styles.day_tag_container}>
-            {category_icon(normalize(icon_size, "width"), icon_color)}
+            {category_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>
               {`${category_name}`}
@@ -274,7 +274,7 @@ class DayTagDataElement extends React.PureComponent {
       this.setState({
         render_component: (
           <View style={styles.day_tag_container}>
-            {priority_icon(normalize(icon_size, "width"), icon_color)}
+            {priority_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>{`${prio}`}</Text>
           </View>
@@ -285,7 +285,7 @@ class DayTagDataElement extends React.PureComponent {
       this.setState({
         render_component: (
           <View style={styles.day_tag_container}>
-            {reward_icon(normalize(icon_size, "width"), icon_color)}
+            {reward_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>{`${value} pts`}</Text>
           </View>
@@ -296,7 +296,7 @@ class DayTagDataElement extends React.PureComponent {
       this.setState({
         render_component: (
           <View style={styles.day_tag_container}>
-            {goal_icon(normalize(icon_size, "width"), icon_color)}
+            {goal_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>
               {`${value} times per ${this.props.currentAnnotation}`}
@@ -409,7 +409,7 @@ class WeekTagDataElement extends React.PureComponent {
       this.setState({
         render_component: (
           <View style={styles.day_tag_container}>
-            {calendar_icon(normalize(icon_size, "width"), icon_color)}
+            {calendar_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>
               {`Week ${week} ${string}`}
@@ -439,7 +439,7 @@ class WeekTagDataElement extends React.PureComponent {
         this.setState({
           render_component: (
             <View style={styles.day_tag_container}>
-              {repeat_icon(normalize(icon_size, "width"), icon_color)}
+              {repeat_icon(icon_size, icon_color)}
 
               <Text style={styles.day_tag_uncolorful_text}>{string}</Text>
             </View>
@@ -449,7 +449,7 @@ class WeekTagDataElement extends React.PureComponent {
         this.setState({
           render_component: (
             <View style={styles.day_tag_container}>
-              {repeat_icon(normalize(icon_size, "width"), icon_color)}
+              {repeat_icon(icon_size, icon_color)}
 
               <Text style={styles.day_tag_uncolorful_text}>
                 {`every ${value} week`}
@@ -513,7 +513,7 @@ class WeekTagDataElement extends React.PureComponent {
       this.setState({
         render_component: (
           <View style={styles.day_tag_container}>
-            {category_icon(normalize(icon_size, "width"), icon_color)}
+            {category_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>
               {`${category_name}`}
@@ -530,7 +530,7 @@ class WeekTagDataElement extends React.PureComponent {
       this.setState({
         render_component: (
           <View style={styles.day_tag_container}>
-            {priority_icon(normalize(icon_size, "width"), icon_color)}
+            {priority_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>{`${prio}`}</Text>
           </View>
@@ -541,7 +541,7 @@ class WeekTagDataElement extends React.PureComponent {
       this.setState({
         render_component: (
           <View style={styles.day_tag_container}>
-            {reward_icon(normalize(icon_size, "width"), icon_color)}
+            {reward_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>{`${value} pts`}</Text>
           </View>
@@ -552,7 +552,7 @@ class WeekTagDataElement extends React.PureComponent {
       this.setState({
         render_component: (
           <View style={styles.day_tag_container}>
-            {goal_icon(normalize(icon_size, "width"), icon_color)}
+            {goal_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>
               {`${value} times per ${this.props.currentAnnotation}`}
@@ -644,7 +644,7 @@ class MonthTagDataElement extends React.PureComponent {
       this.setState({
         render_component: (
           <View style={styles.day_tag_container}>
-            {calendar_icon(normalize(icon_size, "width"), icon_color)}
+            {calendar_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>
               {`${this.monthNames[month]} ${year}`}
@@ -658,7 +658,7 @@ class MonthTagDataElement extends React.PureComponent {
       this.setState({
         render_component: (
           <View style={styles.day_tag_container}>
-            {repeat_icon(normalize(icon_size, "width"), icon_color)}
+            {repeat_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>
               every {value} month
@@ -721,7 +721,7 @@ class MonthTagDataElement extends React.PureComponent {
       this.setState({
         render_component: (
           <View style={styles.day_tag_container}>
-            {category_icon(normalize(icon_size, "width"), icon_color)}
+            {category_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>
               {`${category_name}`}
@@ -738,7 +738,7 @@ class MonthTagDataElement extends React.PureComponent {
       this.setState({
         render_component: (
           <View style={styles.day_tag_container}>
-            {priority_icon(normalize(icon_size, "width"), icon_color)}
+            {priority_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>{`${prio}`}</Text>
           </View>
@@ -749,7 +749,7 @@ class MonthTagDataElement extends React.PureComponent {
       this.setState({
         render_component: (
           <View style={styles.day_tag_container}>
-            {reward_icon(normalize(icon_size, "width"), icon_color)}
+            {reward_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>{`${value} pts`}</Text>
           </View>
@@ -760,7 +760,7 @@ class MonthTagDataElement extends React.PureComponent {
       this.setState({
         render_component: (
           <View style={styles.day_tag_container}>
-            {goal_icon(normalize(icon_size, "width"), icon_color)}
+            {goal_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>
               {`${value} times per ${this.props.currentAnnotation}`}

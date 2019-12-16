@@ -153,8 +153,8 @@ export default class AddTaskPanel extends Component {
               ? normalize(409, "height") - 25 - 48
               : normalize(409, "height"),
           backgroundColor: "white",
-          borderTopRightRadius: 20,
-          borderTopLeftRadius: 20,
+          borderTopRightRadius: normalize(20, "width"),
+          borderTopLeftRadius: normalize(20, "width"),
           opacity: this.opacity_value,
           backgroundColor: "#FFFFFF",
           shadowOffset: {

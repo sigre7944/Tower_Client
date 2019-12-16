@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "white",
-    borderRadius: 30
+    borderRadius: normalize(30, "width")
   },
 
   chosen_annotation_holder: {
@@ -18,7 +18,7 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: CommonStyle.primary_colors.prim_3,
-    borderRadius: 30
+    borderRadius: normalize(30, "width")
   },
 
   not_chosen_annotation_text: {

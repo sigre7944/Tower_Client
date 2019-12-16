@@ -24,7 +24,7 @@ import { normalize } from "../../shared/helpers";
 
 const icon_color = primary_colors.prim_1;
 const window_width = Dimensions.get("window").width;
-export default class BottomTabNavigator extends React.Component {
+export default class BottomTabNavigator extends React.PureComponent {
   state = {
     addTaskClicked: false,
     renderAddTaskUI: null,

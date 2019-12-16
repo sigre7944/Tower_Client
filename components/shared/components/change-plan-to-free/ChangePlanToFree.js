@@ -4,32 +4,16 @@ import {
   Text,
   TouchableOpacity,
   Dimensions,
-  ScrollView,
-  Switch,
-  Picker,
   Modal,
   Image,
-  TouchableWithoutFeedback,
-  SafeAreaView,
-  Animated,
-  Easing
+  TouchableWithoutFeedback
 } from "react-native";
 
 import { styles } from "./styles/styles";
 
-import { close_icon, check_icon } from "../../icons";
-
-const icon_size = 24;
-const icon_color = "#05838B";
-
-const check_icon_size = 19;
-
 const window_width = Dimensions.get("window").width;
-const window_height = Dimensions.get("window").height;
-const anim_duration = 350;
-const easing = Easing.in();
 const logo_image = require("../../../../assets/pngs/logo.png");
-
+import { normalize } from "../../helpers";
 export default class ChangePlanToFree extends React.PureComponent {
   render() {
     return (
@@ -56,10 +40,11 @@ export default class ChangePlanToFree extends React.PureComponent {
           <View
             style={{
               position: "absolute",
-              width: 331,
+              width: normalize(331, "width"),
               backgroundColor: "white",
-              borderRadius: 10,
-              padding: 22
+              borderRadius: normalize(10, "width"),
+              paddingHorizontal: normalize(22, "width"),
+              paddingVertical: normalize(22, "height")
             }}
           >
             <View
@@ -71,14 +56,14 @@ export default class ChangePlanToFree extends React.PureComponent {
               <Image
                 source={logo_image}
                 style={{
-                  width: 150,
-                  height: 150
+                  width: normalize(150, "width"),
+                  height: normalize(150, "width")
                 }}
               />
             </View>
             <View
               style={{
-                marginTop: 32,
+                marginTop: normalize(32, "height"),
                 justifyContent: "center",
                 alignItems: "center"
               }}
@@ -90,7 +75,7 @@ export default class ChangePlanToFree extends React.PureComponent {
 
             <View
               style={{
-                marginTop: 10,
+                marginTop: normalize(10, "height"),
                 justifyContent: "center",
                 alignItems: "center"
               }}
