@@ -1,18 +1,9 @@
 import React from "react";
 
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Modal,
-  Picker,
-  Dimensions
-} from "react-native";
+import { View, Text } from "react-native";
 
 import { styles } from "./styles/styles";
-
-const window_width = Dimensions.get("window").width;
-
+import { normalize } from "../../../../../../../../shared/helpers";
 export default class ChooseWeekNthInMonth extends React.PureComponent {
   week_nth_text_array = ["First", "Second", "Third", "Last"];
 
@@ -35,9 +26,9 @@ export default class ChooseWeekNthInMonth extends React.PureComponent {
       <View
         style={{
           flexDirection: "row",
-          marginLeft: 59,
+          marginLeft: normalize(59, "width"),
           alignItems: "center",
-          marginTop: 20
+          marginTop: normalize(20, "height")
         }}
       >
         <Text style={week_every_month_text_style}>

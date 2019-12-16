@@ -1,30 +1,20 @@
-import React, { Component } from 'react';
+import React  from 'react';
 import {
     TouchableOpacity,
     TouchableWithoutFeedback,
     Text,
     View,
-    StyleSheet,
-    ImageBackground,
     Dimensions,
-    Image,
-    TextInput,
     Modal,
-    ScrollView,
-    Animated,
-    Easing
 } from 'react-native'
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 
 import { Map, List, fromJS } from 'immutable'
 import { styles } from './styles/styles';
+import { normalize } from "../../../../../../../../shared/helpers";
 
 const window_width = Dimensions.get("window").width
-const window_height = Dimensions.get("window").height
-const easing = Easing.inOut(Easing.linear)
-const animation_duration = 250
 
-export default class DeleteModal extends Component {
+export default class DeleteModal extends React.PureComponent {
     priority_order = {
         pri_01: 0,
         pri_02: 1,
@@ -921,11 +911,11 @@ export default class DeleteModal extends Component {
                     <View
                         style={{
                             position: "absolute",
-                            borderRadius: 20,
-                            width: 320,
+                            borderRadius: normalize(20, "width"),
+                            width: normalize(320, "width"),
                             backgroundColor: "white",
-                            paddingHorizontal: 22,
-                            paddingVertical: 22,
+                            paddingHorizontal: normalize(22, "width"),
+                            paddingVertical: normalize(22, "height"),
                         }}
                     >
                         {/* <Text
@@ -937,8 +927,8 @@ export default class DeleteModal extends Component {
                         <TouchableOpacity
                             style={{
                                 flexDirection: "row",
-                                paddingVertical: 5,
-                                borderRadius: 5,
+                                paddingVertical: normalize(5, "height"),
+                                borderRadius: normalize(5, "width"),
                                 justifyContent: "center",
                                 alignItems: "center",
                                 backgroundColor: "#EB5757",
@@ -955,7 +945,7 @@ export default class DeleteModal extends Component {
 
                         <View
                             style={{
-                                marginTop: 5
+                                marginTop: normalize(5, "height")
                             }}
                         >
                             <Text
@@ -972,12 +962,12 @@ export default class DeleteModal extends Component {
                                 <TouchableOpacity
                                     style={{
                                         flexDirection: "row",
-                                        paddingVertical: 5,
-                                        borderRadius: 5,
+                                        paddingVertical: normalize(5, "height"),
+                                        borderRadius: normalize(5, "width"),
                                         justifyContent: "center",
                                         alignItems: "center",
                                         backgroundColor: "#F2994A",
-                                        marginTop: 15,
+                                        marginTop: normalize(15, "height"),
                                     }}
 
                                     onPress={this._deleteRecord}
@@ -991,7 +981,7 @@ export default class DeleteModal extends Component {
 
                                 <View
                                     style={{
-                                        marginTop: 5
+                                        marginTop: normalize(5, "height")
                                     }}
                                 >
                                     <Text
@@ -1013,11 +1003,11 @@ export default class DeleteModal extends Component {
                         <TouchableOpacity
                             style={{
                                 flexDirection: "row",
-                                paddingVertical: 5,
-                                borderRadius: 5,
+                                paddingVertical: normalize(5, "height"),
+                                borderRadius: normalize(5, "width"),
                                 justifyContent: "center",
                                 alignItems: "center",
-                                marginTop: 15,
+                                marginTop: normalize(15, "height"),
                             }}
 
                             onPress={this.props._toggleDelete}

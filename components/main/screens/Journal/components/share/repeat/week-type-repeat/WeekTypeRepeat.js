@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 
 import {
   View,
@@ -10,7 +10,8 @@ import {
   Animated,
   Easing,
   ScrollView,
-  UIManager
+  UIManager,
+  Platform
 } from "react-native";
 
 import { styles } from "./styles/styles";
@@ -28,16 +29,18 @@ import {
   check_icon
 } from "../../../../../../../shared/icons";
 
+import { normalize } from "../../../../../../../shared/helpers";
+
 const icon_color = "#2C2C2C";
-const icon_size = 14;
+const icon_size = normalize(14, "width");
 
 import { Map, fromJS } from "immutable";
 
 const animation_duration = 250;
 const easing = Easing.in();
 const window_width = Dimensions.get("window").width;
-const margin_bottom_of_last_row = 35;
-const extra_margin_from_keyboard = 10;
+const margin_bottom_of_last_row = normalize(35, "height");
+const extra_margin_from_keyboard = normalize(10, "height");
 const window_height = Dimensions.get("window").height;
 
 export default class WeekTypeRepeat extends React.PureComponent {
@@ -182,6 +185,34 @@ export default class WeekTypeRepeat extends React.PureComponent {
   };
 
   _keyboardWillShowHandler = e => {
+    let keyboard_height = e.endCoordinates.height,
+      keyboard_duration = e.duration;
+    let currently_focused_input = this.currently_focused_input.currentlyFocusedField();
+
+    UIManager.measure(
+      currently_focused_input,
+      (originX, originY, width, height, pageX, pageY) => {
+        let input_height = height,
+          input_py = pageY;
+
+        let gap =
+          window_height -
+          keyboard_height -
+          (input_py + input_height) -
+          extra_margin_from_keyboard;
+
+        if (gap < 0) {
+          Animated.timing(this.translate_y, {
+            toValue: gap,
+            duration: keyboard_duration,
+            useNativeDriver: true
+          }).start();
+        }
+      }
+    );
+  };
+
+  _keyboardDidShowHandler = e => {
     let keyboard_height = e.endCoordinates.height,
       keyboard_duration = e.duration;
     let currently_focused_input = this.currently_focused_input.currentlyFocusedField();
@@ -407,10 +438,17 @@ export default class WeekTypeRepeat extends React.PureComponent {
       "keyboardWillHide",
       this._keyboardWillHideHandler
     );
-    this._keyboardWillShowListener = Keyboard.addListener(
-      "keyboardWillShow",
-      this._keyboardWillShowHandler
-    );
+    if (Platform.OS === "ios") {
+      this._keyboardWillShowListener = Keyboard.addListener(
+        "keyboardWillShow",
+        this._keyboardWillShowHandler
+      );
+    } else {
+      this._keyboardDidShowListener = Keyboard.addListener(
+        "keyboardDidShow",
+        this._keyboardDidShowHandler
+      );
+    }
 
     if (this.props.edit) {
       this.initializeData(this.props.edit_task_data);
@@ -430,7 +468,14 @@ export default class WeekTypeRepeat extends React.PureComponent {
 
   componentWillUnmount() {
     Keyboard.removeListener("keyboardWillHide", this._keyboardWillHideHandler);
-    Keyboard.removeListener("keyboardWillShow", this._keyboardWillShowHandler);
+    if (Platform.OS === "ios") {
+      Keyboard.removeListener(
+        "keyboardWillShow",
+        this._keyboardWillShowHandler
+      );
+    } else {
+      Keyboard.removeListener("keyboardDidShow", this._keyboardDidShowHandler);
+    }
   }
 
   render() {
@@ -438,13 +483,13 @@ export default class WeekTypeRepeat extends React.PureComponent {
       <Animated.View
         style={{
           position: "absolute",
-          width: 338,
+          width: normalize(338, "width"),
           transform: [{ scale: this.repeat_scale_value }],
           backgroundColor: "white",
-          borderRadius: 10,
+          borderRadius: normalize(10, "width"),
           opacity: this.repeat_opacity_value,
           overflow: "hidden",
-          paddingVertical: 5
+          paddingVertical: normalize(5, "height")
         }}
       >
         <Animated.View
@@ -494,11 +539,11 @@ export default class WeekTypeRepeat extends React.PureComponent {
 
             <View
               style={{
-                marginTop: 30,
+                marginTop: normalize(30, "height"),
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "flex-end",
-                marginHorizontal: 30,
+                marginHorizontal: normalize(30, "width"),
                 marginBottom: margin_bottom_of_last_row
               }}
             >
@@ -506,14 +551,14 @@ export default class WeekTypeRepeat extends React.PureComponent {
                 style={styles.close_button_container}
                 onPress={this.close}
               >
-                {close_icon(19, "white")}
+                {close_icon(normalize(19, "width"), "white")}
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.save_button_container}
                 onPress={this.save}
               >
-                {check_icon(19, "white")}
+                {check_icon(normalize(19, "width"), "white")}
               </TouchableOpacity>
             </View>
           </ScrollView>
@@ -540,8 +585,8 @@ class GoalHolder extends React.PureComponent {
         <View
           style={{
             flexDirection: "row",
-            marginLeft: 30,
-            marginTop: 25,
+            marginLeft: normalize(30, "width"),
+            marginTop: normalize(25, "height"),
             alignItems: "center"
           }}
         >
@@ -560,10 +605,10 @@ class GoalHolder extends React.PureComponent {
 
         <TouchableOpacity
           style={{
-            marginTop: 25,
+            marginTop: normalize(25, "height"),
             flexDirection: "row",
             alignItems: "center",
-            marginLeft: 39
+            marginLeft: normalize(39, "width")
           }}
           onPress={this._onPress}
         >
@@ -580,7 +625,7 @@ class GoalHolder extends React.PureComponent {
 
           <View
             style={{
-              marginLeft: 20
+              marginLeft: normalize(20, "width")
             }}
           >
             <Text style={styles.every_option_text}>times per week</Text>
