@@ -17,6 +17,8 @@ import { styles } from "./styles/styles";
 
 import { left_arrow_icon, check_icon, close_icon } from "../shared/icons";
 
+import { normalize } from "../shared/helpers";
+
 import axios from "axios";
 
 import { SERVER_URL } from "../../config";
@@ -27,10 +29,10 @@ import * as firebase from "firebase";
 
 import WaitingForEmailVerificationScreen from "./components/waiting-for-email-verification-screen/WaitingForEmailVerification";
 
-const icon_size = 39;
+const icon_size = normalize(39, "width");
 const icon_color = "#BDBDBD";
 
-const extra_margin_from_keyboard = 10;
+const extra_margin_from_keyboard = normalize(10, "height");
 const text_input_state = TextInput.State;
 const window_height = Dimensions.get("window").height;
 const window_width = Dimensions.get("window").width;
@@ -386,7 +388,7 @@ export default class SignUpScreen extends React.PureComponent {
         style={{
           flex: 1,
           backgroundColor: "white",
-          paddingHorizontal: 32,
+          paddingHorizontal: normalize(32, "width"),
           overflow: "hidden"
         }}
       >
@@ -398,7 +400,7 @@ export default class SignUpScreen extends React.PureComponent {
           <ScrollView showsVerticalScrollIndicator={false}>
             <View
               style={{
-                marginTop: 45
+                marginTop: normalize(45, "height")
               }}
             >
               <TouchableOpacity
@@ -412,7 +414,7 @@ export default class SignUpScreen extends React.PureComponent {
             </View>
             <View
               style={{
-                marginTop: 15
+                marginTop: normalize(15, "height")
               }}
             >
               <Text style={styles.title_text}> Sign </Text>
@@ -421,13 +423,13 @@ export default class SignUpScreen extends React.PureComponent {
 
             <View
               style={{
-                marginTop: 53
+                marginTop: normalize(53, "height")
               }}
             >
               <Text style={styles.input_title}> Full name: </Text>
               <View
                 style={{
-                  marginTop: 12
+                  marginTop: normalize(12, "height")
                 }}
               >
                 <TextInput
@@ -441,8 +443,8 @@ export default class SignUpScreen extends React.PureComponent {
                 <Collapsible
                   collapsed={this.state.should_full_name_warning_collapsed}
                   style={{
-                    marginTop: 5,
-                    height: 20
+                    marginTop: normalize(5, "height"),
+                    height: normalize(20, "height")
                   }}
                 >
                   <Text style={styles.small_warning_text}>
@@ -454,13 +456,13 @@ export default class SignUpScreen extends React.PureComponent {
 
             <View
               style={{
-                marginTop: 28
+                marginTop: normalize(28, "height")
               }}
             >
               <Text style={styles.input_title}> Email: </Text>
               <View
                 style={{
-                  marginTop: 12
+                  marginTop: normalize(12, "height")
                 }}
               >
                 <TextInput
@@ -474,8 +476,8 @@ export default class SignUpScreen extends React.PureComponent {
                 <Collapsible
                   collapsed={this.state.should_email_warning_collapsed}
                   style={{
-                    marginTop: 5,
-                    height: 20
+                    marginTop: normalize(5, "height"),
+                    height: normalize(20, "height")
                   }}
                 >
                   <Text style={styles.small_warning_text}>
@@ -486,13 +488,13 @@ export default class SignUpScreen extends React.PureComponent {
             </View>
             <View
               style={{
-                marginTop: 28
+                marginTop: normalize(28, "height")
               }}
             >
               <Text style={styles.input_title}> Password: </Text>
               <View
                 style={{
-                  marginTop: 12
+                  marginTop: normalize(12, "height")
                 }}
               >
                 <TextInput
@@ -508,8 +510,8 @@ export default class SignUpScreen extends React.PureComponent {
               <Collapsible
                 collapsed={this.state.should_password_instruction_collapsed}
                 style={{
-                  marginTop: 5,
-                  height: 35
+                  marginTop: normalize(5, "height"),
+                  height: normalize(35, "height")
                 }}
               >
                 <Text style={styles.small_instruction_password_text}>
@@ -521,8 +523,8 @@ export default class SignUpScreen extends React.PureComponent {
               <Collapsible
                 collapsed={this.state.should_password_warning_collapsed}
                 style={{
-                  marginTop: 5,
-                  height: 20
+                  marginTop: normalize(5, "height"),
+                  height: normalize(20, "height")
                 }}
               >
                 <Text style={styles.small_warning_text}>Invalid password.</Text>
@@ -530,13 +532,13 @@ export default class SignUpScreen extends React.PureComponent {
             </View>
             <View
               style={{
-                marginTop: 28
+                marginTop: normalize(28, "height")
               }}
             >
               <Text style={styles.input_title}> Confirm password: </Text>
               <View
                 style={{
-                  marginTop: 12
+                  marginTop: normalize(12, "height")
                 }}
               >
                 <TextInput
@@ -553,8 +555,8 @@ export default class SignUpScreen extends React.PureComponent {
                     this.state.should_confirm_password_warning_collapsed
                   }
                   style={{
-                    marginTop: 5,
-                    height: 20
+                    marginTop: normalize(5, "height"),
+                    height: normalize(20, "height")
                   }}
                 >
                   <Text style={styles.small_warning_text}>
@@ -566,13 +568,13 @@ export default class SignUpScreen extends React.PureComponent {
 
             <View
               style={{
-                marginTop: 28
+                marginTop: normalize(28, "height")
               }}
             >
               <Text style={styles.input_title}> Referral code: </Text>
               <View
                 style={{
-                  marginTop: 12
+                  marginTop: normalize(12, "height")
                 }}
               >
                 <View
@@ -600,8 +602,8 @@ export default class SignUpScreen extends React.PureComponent {
                 <Collapsible
                   collapsed={this.state.should_referral_code_inform_collapsed}
                   style={{
-                    marginTop: 5,
-                    height: 20
+                    marginTop: normalize(5, "height"),
+                    height: normalize(20, "height")
                   }}
                 >
                   <View
@@ -613,7 +615,7 @@ export default class SignUpScreen extends React.PureComponent {
                     {this.state.referral_code_inform_icon}
                     <View
                       style={{
-                        marginLeft: 5
+                        marginLeft: normalize(5, "height")
                       }}
                     >
                       {/* <Text style={styles.small_warning_text}> */}
@@ -626,7 +628,7 @@ export default class SignUpScreen extends React.PureComponent {
             </View>
             <View
               style={{
-                marginTop: 32
+                marginTop: normalize(32, "height")
               }}
             >
               <View
@@ -657,13 +659,13 @@ export default class SignUpScreen extends React.PureComponent {
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",
-                marginVertical: 32
+                marginVertical: normalize(32, "height")
               }}
             >
               <Text style={styles.sign_in_small_text}>Already a member ?</Text>
               <TouchableOpacity
                 style={{
-                  marginLeft: 5
+                  marginLeft: normalize(5, "height")
                 }}
                 onPress={this._goToSignInScreen}
               >

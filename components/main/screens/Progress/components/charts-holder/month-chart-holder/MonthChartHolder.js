@@ -2,10 +2,7 @@ import React from "react";
 import {
   View,
   Text,
-  ScrollView,
   TouchableOpacity,
-  StyleSheet,
-  FlatList,
   TouchableWithoutFeedback,
   Modal,
   Dimensions
@@ -17,10 +14,10 @@ import { styles } from "./styles/styles";
 import MonthCalendar from "./month-calendar/MonthCalendar";
 
 import PremiumAd from "../../../../../../shared/components/premium-ad/PremiumAd.Container";
-
+import { normalize } from "../../../../../../shared/helpers";
 const window_width = Dimensions.get("window").width;
 
-export default class MonthChartHolder extends React.Component {
+export default class MonthChartHolder extends React.PureComponent {
   month_names = [
     "January",
     "Febuary",
@@ -316,27 +313,27 @@ export default class MonthChartHolder extends React.Component {
 
         <View
           style={{
-            marginTop: 30,
+            marginTop: normalize(30, "height"),
             width: window_width
           }}
         >
           <View
             style={{
               flexDirection: "row",
-              height: 320,
+              height: normalize(320, "height"),
               flex: 1,
-              marginHorizontal: 10
+              marginHorizontal: normalize(10, "width")
             }}
           >
             <YAxis
               style={{
-                width: 30
+                width: normalize(30, "width")
               }}
               data={this.y_data}
               numberOfTicks={this.number_of_ticks}
               contentInset={{
-                top: 7,
-                bottom: 5
+                top: normalize(7, "height"),
+                bottom: normalize(5, "height")
               }}
               svg={styles.y_axis_text}
             />
@@ -350,7 +347,7 @@ export default class MonthChartHolder extends React.Component {
               animate={true}
               animationDuration={400}
               contentInset={{
-                top: 7,
+                top: normalize(7, "height"),
                 bottom: 0
               }}
               spacingInner={0.05}
@@ -410,8 +407,8 @@ class XAxis extends React.PureComponent {
       <View
         style={{
           flexDirection: "row",
-          marginLeft: 40,
-          marginRight: 10,
+          marginLeft: normalize(40, "width"),
+          marginRight: normalize(10, "width"),
           borderTopWidth: 1,
           borderColor: "#05838B"
         }}
@@ -429,7 +426,9 @@ class XAxisDayTextHolder extends React.PureComponent {
         style={{
           flex: 1,
           alignItems: "center",
-          marginTop: this.props.below ? 30 : 10
+          marginTop: this.props.below
+            ? normalize(30, "height")
+            : normalize(10, "height")
         }}
       >
         <Text style={styles.day_in_month_text}>{this.props.day_text}</Text>

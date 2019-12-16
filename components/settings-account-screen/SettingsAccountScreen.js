@@ -1,14 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Dimensions,
-  ScrollView,
-  Switch,
-  Picker,
-  Image
-} from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
@@ -17,6 +8,7 @@ import Header from "./header/Header";
 import { Map, fromJS } from "immutable";
 
 import { plus_icon } from "../shared/icons";
+import { normalize } from "../shared/helpers";
 
 import { styles } from "./styles/styles";
 
@@ -151,14 +143,14 @@ export default class SettingsAccountScreen extends React.PureComponent {
           style={{
             justifyContent: "center",
             alignItems: "center",
-            marginTop: 12
+            marginTop: normalize(12, "height")
           }}
         >
           <TouchableOpacity
             style={styles.image_container}
             onPress={this._pickImage}
           >
-            {plus_icon(18, "#05838B")}
+            {plus_icon(normalize(18, "width"), "#05838B")}
           </TouchableOpacity>
         </View>
 
@@ -172,8 +164,8 @@ export default class SettingsAccountScreen extends React.PureComponent {
             shadowOpacity: 0.08,
             shadowRadius: 15,
             shadowColor: "black",
-            paddingHorizontal: 12,
-            marginTop: 48
+            paddingHorizontal: normalize(12, "width"),
+            marginTop: normalize(48, "height")
           }}
         >
           <View style={styles.row_container}>
@@ -182,7 +174,7 @@ export default class SettingsAccountScreen extends React.PureComponent {
             <Text
               style={{
                 ...styles.highlight_text,
-                ...{ marginLeft: 20, color: "#6E6E6E" }
+                ...{ marginLeft: normalize(20, "width"), color: "#6E6E6E" }
               }}
             >
               {this.state.uuid}
@@ -197,7 +189,10 @@ export default class SettingsAccountScreen extends React.PureComponent {
             <Text
               style={{
                 ...styles.highlight_text,
-                ...{ marginLeft: 20, color: "rgba(0, 0, 0, 0.5)" }
+                ...{
+                  marginLeft: normalize(20, "width"),
+                  color: "rgba(0, 0, 0, 0.5)"
+                }
               }}
             >
               {this.state.email}
@@ -212,7 +207,10 @@ export default class SettingsAccountScreen extends React.PureComponent {
             <Text
               style={{
                 ...styles.highlight_text,
-                ...{ fontSize: 18, lineHeight: 21 }
+                ...{
+                  fontSize: normalize(18, "width"),
+                  lineHeight: normalize(21, "height")
+                }
               }}
             >
               {this.state.full_name}
@@ -227,7 +225,10 @@ export default class SettingsAccountScreen extends React.PureComponent {
             <Text
               style={{
                 ...styles.highlight_text,
-                ...{ fontSize: 18, lineHeight: 21 }
+                ...{
+                  fontSize: normalize(18, "width"),
+                  lineHeight: normalize(21, "height")
+                }
               }}
             >
               {this.state.referral_code}
@@ -242,7 +243,10 @@ export default class SettingsAccountScreen extends React.PureComponent {
             <Text
               style={{
                 ...styles.highlight_text,
-                ...{ fontSize: 18, lineHeight: 21 }
+                ...{
+                  fontSize: normalize(18, "width"),
+                  lineHeight: normalize(21, "height")
+                }
               }}
             >
               {expiry_date_text}
@@ -257,7 +261,10 @@ export default class SettingsAccountScreen extends React.PureComponent {
             <Text
               style={{
                 ...styles.highlight_text,
-                ...{ fontSize: 18, lineHeight: 21 }
+                ...{
+                  fontSize: normalize(18, "width"),
+                  lineHeight: normalize(21, "height")
+                }
               }}
             >
               {this.state.plan}
@@ -274,7 +281,10 @@ export default class SettingsAccountScreen extends React.PureComponent {
                 <Text
                   style={{
                     ...styles.highlight_text,
-                    ...{ fontSize: 18, lineHeight: 21 }
+                    ...{
+                      fontSize: normalize(18, "width"),
+                      lineHeight: normalize(21, "height")
+                    }
                   }}
                 >
                   {renewal_date_text}
@@ -284,10 +294,15 @@ export default class SettingsAccountScreen extends React.PureComponent {
           ) : null}
         </View>
 
-        <View style={{ marginTop: 42, marginBottom: 66 }}>
+        <View
+          style={{
+            marginTop: normalize(42, "height"),
+            marginBottom: normalize(66, "height")
+          }}
+        >
           <TouchableOpacity
             style={{
-              height: 67,
+              height: normalize(67, "height"),
               justifyContent: "center",
               alignItems: "center",
               backgroundColor: "white",

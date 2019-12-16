@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Dimensions,
-  ScrollView,
-  Switch,
-  Picker
-} from "react-native";
+import { View, Text, TouchableOpacity, Dimensions } from "react-native";
 
 import PremiumAd from "../../../../../shared/components/premium-ad/PremiumAd.Container";
 import PremiumFeatures from "../../../../../shared/components/premium-features/PremiumFeatures";
@@ -15,7 +7,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { styles } from "./styles/styles";
 
 import { Map } from "immutable";
-
+import { normalize } from "../../../../../shared/helpers";
 const window_width = Dimensions.get("window").width;
 
 export default class Settings extends React.PureComponent {
@@ -71,13 +63,13 @@ export default class Settings extends React.PureComponent {
       <TouchableOpacity
         style={{
           flexDirection: "row",
-          height: 92,
+          height: normalize(92, "height"),
           width: window_width,
           alignItems: "center",
           justifyContent: "space-between",
-          paddingHorizontal: 22,
-          paddingVertical: 22,
-          marginTop: 32,
+          paddingHorizontal: normalize(22, "width"),
+          paddingVertical: normalize(22, "height"),
+          marginTop: normalize(32, "height"),
           shadowOffset: {
             width: 4,
             height: 4
@@ -96,21 +88,21 @@ export default class Settings extends React.PureComponent {
           }}
         >
           <View style={styles.plan_icon_container}>
-            <Ionicons name="ios-star-outline" color="#05838B" size={26} />
+            <Ionicons name="ios-star-outline" color="#05838B" size={normalize(26, "width")} />
           </View>
 
           {this.state.account_plan === "free" ? (
             <>
               <View
                 style={{
-                  marginLeft: 15
+                  marginLeft: normalize(15, "width")
                 }}
               >
                 <Text style={styles.normal_text}>Upgrade to Premium</Text>
 
                 <View
                   style={{
-                    marginTop: 2
+                    marginTop: normalize(2, "height")
                   }}
                 >
                   <Text style={styles.small_text}>Unlock special features</Text>
@@ -121,7 +113,7 @@ export default class Settings extends React.PureComponent {
             <>
               <View
                 style={{
-                  marginLeft: 15
+                  marginLeft: normalize(15, "width")
                 }}
               >
                 <Text
@@ -132,7 +124,7 @@ export default class Settings extends React.PureComponent {
 
                 <View
                   style={{
-                    marginTop: 2
+                    marginTop: normalize(2, "height")
                   }}
                 >
                   <Text style={styles.small_text}>See all features</Text>

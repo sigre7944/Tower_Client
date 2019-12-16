@@ -3,15 +3,9 @@ import {
   TouchableOpacity,
   Text,
   View,
-  TextInput,
   Dimensions,
   Animated,
-  ScrollView,
-  UIManager,
-  Keyboard,
   Modal,
-  ActivityIndicator,
-  TouchableWithoutFeedback,
   Easing,
   Image
 } from "react-native";
@@ -19,7 +13,7 @@ import {
 import { styles } from "./styles/styles";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-
+import { normalize } from "../../../shared/helpers";
 const window_width = Dimensions.get("window").width;
 const anim_duration = 250;
 const easing = Easing.in();
@@ -100,10 +94,10 @@ class SuccessBanner extends React.PureComponent {
         style={{
           position: "absolute",
           backgroundColor: "white",
-          paddingVertical: 22,
-          paddingHorizontal: 22,
-          width: 300,
-          borderRadius: 10,
+          paddingVertical: normalize(22, "height"),
+          paddingHorizontal: normalize(22, "width"),
+          width: normalize(300, "width"),
+          borderRadius: normalize(10, "width"),
           opacity: this.opacity_value,
           transform: [{ scale: this.scale_value }]
         }}
@@ -112,7 +106,7 @@ class SuccessBanner extends React.PureComponent {
           style={{
             justifyContent: "center",
             alignItems: "center",
-            height: 100
+            height: normalize(100, "height")
           }}
         >
           <Image
@@ -126,7 +120,7 @@ class SuccessBanner extends React.PureComponent {
 
         <View
           style={{
-            marginTop: 20,
+            marginTop: normalize(20, "height"),
             alignItems: "center",
             justifyContent: "center"
           }}
@@ -139,7 +133,7 @@ class SuccessBanner extends React.PureComponent {
 
         <View
           style={{
-            marginTop: 15
+            marginTop: normalize(15, "height")
           }}
         >
           <TouchableOpacity
@@ -180,10 +174,10 @@ class ErrorBanner extends React.PureComponent {
         style={{
           position: "absolute",
           backgroundColor: "white",
-          paddingVertical: 22,
-          paddingHorizontal: 22,
-          width: 250,
-          borderRadius: 10,
+          paddingVertical: normalize(22, "height"),
+          paddingHorizontal: normalize(22, "width"),
+          width: normalize(250, "width"),
+          borderRadius: normalize(10, "width"),
           opacity: this.opacity_value,
           transform: [{ scale: this.scale_value }]
         }}
@@ -194,12 +188,16 @@ class ErrorBanner extends React.PureComponent {
             alignItems: "center"
           }}
         >
-          <MaterialIcons name="error" color="#EB5757" size={62} />
+          <MaterialIcons
+            name="error"
+            color="#EB5757"
+            size={normalize(62, "width")}
+          />
         </View>
 
         <View
           style={{
-            marginTop: 10,
+            marginTop: normalize(10, "height"),
             alignItems: "center",
             justifyContent: "center"
           }}
@@ -207,7 +205,11 @@ class ErrorBanner extends React.PureComponent {
           <Text
             style={{
               ...styles.normal_text,
-              ...{ color: "#EB5757", fontSize: 18, lineHeight: 21 }
+              ...{
+                color: "#EB5757",
+                fontSize: normalize(18, "width"),
+                lineHeight: normalize(21, "height")
+              }
             }}
           >
             {this.props.error_msg}
@@ -216,7 +218,7 @@ class ErrorBanner extends React.PureComponent {
 
         <View
           style={{
-            marginTop: 15
+            marginTop: normalize(15, "height")
           }}
         >
           <TouchableOpacity

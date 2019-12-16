@@ -1,12 +1,12 @@
 import { StyleSheet } from "react-native";
 
 import * as CommonStyles from "../../shared/styles/style";
-
+import { normalize } from "../../shared/helpers";
 export const styles = StyleSheet.create({
   title_text: {
     fontFamily: CommonStyles.sf_ui_display_medium_font,
-    fontSize: 48,
-    lineHeight: 51,
+    fontSize: normalize(48, "width"),
+    lineHeight: normalize(51, "height"),
     letterSpacing: -0.02,
     color: CommonStyles.text_icon_colors.ti_1,
     textTransform: "uppercase"
@@ -14,17 +14,17 @@ export const styles = StyleSheet.create({
 
   input_title: {
     fontFamily: CommonStyles.sf_ui_display_light_font,
-    fontSize: 16,
-    lineHeight: 19,
+    fontSize: normalize(16, "width"),
+    lineHeight: normalize(19, "height"),
     letterSpacing: -0.02,
     color: CommonStyles.text_icon_colors.ti_2
   },
 
   input_text: {
-    height: 24,
+    height: normalize(24, "height"),
     fontFamily: CommonStyles.sf_ui_display_light_font,
-    fontSize: 18,
-    lineHeight: 21,
+    fontSize: normalize(18, "width"),
+    lineHeight: normalize(21, "height"),
     letterSpacing: -0.02,
     color: CommonStyles.text_icon_colors.ti_1,
     borderBottomWidth: 1,
@@ -33,16 +33,16 @@ export const styles = StyleSheet.create({
 
   forgot_password_text: {
     fontFamily: CommonStyles.sf_ui_display_light_font,
-    fontSize: 14,
-    lineHeight: 17,
+    fontSize: normalize(14, "width"),
+    lineHeight: normalize(17, "height"),
     letterSpacing: -0.02,
     color: CommonStyles.text_icon_colors.ti_1,
     textDecorationLine: "underline"
   },
 
   button_container: {
-    height: 48,
-    borderRadius: 4,
+    height: normalize(48, "height"),
+    borderRadius: normalize(4, "width"),
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: CommonStyles.primary_colors.prim_1
@@ -50,8 +50,8 @@ export const styles = StyleSheet.create({
 
   sign_up_text: {
     fontFamily: CommonStyles.sf_ui_display_light_font,
-    fontSize: 16,
-    lineHeight: 19,
+    fontSize: normalize(16, "width"),
+    lineHeight: normalize(19, "height"),
     letterSpacing: -0.02,
     color: "white",
     textTransform: "uppercase"
@@ -59,16 +59,16 @@ export const styles = StyleSheet.create({
 
   sign_in_small_text: {
     fontFamily: CommonStyles.sf_ui_display_light_font,
-    fontSize: 14,
-    lineHeight: 17,
+    fontSize: normalize(14, "width"),
+    lineHeight: normalize(17, "height"),
     letterSpacing: -0.02,
     color: CommonStyles.text_icon_colors.ti_2
   },
 
   sign_in_small_underline_text: {
     fontFamily: CommonStyles.sf_ui_display_light_font,
-    fontSize: 14,
-    lineHeight: 17,
+    fontSize: normalize(14, "width"),
+    lineHeight: normalize(17, "height"),
     letterSpacing: -0.02,
     fontWeight: "bold",
     textDecorationLine: "underline",
@@ -77,34 +77,34 @@ export const styles = StyleSheet.create({
 
   small_instruction_password_text: {
     fontFamily: CommonStyles.sf_ui_display_light_font,
-    fontSize: 12,
-    lineHeight: 15,
+    fontSize: normalize(12, "width"),
+    lineHeight: normalize(15, "height"),
     letterSpacing: -0.02,
     color: CommonStyles.text_icon_colors.ti_1
   },
 
   small_warning_text: {
     fontFamily: CommonStyles.sf_ui_display_light_font,
-    fontSize: 12,
-    lineHeight: 15,
+    fontSize: normalize(12, "width"),
+    lineHeight: normalize(15, "height"),
     letterSpacing: -0.02,
     color: "#EB5757"
   },
 
   referral_check_container: {
-    width: 52,
-    height: 24,
+    width: normalize(52, "width"),
+    height: normalize(24, "height"),
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 2,
-    marginLeft: 20,
+    borderRadius: normalize(2, "width"),
+    marginLeft: normalize(20, "width"),
     backgroundColor: CommonStyles.primary_colors.prim_1
   },
 
   referral_check_text: {
     fontFamily: CommonStyles.sf_ui_display_light_font,
-    fontSize: 12,
-    lineHeight: 15,
+    fontSize: normalize(12, "width"),
+    lineHeight: normalize(15, "height"),
     letterSpacing: -0.02,
     color: "white"
   }

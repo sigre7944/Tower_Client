@@ -19,7 +19,9 @@ import {
   close_icon
 } from "../../../../../../../shared/icons";
 
-const icon_size = 14;
+import { normalize } from "../../../../../../../shared/helpers";
+
+const icon_size = normalize(14, "width");
 const icon_color = "#2C2C2C";
 
 import { styles } from "./styles/styles";
@@ -33,8 +35,8 @@ const easing = Easing.in();
 export default class AddEditReward extends React.PureComponent {
   scale_value = new Animated.Value(0.3);
   opacity_value = this.scale_value.interpolate({
-    inputRange: [0.3, 0.5, 0.7, 1],
-    outputRange: [0.3, 0.5, 0.7, 1],
+    inputRange: [0, 0.3, 0.5, 0.7, 1],
+    outputRange: [0, 0.3, 0.5, 0.7, 1],
     extrapolate: "clamp"
   });
 
@@ -283,11 +285,11 @@ export default class AddEditReward extends React.PureComponent {
             <View
               style={{
                 position: "absolute",
-                width: 331,
-                borderRadius: 10,
+                width: normalize(331, "width"),
+                borderRadius: normalize(10, "width"),
                 backgroundColor: "white",
-                paddingHorizontal: 32,
-                paddingVertical: 32
+                paddingHorizontal: normalize(32, "width"),
+                paddingVertical: normalize(32, "height")
               }}
             >
               <Text style={styles.delete_warning_text}>
@@ -299,14 +301,14 @@ export default class AddEditReward extends React.PureComponent {
                   flexDirection: "row",
                   justifyContent: "center",
                   alignItems: "center",
-                  marginTop: 32
+                  marginTop: normalize(32, "height")
                 }}
               >
                 <TouchableOpacity
                   style={styles.cancel_container}
                   onPress={this._toggleDelete}
                 >
-                  {close_icon(19, "white")}
+                  {close_icon(normalize(19, "width"), "white")}
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -316,7 +318,7 @@ export default class AddEditReward extends React.PureComponent {
                   }}
                   onPress={this._delete}
                 >
-                  {check_icon(19, "white")}
+                  {check_icon(normalize(19, "width"), "white")}
                 </TouchableOpacity>
               </View>
             </View>
@@ -324,11 +326,11 @@ export default class AddEditReward extends React.PureComponent {
             <Animated.View
               style={{
                 position: "absolute",
-                width: 331,
-                borderRadius: 10,
+                width: normalize(331, "width"),
+                borderRadius: normalize(10, "width"),
                 backgroundColor: "white",
-                paddingHorizontal: 32,
-                paddingVertical: 32,
+                paddingHorizontal: normalize(32, "width"),
+                paddingVertical: normalize(32, "height"),
                 transform: [{ scale: this.scale_value }],
                 opacity: this.opacity_value
               }}
@@ -357,7 +359,7 @@ export default class AddEditReward extends React.PureComponent {
 
                 <View
                   style={{
-                    marginTop: 32
+                    marginTop: normalize(32, "height")
                   }}
                 >
                   <Text style={styles.reward_title_informer}>Title</Text>
@@ -376,7 +378,7 @@ export default class AddEditReward extends React.PureComponent {
 
                 <View
                   style={{
-                    marginTop: 22
+                    marginTop: normalize(22, "height")
                   }}
                 >
                   <Text style={styles.reward_title_informer}>Value</Text>
@@ -398,7 +400,7 @@ export default class AddEditReward extends React.PureComponent {
                     flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    marginTop: 22
+                    marginTop: normalize(22, "height")
                   }}
                 >
                   <Text style={styles.set_as_main_reward_text}>
@@ -421,7 +423,7 @@ export default class AddEditReward extends React.PureComponent {
                     flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    marginTop: 40
+                    marginTop: normalize(40, "height")
                   }}
                 >
                   <TouchableOpacity onPress={this._toggleDelete}>
@@ -439,14 +441,14 @@ export default class AddEditReward extends React.PureComponent {
                       style={styles.cancel_container}
                       onPress={this._cancel}
                     >
-                      {close_icon(19, "white")}
+                      {close_icon(normalize(19, "width"), "white")}
                     </TouchableOpacity>
 
                     <TouchableOpacity
                       style={styles.save_container}
                       onPress={this._save}
                     >
-                      {check_icon(19, "white")}
+                      {check_icon(normalize(19, "width"), "white")}
                     </TouchableOpacity>
                   </View>
                 </View>

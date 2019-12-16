@@ -1,12 +1,12 @@
 import { StyleSheet } from "react-native";
 
 import * as CommonStyles from "../../shared/styles/style";
-
+import { normalize } from "../../shared/helpers";
 export const styles = StyleSheet.create({
   image_container: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
+    width: normalize(150, "width"),
+    height: normalize(150, "width"),
+    borderRadius: normalize(150, "width"),
     backgroundColor: CommonStyles.primary_colors.prim_3,
     justifyContent: "center",
     alignItems: "center"
@@ -16,20 +16,20 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    height: 58
+    height: normalize(58, "height")
   },
 
   normal_text: {
     fontFamily: CommonStyles.sf_ui_display_light_font,
-    fontSize: 16,
-    lineHeight: 19,
+    fontSize: normalize(16, "width"),
+    lineHeight: normalize(19, "height"),
     color: CommonStyles.text_icon_colors.ti_1
   },
 
   highlight_text: {
     fontFamily: CommonStyles.sf_ui_display_light_font,
-    fontSize: 14,
-    lineHeight: 17,
+    fontSize: normalize(14, "width"),
+    lineHeight: normalize(17, "height"),
     color: CommonStyles.primary_colors.prim_1
   },
 
@@ -41,8 +41,8 @@ export const styles = StyleSheet.create({
 
   log_out_text: {
     fontFamily: CommonStyles.sf_ui_display_light_font,
-    fontSize: 18,
-    lineHeight: 21,
+    fontSize: normalize(18, "width"),
+    lineHeight: normalize(21, "height"),
     color: "#EB5757"
   }
 });

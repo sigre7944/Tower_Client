@@ -3,10 +3,7 @@ import {
   FlatList,
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
-  Animated,
-  Easing,
   Dimensions
 } from "react-native";
 
@@ -15,10 +12,10 @@ import { Map, fromJS, List } from "immutable";
 import { styles } from "./styles/styles";
 
 import PremiumAd from "../../../../../shared/components/premium-ad/PremiumAd.Container";
-
+import { normalize } from "../../../../../shared/helpers";
 const panel_width = Dimensions.get("window").width;
-const margin_top_for_calendar_row = 20;
-const margin_top_for_month_year_text = 30;
+const margin_top_for_calendar_row = normalize(20, "height");
+const margin_top_for_month_year_text = normalize(30, "height");
 
 export default class Calendar extends React.Component {
   year_in_between = 4;
@@ -228,9 +225,9 @@ export default class Calendar extends React.Component {
             position: "absolute",
             top:
               margin_top_for_month_year_text +
-              21 +
+              normalize(21, "height") +
               margin_top_for_calendar_row +
-              (19 + 20),
+              (normalize(19, "height") + normalize(20, "height")),
             flexDirection: "row",
             alignItems: "center",
             width: panel_width
@@ -469,7 +466,7 @@ class MonthHolder extends React.Component {
       >
         <View
           style={{
-            marginTop: 20,
+            marginTop: normalize(20, "height"),
             flexDirection: "row",
             alignItems: "center"
           }}
@@ -495,7 +492,7 @@ class MonthHolder extends React.Component {
 
         <View
           style={{
-            marginTop: margin_top_for_calendar_row + 32
+            marginTop: margin_top_for_calendar_row + normalize(32, "height")
             // height: calendar_total_height,
           }}
         >
@@ -633,9 +630,9 @@ class WeekHolder extends React.Component {
               style={{
                 flexDirection: "row",
                 flexWrap: "wrap",
-                marginHorizontal: 3,
+                marginHorizontal: normalize(3, "width"),
                 justifyContent: "center",
-                marginBottom: 5
+                marginBottom: normalize(5, "height")
               }}
             >
               <Text style={styles.point_text_white}>{total_points}</Text>
@@ -725,9 +722,9 @@ class DayHolder extends React.Component {
               style={{
                 flexDirection: "row",
                 flexWrap: "wrap",
-                marginHorizontal: 3,
+                marginHorizontal: normalize(3, "width"),
                 justifyContent: "center",
-                marginBottom: 5
+                marginBottom: normalize(5, "height")
               }}
             >
               <Text style={styles.point_text_white}>{total_points}</Text>
@@ -798,9 +795,9 @@ class UnchosenDayHolder extends React.Component {
               style={{
                 flexDirection: "row",
                 flexWrap: "wrap",
-                marginHorizontal: 3,
+                marginHorizontal: normalize(3, "width"),
                 justifyContent: "center",
-                marginBottom: 5
+                marginBottom: normalize(5, "height")
               }}
             >
               <Text style={styles.point_text_white}>{total_points}</Text>
@@ -830,7 +827,7 @@ class DayText extends React.Component {
       <View
         style={{
           flex: 1,
-          height: 32,
+          height: normalize(32, "height"),
           justifyContent: "center",
           alignItems: "center"
         }}
@@ -851,7 +848,7 @@ class WeekText extends React.Component {
       <View
         style={{
           flex: 1,
-          height: 32,
+          height: normalize(32, "height"),
           justifyContent: "center",
           alignItems: "center"
         }}

@@ -4,11 +4,7 @@ import {
   Text,
   Dimensions,
   TouchableOpacity,
-  FlatList,
-  Modal,
-  TouchableWithoutFeedback,
-  Animated,
-  Easing
+  FlatList
 } from "react-native";
 
 import { Map, fromJS, OrderedMap, isKeyed } from "immutable";
@@ -24,11 +20,15 @@ import * as Haptics from "expo-haptics";
 import { Audio } from "expo-av";
 
 import PremiumAd from "../../../../../../shared/components/premium-ad/PremiumAd.Container";
+import { normalize } from "../../../../../../shared/helpers";
 
 const window_width = Dimensions.get("window").width;
 const number_of_columns = 2;
 const reward_holder_width =
-  (window_width - (22 * 2 + 23 * (number_of_columns - 1))) / number_of_columns; //22 = paddingHorizontal value, 23 = margin between 2 cols
+  (window_width -
+    (normalize(22, "width") * 2 +
+      normalize(23, "width") * (number_of_columns - 1))) /
+  number_of_columns; //22 = paddingHorizontal value, 23 = margin between 2 cols
 
 export default class CRUDRewardSection extends React.PureComponent {
   edit_reward_data = {};
@@ -302,7 +302,7 @@ export default class CRUDRewardSection extends React.PureComponent {
     return (
       <View
         style={{
-          marginTop: 22
+          marginTop: normalize(22, "height")
         }}
       >
         <FlatList
@@ -314,12 +314,12 @@ export default class CRUDRewardSection extends React.PureComponent {
           ref={this._setFlatListRef}
           columnWrapperStyle={{
             justifyContent: "space-between",
-            marginTop: 22
+            marginTop: normalize(22, "height")
           }}
           windowSize={5}
           maxToRenderPerBatch={5}
           initialNumToRender={5}
-          // removeClippedSubviews={true}
+          removeClippedSubviews={true}
         />
 
         {this.state.is_add_new_reward ? (
@@ -444,22 +444,26 @@ class RewardHolder extends React.PureComponent {
           >
             <TouchableOpacity
               style={{
-                height: 24,
-                width: 24,
+                height: normalize(24, "width"),
+                width: normalize(24, "width"),
                 alignItems: "flex-start",
                 justifyContent: "flex-end"
               }}
               onPress={this._editReward}
             >
-              <FontAwesomeIcon icon={faEdit} color="#05838B" size={14} />
+              <FontAwesomeIcon
+                icon={faEdit}
+                color="#05838B"
+                size={normalize(14, "width")}
+              />
             </TouchableOpacity>
           </View>
 
           <View
             style={{
-              marginTop: 10,
+              marginTop: normalize(10, "height"),
               alignItems: "center",
-              paddingHorizontal: 10
+              paddingHorizontal: normalize(10, "width")
             }}
           >
             <Text style={reward_name}>{reward_name}</Text>
@@ -467,15 +471,15 @@ class RewardHolder extends React.PureComponent {
 
           <View
             style={{
-              marginTop: 22,
+              marginTop: normalize(22, "height"),
               alignItems: "center",
-              paddingHorizontal: 10
+              paddingHorizontal: normalize(10, "width")
             }}
           >
             <Text style={styles.reward_value}>{reward_value}</Text>
             <View
               style={{
-                marginTop: 5
+                marginTop: normalize(5, "height")
               }}
             >
               <Text style={styles.currency_text}>pts</Text>
@@ -515,7 +519,11 @@ class AddRewardHolder extends React.PureComponent {
         }}
         onPress={this.addNewReward}
       >
-        <FontAwesomeIcon icon={faPlus} color="white" size={45} />
+        <FontAwesomeIcon
+          icon={faPlus}
+          color="white"
+          size={normalize(45, "width")}
+        />
       </TouchableOpacity>
     );
   }
