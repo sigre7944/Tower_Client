@@ -24,7 +24,8 @@ export const styles = StyleSheet.create({
       height: 4
     },
     shadowRadius: 8,
-    shadowOpacity: 0.15
+    shadowOpacity: 0.15,
+    elevation: 4,
   },
 
   upgrade_button_normal_text: {

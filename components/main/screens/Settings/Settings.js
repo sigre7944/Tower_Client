@@ -80,7 +80,8 @@ export default class Settings extends React.Component {
               },
               shadowRadius: 8,
               shadowColor: "black",
-              shadowOpacity: 0.12
+              shadowOpacity: 0.08,
+              elevation: 4,
             }}
           >
             <View
@@ -262,7 +263,8 @@ export default class Settings extends React.Component {
               },
               shadowRadius: 8,
               shadowColor: "black",
-              shadowOpacity: 0.12,
+              shadowOpacity: 0.08,
+              elevation: 4,
               marginBottom: normalize(32, "height")
             }}
           >

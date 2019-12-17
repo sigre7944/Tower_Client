@@ -164,6 +164,7 @@ export default class SettingsAccountScreen extends React.PureComponent {
             shadowOpacity: 0.08,
             shadowRadius: 15,
             shadowColor: "black",
+            elevation: 8,
             paddingHorizontal: normalize(12, "width"),
             marginTop: normalize(48, "height")
           }}
@@ -312,7 +313,8 @@ export default class SettingsAccountScreen extends React.PureComponent {
                 height: 2
               },
               shadowRadius: 8,
-              shadowOpacity: 0.12
+              shadowOpacity: 0.12,
+              elevation: 8,
             }}
             onPress={this._logOut}
           >

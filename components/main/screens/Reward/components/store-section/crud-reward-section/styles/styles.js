@@ -22,7 +22,8 @@ export const styles = StyleSheet.create({
     },
     shadowOpacity: 1,
     shadowRadius: 15,
-    shadowColor: "rgba(0, 0, 0, 0.08)"
+    shadowColor: "rgba(0, 0, 0, 0.08)",
+    elevation: 8
   },
 
   reward_name: {

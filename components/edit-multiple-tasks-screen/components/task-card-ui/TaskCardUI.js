@@ -41,7 +41,7 @@ export default class TaskCardUI extends React.PureComponent {
       is_task_card_able_to_edit = false;
 
     if (task_plan === "free") {
-      is_task_card_able_to_edit = false;
+      is_task_card_able_to_edit = true;
     } else {
       is_task_card_able_to_edit = account_plan === task_plan;
     }

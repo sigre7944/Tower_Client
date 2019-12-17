@@ -63,7 +63,8 @@ export default class BottomOptionsHolder extends React.PureComponent {
           },
           shadowRadius: 7,
           shadowColor: "black",
-          shadowOpacity: 0.03
+          shadowOpacity: 0.03,
+          elevation: 8
         }}
       >
         <BottomOptionElement

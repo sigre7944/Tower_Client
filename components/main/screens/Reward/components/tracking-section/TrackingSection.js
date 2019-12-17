@@ -328,7 +328,8 @@ export default class TrackingSection extends React.PureComponent {
               paddingHorizontal: normalize(22, "width"),
               paddingVertical: normalize(49, "height"),
               marginHorizontal: normalize(22, "width"),
-              opacity: this.state.can_choose ? 1 : 0.5
+              opacity: this.state.can_choose ? 1 : 0.5,
+              elevation: 8
             }}
           >
             <View

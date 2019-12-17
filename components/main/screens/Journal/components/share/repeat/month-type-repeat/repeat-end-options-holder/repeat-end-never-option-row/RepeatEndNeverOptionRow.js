@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 
 import { styles } from "./styles/styles";
 import { normalize } from "../../../../../../../../../shared/helpers";
-export default class RepeatEndNeverOptionRow extends React.PureComponent {
+export default class RepeatEndNeverOptionRow extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
     return (
       (this.props.index === nextProps.current_index &&

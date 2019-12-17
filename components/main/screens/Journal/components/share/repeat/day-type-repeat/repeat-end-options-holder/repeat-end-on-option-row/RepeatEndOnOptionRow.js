@@ -7,14 +7,15 @@ import {
   TouchableOpacity,
   Modal,
   Dimensions,
-  Picker
+  Picker,
+  Platform
 } from "react-native";
 
 import { styles } from "./styles/styles";
 import { normalize } from "../../../../../../../../../shared/helpers";
 const window_width = Dimensions.get("window").width;
 
-export default class RepeatEndOnOptionRow extends React.PureComponent {
+export default class RepeatEndOnOptionRow extends React.Component {
   month_names = [
     "January",
     "Febuary",
@@ -285,18 +286,45 @@ class DatePickerWheel extends React.PureComponent {
             marginTop: normalize(70, "height")
           }}
         >
-          <DayPickerValueHolder
-            day={this.props.day}
-            _changeDayPickerValue={this.props._changeDayPickerValue}
-          />
-          <MonthPickerValueHolder
-            month={this.props.month}
-            _changeMonthPickerValue={this.props._changeMonthPickerValue}
-          />
-          <YearPickerValueHolder
-            year={this.props.year}
-            _changeYearPickerValue={this.props._changeYearPickerValue}
-          />
+          {Platform.OS === "android" ? (
+            <View
+              style={{
+                flexDirection: "row",
+                paddingHorizontal: normalize(22, "width"),
+                // height: normalize(24, "height"),
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+            >
+              <DayPickerValueHolder
+                day={this.props.day}
+                _changeDayPickerValue={this.props._changeDayPickerValue}
+              />
+              <MonthPickerValueHolder
+                month={this.props.month}
+                _changeMonthPickerValue={this.props._changeMonthPickerValue}
+              />
+              <YearPickerValueHolder
+                year={this.props.year}
+                _changeYearPickerValue={this.props._changeYearPickerValue}
+              />
+            </View>
+          ) : (
+            <>
+              <DayPickerValueHolder
+                day={this.props.day}
+                _changeDayPickerValue={this.props._changeDayPickerValue}
+              />
+              <MonthPickerValueHolder
+                month={this.props.month}
+                _changeMonthPickerValue={this.props._changeMonthPickerValue}
+              />
+              <YearPickerValueHolder
+                year={this.props.year}
+                _changeYearPickerValue={this.props._changeYearPickerValue}
+              />
+            </>
+          )}
         </View>
       </View>
     );

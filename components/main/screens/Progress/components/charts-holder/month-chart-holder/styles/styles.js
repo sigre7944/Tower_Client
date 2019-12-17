@@ -13,8 +13,8 @@ export const styles = StyleSheet.create({
 
   day_in_month_text: {
     fontFamily: CommonStyles.sf_ui_display_light_font,
-    fontSize: normalize(10, "width"),
-    lineHeight: normalize(13, "height"),
+    fontSize: normalize(9, "width"),
+    lineHeight: normalize(12, "height"),
     letterSpacing: -0.02,
     color: CommonStyles.text_icon_colors.ti_1
   },

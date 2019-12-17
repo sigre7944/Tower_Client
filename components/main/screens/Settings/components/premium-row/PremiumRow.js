@@ -77,7 +77,8 @@ export default class Settings extends React.PureComponent {
           shadowRadius: 15,
           shadowColor: "rgb(0, 0, 0)",
           shadowOpacity: 0.08,
-          backgroundColor: "white"
+          backgroundColor: "white",
+          elevation: 4,
         }}
         onPress={this._togglePremiumAdvert}
       >

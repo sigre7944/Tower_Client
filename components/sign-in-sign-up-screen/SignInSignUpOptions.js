@@ -139,7 +139,9 @@ export default class SignInSignUpOptions extends React.PureComponent {
               },
               shadowRadius: 8,
               shadowColor: "black",
-              shadowOpacity: 0.25
+              shadowOpacity: 0.25,
+              elevation: 4,
+              backgroundColor: "white"
             }}
           >
             <TouchableOpacity

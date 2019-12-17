@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, TextInput } from "react-native";
 
 import { styles } from "./styles/styles";
 import { normalize } from "../../../../../../../../../shared/helpers";
-export default class RepeatEndAfterOptionRow extends React.PureComponent {
+export default class RepeatEndAfterOptionRow extends React.Component {
   state = {
     is_text_input_readable: false
   };

@@ -51,6 +51,7 @@ export default class Settings extends React.PureComponent {
               shadowRadius: 15,
               shadowColor: "rgb(0, 0, 0)",
               shadowOpacity: 0.08,
+              elevation: 8,
               backgroundColor: "white"
             }}
             onPress={this._goToAccountScreen}
@@ -102,6 +103,7 @@ export default class Settings extends React.PureComponent {
               shadowRadius: 15,
               shadowColor: "rgb(0, 0, 0)",
               shadowOpacity: 0.08,
+              elevation: 4,
               backgroundColor: "white"
             }}
             onPress={this._goToSignInSignUp}

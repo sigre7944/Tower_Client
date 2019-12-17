@@ -212,6 +212,18 @@ export default class WeekTypeRepeat extends React.PureComponent {
     );
   };
 
+  _keyboardDidHideHandler = e => {
+    this._resetRepeatInput();
+    this._resetAfterOccurrenceInput();
+    this._resetGoalValueInput();
+
+    Animated.timing(this.translate_y, {
+      toValue: 0,
+      duration: 100,
+      useNativeDriver: true
+    }).start();
+  };
+
   _keyboardDidShowHandler = e => {
     let keyboard_height = e.endCoordinates.height,
       keyboard_duration = e.duration;
@@ -232,7 +244,7 @@ export default class WeekTypeRepeat extends React.PureComponent {
         if (gap < 0) {
           Animated.timing(this.translate_y, {
             toValue: gap,
-            duration: keyboard_duration,
+            duration: 100,
             useNativeDriver: true
           }).start();
         }
@@ -434,19 +446,23 @@ export default class WeekTypeRepeat extends React.PureComponent {
   componentDidMount() {
     this.animateRepeat(this.props.edit);
 
-    this._keyboardWillHideListener = Keyboard.addListener(
-      "keyboardWillHide",
-      this._keyboardWillHideHandler
-    );
     if (Platform.OS === "ios") {
       this._keyboardWillShowListener = Keyboard.addListener(
         "keyboardWillShow",
         this._keyboardWillShowHandler
       );
+      this._keyboardWillHideListener = Keyboard.addListener(
+        "keyboardWillHide",
+        this._keyboardWillHideHandler
+      );
     } else {
       this._keyboardDidShowListener = Keyboard.addListener(
         "keyboardDidShow",
         this._keyboardDidShowHandler
+      );
+      this._keyboardDidHideListener = Keyboard.addListener(
+        "keyboardDidHide",
+        this._keyboardDidHideHandler
       );
     }
 
@@ -467,14 +483,18 @@ export default class WeekTypeRepeat extends React.PureComponent {
   }
 
   componentWillUnmount() {
-    Keyboard.removeListener("keyboardWillHide", this._keyboardWillHideHandler);
     if (Platform.OS === "ios") {
       Keyboard.removeListener(
         "keyboardWillShow",
         this._keyboardWillShowHandler
       );
+      Keyboard.removeListener(
+        "keyboardWillHide",
+        this._keyboardWillHideHandler
+      );
     } else {
       Keyboard.removeListener("keyboardDidShow", this._keyboardDidShowHandler);
+      Keyboard.removeListener("keyboardDidHide", this._keyboardDidHideHandler);
     }
   }
 

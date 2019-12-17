@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 import { Map, List } from "immutable";
 import { styles } from "./styles/styles";
 import { normalize } from "../../../../../shared/helpers";
-export default class SummaryHolder extends React.PureComponent {
+export default class SummaryHolder extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
     let chosen_month = this.props.chosen_month,
       chosen_year = this.props.chosen_year,

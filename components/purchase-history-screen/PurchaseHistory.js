@@ -247,6 +247,7 @@ class PurchasedItem extends React.PureComponent {
           shadowRadius: 15,
           shadowOpacity: 1,
           shadowColor: "rgba(0, 0, 0, 0.08)",
+          elevation: 8,
           alignItems: "center",
           justifyContent: "space-between",
           paddingHorizontal: normalize(22, "width")

@@ -8,7 +8,8 @@ import {
   TextInput,
   Modal,
   Picker,
-  Dimensions
+  Dimensions,
+  Platform
 } from "react-native";
 
 import { styles } from "./styles/styles";
@@ -215,21 +216,47 @@ class RepeatTypePicker extends React.PureComponent {
               </TouchableOpacity>
             </View>
 
-            <Picker
-              selectedValue={this.props.current_chosen_repeat_type}
-              onValueChange={this.props._changePickerValue}
-              itemStyle={styles.picker_value_text}
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                zIndex: 10,
-                marginTop: normalize(50, "height")
-              }}
-            >
-              <Picker.Item label="day" value="day" />
-              <Picker.Item label="week" value="week" />
-              <Picker.Item label="month" value="month" />
-            </Picker>
+            {Platform.OS === "android" ? (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: normalize(50, "height")
+                }}
+              >
+                <Picker
+                  selectedValue={this.props.current_chosen_repeat_type}
+                  onValueChange={this.props._changePickerValue}
+                  itemStyle={styles.picker_value_text}
+                  style={{
+                    // flex: 1,
+                    width: normalize(130, "width"),
+                    zIndex: 10
+                  }}
+                >
+                  <Picker.Item label="day" value="day" />
+                  <Picker.Item label="week" value="week" />
+                  <Picker.Item label="month" value="month" />
+                </Picker>
+              </View>
+            ) : (
+              <Picker
+                selectedValue={this.props.current_chosen_repeat_type}
+                onValueChange={this.props._changePickerValue}
+                itemStyle={styles.picker_value_text}
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  zIndex: 10,
+                  marginTop: normalize(50, "height")
+                }}
+              >
+                <Picker.Item label="day" value="day" />
+                <Picker.Item label="week" value="week" />
+                <Picker.Item label="month" value="month" />
+              </Picker>
+            )}
           </View>
         </View>
       </Modal>

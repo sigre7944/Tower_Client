@@ -45,7 +45,8 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginVertical: normalize(5, "height"),
-    position: "relative"
+    position: "relative",
+    elevation: 8
   },
 
   complete_box_container_unchosen: {

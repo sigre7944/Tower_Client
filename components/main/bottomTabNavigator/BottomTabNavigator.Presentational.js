@@ -89,7 +89,16 @@ export default class BottomTabNavigator extends React.PureComponent {
           style={{
             height: normalize(60, "height"),
             display: "flex",
-            alignItems: "center"
+            alignItems: "center",
+            shadowOffset: {
+              width: 0,
+              height: -4
+            },
+            shadowRadius: 10,
+            shadowColor: "black",
+            shadowOpacity: 0.04,
+            elevation: 8,
+            backgroundColor: "white"
           }}
         >
           {this.state.addTaskClicked ? (

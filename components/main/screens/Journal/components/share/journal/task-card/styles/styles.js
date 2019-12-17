@@ -17,7 +17,8 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginVertical: normalize(5, "height"),
-    position: "relative"
+    position: "relative",
+    elevation: 5
   },
 
   unable_to_edit_container: {
@@ -35,7 +36,8 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginVertical: normalize(5, "height"),
     position: "relative",
-    opacity: 0.3
+    opacity: 0.3,
+    elevation: 5
   },
 
   complete_box_container: {

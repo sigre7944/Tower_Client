@@ -17,7 +17,7 @@ import PremiumAd from "../../../../../../shared/components/premium-ad/PremiumAd.
 import { normalize } from "../../../../../../shared/helpers";
 const window_width = Dimensions.get("window").width;
 
-export default class MonthChartHolder extends React.PureComponent {
+export default class MonthChartHolder extends React.Component {
   month_names = [
     "January",
     "Febuary",

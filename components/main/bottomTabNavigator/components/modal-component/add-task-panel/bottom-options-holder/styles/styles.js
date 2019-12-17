@@ -24,6 +24,7 @@ export const styles = StyleSheet.create({
             height: 4,
         },
         shadowOpacity: 1,
-        shadowColor: "rgba(0, 0, 0, 0.15)"
+        shadowColor: "rgba(0, 0, 0, 0.15)",
+        elevation: 8,
     }
 })

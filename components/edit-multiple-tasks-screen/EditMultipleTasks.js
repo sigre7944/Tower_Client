@@ -530,7 +530,8 @@ export default class EditMultipleTasks extends React.PureComponent {
             shadowColor: "rgb(0, 0, 0)",
             shadowOpacity: 0.04,
             flexDirection: "row",
-            alignItems: "center"
+            alignItems: "center",
+            elevation: 8
           }}
         >
           <TouchableOpacity

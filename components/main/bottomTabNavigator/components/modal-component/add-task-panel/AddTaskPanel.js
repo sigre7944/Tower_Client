@@ -68,6 +68,8 @@ export default class AddTaskPanel extends Component {
     extrapolate: "clamp"
   });
 
+  android_opacity_value = new Animated.Value(0);
+
   state = {
     tag_data: []
   };
@@ -103,12 +105,12 @@ export default class AddTaskPanel extends Component {
   };
 
   _toDoWhenKeyboardDidShow = e => {
-    // Animated.timing(this.translateY_value, {
-    //   toValue: 0,
-    //   duration: e.duration,
-    //   easing: Easing.in(),
-    //   useNativeDriver: true
-    // }).start();
+    Animated.timing(this.android_opacity_value, {
+      toValue: 1,
+      duration: e.duration,
+      easing: Easing.in(),
+      useNativeDriver: true
+    }).start();
   };
 
   componentDidMount() {
@@ -126,8 +128,14 @@ export default class AddTaskPanel extends Component {
   }
 
   componentWillUnmount() {
-    Keyboard.removeListener("keyboardWillShow", this.toDoWhenWillShowKeyboard);
-    Keyboard.removeListener("keyboardDidShow", this._toDoWhenKeyboardDidShow);
+    if (Platform.OS === "ios") {
+      Keyboard.removeListener(
+        "keyboardWillShow",
+        this.toDoWhenWillShowKeyboard
+      );
+    } else {
+      Keyboard.removeListener("keyboardDidShow", this._toDoWhenKeyboardDidShow);
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -155,14 +163,18 @@ export default class AddTaskPanel extends Component {
           backgroundColor: "white",
           borderTopRightRadius: normalize(20, "width"),
           borderTopLeftRadius: normalize(20, "width"),
-          opacity: this.opacity_value,
+          opacity:
+            Platform.OS === "android"
+              ? this.android_opacity_value
+              : this.opacity_value,
           backgroundColor: "#FFFFFF",
           shadowOffset: {
             width: 0,
             height: -2
           },
           shadowRadius: 15,
-          shadowColor: "rgba(0, 0, 0, 0.06)"
+          shadowColor: "rgba(0, 0, 0, 0.06)",
+          elevation: 8
         }}
       >
         <TaskAnnotationTypeHolder
