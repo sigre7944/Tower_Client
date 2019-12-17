@@ -7,23 +7,21 @@ import {
   Dimensions,
   Animated,
   ScrollView,
-  UIManager,
-  Keyboard,
   Modal,
   ActivityIndicator,
-  TouchableWithoutFeedback,
   Easing,
-  Image
+  Platform
 } from "react-native";
 
 import { styles } from "./styles/styles";
 
 import { left_arrow_icon } from "../shared/icons";
+import { normalize } from "../shared/helpers";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import * as firebase from "firebase";
 
-const icon_size = 39;
+const icon_size = normalize(39, "width");
 const icon_color = "#BDBDBD";
 const window_width = Dimensions.get("window").width;
 const anim_duration = 250;
@@ -32,7 +30,7 @@ const easing = Easing.in();
 export default class SignInScreen extends React.PureComponent {
   static navigationOptions = ({ navigation, navigationOptions }) => {
     return {
-      header: null,
+      header: null
     };
   };
 
@@ -122,14 +120,14 @@ export default class SignInScreen extends React.PureComponent {
         style={{
           flex: 1,
           backgroundColor: "white",
-          paddingHorizontal: 32
+          paddingHorizontal: normalize(32, "width")
         }}
         scrollEnabled={false}
         keyboardDismissMode="on-drag"
       >
         <View
           style={{
-            marginTop: 45
+            marginTop: normalize(45, "height")
           }}
         >
           <TouchableOpacity
@@ -144,7 +142,7 @@ export default class SignInScreen extends React.PureComponent {
 
         <View
           style={{
-            marginTop: 15
+            marginTop: normalize(15, "height")
           }}
         >
           <Text style={styles.title_text}>Sign</Text>
@@ -153,14 +151,14 @@ export default class SignInScreen extends React.PureComponent {
 
         <View
           style={{
-            marginTop: 53
+            marginTop: normalize(53, "height")
           }}
         >
           <Text style={styles.input_title}>Email:</Text>
 
           <View
             style={{
-              marginTop: 12
+              marginTop: normalize(12, "height")
             }}
           >
             <TextInput
@@ -175,14 +173,14 @@ export default class SignInScreen extends React.PureComponent {
 
         <View
           style={{
-            marginTop: 28
+            marginTop: normalize(28, "height")
           }}
         >
           <Text style={styles.input_title}>Password:</Text>
 
           <View
             style={{
-              marginTop: 12
+              marginTop: normalize(12, "height")
             }}
           >
             <TextInput
@@ -205,7 +203,7 @@ export default class SignInScreen extends React.PureComponent {
 
         <View
           style={{
-            marginTop: 32
+            marginTop: normalize(32, "height")
           }}
         >
           <View
@@ -216,7 +214,9 @@ export default class SignInScreen extends React.PureComponent {
               },
               shadowRadius: 8,
               shadowColor: "black",
-              shadowOpacity: 0.25
+              shadowOpacity: 0.25,
+              elevation: 4,
+              backgroundColor: "white"
             }}
           >
             <TouchableOpacity
@@ -234,7 +234,7 @@ export default class SignInScreen extends React.PureComponent {
 
         <View
           style={{
-            marginTop: 32,
+            marginTop: normalize(32, "height"),
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "center"
@@ -244,7 +244,7 @@ export default class SignInScreen extends React.PureComponent {
 
           <TouchableOpacity
             style={{
-              marginLeft: 5
+              marginLeft: normalize(5, "width")
             }}
             onPress={this._goToSignUpScreen}
           >
@@ -264,19 +264,14 @@ export default class SignInScreen extends React.PureComponent {
 }
 
 class ErrorBanner extends React.PureComponent {
-  scale_value = new Animated.Value(0);
-  opacity_value = this.scale_value.interpolate({
-    inputRange: [0, 0.3, 0.5, 0.7, 1],
-    outputRange: [0, 0.3, 0.5, 0.7, 1],
-    extrapolate: "clamp"
-  });
+  opacity_value = new Animated.Value(0);
 
   _startAnimate = () => {
-    Animated.timing(this.scale_value, {
+    Animated.timing(this.opacity_value, {
       toValue: 1,
       duration: anim_duration,
       easing,
-      useNativeDriver: true
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
@@ -307,12 +302,11 @@ class ErrorBanner extends React.PureComponent {
             style={{
               position: "absolute",
               backgroundColor: "white",
-              paddingVertical: 22,
-              paddingHorizontal: 22,
-              width: 250,
-              borderRadius: 10,
+              paddingVertical: normalize(22, "height"),
+              paddingHorizontal: normalize(22, "width"),
+              width: normalize(250, "width"),
+              borderRadius: normalize(10, "width"),
               opacity: this.opacity_value,
-              transform: [{ scale: this.scale_value }]
             }}
           >
             <View
@@ -326,7 +320,7 @@ class ErrorBanner extends React.PureComponent {
 
             <View
               style={{
-                marginTop: 10,
+                marginTop: normalize(10, "height"),
                 alignItems: "center",
                 justifyContent: "center"
               }}
@@ -334,7 +328,11 @@ class ErrorBanner extends React.PureComponent {
               <Text
                 style={{
                   ...styles.normal_text,
-                  ...{ color: "#EB5757", fontSize: 18, lineHeight: 21 }
+                  ...{
+                    color: "#EB5757",
+                    fontSize: normalize(18, "width"),
+                    lineHeight: normalize(21, "height")
+                  }
                 }}
               >
                 {this.props.error_msg}
@@ -343,7 +341,7 @@ class ErrorBanner extends React.PureComponent {
 
             <View
               style={{
-                marginTop: 15
+                marginTop: normalize(15, "height")
               }}
             >
               <TouchableOpacity

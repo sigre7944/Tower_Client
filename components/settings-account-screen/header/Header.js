@@ -1,14 +1,9 @@
 import React from "react";
-import { View, Image, Text, TouchableOpacity } from "react-native";
-import Modal from "react-native-modalbox";
-import { DrawerActions } from "react-navigation-drawer";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { View, Text, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  faChevronLeft,
-  faShoppingCart
-} from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { styles } from "./styles/styles";
+import { normalize } from "../../shared/helpers";
 
 export default class Header extends React.PureComponent {
   _goBackToSettings = () => {
@@ -29,7 +24,11 @@ export default class Header extends React.PureComponent {
             style={styles.end_icon_container}
             onPress={this._goBackToSettings}
           >
-            <FontAwesomeIcon icon={faChevronLeft} size={20} color={"#BDBDBD"} />
+            <FontAwesomeIcon
+              icon={faChevronLeft}
+              size={normalize(20, "width")}
+              color={"#BDBDBD"}
+            />
           </TouchableOpacity>
 
           <TouchableOpacity onPress={this._toggleReturn}>

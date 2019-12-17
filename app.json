@@ -17,6 +17,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "primaryColor": "#05838B",
     "updates": {
       "fallbackToCacheTimeout": 0
     },

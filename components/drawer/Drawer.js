@@ -24,12 +24,13 @@ import { styles } from "./styles/styles";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 
 import { category_icon, plus_icon } from "../shared/icons";
+import { normalize } from "../shared/helpers";
 import PremiumAd from "../shared/components/premium-ad/PremiumAd.Container";
 
-const icon_size = 18;
+const icon_size = normalize(18, "width");
 const icon_color = "white";
 
-const category_row_height = 42;
+const category_row_height = normalize(42, "height");
 const window_width = Dimensions.get("window").width;
 
 export default class Drawer extends React.PureComponent {
@@ -146,7 +147,7 @@ export default class Drawer extends React.PureComponent {
               month_timestamp_toString = new Date(year, month_in_year)
                 .getTime()
                 .toString(),
-              total_points = parseInt(data.get("totalPoints"));
+              total_points = parseFloat(data.get("totalPoints")).toFixed(3);
 
             if (
               new_day_chart_stats.hasIn([day_timestamp_toString, "totalPoints"])
@@ -423,7 +424,7 @@ export default class Drawer extends React.PureComponent {
                     )
                       .getTime()
                       .toString(),
-                    total_points = total_points_array.get(day_in_week_index);
+                    total_points = parseFloat(total_points_array.get(day_in_week_index)).toFixed(3);
 
                   if (
                     new_day_chart_stats.hasIn([
@@ -737,7 +738,7 @@ export default class Drawer extends React.PureComponent {
                     )
                       .getTime()
                       .toString(),
-                    total_points = total_points_array.get(day_in_month_index);
+                    total_points = parseFloat(total_points_array.get(day_in_month_index)).toFixed(3);
 
                   if (
                     new_day_chart_stats.hasIn([
@@ -1251,7 +1252,7 @@ class CategoryFlatlist extends React.PureComponent {
     return (
       <View
         style={{
-          marginTop: 20,
+          marginTop: normalize(20, "height"),
           flex: 1
         }}
       >
@@ -1265,7 +1266,7 @@ class CategoryFlatlist extends React.PureComponent {
           windowSize={3}
           maxToRenderPerBatch={3}
           initialNumToRender={3}
-          // removeClippedSubviews={true}
+          removeClippedSubviews={true}
           showsVerticalScrollIndicator={false}
         />
       </View>
@@ -1306,7 +1307,7 @@ class InboxRow extends React.Component {
     return (
       <TouchableOpacity
         style={{
-          marginTop: 20,
+          marginTop: normalize(20, "height"),
           height: category_row_height,
           flexDirection: "row",
           backgroundColor: row_color
@@ -1316,18 +1317,18 @@ class InboxRow extends React.Component {
         <View
           style={{
             height: category_row_height,
-            width: 4,
+            width: normalize(4, "width"),
             backgroundColor: category_color,
-            borderTopRightRadius: 3,
-            borderBottomRightRadius: 3
+            borderTopRightRadius: normalize(3, "width"),
+            borderBottomRightRadius: normalize(3, "width")
           }}
         ></View>
 
         <View
           style={{
             flex: 1,
-            marginLeft: 18,
-            marginRight: 22,
+            marginLeft: normalize(18, "width"),
+            marginRight: normalize(22, "width"),
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center"
@@ -1340,9 +1341,18 @@ class InboxRow extends React.Component {
               alignItems: "center"
             }}
           >
-            <FontAwesomeIcon icon={faInbox} color="white" size={18} />
+            <FontAwesomeIcon
+              icon={faInbox}
+              color="white"
+              size={normalize(18, "width")}
+            />
 
-            <Text style={{ ...styles.text, ...{ marginLeft: 16 } }}>
+            <Text
+              style={{
+                ...styles.text,
+                ...{ marginLeft: normalize(16, "width") }
+              }}
+            >
               {category_name}
             </Text>
           </View>
@@ -1411,7 +1421,7 @@ class CategoryRow extends React.Component {
     return (
       <Animated.View
         style={{
-          marginTop: 20,
+          marginTop: normalize(20, "height"),
           flexDirection: "row",
           transform: [{ translateX: trans }]
         }}
@@ -1420,13 +1430,21 @@ class CategoryRow extends React.Component {
           style={styles.edit_container}
           onPress={this._editCategory}
         >
-          <FontAwesomeIcon icon={faEdit} color="white" size={16} />
+          <FontAwesomeIcon
+            icon={faEdit}
+            color="white"
+            size={normalize(16, "width")}
+          />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.delete_container}
           onPress={this._deleteCategory}
         >
-          <FontAwesomeIcon icon={faTrashAlt} color="white" size={14} />
+          <FontAwesomeIcon
+            icon={faTrashAlt}
+            color="white"
+            size={normalize(14, "width")}
+          />
         </TouchableOpacity>
       </Animated.View>
     );
@@ -1508,7 +1526,7 @@ class CategoryRow extends React.Component {
         >
           <TouchableOpacity
             style={{
-              marginTop: 20,
+              marginTop: normalize(20, "height"),
               flexDirection: "row",
               height: category_row_height
             }}
@@ -1517,18 +1535,18 @@ class CategoryRow extends React.Component {
             <View
               style={{
                 height: category_row_height,
-                width: 4,
+                width: normalize(4, "width"),
                 backgroundColor: category_color,
-                borderTopRightRadius: 3,
-                borderBottomRightRadius: 3
+                borderTopRightRadius: normalize(3, "width"),
+                borderBottomRightRadius: normalize(3, "width")
               }}
             ></View>
 
             <View
               style={{
                 flex: 1,
-                marginLeft: 18,
-                marginRight: 22,
+                marginLeft: normalize(18, "width"),
+                marginRight: normalize(22, "width"),
                 flexDirection: "row",
                 justifyContent: "space-between",
                 alignItems: "center"
@@ -1551,7 +1569,12 @@ class CategoryRow extends React.Component {
                   {category_icon(icon_size, icon_color)}
                 </View>
 
-                <Text style={{ ...styles.text, ...{ marginLeft: 16 } }}>
+                <Text
+                  style={{
+                    ...styles.text,
+                    ...{ marginLeft: normalize(16, "width") }
+                  }}
+                >
                   {category_name}
                 </Text>
               </View>
@@ -1581,9 +1604,9 @@ class AddNewCategory extends React.PureComponent {
     return (
       <TouchableOpacity
         style={{
-          marginBottom: 42,
-          marginHorizontal: 22,
-          marginTop: 20,
+          marginBottom: normalize(42, "height"),
+          marginHorizontal: normalize(22, "width"),
+          marginTop: normalize(20, "height"),
           flexDirection: "row",
           alignItems: "center"
         }}
@@ -1591,7 +1614,9 @@ class AddNewCategory extends React.PureComponent {
       >
         {plus_icon(icon_size, icon_color)}
 
-        <Text style={{ ...styles.text, ...{ marginLeft: 16 } }}>
+        <Text
+          style={{ ...styles.text, ...{ marginLeft: normalize(16, "width") } }}
+        >
           Add Category
         </Text>
       </TouchableOpacity>
@@ -1624,11 +1649,11 @@ class DeleteWarning extends React.PureComponent {
           <View
             style={{
               position: "absolute",
-              borderRadius: 20,
-              width: 320,
+              borderRadius: normalize(20, "width"),
+              width: normalize(320, "width"),
               backgroundColor: "white",
-              paddingHorizontal: 22,
-              paddingVertical: 22
+              paddingHorizontal: normalize(22, "width"),
+              paddingVertical: normalize(22, "height")
             }}
           >
             {/* <Text
@@ -1640,11 +1665,11 @@ class DeleteWarning extends React.PureComponent {
             <TouchableOpacity
               style={{
                 flexDirection: "row",
-                borderRadius: 5,
+                borderRadius: normalize(5, "width"),
                 justifyContent: "center",
                 alignItems: "center",
                 backgroundColor: "#EB5757",
-                paddingVertical: 5
+                paddingVertical: normalize(5, "height")
               }}
               onPress={this.props._deleteCategoryAffectingTasksAndHistory}
             >
@@ -1655,7 +1680,7 @@ class DeleteWarning extends React.PureComponent {
 
             <View
               style={{
-                marginTop: 5
+                marginTop: normalize(5, "height")
               }}
             >
               <Text style={styles.small_warning_text}>
@@ -1688,11 +1713,11 @@ class DeleteWarning extends React.PureComponent {
             <TouchableOpacity
               style={{
                 flexDirection: "row",
-                borderRadius: 5,
+                borderRadius: normalize(5, "width"),
                 justifyContent: "center",
                 alignItems: "center",
-                marginTop: 15,
-                paddingVertical: 5
+                marginTop: normalize(15, "height"),
+                paddingVertical: normalize(5, "height")
               }}
               onPress={this.props._toggleDeleteWarning}
             >

@@ -1,18 +1,10 @@
-import React, { Component } from "react";
+import React from "react";
 
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  Dimensions,
-  KeyboardAvoidingView,
-  Animated,
-  Keyboard,
-  ScrollView
-} from "react-native";
+import { View, Dimensions, Keyboard, TouchableOpacity } from "react-native";
 
 import { primary_colors } from "../../../../../../shared/styles/style";
+
+import { normalize } from "../../../../../../shared/helpers";
 
 import {
   calendar_icon,
@@ -23,7 +15,7 @@ import {
 } from "../../../../../../shared/icons";
 
 const icon_color = primary_colors.prim_1;
-const icon_size = 21;
+const icon_size = normalize(21, "width");
 
 import { styles } from "./styles/styles";
 
@@ -61,7 +53,7 @@ export default class BottomOptionsHolder extends React.PureComponent {
     return (
       <View
         style={{
-          height: 57,
+          height: normalize(57, "height"),
           width: Dimensions.get("window").width,
           backgroundColor: "white",
           flexDirection: "row",
@@ -71,7 +63,8 @@ export default class BottomOptionsHolder extends React.PureComponent {
           },
           shadowRadius: 7,
           shadowColor: "black",
-          shadowOpacity: 0.03
+          shadowOpacity: 0.03,
+          elevation: 8
         }}
       >
         <BottomOptionElement
@@ -99,7 +92,7 @@ export default class BottomOptionsHolder extends React.PureComponent {
           {...this.props}
           title_value={this.props.addTaskTitle}
           description_value={this.props.addTaskDescription}
-          icon={check_icon(28, "white")}
+          icon={check_icon(normalize(28, "width"), "white")}
           _toggleShouldDisplayPremiumAd={this._toggleShouldDisplayPremiumAd}
         />
 

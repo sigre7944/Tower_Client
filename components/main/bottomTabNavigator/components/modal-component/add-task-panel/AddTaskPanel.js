@@ -5,7 +5,8 @@ import {
   Animated,
   Easing,
   Keyboard,
-  ScrollView
+  ScrollView,
+  Platform
 } from "react-native";
 
 import TaskAnnotationTypeHolder from "./task-annotation-type-holder/TaskAnnotationTypeHolder.Container";
@@ -14,6 +15,8 @@ import TitleAndDescriptionHolder from "./title-and-description-holder/TitleAndDe
 import TagDataHolder from "./tag-data-holder/TagDataHolder.Container";
 
 import BottomOptionsHolder from "./bottom-options-holder/BottomOptionsHolder.Container";
+
+import { normalize } from "../../../../../shared/helpers";
 
 export default class AddTaskPanel extends Component {
   taskTextInputRef = React.createRef();
@@ -61,9 +64,11 @@ export default class AddTaskPanel extends Component {
   translateY_value = new Animated.Value(0);
   opacity_value = this.translateY_value.interpolate({
     inputRange: [-80, 0],
-    outputRange: [1, 0],
+    outputRange: Platform.OS === "android" ? [1, 1] : [1, 0],
     extrapolate: "clamp"
   });
+
+  android_opacity_value = new Animated.Value(0);
 
   state = {
     tag_data: []
@@ -78,34 +83,59 @@ export default class AddTaskPanel extends Component {
       toValue: -e.endCoordinates.height,
       duration: e.duration,
       easing: Easing.in()
-      // useNativeDriver: true
     }).start();
   };
 
   _animateEnd = callback => {
-    Animated.timing(this.translateY_value, {
-      toValue: 0,
-      duration: 250,
-      easing: Easing.in()
-      // useNativeDriver: true
-    }).start(() => {
+    if (Platform.OS === "android") {
       callback();
-    });
+    } else {
+      Animated.timing(this.translateY_value, {
+        toValue: 0,
+        duration: 250,
+        easing: Easing.in()
+      }).start(() => {
+        callback();
+      });
+    }
   };
 
   _close = () => {
     this._animateEnd(this.props.toggleAddTask);
   };
 
+  _toDoWhenKeyboardDidShow = e => {
+    Animated.timing(this.android_opacity_value, {
+      toValue: 1,
+      duration: e.duration,
+      easing: Easing.in(),
+      useNativeDriver: true
+    }).start();
+  };
+
   componentDidMount() {
-    this.keyboardWillShowListener = Keyboard.addListener(
-      "keyboardWillShow",
-      this.toDoWhenWillShowKeyboard
-    );
+    if (Platform.OS === "ios") {
+      this.keyboardWillShowListener = Keyboard.addListener(
+        "keyboardWillShow",
+        this.toDoWhenWillShowKeyboard
+      );
+    } else {
+      this.keyboardDidShowListener = Keyboard.addListener(
+        "keyboardDidShow",
+        this._toDoWhenKeyboardDidShow
+      );
+    }
   }
 
   componentWillUnmount() {
-    Keyboard.removeListener("keyboardWillShow", this.toDoWhenWillShowKeyboard);
+    if (Platform.OS === "ios") {
+      Keyboard.removeListener(
+        "keyboardWillShow",
+        this.toDoWhenWillShowKeyboard
+      );
+    } else {
+      Keyboard.removeListener("keyboardDidShow", this._toDoWhenKeyboardDidShow);
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -125,18 +155,26 @@ export default class AddTaskPanel extends Component {
           width: Dimensions.get("window").width,
           bottom: 0,
           transform: [{ translateY: this.translateY_value }],
-          height: 409,
+          // 25 for status bar, 48 for soft menu bar (largest size)
+          height:
+            Platform.OS === "android"
+              ? normalize(409, "height") - 25 - 48
+              : normalize(409, "height"),
           backgroundColor: "white",
-          borderTopRightRadius: 20,
-          borderTopLeftRadius: 20,
-          opacity: this.opacity_value,
+          borderTopRightRadius: normalize(20, "width"),
+          borderTopLeftRadius: normalize(20, "width"),
+          opacity:
+            Platform.OS === "android"
+              ? this.android_opacity_value
+              : this.opacity_value,
           backgroundColor: "#FFFFFF",
           shadowOffset: {
             width: 0,
             height: -2
           },
           shadowRadius: 15,
-          shadowColor: "rgba(0, 0, 0, 0.06)"
+          shadowColor: "rgba(0, 0, 0, 0.06)",
+          elevation: 8
         }}
       >
         <TaskAnnotationTypeHolder

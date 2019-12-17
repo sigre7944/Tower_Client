@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   Animated,
   Easing,
-  Keyboard
+  Keyboard,
+  Platform
 } from "react-native";
 
 import { FlatList } from "react-native-gesture-handler";
@@ -22,24 +23,20 @@ import {
   close_icon,
   plus_icon
 } from "../../../../../../shared/icons";
+import { normalize } from "../../../../../../shared/helpers";
 
-const icon_size = 14;
+const icon_size = normalize(14, "width");
 const icon_color = "#2C2C2C";
 
-const panel_width = 338;
+const panel_width = normalize(338, "width");
 const animation_duration = 250;
 const easing = Easing.in();
-const category_height = 45; // row's height = 25 + margin top = 20
+const category_height = normalize(45, "height"); // row's height = 25 + margin top = 20
 
 const list_max_height = 8 * category_height;
 
 export default class Category extends React.PureComponent {
-  repeat_opacity_value = new Animated.Value(0.3);
-  repeat_scale_value = this.repeat_opacity_value.interpolate({
-    inputRange: [0, 0.3, 0.5, 0.7, 1],
-    outputRange: [0, 0.3, 0.5, 0.7, 1],
-    extrapolate: "clamp"
-  });
+  repeat_opacity_value = new Animated.Value(0);
 
   start_index = 0;
 
@@ -217,7 +214,8 @@ export default class Category extends React.PureComponent {
       toValue: 1,
       duration: animation_duration,
       easing,
-      useNativeDriver: edit ? false : true
+      // useNativeDriver: edit ? false : true
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
@@ -226,7 +224,8 @@ export default class Category extends React.PureComponent {
       toValue: 0,
       duration: animation_duration,
       easing,
-      useNativeDriver: edit ? false : true
+      // useNativeDriver: edit ? false : true
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start(() => {
       callback();
     });
@@ -296,7 +295,6 @@ export default class Category extends React.PureComponent {
           backgroundColor: "white",
           borderRadius: 10,
           overflow: "hidden",
-          transform: [{ scale: this.repeat_scale_value }],
           opacity: this.repeat_opacity_value
         }}
       >
@@ -304,8 +302,8 @@ export default class Category extends React.PureComponent {
           style={{
             flexDirection: "row",
             alignItems: "center",
-            marginLeft: 30,
-            marginTop: 30
+            marginLeft: normalize(30, "width"),
+            marginTop: normalize(30, "height")
           }}
         >
           <View
@@ -323,8 +321,8 @@ export default class Category extends React.PureComponent {
 
         <View
           style={{
-            marginTop: 10,
-            marginHorizontal: 30,
+            marginTop: normalize(10, "height"),
+            marginHorizontal: normalize(30, "width"),
             height: list_max_height
           }}
         >
@@ -340,31 +338,32 @@ export default class Category extends React.PureComponent {
             initialNumToRender={3}
             windowSize={3}
             maxToRenderPerBatch={3}
+            removeClippedSubviews={true}
           />
         </View>
 
         <TouchableOpacity
           style={{
             flexDirection: "row",
-            marginTop: 20,
-            height: 25,
-            marginHorizontal: 30,
+            marginTop: normalize(20, "height"),
+            height: normalize(25, "height"),
+            marginHorizontal: normalize(30, "width"),
             alignItems: "center"
           }}
           onPress={this._displayAddCategoryPanel}
         >
           <View
             style={{
-              width: 14,
-              height: 14,
-              borderRadius: 7,
+              width: normalize(14, "width"),
+              height: normalize(14, "width"),
+              borderRadius: normalize(14, "width"),
               justifyContent: "center",
               alignItems: "center",
               borderWidth: 1,
               borderColor: "rgba(0, 0, 0, 0.3)"
             }}
           >
-            {plus_icon(9, "rgba(0, 0, 0, 0.3)")}
+            {plus_icon(normalize(9, "width"), "rgba(0, 0, 0, 0.3)")}
           </View>
 
           <Text style={styles.category_text}>Add a new list</Text>
@@ -381,25 +380,25 @@ export default class Category extends React.PureComponent {
 
         <View
           style={{
-            marginTop: 28,
-            marginHorizontal: 30,
+            marginTop: normalize(28, "height"),
+            marginHorizontal: normalize(30, "width"),
             flexDirection: "row",
             justifyContent: "flex-end",
-            marginBottom: 35
+            marginBottom: normalize(35, "height")
           }}
         >
           <TouchableOpacity
             style={styles.close_icon_holder}
             onPress={this._cancel}
           >
-            {close_icon(19, "white")}
+            {close_icon(normalize(19, "width"), "white")}
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.save_icon_holder}
             onPress={this._save}
           >
-            {check_icon(19, "white")}
+            {check_icon(normalize(19, "width"), "white")}
           </TouchableOpacity>
         </View>
       </Animated.View>
@@ -511,16 +510,16 @@ class CategoryRow extends React.Component {
             style={{
               flexDirection: "row",
               alignItems: "center",
-              marginTop: 20
+              marginTop: normalize(20, "height")
             }}
           >
             {Map(this.props.data).get("color") === "no color" ||
             Map(this.props.data).get("color") === "white" ? (
               <View
                 style={{
-                  width: 14,
-                  height: 14,
-                  borderRadius: 7,
+                  width: normalize(14, "width"),
+                  height: normalize(14, "width"),
+                  borderRadius: normalize(14, "width"),
                   borderWidth: 1,
                   borderColor: "#2C2C2C",
                   justifyContent: "center",
@@ -539,9 +538,9 @@ class CategoryRow extends React.Component {
             ) : (
               <View
                 style={{
-                  width: 14,
-                  height: 14,
-                  borderRadius: 7,
+                  width: normalize(14, "width"),
+                  height: normalize(14, "width"),
+                  borderRadius: normalize(14, "width"),
                   backgroundColor: Map(this.props.data).get("color")
                 }}
               ></View>

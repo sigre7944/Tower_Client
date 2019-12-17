@@ -5,8 +5,7 @@ import {
   TouchableOpacity,
   Dimensions,
   ScrollView,
-  Switch,
-  Picker
+  Switch
 } from "react-native";
 
 import SettingHeader from "./components/header/SettingHeader";
@@ -14,11 +13,10 @@ import UserAccount from "./components/user-account/UserAccount.Container";
 import PremiumRow from "./components/premium-row/PremiumRow.Container";
 import Feather from "react-native-vector-icons/Feather";
 import { styles } from "./styles/styles";
-
+import { normalize } from "../../../shared/helpers";
 import { Map } from "immutable";
 
 const window_width = Dimensions.get("window").width;
-const premium_1x_image = require("../../../../assets/pngs/premium_1x.png");
 
 export default class Settings extends React.Component {
   static navigationOptions = ({ navigation, navigationOptions }) => {
@@ -65,9 +63,9 @@ export default class Settings extends React.Component {
 
           <View
             style={{
-              paddingHorizontal: 22,
-              marginTop: 32,
-              marginBottom: 22
+              paddingHorizontal: normalize(22, "width"),
+              marginTop: normalize(32, "height"),
+              marginBottom: normalize(22, "height")
             }}
           >
             <Text style={styles.normal_text}>Preference</Text>
@@ -82,18 +80,19 @@ export default class Settings extends React.Component {
               },
               shadowRadius: 8,
               shadowColor: "black",
-              shadowOpacity: 0.12
+              shadowOpacity: 0.08,
+              elevation: 4,
             }}
           >
             <View
               style={{
-                height: 59,
+                height: normalize(59, "height"),
                 width: window_width,
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
-                paddingHorizontal: 22,
-                paddingVertical: 18
+                paddingHorizontal: normalize(22, "width"),
+                paddingVertical: normalize(18, "height")
               }}
             >
               <Text style={styles.normal_text}>Sound</Text>
@@ -113,13 +112,13 @@ export default class Settings extends React.Component {
 
             <View
               style={{
-                height: 59,
+                height: normalize(59, "height"),
                 width: window_width,
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
-                paddingHorizontal: 22,
-                paddingVertical: 18
+                paddingHorizontal: normalize(22, "width"),
+                paddingVertical: normalize(18, "height")
               }}
             >
               <Text style={styles.normal_text}>Vibration</Text>
@@ -247,9 +246,9 @@ export default class Settings extends React.Component {
 
           <View
             style={{
-              paddingHorizontal: 22,
-              marginTop: 32,
-              marginBottom: 22
+              paddingHorizontal: normalize(22, "width"),
+              marginTop: normalize(32, "height"),
+              marginBottom: normalize(22, "height")
             }}
           >
             <Text style={styles.normal_text}>Support us</Text>
@@ -264,42 +263,51 @@ export default class Settings extends React.Component {
               },
               shadowRadius: 8,
               shadowColor: "black",
-              shadowOpacity: 0.12,
-              marginBottom: 32
+              shadowOpacity: 0.08,
+              elevation: 4,
+              marginBottom: normalize(32, "height")
             }}
           >
             <TouchableOpacity
               style={{
-                height: 59,
+                height: normalize(59, "height"),
                 width: window_width,
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
-                paddingHorizontal: 22,
-                paddingVertical: 18
+                paddingHorizontal: normalize(22, "width"),
+                paddingVertical: normalize(18, "height")
               }}
             >
               <Text style={styles.normal_text}>Write a review</Text>
 
-              <Feather name="chevron-right" size={21} color="#6E6E6E" />
+              <Feather
+                name="chevron-right"
+                size={normalize(21, "width")}
+                color="#6E6E6E"
+              />
             </TouchableOpacity>
 
             <View style={styles.separating_line} />
 
             <TouchableOpacity
               style={{
-                height: 59,
+                height: normalize(59, "height"),
                 width: window_width,
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
-                paddingHorizontal: 22,
-                paddingVertical: 18
+                paddingHorizontal: normalize(22, "width"),
+                paddingVertical: normalize(18, "height")
               }}
             >
               <Text style={styles.normal_text}>Feedback</Text>
 
-              <Feather name="chevron-right" size={21} color="#6E6E6E" />
+              <Feather
+                name="chevron-right"
+                size={normalize(21, "width")}
+                color="#6E6E6E"
+              />
             </TouchableOpacity>
           </View>
         </ScrollView>

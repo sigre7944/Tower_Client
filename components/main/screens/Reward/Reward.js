@@ -1,13 +1,6 @@
 import React from "react";
 
-import {
-  View,
-  FlatList,
-  Dimensions,
-  Image,
-  Text,
-  TouchableOpacity
-} from "react-native";
+import { View, FlatList, Image, Text, TouchableOpacity } from "react-native";
 
 import TrackingSection from "./components/tracking-section/TrackingSection.Container";
 import StoreSection from "./components/store-section/StoreSection";
@@ -15,8 +8,8 @@ import StoreSection from "./components/store-section/StoreSection";
 import RewardHeader from "./components/header/RewardHeader";
 
 import { plus_icon } from "../../../shared/icons";
-
-const icon_size = 19;
+import { normalize } from "../../../shared/helpers";
+const icon_size = normalize(19, "width");
 const icon_color = "white";
 
 import { OrderedMap } from "immutable";
@@ -25,7 +18,6 @@ import { styles } from "./styles/styles";
 
 import AddEditReward from "./components/store-section/crud-reward-section/add-edit-reward/AddEditReward.Container";
 
-const window_width = Dimensions.get("window").width;
 const have_no_reward_1x = require("../../../../assets/pngs/have_no_reward_1x.png");
 
 export default class Reward extends React.PureComponent {
@@ -120,7 +112,7 @@ export default class Reward extends React.PureComponent {
               style={{
                 justifyContent: "center",
                 alignItems: "center",
-                height: 172
+                height: normalize(172, "height")
               }}
             >
               <Image
@@ -134,7 +126,7 @@ export default class Reward extends React.PureComponent {
 
             <View
               style={{
-                marginTop: 48,
+                marginTop: normalize(48, "height"),
                 justifyContent: "center",
                 alignItems: "center"
               }}

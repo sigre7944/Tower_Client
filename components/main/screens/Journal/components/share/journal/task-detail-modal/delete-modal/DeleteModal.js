@@ -1,30 +1,20 @@
-import React, { Component } from 'react';
+import React  from 'react';
 import {
     TouchableOpacity,
     TouchableWithoutFeedback,
     Text,
     View,
-    StyleSheet,
-    ImageBackground,
     Dimensions,
-    Image,
-    TextInput,
     Modal,
-    ScrollView,
-    Animated,
-    Easing
 } from 'react-native'
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 
 import { Map, List, fromJS } from 'immutable'
 import { styles } from './styles/styles';
+import { normalize } from "../../../../../../../../shared/helpers";
 
 const window_width = Dimensions.get("window").width
-const window_height = Dimensions.get("window").height
-const easing = Easing.inOut(Easing.linear)
-const animation_duration = 250
 
-export default class DeleteModal extends Component {
+export default class DeleteModal extends React.PureComponent {
     priority_order = {
         pri_01: 0,
         pri_02: 1,
@@ -86,7 +76,7 @@ export default class DeleteModal extends Component {
                         week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
                         month_timestamp_toString = new Date(year, month_in_year).getTime().toString(),
                         day_timestamp_toString = key,
-                        total_points = completed_tasks_map.getIn([task_id, key, "totalPoints"])
+                        total_points = parseFloat(completed_tasks_map.getIn([task_id, key, "totalPoints"], 0)).toFixed(3)
 
                     if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
                         returning_day_chart_stats_map.updateIn(
@@ -210,7 +200,7 @@ export default class DeleteModal extends Component {
                             year_toString = year.toString(),
                             month_timestamp_toString = new Date(year, month_in_year).getTime().toString(),
                             day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
-                            total_points = parseFloat(total_points_array.get(day_in_week_index))
+                            total_points = parseFloat(total_points_array.get(day_in_week_index)).toFixed(3)
 
                         if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
                             returning_day_chart_stats_map.updateIn(
@@ -336,7 +326,7 @@ export default class DeleteModal extends Component {
                             monday = this.getMonday(date),
                             day_timestamp_toString = date.getTime().toString(),
                             week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
-                            total_points = parseFloat(total_points_array.get(day_in_month_index))
+                            total_points = parseFloat(total_points_array.get(day_in_month_index)).toFixed(3)
 
                         if (returning_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
                             returning_day_chart_stats_map.updateIn(
@@ -591,7 +581,7 @@ export default class DeleteModal extends Component {
                 year_toString = year.toString()
 
             if (completed_tasks_map.hasIn([task_id, timestamp_toString])) {
-                let total_points = completed_tasks_map.getIn([task_id, timestamp_toString, "totalPoints"], 0),
+                let total_points = parseFloat(completed_tasks_map.getIn([task_id, timestamp_toString, "totalPoints"], 0)).toFixed(3),
                     completed_priority_array = List(completed_tasks_map.getIn([task_id, timestamp_toString, "completed_priority_array"]))
 
                 if (returning_day_chart_stats_map.has(timestamp_toString)) {
@@ -672,7 +662,7 @@ export default class DeleteModal extends Component {
                         year_toString = year.toString(),
                         month_timestamp_toString = new Date(year, month_in_year).getTime().toString(),
                         day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
-                        total_points = parseFloat(total_points_array.get(day_in_week_index))
+                        total_points = parseFloat(total_points_array.get(day_in_week_index)).toFixed(3)
 
                     if (returning_day_chart_stats_map.has(day_timestamp_toString)) {
                         returning_day_chart_stats_map.updateIn([day_timestamp_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
@@ -753,7 +743,7 @@ export default class DeleteModal extends Component {
                         monday = this.getMonday(date),
                         day_timestamp_toString = date.getTime().toString(),
                         week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
-                        total_points = parseFloat(total_points_array.get(day_in_month_index))
+                        total_points = parseFloat(total_points_array.get(day_in_month_index)).toFixed(3)
 
                     if (returning_day_chart_stats_map.has(day_timestamp_toString)) {
                         returning_day_chart_stats_map.updateIn([day_timestamp_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
@@ -921,11 +911,11 @@ export default class DeleteModal extends Component {
                     <View
                         style={{
                             position: "absolute",
-                            borderRadius: 20,
-                            width: 320,
+                            borderRadius: normalize(20, "width"),
+                            width: normalize(320, "width"),
                             backgroundColor: "white",
-                            paddingHorizontal: 22,
-                            paddingVertical: 22,
+                            paddingHorizontal: normalize(22, "width"),
+                            paddingVertical: normalize(22, "height"),
                         }}
                     >
                         {/* <Text
@@ -937,8 +927,8 @@ export default class DeleteModal extends Component {
                         <TouchableOpacity
                             style={{
                                 flexDirection: "row",
-                                paddingVertical: 5,
-                                borderRadius: 5,
+                                paddingVertical: normalize(5, "height"),
+                                borderRadius: normalize(5, "width"),
                                 justifyContent: "center",
                                 alignItems: "center",
                                 backgroundColor: "#EB5757",
@@ -955,7 +945,7 @@ export default class DeleteModal extends Component {
 
                         <View
                             style={{
-                                marginTop: 5
+                                marginTop: normalize(5, "height")
                             }}
                         >
                             <Text
@@ -972,12 +962,12 @@ export default class DeleteModal extends Component {
                                 <TouchableOpacity
                                     style={{
                                         flexDirection: "row",
-                                        paddingVertical: 5,
-                                        borderRadius: 5,
+                                        paddingVertical: normalize(5, "height"),
+                                        borderRadius: normalize(5, "width"),
                                         justifyContent: "center",
                                         alignItems: "center",
                                         backgroundColor: "#F2994A",
-                                        marginTop: 15,
+                                        marginTop: normalize(15, "height"),
                                     }}
 
                                     onPress={this._deleteRecord}
@@ -991,7 +981,7 @@ export default class DeleteModal extends Component {
 
                                 <View
                                     style={{
-                                        marginTop: 5
+                                        marginTop: normalize(5, "height")
                                     }}
                                 >
                                     <Text
@@ -1013,11 +1003,11 @@ export default class DeleteModal extends Component {
                         <TouchableOpacity
                             style={{
                                 flexDirection: "row",
-                                paddingVertical: 5,
-                                borderRadius: 5,
+                                paddingVertical: normalize(5, "height"),
+                                borderRadius: normalize(5, "width"),
                                 justifyContent: "center",
                                 alignItems: "center",
-                                marginTop: 15,
+                                marginTop: normalize(15, "height"),
                             }}
 
                             onPress={this.props._toggleDelete}

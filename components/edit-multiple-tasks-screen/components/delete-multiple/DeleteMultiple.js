@@ -1,21 +1,13 @@
 import React from 'react';
-import { DrawerActions } from 'react-navigation-drawer'
 import {
     TouchableOpacity,
     Text,
     View,
-    Modal,
-    TextInput,
-    FlatList,
-    Dimensions,
-    Animated
 } from 'react-native'
 
 import { Map, List, OrderedMap, fromJS } from 'immutable'
-
+import { normalize } from "../../../shared/helpers";
 import { styles } from "./styles/styles";
-const window_width = Dimensions.get("window").width
-
 
 export default class DeleteMultiple extends React.PureComponent {
     month_names = ["January", "Febuary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
@@ -163,7 +155,7 @@ export default class DeleteMultiple extends React.PureComponent {
                             year_toString = year.toString()
 
                         if (completed_tasks_map.hasIn([task_id, timestamp_toString])) {
-                            let total_points = completed_tasks_map.getIn([task_id, timestamp_toString, "totalPoints"], 0),
+                            let total_points = parseFloat(completed_tasks_map.getIn([task_id, timestamp_toString, "totalPoints"], 0)).toFixed(3),
                                 completed_priority_array = List(completed_tasks_map.getIn([task_id, timestamp_toString, "completed_priority_array"]))
 
                             if (new_day_chart_stats_map.has(timestamp_toString)) {
@@ -236,7 +228,7 @@ export default class DeleteMultiple extends React.PureComponent {
                                     year_toString = year.toString(),
                                     month_timestamp_toString = new Date(year, month_in_year).getTime().toString(),
                                     day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
-                                    total_points = parseFloat(total_points_array.get(day_in_week_index))
+                                    total_points = parseFloat(total_points_array.get(day_in_week_index)).toFixed(3)
 
                                 if (new_day_chart_stats_map.has(day_timestamp_toString)) {
                                     new_day_chart_stats_map.updateIn([day_timestamp_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
@@ -325,7 +317,7 @@ export default class DeleteMultiple extends React.PureComponent {
                                     monday = this.getMonday(date),
                                     day_timestamp_toString = date.getTime().toString(),
                                     week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
-                                    total_points = parseFloat(total_points_array.get(day_in_month_index))
+                                    total_points = parseFloat(total_points_array.get(day_in_month_index)).toFixed(3)
 
                                 if (new_day_chart_stats_map.has(day_timestamp_toString)) {
                                     new_day_chart_stats_map.updateIn([day_timestamp_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
@@ -407,7 +399,7 @@ export default class DeleteMultiple extends React.PureComponent {
                                         week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
                                         month_timestamp_toString = new Date(year, month_in_year).getTime().toString(),
                                         day_timestamp_toString = key,
-                                        total_points = completed_tasks_key_data.getIn(["totalPoints"])
+                                        total_points = parseFloat(completed_tasks_key_data.getIn(["totalPoints"], 0)).toFixed(3)
 
                                     if (new_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
                                         new_day_chart_stats_map.updateIn(
@@ -531,7 +523,7 @@ export default class DeleteMultiple extends React.PureComponent {
                                             year_toString = year.toString(),
                                             month_timestamp_toString = new Date(year, month_in_year).getTime().toString(),
                                             day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
-                                            total_points = total_points_array.get(day_in_week_index)
+                                            total_points = parseFloat(total_points_array.get(day_in_week_index)).toFixed(3)
 
                                         if (new_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
                                             new_day_chart_stats_map.updateIn(
@@ -657,7 +649,7 @@ export default class DeleteMultiple extends React.PureComponent {
                                             monday = this.getMonday(date),
                                             day_timestamp_toString = date.getTime().toString(),
                                             week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
-                                            total_points = parseFloat(total_points_array.get(day_in_month_index))
+                                            total_points = parseFloat(total_points_array.get(day_in_month_index)).toFixed(3)
 
                                         if (new_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
                                             new_day_chart_stats_map.updateIn(
@@ -831,11 +823,11 @@ export default class DeleteMultiple extends React.PureComponent {
             <View
                 style={{
                     position: "absolute",
-                    borderRadius: 20,
-                    width: 320,
+                    borderRadius: normalize(20, "width"),
+                    width: normalize(320, "width"),
                     backgroundColor: "white",
-                    paddingHorizontal: 22,
-                    paddingVertical: 22,
+                    paddingHorizontal: normalize(22, "width"),
+                    paddingVertical: normalize(22, "height"),
                 }}
             >
                 {/* <Text
@@ -847,8 +839,8 @@ export default class DeleteMultiple extends React.PureComponent {
                 <TouchableOpacity
                     style={{
                         flexDirection: "row",
-                        paddingVertical: 5,
-                        borderRadius: 5,
+                        paddingVertical: normalize(5, "height"),
+                        borderRadius: normalize(5, "width"),
                         justifyContent: "center",
                         alignItems: "center",
                         backgroundColor: "#EB5757",
@@ -865,7 +857,7 @@ export default class DeleteMultiple extends React.PureComponent {
 
                 <View
                     style={{
-                        marginTop: 5
+                        marginTop: normalize(5, "height")
                     }}
                 >
                     <Text
@@ -878,12 +870,12 @@ export default class DeleteMultiple extends React.PureComponent {
                 <TouchableOpacity
                     style={{
                         flexDirection: "row",
-                        paddingVertical: 5,
-                        borderRadius: 5,
+                        paddingVertical: normalize(5, "height"),
+                        borderRadius: normalize(5, "width"),
                         justifyContent: "center",
                         alignItems: "center",
                         backgroundColor: "#F2994A",
-                        marginTop: 15,
+                        marginTop: normalize(15, "height"),
                     }}
 
                     onPress={this._deleteRecord}
@@ -897,7 +889,7 @@ export default class DeleteMultiple extends React.PureComponent {
 
                 <View
                     style={{
-                        marginTop: 5
+                        marginTop: normalize(5, "height")
                     }}
                 >
                     <Text
@@ -917,12 +909,12 @@ export default class DeleteMultiple extends React.PureComponent {
                 <TouchableOpacity
                     style={{
                         flexDirection: "row",
-                        paddingHorizontal: 10,
-                        paddingVertical: 5,
-                        borderRadius: 5,
+                        paddingHorizontal: normalize(10, "width"),
+                        paddingVertical: normalize(5, "height"),
+                        borderRadius: normalize(5, "width"),
                         justifyContent: "center",
                         alignItems: "center",
-                        marginTop: 15,
+                        marginTop: normalize(15, "height"),
                     }}
 
                     onPress={this.props.hideAction}

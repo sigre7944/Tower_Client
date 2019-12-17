@@ -1,26 +1,16 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Dimensions,
-  ScrollView,
-  Switch,
-  Picker
-} from "react-native";
+import { View, Text, TouchableOpacity, Dimensions } from "react-native";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import { styles } from "./styles/styles";
-
+import { normalize } from "../../../../../shared/helpers";
 import { Map } from "immutable";
 
 const window_width = Dimensions.get("window").width;
 
 export default class Settings extends React.PureComponent {
-  state = {
-  };
+  state = {};
 
   _goToAccountScreen = () => {
     this.props.navigation.navigate("SettingsAccountScreen");
@@ -36,7 +26,10 @@ export default class Settings extends React.PureComponent {
       "isLoggedIn"
     ]);
 
-    let full_name = Map(this.props.generalSettings).getIn(["account", "fullName"]);
+    let full_name = Map(this.props.generalSettings).getIn([
+      "account",
+      "fullName"
+    ]);
 
     return (
       <>
@@ -44,13 +37,13 @@ export default class Settings extends React.PureComponent {
           <TouchableOpacity
             style={{
               flexDirection: "row",
-              height: 92,
+              height: normalize(92, "height"),
               width: window_width,
               alignItems: "center",
               justifyContent: "space-between",
-              paddingHorizontal: 22,
-              paddingVertical: 22,
-              marginTop: 20,
+              paddingHorizontal: normalize(22, "width"),
+              paddingVertical: normalize(22, "height"),
+              marginTop: normalize(20, "height"),
               shadowOffset: {
                 width: 4,
                 height: 4
@@ -58,6 +51,7 @@ export default class Settings extends React.PureComponent {
               shadowRadius: 15,
               shadowColor: "rgb(0, 0, 0)",
               shadowOpacity: 0.08,
+              elevation: 8,
               backgroundColor: "white"
             }}
             onPress={this._goToAccountScreen}
@@ -72,32 +66,36 @@ export default class Settings extends React.PureComponent {
                 <MaterialCommunityIcons
                   name="account"
                   color="white"
-                  size={30}
+                  size={normalize(30, "width")}
                 />
               </View>
 
               <View
                 style={{
-                  marginLeft: 15
+                  marginLeft: normalize(15, "width")
                 }}
               >
                 <Text style={styles.normal_text}>{full_name}</Text>
               </View>
             </View>
 
-            <Feather name="chevron-right" size={21} color="#6E6E6E" />
+            <Feather
+              name="chevron-right"
+              size={normalize(21, "width")}
+              color="#6E6E6E"
+            />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
             style={{
               flexDirection: "row",
-              height: 92,
+              height: normalize(92, "height"),
               width: window_width,
               alignItems: "center",
               justifyContent: "space-between",
-              paddingHorizontal: 22,
-              paddingVertical: 22,
-              marginTop: 20,
+              paddingHorizontal: normalize(22, "width"),
+              paddingVertical: normalize(22, "height"),
+              marginTop: normalize(20, "height"),
               shadowOffset: {
                 width: 4,
                 height: 4
@@ -105,6 +103,7 @@ export default class Settings extends React.PureComponent {
               shadowRadius: 15,
               shadowColor: "rgb(0, 0, 0)",
               shadowOpacity: 0.08,
+              elevation: 4,
               backgroundColor: "white"
             }}
             onPress={this._goToSignInSignUp}
@@ -119,20 +118,24 @@ export default class Settings extends React.PureComponent {
                 <MaterialCommunityIcons
                   name="account"
                   color="white"
-                  size={30}
+                  size={normalize(30, "width")}
                 />
               </View>
 
               <View
                 style={{
-                  marginLeft: 15
+                  marginLeft: normalize(15, "width")
                 }}
               >
                 <Text style={styles.normal_text}>Sign in or Sign up</Text>
               </View>
             </View>
 
-            <Feather name="chevron-right" size={21} color="#6E6E6E" />
+            <Feather
+              name="chevron-right"
+              size={normalize(21, "width")}
+              color="#6E6E6E"
+            />
           </TouchableOpacity>
         )}
       </>

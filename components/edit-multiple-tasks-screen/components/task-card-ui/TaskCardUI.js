@@ -1,22 +1,10 @@
 import React from "react";
 
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  Keyboard,
-  Animated,
-  KeyboardAvoidingView,
-  Dimensions,
-  Modal,
-  FlatList,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback
-} from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 
 import { styles } from "./styles/styles";
 import PremiumAd from "../../../shared/components/premium-ad/PremiumAd.Container";
+import { normalize } from "../../../shared/helpers";
 import { Map, List, fromJS } from "immutable";
 
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -53,7 +41,7 @@ export default class TaskCardUI extends React.PureComponent {
       is_task_card_able_to_edit = false;
 
     if (task_plan === "free") {
-      is_task_card_able_to_edit = false;
+      is_task_card_able_to_edit = true;
     } else {
       is_task_card_able_to_edit = account_plan === task_plan;
     }
@@ -121,8 +109,8 @@ export default class TaskCardUI extends React.PureComponent {
               style={{
                 justifyContent: "center",
                 alignItems: "center",
-                height: 62,
-                paddingHorizontal: 15
+                height: normalize(62, "height"),
+                paddingHorizontal: normalize(15, "width")
               }}
               onPress={this._checkComplete}
             >
@@ -131,7 +119,7 @@ export default class TaskCardUI extends React.PureComponent {
           </View>
           <View
             style={{
-              marginLeft: 15,
+              marginLeft: normalize(15, "width"),
               flex: 1,
               justifyContent: "center"
             }}
@@ -173,10 +161,10 @@ class PriorityColorBar extends React.PureComponent {
     return (
       <View
         style={{
-          width: 9,
+          width: normalize(9, "width"),
           backgroundColor: this.props.priority_color,
-          borderRadius: 30,
-          height: 62,
+          borderRadius: normalize(30, "width"),
+          height: normalize(62, "height"),
           marginLeft: 1
         }}
       ></View>
@@ -212,14 +200,14 @@ class CategoryColorCircle extends React.PureComponent {
         this.props.category_color === "no color" ? (
           <View
             style={{
-              width: 12,
-              height: 12,
-              borderRadius: 6,
+              width: normalize(12, "width"),
+              height: normalize(12, "width"),
+              borderRadius: normalize(12, "width"),
               borderWidth: 1,
               borderColor: "#2C2C2C",
               justifyContent: "center",
               alignItems: "center",
-              marginHorizontal: 15
+              marginHorizontal: normalize(15, "width")
             }}
           >
             <View
@@ -235,10 +223,10 @@ class CategoryColorCircle extends React.PureComponent {
           <View
             style={{
               backgroundColor: this.props.category_color,
-              marginHorizontal: 15,
-              width: 12,
-              height: 12,
-              borderRadius: 6
+              marginHorizontal: normalize(15, "width"),
+              width: normalize(12, "width"),
+              height: normalize(12, "width"),
+              borderRadius: normalize(12, "width")
             }}
           ></View>
         )}

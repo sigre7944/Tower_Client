@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  TouchableOpacity,
-  Text,
-  View,
-  StyleSheet,
-  Animated,
-  Switch
-} from "react-native";
+import { TouchableOpacity, Text, View } from "react-native";
 
 import * as Haptics from "expo-haptics";
 
@@ -19,6 +12,8 @@ import { Map, List, fromJS } from "immutable";
 import { Audio } from "expo-av";
 import { check_icon } from "../../../../../../../shared/icons";
 import { styles } from "./styles/styles";
+
+import { normalize } from "../../../../../../../shared/helpers";
 
 export default class TaskCard extends React.PureComponent {
   priority_order = {
@@ -79,7 +74,7 @@ export default class TaskCard extends React.PureComponent {
       task_id = task_map.get("id"),
       task_category = task_map.get("category"),
       task_priority = task_map.getIn(["priority", "value"]),
-      task_reward = parseFloat(task_map.getIn(["reward", "value"])),
+      task_reward = parseFloat(task_map.getIn(["reward", "value"])).toFixed(3),
       current_date = new Date(),
       monday = this.getMonday(current_date),
       data = Map(),
@@ -461,7 +456,7 @@ export default class TaskCard extends React.PureComponent {
       task_priority = Map(this.props.task_data).getIn(["priority", "value"]),
       task_reward = parseFloat(
         Map(this.props.task_data).getIn(["reward", "value"])
-      ),
+      ).toFixed(3),
       task_type = Map(this.props.task_data).get("type");
 
     let day_chart_stats_update = this._updateDayChartStats(
@@ -1240,7 +1235,7 @@ export default class TaskCard extends React.PureComponent {
 
         let reward_value = parseFloat(
           Map(this.props.task_data).getIn(["reward", "value"])
-        );
+        ).toFixed(3);
 
         sending_obj.balance_data = this._updateBalanceData(
           reward_value,
@@ -1293,7 +1288,7 @@ export default class TaskCard extends React.PureComponent {
 
         let reward_value = parseFloat(
           Map(this.props.task_data).getIn(["reward", "value"])
-        );
+        ).toFixed(3);
 
         sending_obj.balance_data = this._updateBalanceData(
           reward_value,
@@ -1406,8 +1401,8 @@ export default class TaskCard extends React.PureComponent {
               style={{
                 justifyContent: "center",
                 alignItems: "center",
-                height: 62,
-                paddingHorizontal: 15
+                height: normalize(62, "height"),
+                paddingHorizontal: normalize(15, "width")
               }}
               onPress={this._checkComplete}
             >
@@ -1419,7 +1414,7 @@ export default class TaskCard extends React.PureComponent {
           </View>
           <TouchableOpacity
             style={{
-              marginLeft: 15,
+              marginLeft: normalize(15, "width"),
               flex: 1,
               justifyContent: "center"
             }}
@@ -1444,14 +1439,18 @@ export default class TaskCard extends React.PureComponent {
               {this.props.current_goal_value > 0 ? (
                 <TouchableOpacity
                   style={{
-                    width: 58,
-                    height: 62,
+                    width: normalize(58, "width"),
+                    height: normalize(62, "height"),
                     justifyContent: "center",
                     alignItems: "center"
                   }}
                   onPress={this._unCheckComplete}
                 >
-                  <FontAwesomeIcon icon={faRedoAlt} size={18} color="#BDBDBD" />
+                  <FontAwesomeIcon
+                    icon={faRedoAlt}
+                    size={normalize(18, "width")}
+                    color="#BDBDBD"
+                  />
                 </TouchableOpacity>
               ) : null}
             </>
@@ -1475,10 +1474,10 @@ class PriorityColorBar extends React.PureComponent {
     return (
       <View
         style={{
-          width: 9,
+          width: normalize(9, "width"),
           backgroundColor: this.props.priority_color,
-          borderRadius: 30,
-          height: 62,
+          borderRadius: normalize(30, "width"),
+          height: normalize(62, "height"),
           marginLeft: 1
         }}
       ></View>
@@ -1495,7 +1494,9 @@ class CompleteBox extends React.PureComponent {
     }
     return (
       <View style={complete_box_container_style}>
-        {flag === "completed" ? <>{check_icon(14, "white")}</> : null}
+        {flag === "completed" ? (
+          <>{check_icon(normalize(14, "width"), "white")}</>
+        ) : null}
       </View>
     );
   }
@@ -1509,14 +1510,14 @@ class CategoryColorCircle extends React.PureComponent {
         this.props.category_color === "no color" ? (
           <View
             style={{
-              width: 12,
-              height: 12,
-              borderRadius: 6,
+              width: normalize(12, "width"),
+              height: normalize(12, "width"),
+              borderRadius: normalize(12, "width"),
               borderWidth: 1,
               borderColor: "#2C2C2C",
               justifyContent: "center",
               alignItems: "center",
-              marginHorizontal: 15
+              marginHorizontal: normalize(15, "width")
             }}
           >
             <View
@@ -1532,10 +1533,10 @@ class CategoryColorCircle extends React.PureComponent {
           <View
             style={{
               backgroundColor: this.props.category_color,
-              marginHorizontal: 15,
-              width: 12,
-              height: 12,
-              borderRadius: 6
+              marginHorizontal: normalize(15, "width"),
+              width: normalize(12, "width"),
+              height: normalize(12, "width"),
+              borderRadius: normalize(12, "width")
             }}
           ></View>
         )}
