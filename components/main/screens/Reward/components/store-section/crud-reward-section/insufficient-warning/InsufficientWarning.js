@@ -6,7 +6,8 @@ import {
   Modal,
   TouchableWithoutFeedback,
   Animated,
-  Easing
+  Easing,
+  Platform
 } from "react-native";
 
 import { styles } from "./styles/styles";
@@ -18,26 +19,23 @@ const anim_duration = 250;
 const window_width = Dimensions.get("window").width;
 
 export default class InsufficientWarning extends React.PureComponent {
-  warning_scale_value = new Animated.Value(0);
-  warning_opacity_value = this.warning_scale_value.interpolate({
-    inputRange: [0, 0.3, 0.5, 0.7, 1],
-    outputRange: [0, 0.3, 0.5, 0.7, 1],
-    extrapolate: "clamp"
-  });
+  warning_opacity_value = new Animated.Value(0);
 
   _animateStartWarning = () => {
-    Animated.timing(this.warning_scale_value, {
+    Animated.timing(this.warning_opacity_value, {
       toValue: 1,
       duration: anim_duration,
-      easing
+      easing,
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
   _animateEndWarning = callback => {
-    Animated.timing(this.warning_scale_value, {
+    Animated.timing(this.warning_opacity_value, {
       toValue: 0,
       duration: anim_duration,
-      easing
+      easing,
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start(() => {
       callback();
     });
@@ -81,7 +79,6 @@ export default class InsufficientWarning extends React.PureComponent {
               paddingVertical: normalize(22, "height"),
               paddingHorizontal: normalize(22, "width"),
               width: normalize(300, "width"),
-              transform: [{ scale: this.warning_scale_value }],
               opacity: this.warning_opacity_value
             }}
           >

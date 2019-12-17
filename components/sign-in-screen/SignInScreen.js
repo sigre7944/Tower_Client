@@ -9,7 +9,8 @@ import {
   ScrollView,
   Modal,
   ActivityIndicator,
-  Easing
+  Easing,
+  Platform
 } from "react-native";
 
 import { styles } from "./styles/styles";
@@ -263,19 +264,14 @@ export default class SignInScreen extends React.PureComponent {
 }
 
 class ErrorBanner extends React.PureComponent {
-  scale_value = new Animated.Value(0);
-  opacity_value = this.scale_value.interpolate({
-    inputRange: [0, 0.3, 0.5, 0.7, 1],
-    outputRange: [0, 0.3, 0.5, 0.7, 1],
-    extrapolate: "clamp"
-  });
+  opacity_value = new Animated.Value(0);
 
   _startAnimate = () => {
-    Animated.timing(this.scale_value, {
+    Animated.timing(this.opacity_value, {
       toValue: 1,
       duration: anim_duration,
       easing,
-      useNativeDriver: true
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
@@ -311,7 +307,6 @@ class ErrorBanner extends React.PureComponent {
               width: normalize(250, "width"),
               borderRadius: normalize(10, "width"),
               opacity: this.opacity_value,
-              transform: [{ scale: this.scale_value }]
             }}
           >
             <View

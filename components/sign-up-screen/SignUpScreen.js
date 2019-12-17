@@ -10,7 +10,7 @@ import {
   ScrollView,
   UIManager,
   Keyboard,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 
 import { styles } from "./styles/styles";

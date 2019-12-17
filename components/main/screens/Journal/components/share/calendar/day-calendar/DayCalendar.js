@@ -3,10 +3,10 @@ import {
   FlatList,
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Animated,
-  Easing
+  Easing,
+  Platform
 } from "react-native";
 
 import { Map, fromJS } from "immutable";
@@ -29,17 +29,12 @@ const icon_color = "white";
 const icon_size = normalize(19, "width");
 const outer_panel_padding = normalize(7, "width");
 
-export default class DayCalendar extends React.Component {
+export default class DayCalendar extends React.PureComponent {
   chosen_day = -1;
   chosen_month = -1;
   chosen_year = -1;
 
-  calendar_scale_value = new Animated.Value(0);
-  calendar_opacity_value = this.calendar_scale_value.interpolate({
-    inputRange: [0, 0.3, 0.5, 0.7, 1],
-    outputRange: [0, 0.3, 0.5, 0.7, 1],
-    extrapolate: "clamp"
-  });
+  calendar_opacity_value = new Animated.Value(0);
 
   save = () => {
     if (this.chosen_day > 0 && this.chosen_month >= 0 && this.chosen_year > 0) {
@@ -91,20 +86,22 @@ export default class DayCalendar extends React.Component {
   };
 
   animateCalendar = (edit, edit_multiple) => {
-    Animated.timing(this.calendar_scale_value, {
+    Animated.timing(this.calendar_opacity_value, {
       toValue: 1,
       duration: animation_duration,
       easing,
-      useNativeDriver: edit || edit_multiple ? false : true
+      // useNativeDriver: edit || edit_multiple ? false : true
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
   _animateEndCalendar = (callback, edit, edit_multiple) => {
-    Animated.timing(this.calendar_scale_value, {
+    Animated.timing(this.calendar_opacity_value, {
       toValue: 0,
       duration: animation_duration,
       easing,
-      useNativeDriver: edit || edit_multiple ? false : true
+      // useNativeDriver: edit || edit_multiple ? false : true
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start(() => {
       callback();
     });
@@ -133,7 +130,6 @@ export default class DayCalendar extends React.Component {
           borderRadius: 10,
           flexDirection: "row",
           overflow: "hidden",
-          transform: [{ scale: this.calendar_scale_value }],
           opacity: this.calendar_opacity_value
         }}
       >

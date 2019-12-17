@@ -44,12 +44,7 @@ const extra_margin_from_keyboard = normalize(10, "height");
 const text_input_state = TextInput.State;
 
 export default class Priority extends React.PureComponent {
-  opacity_value = new Animated.Value(0.3);
-  scale_value = this.opacity_value.interpolate({
-    inputRange: [0, 0.3, 0.5, 0.7, 1],
-    outputRange: [0, 0.3, 0.5, 0.7, 1],
-    extrapolate: "clamp"
-  });
+  opacity_value = new Animated.Value(0);
 
   translate_y_value = new Animated.Value(0);
 
@@ -251,7 +246,8 @@ export default class Priority extends React.PureComponent {
       toValue: 1,
       duration: animation_duration,
       easing,
-      useNativeDriver: edit ? false : true
+      // useNativeDriver: edit ? false : true
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
@@ -260,7 +256,8 @@ export default class Priority extends React.PureComponent {
       toValue: 0,
       duration: animation_duration,
       easing,
-      useNativeDriver: edit ? false : true
+      // useNativeDriver: edit ? false : true
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start(() => {
       callback();
     });
@@ -392,6 +389,18 @@ export default class Priority extends React.PureComponent {
     );
   };
 
+  _keyboardDidHideHandler = e => {
+    if (this.state.reward_value.length === 0) {
+      this._setDefaultRewardValue();
+    }
+
+    Animated.timing(this.translate_y_value, {
+      toValue: 0,
+      duration: 100,
+      useNativeDriver: true
+    }).start();
+  };
+
   _keyboardDidShowHandler = e => {
     let keyboard_height = e.endCoordinates.height,
       keyboard_duration = e.duration;
@@ -413,7 +422,7 @@ export default class Priority extends React.PureComponent {
         if (gap < 0) {
           Animated.timing(this.translate_y_value, {
             toValue: gap,
-            duration: keyboard_duration,
+            duration: 100,
             useNativeDriver: true
           }).start();
         }
@@ -466,20 +475,26 @@ export default class Priority extends React.PureComponent {
   componentDidMount() {
     this._animate(this.props.edit);
 
-    this.keyboardWillHideListener = Keyboard.addListener(
-      "keyboardWillHide",
-      this._keyboardWillHideHandler
-    );
+    if (Platform.OS === "ios") {
+      this.keyboardWillHideListener = Keyboard.addListener(
+        "keyboardWillHide",
+        this._keyboardWillHideHandler
+      );
 
-    this.keyboardWillShowListener = Keyboard.addListener(
-      "keyboardWillShow",
-      this._keyboardWillShowHandler
-    );
-
-    this.keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      this._keyboardDidShowHandler
-    );
+      this.keyboardWillShowListener = Keyboard.addListener(
+        "keyboardWillShow",
+        this._keyboardWillShowHandler
+      );
+    } else {
+      this.keyboardDidHideListener = Keyboard.addListener(
+        "keyboardDidHide",
+        this._keyboardDidHideHandler
+      );
+      this.keyboardDidShowListener = Keyboard.addListener(
+        "keyboardDidShow",
+        this._keyboardDidShowHandler
+      );
+    }
 
     if (this.props.edit) {
       this._initializePriorityData(this.props.edit_task_data);
@@ -498,9 +513,19 @@ export default class Priority extends React.PureComponent {
   }
 
   componentWillUnmount() {
-    Keyboard.removeListener("keyboardWillHide", this._keyboardWillHideHandler);
-    Keyboard.removeListener("keyboardWillShow", this._keyboardWillShowHandler);
-    Keyboard.removeListener("keyboardDidShow", this._keyboardDidShowHandler);
+    if (Platform.OS === "ios") {
+      Keyboard.removeListener(
+        "keyboardWillHide",
+        this._keyboardWillHideHandler
+      );
+      Keyboard.removeListener(
+        "keyboardWillShow",
+        this._keyboardWillShowHandler
+      );
+    } else {
+      Keyboard.removeListener("keyboardDidHide", this._keyboardDidHideHandler);
+      Keyboard.removeListener("keyboardDidShow", this._keyboardDidShowHandler);
+    }
   }
 
   render() {
@@ -649,7 +674,6 @@ export default class Priority extends React.PureComponent {
             backgroundColor: "white",
             borderRadius: normalize(10, "width"),
             overflow: "hidden",
-            transform: [{ scale: this.scale_value }],
             opacity: this.opacity_value,
             paddingVertical: normalize(5, "height")
           }}

@@ -38,12 +38,7 @@ const extra_margin_from_keyboard = normalize(10, "height");
 const window_height = Dimensions.get("window").height;
 
 export default class WeekTypeRepeat extends React.PureComponent {
-  repeat_opacity_value = new Animated.Value(0.3);
-  repeat_scale_value = this.repeat_opacity_value.interpolate({
-    inputRange: [0, 0.3, 0.5, 0.7, 1],
-    outputRange: [0, 0.3, 0.5, 0.7, 1],
-    extrapolate: "clamp"
-  });
+  repeat_opacity_value = new Animated.Value(0);
 
   translate_y = new Animated.Value(0);
 
@@ -131,7 +126,8 @@ export default class WeekTypeRepeat extends React.PureComponent {
       toValue: 1,
       duration: animation_duration,
       easing,
-      useNativeDriver: edit ? false : true
+      // useNativeDriver: edit ? false : true
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
@@ -140,7 +136,8 @@ export default class WeekTypeRepeat extends React.PureComponent {
       toValue: 0,
       duration: animation_duration,
       easing,
-      useNativeDriver: edit ? false : true
+      // useNativeDriver: edit ? false : true
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start(() => {
       callback();
     });
@@ -415,7 +412,6 @@ export default class WeekTypeRepeat extends React.PureComponent {
         style={{
           position: "absolute",
           width: normalize(338, "width"),
-          transform: [{ scale: this.repeat_scale_value }],
           backgroundColor: "white",
           borderRadius: normalize(10, "width"),
           opacity: this.repeat_opacity_value,

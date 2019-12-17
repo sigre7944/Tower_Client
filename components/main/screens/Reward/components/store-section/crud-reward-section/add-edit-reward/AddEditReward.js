@@ -10,7 +10,10 @@ import {
   Switch,
   ScrollView,
   Animated,
-  Easing
+  Easing,
+  Platform,
+  Keyboard,
+  UIManager
 } from "react-native";
 
 import {
@@ -32,13 +35,14 @@ const shortid = require("shortid");
 const animation_duration = 250;
 const easing = Easing.in();
 
+const text_input_state = TextInput.State;
+const window_height = Dimensions.get("window").height;
+const extra_margin_from_keyboard = normalize(10, "height");
+
 export default class AddEditReward extends React.PureComponent {
-  scale_value = new Animated.Value(0.3);
-  opacity_value = this.scale_value.interpolate({
-    inputRange: [0, 0.3, 0.5, 0.7, 1],
-    outputRange: [0, 0.3, 0.5, 0.7, 1],
-    extrapolate: "clamp"
-  });
+  opacity_value = new Animated.Value(0);
+
+  translate_y_value = new Animated.Value(0);
 
   state = {
     reward_title: "",
@@ -59,7 +63,7 @@ export default class AddEditReward extends React.PureComponent {
       }),
       () => {
         if (!this.state.toggle_delete) {
-          this.scale_value.setValue(1);
+          this.opacity_value.setValue(1);
         }
       }
     );
@@ -89,9 +93,15 @@ export default class AddEditReward extends React.PureComponent {
   };
 
   onChangeRewardValue = e => {
-    this.setState({
-      reward_value: e.nativeEvent.text.replace(/[,]/g, ".")
-    });
+    if (Platform.OS === "android") {
+      this.setState({
+        reward_value: e.nativeEvent.text.replace(/^[0-9]*\.?[0-9]*$/, ".")
+      });
+    } else {
+      this.setState({
+        reward_value: e.nativeEvent.text.replace(/[,]/g, ".")
+      });
+    }
   };
 
   onChangeTrackReward = () => {
@@ -125,7 +135,8 @@ export default class AddEditReward extends React.PureComponent {
   _save = () => {
     if (
       this.state.reward_title.length > 0 &&
-      this.state.reward_value.length > 0
+      this.state.reward_value.length > 0 &&
+      parseFloat(this.state.reward_value) > 0
     ) {
       if (this.props.edit) {
         let edit_reward_id = Map(this.props.edit_reward_data).get("id");
@@ -215,20 +226,20 @@ export default class AddEditReward extends React.PureComponent {
   };
 
   _animate = () => {
-    Animated.timing(this.scale_value, {
+    Animated.timing(this.opacity_value, {
       toValue: 1,
       duration: animation_duration,
-      easing
-      // useNativeDriver: true
+      easing,
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
   _animateEnd = callback => {
-    Animated.timing(this.scale_value, {
+    Animated.timing(this.opacity_value, {
       toValue: 0,
       duration: animation_duration,
-      easing
-      // useNativeDriver: true
+      easing,
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start(() => {
       callback();
     });
@@ -245,6 +256,80 @@ export default class AddEditReward extends React.PureComponent {
     );
   };
 
+  _keyboardWillHideHandler = e => {
+    Animated.timing(this.translate_y_value, {
+      toValue: 0,
+      duration: e.duration,
+      useNativeDriver: true
+    }).start();
+  };
+
+  _keyboardWillShowHandler = e => {
+    let keyboard_height = e.endCoordinates.height,
+      keyboard_duration = e.duration;
+
+    let currently_focused_input = text_input_state.currentlyFocusedField();
+
+    UIManager.measure(
+      currently_focused_input,
+      (x, y, width, height, pageX, pageY) => {
+        let input_height = height,
+          input_py = pageY;
+
+        let gap =
+          window_height -
+          keyboard_height -
+          (input_height + input_py) -
+          extra_margin_from_keyboard;
+
+        if (gap < 0) {
+          Animated.timing(this.translate_y_value, {
+            toValue: gap,
+            duration: keyboard_duration,
+            useNativeDriver: true
+          }).start();
+        }
+      }
+    );
+  };
+
+  _keyboardDidHideHandler = e => {
+    Animated.timing(this.translate_y_value, {
+      toValue: 0,
+      duration: 100,
+      useNativeDriver: true
+    }).start();
+  };
+
+  _keyboardDidShowHandler = e => {
+    let keyboard_height = e.endCoordinates.height,
+      keyboard_duration = e.duration;
+
+    let currently_focused_input = text_input_state.currentlyFocusedField();
+
+    UIManager.measure(
+      currently_focused_input,
+      (x, y, width, height, pageX, pageY) => {
+        let input_height = height,
+          input_py = pageY;
+
+        let gap =
+          window_height -
+          keyboard_height -
+          (input_height + input_py) -
+          extra_margin_from_keyboard;
+
+        if (gap < 0) {
+          Animated.timing(this.translate_y_value, {
+            toValue: gap,
+            duration: 100,
+            useNativeDriver: true
+          }).start();
+        }
+      }
+    );
+  };
+
   componentDidMount() {
     this._animate();
 
@@ -256,6 +341,43 @@ export default class AddEditReward extends React.PureComponent {
         reward_value: `${Map(edit_reward_data).get("value")}`,
         is_main: Map(edit_reward_data).get("id") === this.props.main_reward
       });
+    }
+
+    if (Platform.OS === "ios") {
+      this.keyboardWillHideListener = Keyboard.addListener(
+        "keyboardWillHide",
+        this._keyboardWillHideHandler
+      );
+
+      this.keyboardWillShowListener = Keyboard.addListener(
+        "keyboardWillShow",
+        this._keyboardWillShowHandler
+      );
+    } else {
+      this.keyboardDidHideListener = Keyboard.addListener(
+        "keyboardDidHide",
+        this._keyboardDidHideHandler
+      );
+      this.keyboardDidShowListener = Keyboard.addListener(
+        "keyboardDidShow",
+        this._keyboardDidShowHandler
+      );
+    }
+  }
+
+  componentWillUnmount() {
+    if (Platform.OS === "ios") {
+      Keyboard.removeListener(
+        "keyboardWillHide",
+        this._keyboardWillHideHandler
+      );
+      Keyboard.removeListener(
+        "keyboardWillShow",
+        this._keyboardWillShowHandler
+      );
+    } else {
+      Keyboard.removeListener("keyboardDidHide", this._keyboardDidHideHandler);
+      Keyboard.removeListener("keyboardDidShow", this._keyboardDidShowHandler);
     }
   }
 
@@ -331,128 +453,133 @@ export default class AddEditReward extends React.PureComponent {
                 backgroundColor: "white",
                 paddingHorizontal: normalize(32, "width"),
                 paddingVertical: normalize(32, "height"),
-                transform: [{ scale: this.scale_value }],
                 opacity: this.opacity_value
               }}
             >
-              <ScrollView keyboardDismissMode="on-drag" scrollEnabled={false}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center"
-                  }}
-                >
-                  {!this.props.edit ? (
-                    <>
-                      {reward_icon(icon_size, icon_color)}
-
-                      <Text style={styles.title}>Add Reward</Text>
-                    </>
-                  ) : (
-                    <>
-                      {reward_icon(icon_size, icon_color)}
-
-                      <Text style={styles.title}>Edit Reward</Text>
-                    </>
-                  )}
-                </View>
-
-                <View
-                  style={{
-                    marginTop: normalize(32, "height")
-                  }}
-                >
-                  <Text style={styles.reward_title_informer}>Title</Text>
-                  <TextInput
-                    style={styles.reward_input}
-                    onChange={this.onChangeRewardTitle}
-                    maxLength={32}
-                    value={this.state.reward_title}
-                    placeholder={
-                      this.props.edit_reward_data
-                        ? `${this.props.edit_reward_data.name}`
-                        : "Enter a reward title"
-                    }
-                  />
-                </View>
-
-                <View
-                  style={{
-                    marginTop: normalize(22, "height")
-                  }}
-                >
-                  <Text style={styles.reward_title_informer}>Value</Text>
-                  <TextInput
-                    style={styles.reward_input}
-                    onChange={this.onChangeRewardValue}
-                    value={this.state.reward_value}
-                    keyboardType={"numeric"}
-                    placeholder={
-                      this.props.edit_reward_data
-                        ? `${this.props.edit_reward_data.value}`
-                        : "Enter a value for the reward"
-                    }
-                  />
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    marginTop: normalize(22, "height")
-                  }}
-                >
-                  <Text style={styles.set_as_main_reward_text}>
-                    Set as main reward
-                  </Text>
-
-                  <Switch
-                    value={this.state.is_main}
-                    onValueChange={this.onChangeTrackReward}
-                    trackColor={{
-                      false: "rgba(189, 189, 189, 0.2)",
-                      true: "#05838B"
-                    }}
-                    ios_backgroundColor="rgba(189, 189, 189, 0.2)"
-                  />
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    marginTop: normalize(40, "height")
-                  }}
-                >
-                  <TouchableOpacity onPress={this._toggleDelete}>
-                    <Text style={styles.delete_reward_text}>
-                      {this.props.edit ? `Delete reward` : null}
-                    </Text>
-                  </TouchableOpacity>
+              <Animated.View
+                style={{
+                  transform: [{ translateY: this.translate_y_value }]
+                }}
+              >
+                <ScrollView keyboardDismissMode="on-drag" scrollEnabled={false}>
                   <View
                     style={{
                       flexDirection: "row",
                       alignItems: "center"
                     }}
                   >
-                    <TouchableOpacity
-                      style={styles.cancel_container}
-                      onPress={this._cancel}
-                    >
-                      {close_icon(normalize(19, "width"), "white")}
-                    </TouchableOpacity>
+                    {!this.props.edit ? (
+                      <>
+                        {reward_icon(icon_size, icon_color)}
 
-                    <TouchableOpacity
-                      style={styles.save_container}
-                      onPress={this._save}
-                    >
-                      {check_icon(normalize(19, "width"), "white")}
-                    </TouchableOpacity>
+                        <Text style={styles.title}>Add Reward</Text>
+                      </>
+                    ) : (
+                      <>
+                        {reward_icon(icon_size, icon_color)}
+
+                        <Text style={styles.title}>Edit Reward</Text>
+                      </>
+                    )}
                   </View>
-                </View>
-              </ScrollView>
+
+                  <View
+                    style={{
+                      marginTop: normalize(32, "height")
+                    }}
+                  >
+                    <Text style={styles.reward_title_informer}>Title</Text>
+                    <TextInput
+                      style={styles.reward_input}
+                      onChange={this.onChangeRewardTitle}
+                      maxLength={32}
+                      value={this.state.reward_title}
+                      placeholder={
+                        this.props.edit_reward_data
+                          ? `${this.props.edit_reward_data.name}`
+                          : "Enter a reward title"
+                      }
+                    />
+                  </View>
+
+                  <View
+                    style={{
+                      marginTop: normalize(22, "height")
+                    }}
+                  >
+                    <Text style={styles.reward_title_informer}>Value</Text>
+                    <TextInput
+                      style={styles.reward_input}
+                      onChange={this.onChangeRewardValue}
+                      value={this.state.reward_value}
+                      keyboardType={"numeric"}
+                      placeholder={
+                        this.props.edit_reward_data
+                          ? `${this.props.edit_reward_data.value}`
+                          : "Enter a value for the reward"
+                      }
+                    />
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginTop: normalize(22, "height")
+                    }}
+                  >
+                    <Text style={styles.set_as_main_reward_text}>
+                      Set as main reward
+                    </Text>
+
+                    <Switch
+                      value={this.state.is_main}
+                      onValueChange={this.onChangeTrackReward}
+                      trackColor={{
+                        false: "rgba(189, 189, 189, 0.2)",
+                        true: "#05838B"
+                      }}
+                      ios_backgroundColor="rgba(189, 189, 189, 0.2)"
+                    />
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginTop: normalize(40, "height")
+                    }}
+                  >
+                    <TouchableOpacity onPress={this._toggleDelete}>
+                      <Text style={styles.delete_reward_text}>
+                        {this.props.edit ? `Delete reward` : null}
+                      </Text>
+                    </TouchableOpacity>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center"
+                      }}
+                    >
+                      <TouchableOpacity
+                        style={styles.cancel_container}
+                        onPress={this._cancel}
+                      >
+                        {close_icon(normalize(19, "width"), "white")}
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={styles.save_container}
+                        onPress={this._save}
+                      >
+                        {check_icon(normalize(19, "width"), "white")}
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </ScrollView>
+              </Animated.View>
             </Animated.View>
           )}
         </View>

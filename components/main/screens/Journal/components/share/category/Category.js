@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   Animated,
   Easing,
-  Keyboard
+  Keyboard,
+  Platform
 } from "react-native";
 
 import { FlatList } from "react-native-gesture-handler";
@@ -35,12 +36,7 @@ const category_height = normalize(45, "height"); // row's height = 25 + margin t
 const list_max_height = 8 * category_height;
 
 export default class Category extends React.PureComponent {
-  repeat_opacity_value = new Animated.Value(0.3);
-  repeat_scale_value = this.repeat_opacity_value.interpolate({
-    inputRange: [0, 0.3, 0.5, 0.7, 1],
-    outputRange: [0, 0.3, 0.5, 0.7, 1],
-    extrapolate: "clamp"
-  });
+  repeat_opacity_value = new Animated.Value(0);
 
   start_index = 0;
 
@@ -218,7 +214,8 @@ export default class Category extends React.PureComponent {
       toValue: 1,
       duration: animation_duration,
       easing,
-      useNativeDriver: edit ? false : true
+      // useNativeDriver: edit ? false : true
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
@@ -227,7 +224,8 @@ export default class Category extends React.PureComponent {
       toValue: 0,
       duration: animation_duration,
       easing,
-      useNativeDriver: edit ? false : true
+      // useNativeDriver: edit ? false : true
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start(() => {
       callback();
     });
@@ -297,7 +295,6 @@ export default class Category extends React.PureComponent {
           backgroundColor: "white",
           borderRadius: 10,
           overflow: "hidden",
-          transform: [{ scale: this.repeat_scale_value }],
           opacity: this.repeat_opacity_value
         }}
       >

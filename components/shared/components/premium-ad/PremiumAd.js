@@ -8,7 +8,8 @@ import {
   Modal,
   Image,
   Animated,
-  Easing
+  Easing,
+  Platform
 } from "react-native";
 
 import { styles } from "./styles/styles";
@@ -50,7 +51,8 @@ export default class PremiumAd extends React.PureComponent {
     Animated.timing(this.anim_translate_y, {
       toValue: 0,
       duration: anim_duration,
-      easing
+      easing,
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
@@ -58,7 +60,8 @@ export default class PremiumAd extends React.PureComponent {
     Animated.timing(this.anim_translate_y, {
       toValue: window_height,
       duration: anim_duration,
-      easing
+      easing,
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start(() => {
       callback();
     });

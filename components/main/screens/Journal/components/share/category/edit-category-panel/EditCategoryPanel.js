@@ -9,7 +9,8 @@ import {
   Easing,
   Modal,
   Dimensions,
-  SafeAreaView
+  SafeAreaView,
+  Platform
 } from "react-native";
 
 import { check_icon, close_icon } from "../../../../../../../shared/icons";
@@ -59,8 +60,8 @@ export default class AddCategoryPanel extends React.PureComponent {
     Animated.timing(this.anim_translate_y, {
       toValue: 0,
       duration: animation_duration,
-      easing
-      // useNativeDriver: true
+      easing,
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
@@ -68,8 +69,8 @@ export default class AddCategoryPanel extends React.PureComponent {
     Animated.timing(this.anim_translate_y, {
       toValue: window_height,
       duration: animation_duration,
-      easing
-      // useNativeDriver: true
+      easing,
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start(() => {
       callback();
     });
@@ -376,28 +377,23 @@ class NameExistsWarning extends React.PureComponent {
 }
 
 class ColorPanel extends React.PureComponent {
-  scale_value = new Animated.Value(0.3);
-  opacity_value = this.scale_value.interpolate({
-    inputRange: [0, 0.3, 0.5, 0.7, 1],
-    outputRange: [0, 0.3, 0.5, 0.7, 1],
-    extrapolate: "clamp"
-  });
+  opacity_value = new Animated.Value(0);
 
   _animateStart = () => {
-    Animated.timing(this.scale_value, {
+    Animated.timing(this.opacity_value, {
       toValue: 1,
       easing,
-      duration: animation_duration
-      // useNativeDriver: true
+      duration: animation_duration,
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
   _animateEnd = callback => {
-    Animated.timing(this.scale_value, {
+    Animated.timing(this.opacity_value, {
       toValue: 0,
       easing,
-      duration: animation_duration
-      // useNativeDriver: true
+      duration: animation_duration,
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start(() => {
       callback();
     });
@@ -442,7 +438,6 @@ class ColorPanel extends React.PureComponent {
               paddingHorizontal: normalize(32, "width"),
               paddingVertical: normalize(32, "height"),
               justifyContent: "space-between",
-              transform: [{ scale: this.scale_value }],
               opacity: this.opacity_value
             }}
           >

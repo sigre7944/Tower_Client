@@ -3,7 +3,7 @@ import {
   FlatList,
   View,
   Text,
-  StyleSheet,
+  Platform,
   TouchableOpacity,
   Animated,
   Easing
@@ -40,12 +40,7 @@ export default class WeekCalendar extends React.Component {
   chosen_start_noWeekInMonth = -1;
   chosen_end_noWeekInMonth = -1;
 
-  calendar_scale_value = new Animated.Value(0.3);
-  calendar_opacity_value = this.calendar_scale_value.interpolate({
-    inputRange: [0, 0.3, 0.5, 0.7, 1],
-    outputRange: [0, 0.3, 0.5, 0.7, 1],
-    extrapolate: "clamp"
-  });
+  calendar_opacity_value = new Animated.Value(0);
 
   save = () => {
     if (
@@ -177,20 +172,22 @@ export default class WeekCalendar extends React.Component {
   };
 
   animateCalendar = (edit, edit_multiple) => {
-    Animated.timing(this.calendar_scale_value, {
+    Animated.timing(this.calendar_opacity_value, {
       toValue: 1,
       duration: animation_duration,
       easing,
-      useNativeDriver: edit || edit_multiple ? false : true
+      // useNativeDriver: edit || edit_multiple ? false : true
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
   _animateEndCalendar = (callback, edit, edit_multiple) => {
-    Animated.timing(this.calendar_scale_value, {
+    Animated.timing(this.calendar_opacity_value, {
       toValue: 0,
       duration: animation_duration,
       easing,
-      useNativeDriver: edit || edit_multiple ? false : true
+      // useNativeDriver: edit || edit_multiple ? false : true
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start(() => {
       callback();
     });
@@ -219,7 +216,6 @@ export default class WeekCalendar extends React.Component {
           borderRadius: 10,
           flexDirection: "row",
           overflow: "hidden",
-          transform: [{ scale: this.calendar_scale_value }],
           opacity: this.calendar_opacity_value
         }}
       >
@@ -522,7 +518,9 @@ class Calendar extends React.Component {
           style={{
             position: "absolute",
             top:
-              margin_top_for_month_year_text + normalize(21, "height") + margin_top_for_calendar_row,
+              margin_top_for_month_year_text +
+              normalize(21, "height") +
+              margin_top_for_calendar_row,
             flexDirection: "row",
             alignItems: "center",
             left: outer_panel_padding,

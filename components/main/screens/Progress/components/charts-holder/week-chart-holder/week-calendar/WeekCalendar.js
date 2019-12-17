@@ -5,7 +5,8 @@ import {
   Text,
   TouchableOpacity,
   Animated,
-  Easing
+  Easing,
+  Platform
 } from "react-native";
 
 import { styles } from "./styles/styles";
@@ -37,12 +38,7 @@ export default class WeekCalendar extends React.PureComponent {
   chosen_start_noWeekInMonth = -1;
   chosen_end_noWeekInMonth = -1;
 
-  calendar_scale_value = new Animated.Value(0.3);
-  calendar_opacity_value = this.calendar_scale_value.interpolate({
-    inputRange: [0, 0.3, 0.5, 0.7, 1],
-    outputRange: [0, 0.3, 0.5, 0.7, 1],
-    extrapolate: "clamp"
-  });
+  calendar_opacity_value = new Animated.Value(0);
 
   save = () => {
     if (
@@ -108,20 +104,20 @@ export default class WeekCalendar extends React.PureComponent {
   };
 
   animateCalendar = () => {
-    Animated.timing(this.calendar_scale_value, {
+    Animated.timing(this.calendar_opacity_value, {
       toValue: 1,
       duration: animation_duration,
-      easing
-      // useNativeDriver: true
+      easing,
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
   _animateEnd = callback => {
-    Animated.timing(this.calendar_scale_value, {
+    Animated.timing(this.calendar_opacity_value, {
       toValue: 0,
       duration: animation_duration,
-      easing
-      // useNativeDriver: true
+      easing,
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start(() => {
       callback();
     });
@@ -141,7 +137,6 @@ export default class WeekCalendar extends React.PureComponent {
           borderRadius: normalize(10, "width"),
           flexDirection: "row",
           overflow: "hidden",
-          transform: [{ scale: this.calendar_scale_value }],
           opacity: this.calendar_opacity_value
         }}
       >

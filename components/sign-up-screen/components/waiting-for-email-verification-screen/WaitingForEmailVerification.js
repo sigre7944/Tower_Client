@@ -7,7 +7,8 @@ import {
   Animated,
   Modal,
   Easing,
-  Image
+  Image,
+  Platform
 } from "react-native";
 
 import { styles } from "./styles/styles";
@@ -63,19 +64,14 @@ export default class WaitingForEmailVerification extends React.PureComponent {
 }
 
 class SuccessBanner extends React.PureComponent {
-  scale_value = new Animated.Value(0);
-  opacity_value = this.scale_value.interpolate({
-    inputRange: [0, 0.3, 0.5, 0.7, 1],
-    outputRange: [0, 0.3, 0.5, 0.7, 1],
-    extrapolate: "clamp"
-  });
+  opacity_value = new Animated.Value(0);
 
   _startAnimate = () => {
-    Animated.timing(this.scale_value, {
+    Animated.timing(this.opacity_value, {
       toValue: 1,
       duration: anim_duration,
       easing,
-      useNativeDriver: true
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
@@ -98,8 +94,7 @@ class SuccessBanner extends React.PureComponent {
           paddingHorizontal: normalize(22, "width"),
           width: normalize(300, "width"),
           borderRadius: normalize(10, "width"),
-          opacity: this.opacity_value,
-          transform: [{ scale: this.scale_value }]
+          opacity: this.opacity_value
         }}
       >
         <View
@@ -149,19 +144,14 @@ class SuccessBanner extends React.PureComponent {
 }
 
 class ErrorBanner extends React.PureComponent {
-  scale_value = new Animated.Value(0);
-  opacity_value = this.scale_value.interpolate({
-    inputRange: [0, 0.3, 0.5, 0.7, 1],
-    outputRange: [0, 0.3, 0.5, 0.7, 1],
-    extrapolate: "clamp"
-  });
+  opacity_value = new Animated.Value(0);
 
   _startAnimate = () => {
-    Animated.timing(this.scale_value, {
+    Animated.timing(this.opacity_value, {
       toValue: 1,
       duration: anim_duration,
       easing,
-      useNativeDriver: true
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
@@ -178,8 +168,7 @@ class ErrorBanner extends React.PureComponent {
           paddingHorizontal: normalize(22, "width"),
           width: normalize(250, "width"),
           borderRadius: normalize(10, "width"),
-          opacity: this.opacity_value,
-          transform: [{ scale: this.scale_value }]
+          opacity: this.opacity_value
         }}
       >
         <View
