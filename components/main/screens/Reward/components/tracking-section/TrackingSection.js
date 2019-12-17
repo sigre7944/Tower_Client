@@ -36,7 +36,7 @@ export default class TrackingSection extends React.PureComponent {
     if (this.state.can_choose) {
       let purchase_history_map = OrderedMap(this.props.purchase_history),
         rewards = OrderedMap(this.props.rewards),
-        balance = parseFloat(this.props.balance),
+        balance = parseFloat(this.props.balance).toFixed(3),
         main_reward_map = rewards.get(this.props.main_reward),
         reward_id = main_reward_map.get("id"),
         reward_value = main_reward_map.get("value"),
@@ -239,7 +239,7 @@ export default class TrackingSection extends React.PureComponent {
       main_reward_name = "",
       main_reward_value = 0,
       progress_percent = 0,
-      balance = parseFloat(this.props.balance),
+      balance = parseFloat(this.props.balance).toFixed(3),
       rewards_map = OrderedMap(this.props.rewards),
       can_get_reward_bool = false,
       motivating_text = "";
@@ -249,7 +249,7 @@ export default class TrackingSection extends React.PureComponent {
     } else {
       main_reward_name = rewards_map.getIn([main_reward, "name"]);
       main_reward_value = rewards_map.getIn([main_reward, "value"]);
-      progress_percent = balance / parseFloat(main_reward_value);
+      progress_percent = balance / parseFloat(main_reward_value).toFixed(3);
 
       if (progress_percent >= 1) {
         motivating_text = "You nailed it!";

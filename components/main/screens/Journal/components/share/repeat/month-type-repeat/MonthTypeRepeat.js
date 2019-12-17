@@ -86,7 +86,10 @@ export default class WeekTypeRepeat extends React.PureComponent {
   };
 
   _resetRepeatInput = () => {
-    if (this.state.repeat_input_value.length === 0) {
+    if (
+      this.state.repeat_input_value.length === 0 ||
+      parseInt(this.state.repeat_input_value) === 0
+    ) {
       this.setState({
         repeat_input_value: "1"
       });
@@ -100,7 +103,10 @@ export default class WeekTypeRepeat extends React.PureComponent {
   };
 
   _resetAfterOccurrenceInput = () => {
-    if (this.state.after_occurrence_value.length === 0) {
+    if (
+      this.state.after_occurrence_value.length === 0 ||
+      parseInt(this.state.after_occurrence_value) === 0
+    ) {
       this.setState({
         after_occurrence_value: "1"
       });
@@ -114,7 +120,10 @@ export default class WeekTypeRepeat extends React.PureComponent {
   };
 
   _resetGoalValueInput = () => {
-    if (this.state.goal_value.length === 0) {
+    if (
+      this.state.goal_value.length === 0 ||
+      parseInt(this.state.goal_value) === 0
+    ) {
       this.setState({
         goal_value: "1"
       });

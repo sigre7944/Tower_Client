@@ -147,7 +147,7 @@ export default class Drawer extends React.PureComponent {
               month_timestamp_toString = new Date(year, month_in_year)
                 .getTime()
                 .toString(),
-              total_points = parseInt(data.get("totalPoints"));
+              total_points = parseFloat(data.get("totalPoints")).toFixed(3);
 
             if (
               new_day_chart_stats.hasIn([day_timestamp_toString, "totalPoints"])
@@ -424,7 +424,7 @@ export default class Drawer extends React.PureComponent {
                     )
                       .getTime()
                       .toString(),
-                    total_points = total_points_array.get(day_in_week_index);
+                    total_points = parseFloat(total_points_array.get(day_in_week_index)).toFixed(3);
 
                   if (
                     new_day_chart_stats.hasIn([
@@ -738,7 +738,7 @@ export default class Drawer extends React.PureComponent {
                     )
                       .getTime()
                       .toString(),
-                    total_points = total_points_array.get(day_in_month_index);
+                    total_points = parseFloat(total_points_array.get(day_in_month_index)).toFixed(3);
 
                   if (
                     new_day_chart_stats.hasIn([

@@ -410,7 +410,9 @@ class UncompletedTaskCardHolder extends React.PureComponent {
       data = [];
 
     let tasks_for_sorting_array = tasks_map.valueSeq().map((value, index) => {
-      let reward_value = Map(value).getIn(["reward", "value"]),
+      let reward_value = parseFloat(
+          Map(value).getIn(["reward", "value"])
+        ).toFixed(3),
         id = Map(value).get("id");
 
       return [reward_value, id];
@@ -471,7 +473,6 @@ class UncompletedTaskCardHolder extends React.PureComponent {
         extraData={this.state.should_flatlist_update}
         showsVerticalScrollIndicator={false}
         removeClippedSubviews={true}
-
         renderItem={this._renderItem}
         keyExtractor={this._keyExtractor}
         scrollEnabled={false}
@@ -1430,7 +1431,9 @@ class CompletedTaskCardHolder extends React.PureComponent {
       data = [];
 
     let tasks_for_sorting_array = tasks_map.valueSeq().map((value, index) => {
-      let reward_value = Map(value).getIn(["reward", "value"]),
+      let reward_value = parseFloat(
+          Map(value).getIn(["reward", "value"])
+        ).toFixed(3),
         id = Map(value).get("id");
 
       return [reward_value, id];
@@ -1490,7 +1493,6 @@ class CompletedTaskCardHolder extends React.PureComponent {
         extraData={this.state.should_flatlist_update}
         showsVerticalScrollIndicator={false}
         removeClippedSubviews={true}
-
         renderItem={this._renderItem}
         keyExtractor={this._keyExtractor}
         scrollEnabled={false}

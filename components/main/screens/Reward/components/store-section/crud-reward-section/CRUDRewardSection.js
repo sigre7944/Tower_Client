@@ -98,7 +98,7 @@ export default class CRUDRewardSection extends React.PureComponent {
   _getReward = (reward_id, reward_name, reward_value) => {
     let purchase_history_map = OrderedMap(this.props.purchase_history),
       rewards = OrderedMap(this.props.rewards),
-      balance = parseFloat(this.props.balance);
+      balance = parseFloat(this.props.balance).toFixed(3);
 
     // Can buy when have enough balance
     if (balance >= reward_value) {

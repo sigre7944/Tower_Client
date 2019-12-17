@@ -74,7 +74,7 @@ export default class TaskCard extends React.PureComponent {
       task_id = task_map.get("id"),
       task_category = task_map.get("category"),
       task_priority = task_map.getIn(["priority", "value"]),
-      task_reward = parseFloat(task_map.getIn(["reward", "value"])),
+      task_reward = parseFloat(task_map.getIn(["reward", "value"])).toFixed(3),
       current_date = new Date(),
       monday = this.getMonday(current_date),
       data = Map(),
@@ -456,7 +456,7 @@ export default class TaskCard extends React.PureComponent {
       task_priority = Map(this.props.task_data).getIn(["priority", "value"]),
       task_reward = parseFloat(
         Map(this.props.task_data).getIn(["reward", "value"])
-      ),
+      ).toFixed(3),
       task_type = Map(this.props.task_data).get("type");
 
     let day_chart_stats_update = this._updateDayChartStats(
@@ -1235,7 +1235,7 @@ export default class TaskCard extends React.PureComponent {
 
         let reward_value = parseFloat(
           Map(this.props.task_data).getIn(["reward", "value"])
-        );
+        ).toFixed(3);
 
         sending_obj.balance_data = this._updateBalanceData(
           reward_value,
@@ -1288,7 +1288,7 @@ export default class TaskCard extends React.PureComponent {
 
         let reward_value = parseFloat(
           Map(this.props.task_data).getIn(["reward", "value"])
-        );
+        ).toFixed(3);
 
         sending_obj.balance_data = this._updateBalanceData(
           reward_value,
@@ -1446,7 +1446,11 @@ export default class TaskCard extends React.PureComponent {
                   }}
                   onPress={this._unCheckComplete}
                 >
-                  <FontAwesomeIcon icon={faRedoAlt} size={normalize(18, "width")} color="#BDBDBD" />
+                  <FontAwesomeIcon
+                    icon={faRedoAlt}
+                    size={normalize(18, "width")}
+                    color="#BDBDBD"
+                  />
                 </TouchableOpacity>
               ) : null}
             </>
@@ -1490,7 +1494,9 @@ class CompleteBox extends React.PureComponent {
     }
     return (
       <View style={complete_box_container_style}>
-        {flag === "completed" ? <>{check_icon(normalize(14, "width"), "white")}</> : null}
+        {flag === "completed" ? (
+          <>{check_icon(normalize(14, "width"), "white")}</>
+        ) : null}
       </View>
     );
   }

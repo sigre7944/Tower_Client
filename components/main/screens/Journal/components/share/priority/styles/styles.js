@@ -22,7 +22,7 @@ export const styles = StyleSheet.create({
 
   reward_input: {
     height: normalize(25, "height"),
-    width: normalize(47, "width"),
+    paddingHorizontal: normalize(7, "width"),
     justifyContent: "center",
     fontFamily: CommonStyle.sf_ui_display_light_font,
     fontSize: normalize(18, "width"),
