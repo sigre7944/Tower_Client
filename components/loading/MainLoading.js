@@ -6,32 +6,53 @@ import * as firebase from "firebase";
 import { Map } from "immutable";
 import axios from "axios";
 import { SERVER_URL } from "../../config";
+import { fromJS } from "immutable";
+import { SplashScreen, AppLoading } from "expo";
 
-function cacheImages(images) {
-  return images.map(image => {
-    if (typeof image === "string") {
-      return Image.prefetch(image);
-    } else {
-      return Asset.fromModule(image).downloadAsync();
-    }
-  });
-}
+export default class MainLoading extends React.Component {
+  state = {
+    is_splash_ready: false,
+    is_app_ready: false
+  };
 
-export default class MainLoading extends React.PureComponent {
-  _loadAssetsAsync = async () => {
-    const imageAssets = cacheImages([
+  _cacheSplashResourcesAsync = async () => {
+    const splash = require("../../assets/splash_screen.png");
+
+    const cacheSplash = Asset.fromModule(splash).downloadAsync();
+
+    const fonts = [
+      {
+        "sf-ui-display-light": require("../../assets/fonts/sf-ui-display/sf-ui-display-light.otf")
+      },
+      {
+        "sf-ui-display-medium": require("../../assets/fonts/sf-ui-display/sf-ui-display-medium.otf")
+      }
+    ];
+
+    const cacheFonts = fonts.map(font => {
+      return Font.loadAsync(font);
+    });
+
+    await Promise.all([cacheSplash, ...cacheFonts]);
+  };
+
+  _cacheResourcesAsync = async () => {
+    const images = [
       require("../../assets/pngs/logo.png"),
       require("../../assets/pngs/no_main_reward_1x.png"),
       require("../../assets/pngs/premium_1x.png"),
       require("../../assets/pngs/have_no_reward_1x.png")
-    ]);
+    ];
 
-    const fontAssets = Font.loadAsync({
-      "sf-ui-display-light": require("../../assets/fonts/sf-ui-display/sf-ui-display-light.otf"),
-      "sf-ui-display-medium": require("../../assets/fonts/sf-ui-display/sf-ui-display-medium.otf")
+    const cacheImages = images.map(image => {
+      if (typeof image === "string") {
+        return Image.prefetch(image);
+      } else {
+        return Asset.fromModule(image).downloadAsync();
+      }
     });
 
-    await Promise.all([...imageAssets, fontAssets]);
+    await Promise.all([cacheImages]);
   };
 
   _updateAccountRedux = (data, is_logged_in) => {
@@ -100,47 +121,64 @@ export default class MainLoading extends React.PureComponent {
           .doc(uuid)
           .get();
 
-        this._updateAccountRedux(doc.data(), true);
-        this.props._setReady();
+        this._updateAccountRedux(get_user_doc.data(), true);
       } else {
+        let sign_out_response = await firebase.auth().signOut();
         this._updateAccountRedux({ package: { plan: "free" } }, false);
       }
     } catch (err) {
-      // TODO
+      let sign_out_response = await firebase.auth().signOut();
+      this._updateAccountRedux({ package: { plan: "free" } }, false);
     }
   };
 
-  componentDidMount() {
-    this._loadAssetsAsync();
+  _appLoadingOnFinish = () => {
+    this.setState({
+      is_splash_ready: true
+    });
+  };
+
+  _imageOnLoad = () => {
+    this._cacheResourcesAsync();
     this._checkAndUpdateCurrentUserAccount();
+    this.setState({ is_app_ready: true });
+  };
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.is_app_ready !== prevState.is_app_ready) {
+      if (this.state.is_app_ready) {
+        SplashScreen.hide();
+        this.props._setReady();
+      }
+    }
   }
+
   render() {
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: "white",
-          justifyContent: "center",
-          alignItems: "center"
-        }}
-      >
+    if (!this.state.is_splash_ready) {
+      return (
+        <AppLoading
+          startAsync={this._cacheSplashResourcesAsync}
+          onFinish={this._appLoadingOnFinish}
+          autoHideSplash={false}
+        />
+      );
+    }
+
+    if (!this.state.is_app_ready) {
+      return (
         <View
           style={{
-            width: normalize(150, "width"),
-            height: normalize(150, "width"),
-            justifyContent: "center",
-            alignItems: "center"
+            flex: 1
           }}
         >
           <Image
-            source={this.props.logo}
-            style={{
-              flex: 1
-            }}
-            resizeMode="contain"
+            source={require("../../assets/splash_screen.png")}
+            onLoad={this._imageOnLoad}
           />
         </View>
-      </View>
-    );
+      );
+    }
+
+    return <></>;
   }
 }

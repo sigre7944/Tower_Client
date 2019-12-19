@@ -16,10 +16,8 @@ import SignInSignUpOptions from "./components/sign-in-sign-up-screen/SignInSignU
 import SignInScreen from "./components/sign-in-screen/SignInScreen";
 import SignUpScreen from "./components/sign-up-screen/SignUpScreen";
 import SettingsAccountScreen from "./components/settings-account-screen/SettingsAccountScreen.Container";
-import MainLoading from "./components/loading/MainLoading";
+import MainLoading from "./components/loading/MainLoading.Container";
 
-import * as Font from "expo-font";
-// import { AppLoading } from "expo";
 import { Asset } from "expo-asset";
 import { PersistGate } from "redux-persist/lib/integration/react";
 import { persistor, store } from "./store/index";
@@ -70,30 +68,23 @@ export default class App extends React.Component {
     });
   };
 
-  _loadError = () => {};
-
   componentDidMount() {
     // this.reset()
-    this._setReady()
   }
 
   render() {
     return (
       <>
-        {this.state.is_ready ? (
-          <Provider store={store}>
-            {/* <PersistGate persistor={persistor}> */}
+        <Provider store={store}>
+          {this.state.is_ready ? (
+            // <PersistGate persistor={persistor}>
+            //   <AppContainer />
+            // </PersistGate>
             <AppContainer />
-            {/* </PersistGate> */}
-          </Provider>
-        ) : (
-          // <AppLoading
-          //   startAsync={this._loadAssetsAsync}
-          //   onFinish={this._setReady}
-          //   onError={console.warn}
-          // />
-          <></>
-        )}
+          ) : (
+            <MainLoading _setReady={this._setReady} />
+          )}
+        </Provider>
       </>
     );
   }
