@@ -11,11 +11,12 @@ import * as firebase from "firebase";
 import { fromJS, Map } from "immutable";
 import ChangePlanToPremium from "../../../shared/components/change-plan-to-premium/ChangePlanToPremium";
 import ChangePlanToFree from "../../../shared/components/change-plan-to-free/ChangePlanToFree";
+import axios from "axios";
+import { SERVER_URL } from "../../../../config";
 
 export default class AccountRow extends React.PureComponent {
   state = {
     is_logged_in: false,
-    account_email: "",
     account_name: "",
     image: null,
 
@@ -51,32 +52,37 @@ export default class AccountRow extends React.PureComponent {
     );
   };
 
-  _updateAccountLogInState = (full_name, email, is_logged_in) => {
+  _updateAccountLogInState = (full_name, is_logged_in) => {
     this.setState({
       is_logged_in,
-      account_name: full_name,
-      account_email: email
+      account_name: full_name
     });
   };
 
-  _shouldDisplayChangePlanBanner = new_plan => {
+  _shouldDisplayChangePlanBanner = (uuid, new_plan) => {
     let current_plan = Map(this.props.generalSettings).getIn([
-      "account",
-      "package",
-      "plan"
-    ]);
+        "account",
+        "package",
+        "plan"
+      ]),
+      current_uuid = Map(this.props.generalSettings).getIn(["account", "uuid"]);
 
-    if (current_plan !== new_plan) {
-      if (new_plan === "free") {
-        this.setState(prevState => ({
-          should_display_change_plan_banner: !prevState.should_display_change_plan_banner,
-          change_plan_banner: new_plan
-        }));
-      } else {
-        this.setState(prevState => ({
-          should_display_change_plan_banner: !prevState.should_display_change_plan_banner,
-          change_plan_banner: new_plan
-        }));
+    // Display change plan banner if user uses the same account, but its plan was changed
+    // from free to premium by 1. referral code is used and 2. buy premium sub, and from premium
+    // to free by 1. expiry timestamp is past date.
+    if (uuid === current_uuid) {
+      if (current_plan !== new_plan) {
+        if (new_plan === "free") {
+          this.setState(prevState => ({
+            should_display_change_plan_banner: !prevState.should_display_change_plan_banner,
+            change_plan_banner: new_plan
+          }));
+        } else {
+          this.setState(prevState => ({
+            should_display_change_plan_banner: !prevState.should_display_change_plan_banner,
+            change_plan_banner: new_plan
+          }));
+        }
       }
     }
   };
@@ -88,47 +94,101 @@ export default class AccountRow extends React.PureComponent {
       .doc(uuid)
       .onSnapshot(doc => {});
 
-  componentDidMount() {
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        if (user.emailVerified) {
-          firebase
-            .firestore()
-            .collection("users")
-            .doc(user.uid)
-            .onSnapshot(
-              doc => {
-                this._shouldDisplayChangePlanBanner(doc.data().package.plan);
-
-                this._updateAccountRedux(doc.data(), true);
-                this._updateAccountLogInState(
-                  user.displayName,
-                  user.email,
-                  true
-                );
-              },
-              err => {
-                // TO DO
-              }
-            );
-        } else {
-          firebase
-            .auth()
-            .signOut()
-            .then(() => {
-              this._unsuscribeToDb(user.uid);
-              this._updateAccountRedux({ package: { plan: "free" } }, false);
-              this._updateAccountLogInState("", "", false);
-            })
-            .catch(err => {
-              // TO DO
-            });
+  _validateSubscription = async (receipt_data, uuid) => {
+    try {
+      let validate_sub_response = axios({
+        method: "POST",
+        url: SERVER_URL + "payments/?action=validateSubscription",
+        data: {
+          receipt_data,
+          uuid
         }
-      } else {
+      });
+    } catch (err) {
+      // TO DO
+    }
+  };
+
+  _validateExpiryTimestamp = async uuid => {
+    try {
+      let validate_expiry_timestamp_response = axios({
+        method: "POST",
+        url: SERVER_URL + "users/?action=validateExpiryTimestamp",
+        data: {
+          uuid
+        }
+      });
+    } catch (err) {
+      // TO DO
+    }
+  };
+
+  componentDidMount() {
+    firebase.auth().onAuthStateChanged(
+      user => {
+        if (user) {
+          if (user.emailVerified) {
+            firebase
+              .firestore()
+              .collection("users")
+              .doc(user.uid)
+              .onSnapshot(
+                doc => {
+                  let doc_data = doc.data();
+
+                  // If the accounut's expiry timestamp is past date, we need to validate
+                  // it with the server to process further.
+                  if (doc_data.expiryTimestamp < Date.now()) {
+                    this._validateExpiryTimestamp(doc_data.uuid);
+                  }
+                  // If logged in account is a paid account
+                  if (doc_data.package.billed) {
+                    // If its renewal timestamp is past date, we need to validate the subscription to see
+                    // whether the subscriptions expires or not
+                    if (doc_data.package.renewalTimestamp < Date.now()) {
+                      this._validateSubscription(
+                        doc_data.iosLatestReceipt,
+                        doc_data.uuid
+                      );
+                    }
+                  }
+
+                  this._shouldDisplayChangePlanBanner(doc_data.uuid, doc_data.package.plan);
+                  this._updateAccountRedux(doc_data, true);
+                  this._updateAccountLogInState(doc_data.fullName, true);
+                },
+                err => {
+                  this._updateAccountRedux(
+                    { package: { plan: "free" } },
+                    false
+                  );
+                  this._updateAccountLogInState("", false);
+                }
+              );
+          } else {
+            firebase
+              .auth()
+              .signOut()
+              .then(() => {
+                this._unsuscribeToDb(user.uid);
+                this._updateAccountRedux({ package: { plan: "free" } }, false);
+                this._updateAccountLogInState("", false);
+              })
+              .catch(err => {
+                this._updateAccountRedux({ package: { plan: "free" } }, false);
+                this._updateAccountLogInState("", false);
+              });
+          }
+        } else {
+          this._updateAccountRedux({ package: { plan: "free" } }, false);
+          this._updateAccountLogInState("", false);
+        }
+      },
+      err => {
         this._updateAccountRedux({ package: { plan: "free" } }, false);
-        this._updateAccountLogInState("", "", false);
+        this._updateAccountLogInState("", false);
       }
-    });
+    );
   }
 
   render() {

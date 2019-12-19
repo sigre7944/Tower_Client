@@ -9,7 +9,9 @@ import {
   Image,
   Animated,
   Easing,
-  Platform
+  Keyboard,
+  Platform,
+  ActivityIndicator
 } from "react-native";
 
 import { styles } from "./styles/styles";
@@ -17,8 +19,13 @@ import { styles } from "./styles/styles";
 import { close_icon, check_icon } from "../../icons";
 import { normalize } from "../../helpers";
 import { Map } from "immutable";
+import * as InAppPurchase from "expo-in-app-purchases";
+import * as firebase from "firebase";
+import axios from "axios";
+import { SERVER_URL } from "../../../../config";
 
 const icon_size = normalize(24, "width");
+
 const icon_color = "#05838B";
 
 const check_icon_size = normalize(19, "width");
@@ -28,6 +35,8 @@ const window_height = Dimensions.get("window").height;
 const anim_duration = 350;
 const easing = Easing.in();
 const premium_1x_image = require("../../../../assets/pngs/premium_1x.png");
+
+let account = Map();
 
 export default class PremiumAd extends React.PureComponent {
   anim_translate_y = new Animated.Value(window_height);
@@ -44,7 +53,9 @@ export default class PremiumAd extends React.PureComponent {
     number_of_rewards_free: "0",
     number_of_tasks_per_category_premium: "0",
     number_of_categories_premium: "0",
-    number_of_rewards_premium: "0"
+    number_of_rewards_premium: "0",
+    purchase_items: [],
+    is_pay_button_usable: true
   };
 
   _startAnim = () => {
@@ -77,14 +88,68 @@ export default class PremiumAd extends React.PureComponent {
       "isLoggedIn"
     ]);
 
+    account = Map(this.props.generalSettings).get("account");
+
     this.setState({
       is_logged_in
     });
   };
 
-  _pay = () => {
+  _pay = async () => {
     if (this.state.is_logged_in) {
       // PROCESS PAYMENT HERE
+      try {
+        this.setState({
+          is_pay_button_usable: false
+        });
+
+        const history = await InAppPurchase.connectAsync();
+
+        if (history.responseCode === InAppPurchase.IAPResponseCode.OK) {
+          history.results.forEach(result => {});
+
+          const items = Platform.select({
+            ios: ["premium_monthly_sub"]
+          });
+
+          const {
+            responseCode,
+            results
+          } = await InAppPurchase.getProductsAsync(items);
+
+          if (responseCode === InAppPurchase.IAPResponseCode.OK) {
+            this.setState({ purchase_items: results });
+
+            const purchase_async = await InAppPurchase.purchaseItemAsync(
+              items[0]
+            );
+
+            this._close();
+          } else {
+            this.setState({
+              is_pay_button_usable: true
+            });
+          }
+        } else {
+          this.setState({
+            is_pay_button_usable: true
+          });
+        }
+      } catch (err) {
+        alert(`Error: ${err}`);
+        InAppPurchase.disconnectAsync()
+          .then(() => {
+            this.setState({
+              is_pay_button_usable: true
+            });
+          })
+          .catch(err => {
+            this.setState({
+              is_pay_button_usable: true
+            });
+            alert(err);
+          });
+      }
     } else {
       if (this.props._goToLogin) {
         this._endAnim(this.props._goToLogin);
@@ -409,16 +474,25 @@ export default class PremiumAd extends React.PureComponent {
                   marginBottom: normalize(93, "height")
                 }}
               >
-                <TouchableOpacity
-                  style={styles.upgrade_button_container}
-                  onPress={this._pay}
-                >
-                  <View>
-                    <Text style={styles.upgrade_button_normal_text}>
-                      Pay €2.99/month
-                    </Text>
+                {this.state.is_pay_button_usable ? (
+                  <TouchableOpacity
+                    style={styles.upgrade_button_container}
+                    onPress={this._pay}
+                  >
+                    <View>
+                      <Text style={styles.upgrade_button_normal_text}>
+                        Pay €2.99/month
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ) : (
+                  <View
+                    style={styles.upgrade_button_container}
+                    onPress={this._pay}
+                  >
+                    <ActivityIndicator color="white" size="small" />
                   </View>
-                </TouchableOpacity>
+                )}
               </View>
             </ScrollView>
           </Animated.View>
@@ -427,3 +501,75 @@ export default class PremiumAd extends React.PureComponent {
     );
   }
 }
+
+const _sendReceipt = (receipt_data, uuid) => {
+  return axios({
+    method: "POST",
+    url: SERVER_URL + "payments?action=verifyReceipt",
+    data: {
+      receipt_data,
+      uuid: Map(account).get("uuid")
+    }
+  });
+};
+
+const _handleSuccessfulPurchase = async purchase => {
+  if (!purchase.acknowledged) {
+    // Process transaction here and unlock content...
+    // Verify receipt data
+    try {
+      let send_receipt_response = await _sendReceipt(
+        purchase.transactionReceipt
+      );
+
+      if (send_receipt_response.data === "OK") {
+        let finish_transaction_response = await InAppPurchase.finishTransactionAsync(
+          purchase,
+          false
+        );
+      }
+      let disconnect_response = await InAppPurchase.disconnectAsync();
+    } catch (err) {
+      alert(err);
+    }
+  }
+};
+
+// Set purchase listener
+InAppPurchase.setPurchaseListener(
+  async ({ responseCode, results, errorCode }) => {
+    // Purchase was successful
+    if (responseCode === InAppPurchase.IAPResponseCode.OK) {
+      results.forEach(purchase => {
+        _handleSuccessfulPurchase(purchase);
+      });
+    }
+
+    // Else find out what went wrong
+    else if (responseCode === InAppPurchase.IAPResponseCode.USER_CANCELED) {
+      InAppPurchase.disconnectAsync()
+        .then(() => {})
+        .catch(err => {
+          alert(err);
+        });
+    } else if (responseCode === InAppPurchase.IAPResponseCode.DEFERRED) {
+      // alert('User does not have permissions to buy but requested parental approval (iOS only)');
+      InAppPurchase.disconnectAsync()
+        .then(() => {})
+        .catch(err => {
+          alert(err);
+        });
+    } else {
+      // alert(`Something went wrong with the purchase. Received errorCode ${errorCode}`);
+      InAppPurchase.disconnectAsync()
+        .then(() => {})
+        .catch(err => {
+          alert(err);
+        });
+    }
+  }
+)
+  .then(() => {})
+  .catch(err => {
+    alert(err);
+  });
