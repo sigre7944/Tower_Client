@@ -3,7 +3,6 @@ import React from "react";
 import {
   View,
   Text,
-  Keyboard,
   TouchableOpacity,
   TouchableWithoutFeedback,
   TextInput,
@@ -11,13 +10,14 @@ import {
   Easing,
   Modal,
   Dimensions,
-  SafeAreaView
+  SafeAreaView,
+  Platform
 } from "react-native";
 
 import { check_icon, close_icon } from "../../../../../../../shared/icons";
+import { normalize } from "../../../../../../../shared/helpers";
 
-const icon_size = 29;
-const icon_color = "white";
+const icon_size = normalize(29, "width");
 
 import { styles } from "./styles/styles";
 
@@ -67,8 +67,8 @@ export default class AddCategoryPanel extends React.PureComponent {
     Animated.timing(this.anim_translate_y, {
       toValue: 0,
       duration: animation_duration,
-      easing
-      // useNativeDriver: true
+      easing,
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
@@ -76,8 +76,8 @@ export default class AddCategoryPanel extends React.PureComponent {
     Animated.timing(this.anim_translate_y, {
       toValue: window_height,
       duration: animation_duration,
-      easing
-      // useNativeDriver: true
+      easing,
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start(() => {
       callback();
     });
@@ -167,7 +167,7 @@ export default class AddCategoryPanel extends React.PureComponent {
         should_display_premium_ad: false
       },
       () => {
-        this.props._closeAddCategoryPanel(true)
+        this.props._closeAddCategoryPanel(true);
       }
     );
   };
@@ -251,14 +251,14 @@ export default class AddCategoryPanel extends React.PureComponent {
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-between",
-                  marginHorizontal: 20,
-                  marginTop: 15
+                  marginHorizontal: normalize(20, "width"),
+                  marginTop: normalize(15, "height")
                 }}
               >
                 <TouchableOpacity
                   style={{
-                    width: 40,
-                    height: 40,
+                    width: normalize(40, "width"),
+                    height: normalize(40, "width"),
                     justifyContent: "center",
                     alignItems: "center"
                   }}
@@ -269,8 +269,8 @@ export default class AddCategoryPanel extends React.PureComponent {
 
                 <TouchableOpacity
                   style={{
-                    width: 40,
-                    height: 40,
+                    width: normalize(40, "width"),
+                    height: normalize(40, "width"),
                     justifyContent: "center",
                     alignItems: "center"
                   }}
@@ -287,7 +287,7 @@ export default class AddCategoryPanel extends React.PureComponent {
 
               <View
                 style={{
-                  marginTop: 30
+                  marginTop: normalize(30, "height")
                 }}
               >
                 <Text style={styles.small_text}>Category Title</Text>
@@ -304,7 +304,7 @@ export default class AddCategoryPanel extends React.PureComponent {
 
               <View
                 style={{
-                  marginTop: 30
+                  marginTop: normalize(30, "height")
                 }}
               >
                 <Text style={styles.small_text}>Colour</Text>
@@ -317,14 +317,14 @@ export default class AddCategoryPanel extends React.PureComponent {
                   this.state.color === "white" ? (
                     <View
                       style={{
-                        width: 24,
-                        height: 24,
-                        borderRadius: 12,
+                        width: normalize(24, "width"),
+                        height: normalize(24, "width"),
+                        borderRadius: normalize(24, "width"),
                         justifyContent: "center",
                         alignItems: "center",
                         borderWidth: 1,
                         borderColor: "#2C2C2C",
-                        marginBottom: 10
+                        marginBottom: normalize(10, "height")
                       }}
                     >
                       <View
@@ -339,11 +339,11 @@ export default class AddCategoryPanel extends React.PureComponent {
                   ) : (
                     <View
                       style={{
-                        width: 24,
-                        height: 24,
-                        borderRadius: 12,
+                        width: normalize(24, "width"),
+                        height: normalize(24, "width"),
+                        borderRadius: normalize(24, "width"),
                         backgroundColor: this.state.color,
-                        marginBottom: 10
+                        marginBottom: normalize(10, "height")
                       }}
                     ></View>
                   )}
@@ -408,8 +408,8 @@ class NameExistsWarning extends React.PureComponent {
               justifyContent: "center",
               alignItems: "center",
               borderRadius: 10,
-              paddingHorizontal: 30,
-              paddingVertical: 30
+              paddingHorizontal: normalize(30, "width"),
+              paddingVertical: normalize(30, "height")
             }}
           >
             <Text style={styles.title_warning_text}>
@@ -423,28 +423,23 @@ class NameExistsWarning extends React.PureComponent {
 }
 
 class ColorPanel extends React.PureComponent {
-  scale_value = new Animated.Value(0.3);
-  opacity_value = this.scale_value.interpolate({
-    inputRange: [0.3, 0.5, 0.7, 1],
-    outputRange: [0.3, 0.5, 0.7, 1],
-    extrapolate: "clamp"
-  });
+  opacity_value = new Animated.Value(0);
 
   _animateStart = () => {
-    Animated.timing(this.scale_value, {
+    Animated.timing(this.opacity_value, {
       toValue: 1,
       easing,
-      duration: animation_duration
-      // useNativeDriver: true
+      duration: animation_duration,
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
   _animateEnd = callback => {
-    Animated.timing(this.scale_value, {
+    Animated.timing(this.opacity_value, {
       toValue: 0,
       easing,
-      duration: animation_duration
-      // useNativeDriver: true
+      duration: animation_duration,
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start(() => {
       callback();
     });
@@ -483,13 +478,13 @@ class ColorPanel extends React.PureComponent {
           <Animated.View
             style={{
               position: "absolute",
-              width: 200,
-              height: 200,
+              width: normalize(200, "width"),
+              height: normalize(200, "height"),
               backgroundColor: "white",
               borderRadius: 10,
-              padding: 32,
+              paddingHorizontal: normalize(32, "width"),
+              paddingVertical: normalize(32, "height"),
               justifyContent: "space-between",
-              transform: [{ scale: this.scale_value }],
               opacity: this.opacity_value
             }}
           >
@@ -545,9 +540,9 @@ class NoColorButton extends React.PureComponent {
     return (
       <TouchableOpacity
         style={{
-          width: 23,
-          height: 23,
-          borderRadius: 23,
+          width: normalize(23, "width"),
+          height: normalize(23, "width"),
+          borderRadius: normalize(23, "width"),
           justifyContent: "center",
           alignItems: "center",
           borderWidth: 1,
@@ -578,9 +573,9 @@ class ColorButton extends React.PureComponent {
     return (
       <TouchableOpacity
         style={{
-          width: 23,
-          height: 23,
-          borderRadius: 23,
+          width: normalize(23, "width"),
+          height: normalize(23, "width"),
+          borderRadius: normalize(23, "width"),
           backgroundColor: this.props.color
         }}
         onPress={this._chooseColor}

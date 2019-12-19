@@ -1,9 +1,9 @@
 {
-  "packagerPort": null,
-  "packagerPid": null,
+  "packagerPort": 19001,
+  "packagerPid": 11696,
   "devToolsPort": 19002,
-  "expoServerPort": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null
+  "expoServerPort": 19000,
+  "expoServerNgrokUrl": "https://pz-ds6.minhchinh97h.tower-client.exp.direct",
+  "packagerNgrokUrl": "https://packager.pz-ds6.minhchinh97h.tower-client.exp.direct",
+  "ngrokPid": 16228
 }

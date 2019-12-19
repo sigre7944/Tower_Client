@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList
-} from "react-native";
+import { View, FlatList } from "react-native";
 import Calendar from "./components/calendar/Calendar.Container";
 import SummaryHolder from "./components/summary-holder/SummaryHolder.Container";
 import ChartsHolder from "./components/charts-holder/ChartsHolder.Container";

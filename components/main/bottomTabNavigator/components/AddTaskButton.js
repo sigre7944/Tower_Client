@@ -1,12 +1,13 @@
 import React from "react";
 
-import { Text, TouchableOpacity } from "react-native";
-
+import { TouchableOpacity } from "react-native";
 import { primary_colors } from "../../../shared/styles/style";
 
 import { plus_icon } from "../../../shared/icons";
 
-const icon_size = 18;
+import { normalize } from "../../../shared/helpers";
+
+const icon_size = normalize(18, "width");
 const icon_color = "white";
 
 export default class AddTaskButton extends React.PureComponent {
@@ -18,15 +19,23 @@ export default class AddTaskButton extends React.PureComponent {
       <TouchableOpacity
         onPress={this._onPress}
         style={{
-          height: 56,
-          width: 56,
-          borderRadius: 56,
+          height: normalize(56, "width"),
+          width: normalize(56, "width"),
+          borderRadius: normalize(56, "width"),
           backgroundColor: primary_colors.prim_1,
           alignItems: "center",
           justifyContent: "center",
           position: "absolute",
           top: -35,
-          zIndex: 10
+          zIndex: 10,
+          shadowOffset: {
+            width: 0,
+            height: 6
+          },
+          shadowRadius: 6,
+          shadowColor: "black",
+          shadowOpacity: 0.19,
+          elevation: 8
         }}
       >
         {plus_icon(icon_size, icon_color)}

@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Image } from "react-native";
-
 import * as Font from "expo-font";
 import { Asset } from "expo-asset";
 import * as firebase from "firebase";
@@ -115,7 +114,6 @@ export default class MainLoading extends React.PureComponent {
     this._loadAssetsAsync();
     this._checkAndUpdateCurrentUserAccount();
   }
-
   render() {
     return (
       <View
@@ -128,8 +126,8 @@ export default class MainLoading extends React.PureComponent {
       >
         <View
           style={{
-            width: 150,
-            height: 150,
+            width: normalize(150, "width"),
+            height: normalize(150, "width"),
             justifyContent: "center",
             alignItems: "center"
           }}

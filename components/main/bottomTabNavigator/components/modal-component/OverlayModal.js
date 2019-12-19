@@ -1,10 +1,11 @@
-import React, { Component } from "react";
+import React from "react";
 
 import {
   View,
   Modal,
-  TouchableWithoutFeedback,
   Dimensions,
+  TouchableWithoutFeedback,
+  Platform
 } from "react-native";
 
 import AddTaskPanel from "./add-task-panel/AddTaskPanel";
@@ -42,7 +43,7 @@ class DismissElement extends React.PureComponent {
   }
 }
 
-export default class OverlayModal extends Component {
+export default class OverlayModal extends React.PureComponent {
   should_go_to_login_screen = false;
 
   state = {

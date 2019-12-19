@@ -3,7 +3,7 @@ import {
   FlatList,
   View,
   Text,
-  StyleSheet,
+  Platform,
   TouchableOpacity,
   Animated,
   Easing
@@ -14,17 +14,18 @@ import { Map, fromJS } from "immutable";
 import { styles } from "./styles/styles";
 
 import { check_icon, close_icon } from "../../../../../../../shared/icons";
-
+import { normalize } from "../../../../../../../shared/helpers";
 const icon_color = "white";
-const icon_size = 19;
+const icon_size = normalize(19, "width");
 
-const panel_width = 338;
-const margin_top_for_calendar_row = 20;
-const margin_top_for_month_year_text = 30;
-const calendar_total_height = margin_top_for_calendar_row * 6 + 32 * 6;
+const panel_width = normalize(338, "width");
+const margin_top_for_calendar_row = normalize(20, "height");
+const margin_top_for_month_year_text = normalize(30, "height");
+const calendar_total_height =
+  margin_top_for_calendar_row * 6 + normalize(32, "height") * 6;
 const animation_duration = 250;
 const easing = Easing.in();
-const outer_panel_padding = 7;
+const outer_panel_padding = normalize(7, "width");
 
 export default class WeekCalendar extends React.Component {
   chosen_monday = -1;
@@ -39,12 +40,7 @@ export default class WeekCalendar extends React.Component {
   chosen_start_noWeekInMonth = -1;
   chosen_end_noWeekInMonth = -1;
 
-  calendar_scale_value = new Animated.Value(0.3);
-  calendar_opacity_value = this.calendar_scale_value.interpolate({
-    inputRange: [0, 0.3, 0.5, 0.7, 1],
-    outputRange: [0, 0.3, 0.5, 0.7, 1],
-    extrapolate: "clamp"
-  });
+  calendar_opacity_value = new Animated.Value(0);
 
   save = () => {
     if (
@@ -176,20 +172,22 @@ export default class WeekCalendar extends React.Component {
   };
 
   animateCalendar = (edit, edit_multiple) => {
-    Animated.timing(this.calendar_scale_value, {
+    Animated.timing(this.calendar_opacity_value, {
       toValue: 1,
       duration: animation_duration,
       easing,
-      useNativeDriver: edit || edit_multiple ? false : true
+      // useNativeDriver: edit || edit_multiple ? false : true
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
   _animateEndCalendar = (callback, edit, edit_multiple) => {
-    Animated.timing(this.calendar_scale_value, {
+    Animated.timing(this.calendar_opacity_value, {
       toValue: 0,
       duration: animation_duration,
       easing,
-      useNativeDriver: edit || edit_multiple ? false : true
+      // useNativeDriver: edit || edit_multiple ? false : true
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start(() => {
       callback();
     });
@@ -218,7 +216,6 @@ export default class WeekCalendar extends React.Component {
           borderRadius: 10,
           flexDirection: "row",
           overflow: "hidden",
-          transform: [{ scale: this.calendar_scale_value }],
           opacity: this.calendar_opacity_value
         }}
       >
@@ -239,11 +236,11 @@ export default class WeekCalendar extends React.Component {
 
           <View
             style={{
-              marginTop: 28,
-              marginHorizontal: 30,
+              marginTop: normalize(28, "height"),
+              marginHorizontal: normalize(30, "width"),
               flexDirection: "row",
               justifyContent: "flex-end",
-              marginBottom: 35
+              marginBottom: normalize(35, "height")
             }}
           >
             <TouchableOpacity
@@ -521,7 +518,9 @@ class Calendar extends React.Component {
           style={{
             position: "absolute",
             top:
-              margin_top_for_month_year_text + 21 + margin_top_for_calendar_row,
+              margin_top_for_month_year_text +
+              normalize(21, "height") +
+              margin_top_for_calendar_row,
             flexDirection: "row",
             alignItems: "center",
             left: outer_panel_padding,
@@ -752,9 +751,9 @@ class MonthHolder extends React.Component {
 
         <View
           style={{
-            marginTop: margin_top_for_calendar_row + 32,
+            marginTop: margin_top_for_calendar_row + normalize(32, "height"),
             height: calendar_total_height,
-            width: panel_width,
+            width: panel_width
           }}
         >
           <FlatList
@@ -1037,7 +1036,7 @@ class DayText extends React.Component {
       <View
         style={{
           flex: 1,
-          height: 32,
+          height: normalize(32, "height"),
           justifyContent: "center",
           alignItems: "center"
         }}
@@ -1058,7 +1057,7 @@ class WeekText extends React.Component {
       <View
         style={{
           flex: 1,
-          height: 32,
+          height: normalize(32, "height"),
           justifyContent: "center",
           alignItems: "center"
         }}

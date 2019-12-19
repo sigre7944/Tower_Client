@@ -12,11 +12,9 @@ import {
 
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 
-import {
-  faEdit,
-  faSortAmountUpAlt,
-  faShareSquare
-} from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faSortAmountUpAlt } from "@fortawesome/free-solid-svg-icons";
+
+import { normalize } from "../../../../../../../shared/helpers";
 
 import { styles } from "./styles/styles";
 import SortPanel from "./sort-panel/SortPanel.Container";
@@ -24,9 +22,10 @@ import SortPanel from "./sort-panel/SortPanel.Container";
 const window_width = Dimensions.get("window").width;
 const animation_duration = 150;
 const easing = Easing.in();
+const translate_y_value = normalize(200, "height");
 
 export default class ChooseOptions extends React.PureComponent {
-  translate_y_value = new Animated.Value(200);
+  translate_y_value = new Animated.Value(translate_y_value);
 
   sort_scale_value = new Animated.Value(0);
   sort_opacity_value = this.sort_scale_value.interpolate({
@@ -59,7 +58,7 @@ export default class ChooseOptions extends React.PureComponent {
 
   _animateEnd = callback => {
     Animated.timing(this.translate_y_value, {
-      toValue: 200,
+      toValue: translate_y_value,
       duration: 200,
       useNativeDriver: true
     }).start(() => {
@@ -138,13 +137,13 @@ export default class ChooseOptions extends React.PureComponent {
             <Animated.View
               style={{
                 position: "absolute",
-                width: 327,
-                paddingVertical: 33,
+                width: normalize(327, "width"),
+                paddingVertical: normalize(33, "height"),
                 backgroundColor: "white",
-                borderRadius: 10,
+                borderRadius: normalize(10, "width"),
                 opacity: this.sort_opacity_value,
                 transform: [{ scale: this.sort_scale_value }],
-                paddingHorizontal: 33
+                paddingHorizontal: normalize(33, "width")
               }}
             >
               <SortPanel hideAction={this._close} />
@@ -156,11 +155,11 @@ export default class ChooseOptions extends React.PureComponent {
                 bottom: 0,
                 left: 0,
                 right: 0,
-                borderTopLeftRadius: 10,
-                borderTopRightRadius: 10,
+                borderTopLeftRadius: normalize(10, "width"),
+                borderTopRightRadius: normalize(10, "width"),
                 backgroundColor: "white",
                 transform: [{ translateY: this.translate_y_value }],
-                paddingVertical: 5
+                paddingVertical: normalize(5, "width")
               }}
             >
               <TouchableOpacity
@@ -172,25 +171,25 @@ export default class ChooseOptions extends React.PureComponent {
               >
                 <View
                   style={{
-                    width: 37,
-                    height: 5,
+                    width: normalize(37, "width"),
+                    height: normalize(5, "height"),
                     backgroundColor: "#E0E0E0",
-                    borderRadius: 3
+                    borderRadius: normalize(3, "width")
                   }}
                 ></View>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={{
-                  marginTop: 5,
-                  paddingHorizontal: 33,
+                  marginTop: normalize(5, "height"),
+                  paddingHorizontal: normalize(33, "width"),
                   flexDirection: "row",
                   alignItems: "center",
-                  height: 60
+                  height: normalize(60, "height")
                 }}
                 onPress={this._chooseEditMultipleTasks}
               >
-                <FontAwesomeIcon icon={faEdit} size={20} color="#05838B" />
+                <FontAwesomeIcon icon={faEdit} size={normalize(20, "width")} color="#05838B" />
 
                 <Text style={styles.edit_text}>Edit multiple tasks</Text>
               </TouchableOpacity>
@@ -199,17 +198,17 @@ export default class ChooseOptions extends React.PureComponent {
 
               <TouchableOpacity
                 style={{
-                  marginTop: 5,
-                  paddingHorizontal: 33,
+                  marginTop: normalize(5, "height"),
+                  paddingHorizontal: normalize(33, "width"),
                   flexDirection: "row",
                   alignItems: "center",
-                  height: 60
+                  height: normalize(60, "height")
                 }}
                 onPress={this._chooseSortBy}
               >
                 <FontAwesomeIcon
                   icon={faSortAmountUpAlt}
-                  size={20}
+                  size={normalize(20, "width")}
                   color="#05838B"
                 />
 

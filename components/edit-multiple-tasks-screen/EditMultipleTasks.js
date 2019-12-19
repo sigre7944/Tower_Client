@@ -2,11 +2,6 @@ import React from "react";
 
 import {
   View,
-  ScrollView,
-  StyleSheet,
-  Keyboard,
-  Animated,
-  KeyboardAvoidingView,
   Dimensions,
   Modal,
   FlatList,
@@ -30,7 +25,7 @@ import Category from "../main/screens/Journal/components/share/category/Category
 import Collapsible from "react-native-collapsible";
 import TaskCardUI from "./components/task-card-ui/TaskCardUI.Container";
 import DeleteMultiple from "./components/delete-multiple/DeleteMultiple.Container";
-
+import { normalize } from "../shared/helpers";
 const window_width = Dimensions.get("window").width;
 
 export default class EditMultipleTasks extends React.PureComponent {
@@ -310,7 +305,11 @@ export default class EditMultipleTasks extends React.PureComponent {
               style={styles.end_icon_container}
               onPress={this._goBackToJournal}
             >
-              <IoniconsIcon name="ios-arrow-back" size={30} color={"#BDBDBD"} />
+              <IoniconsIcon
+                name="ios-arrow-back"
+                size={normalize(30, "width")}
+                color={"#BDBDBD"}
+              />
             </TouchableOpacity>
 
             <TouchableOpacity onPress={this._toggleReturn}>
@@ -321,7 +320,11 @@ export default class EditMultipleTasks extends React.PureComponent {
               style={styles.end_icon_container}
               onPress={this._save}
             >
-              <FeatherIcon name="check" size={30} color="#05838B" />
+              <FeatherIcon
+                name="check"
+                size={normalize(30, "width")}
+                color="#05838B"
+              />
             </TouchableOpacity>
           </View>
         </View>
@@ -329,7 +332,7 @@ export default class EditMultipleTasks extends React.PureComponent {
         <Collapsible collapsed={this.state.should_reschedule_text_collapse}>
           <View
             style={{
-              marginBottom: 10,
+              marginBottom: normalize(10, "height"),
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center"
@@ -342,7 +345,10 @@ export default class EditMultipleTasks extends React.PureComponent {
             </Text>
 
             <Text
-              style={{ ...styles.chosen_option_text, ...{ marginLeft: 5 } }}
+              style={{
+                ...styles.chosen_option_text,
+                ...{ marginLeft: normalize(5, "width") }
+              }}
             >
               {rescheduled_text}
             </Text>
@@ -352,7 +358,7 @@ export default class EditMultipleTasks extends React.PureComponent {
         <Collapsible collapsed={this.state.should_category_text_collapse}>
           <View
             style={{
-              marginBottom: 15,
+              marginBottom: normalize(15, "height"),
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center"
@@ -367,7 +373,7 @@ export default class EditMultipleTasks extends React.PureComponent {
             <Text
               style={{
                 ...styles.chosen_option_text,
-                ...{ marginLeft: 5, color: category_color }
+                ...{ marginLeft: normalize(5, "width"), color: category_color }
               }}
             >
               {moved_to_category_text}
@@ -377,7 +383,7 @@ export default class EditMultipleTasks extends React.PureComponent {
 
         <View
           style={{
-            marginTop: 5,
+            marginTop: normalize(5, "height"),
             justifyContent: "center",
             alignItems: "center"
           }}
@@ -389,8 +395,8 @@ export default class EditMultipleTasks extends React.PureComponent {
           style={{
             flex: 1,
             width: window_width,
-            marginTop: 22,
-            paddingBottom: 60
+            marginTop: normalize(22, "height"),
+            paddingBottom: normalize(60, "height")
           }}
         >
           <TaskCardsFlatlist
@@ -512,7 +518,7 @@ export default class EditMultipleTasks extends React.PureComponent {
           style={{
             position: "absolute",
             bottom: 0,
-            height: 60,
+            height: normalize(60, "height"),
             right: 0,
             left: 0,
             backgroundColor: "white",
@@ -524,14 +530,19 @@ export default class EditMultipleTasks extends React.PureComponent {
             shadowColor: "rgb(0, 0, 0)",
             shadowOpacity: 0.04,
             flexDirection: "row",
-            alignItems: "center"
+            alignItems: "center",
+            elevation: 8
           }}
         >
           <TouchableOpacity
             style={styles.bottom_nav_icon_button_container}
             onPress={this._toggleDisplayCalendarPanel}
           >
-            <AntDesignIcon name="calendar" size={24} color="#05838B" />
+            <AntDesignIcon
+              name="calendar"
+              size={normalize(24, "width")}
+              color="#05838B"
+            />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -540,7 +551,7 @@ export default class EditMultipleTasks extends React.PureComponent {
           >
             <MaterialCommunityIcon
               name="folder-move"
-              size={24}
+              size={normalize(24, "width")}
               color="#05838B"
             />
           </TouchableOpacity>
@@ -551,7 +562,7 @@ export default class EditMultipleTasks extends React.PureComponent {
           >
             <MaterialCommunityIcon
               name="delete-outline"
-              size={24}
+              size={normalize(24, "width")}
               color="#05838B"
             />
           </TouchableOpacity>
@@ -637,7 +648,9 @@ class TaskCardsFlatlist extends React.PureComponent {
       data = [];
 
     let tasks_for_sorting_array = tasks_map.valueSeq().map((value, index) => {
-      let reward_value = Map(value).getIn(["reward", "value"]),
+      let reward_value = parseFloat(
+          Map(value).getIn(["reward", "value"])
+        ).toFixed(3),
         id = Map(value).get("id");
 
       return [reward_value, id];
@@ -695,6 +708,7 @@ class TaskCardsFlatlist extends React.PureComponent {
         windowSize={5}
         maxToRenderPerBatch={5}
         initialNumToRender={5}
+        removeClippedSubviews={true}
       />
     );
   }

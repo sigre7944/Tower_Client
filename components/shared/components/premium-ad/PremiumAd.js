@@ -5,12 +5,8 @@ import {
   TouchableOpacity,
   Dimensions,
   ScrollView,
-  Switch,
-  Picker,
   Modal,
   Image,
-  TouchableWithoutFeedback,
-  SafeAreaView,
   Animated,
   Easing,
   Keyboard,
@@ -21,15 +17,18 @@ import {
 import { styles } from "./styles/styles";
 
 import { close_icon, check_icon } from "../../icons";
+import { normalize } from "../../helpers";
 import { Map } from "immutable";
 import * as InAppPurchase from "expo-in-app-purchases";
 import * as firebase from "firebase";
 import axios from "axios";
 import { SERVER_URL } from "../../../../config";
-const icon_size = 24;
+
+const icon_size = normalize(24, "width");
+
 const icon_color = "#05838B";
 
-const check_icon_size = 19;
+const check_icon_size = normalize(19, "width");
 
 const window_width = Dimensions.get("window").width;
 const window_height = Dimensions.get("window").height;
@@ -63,7 +62,8 @@ export default class PremiumAd extends React.PureComponent {
     Animated.timing(this.anim_translate_y, {
       toValue: 0,
       duration: anim_duration,
-      easing
+      easing,
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start();
   };
 
@@ -71,7 +71,8 @@ export default class PremiumAd extends React.PureComponent {
     Animated.timing(this.anim_translate_y, {
       toValue: window_height,
       duration: anim_duration,
-      easing
+      easing,
+      useNativeDriver: Platform.OS === "android" ? true : false
     }).start(() => {
       callback();
     });
@@ -242,8 +243,8 @@ export default class PremiumAd extends React.PureComponent {
           >
             <View
               style={{
-                marginTop: 42,
-                paddingHorizontal: 22,
+                marginTop: normalize(42, "height"),
+                paddingHorizontal: normalize(22, "width"),
                 alignItems: "flex-start"
               }}
             >
@@ -255,7 +256,7 @@ export default class PremiumAd extends React.PureComponent {
             <ScrollView>
               <View
                 style={{
-                  marginTop: 12,
+                  marginTop: normalize(12, "height"),
                   justifyContent: "center",
                   alignItems: "center"
                 }}
@@ -263,7 +264,7 @@ export default class PremiumAd extends React.PureComponent {
                 {this.props.motivation_text &&
                 this.props.motivation_text.length > 0 &&
                 this.props.motivation_text !== "" ? (
-                  <View style={{ marginBottom: 10 }}>
+                  <View style={{ marginBottom: normalize(10, "height") }}>
                     <Text style={styles.motivation_text}>
                       {this.props.motivation_text}
                     </Text>
@@ -275,10 +276,10 @@ export default class PremiumAd extends React.PureComponent {
 
               <View
                 style={{
-                  height: 220,
+                  height: normalize(220, "height"),
                   justifyContent: "center",
                   alignItems: "center",
-                  marginTop: 48
+                  marginTop: normalize(48, "height")
                 }}
               >
                 <Image
@@ -292,15 +293,15 @@ export default class PremiumAd extends React.PureComponent {
 
               <View
                 style={{
-                  marginTop: 27,
-                  paddingHorizontal: 35
+                  marginTop: normalize(27, "height"),
+                  paddingHorizontal: normalize(35, "width")
                 }}
               >
                 <View
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    marginTop: 21
+                    marginTop: normalize(21, "height")
                   }}
                 >
                   <View
@@ -315,7 +316,7 @@ export default class PremiumAd extends React.PureComponent {
 
                   <View
                     style={{
-                      marginLeft: 15
+                      marginLeft: normalize(15, "width")
                     }}
                   >
                     <Text style={styles.benefit_text}>
@@ -327,12 +328,12 @@ export default class PremiumAd extends React.PureComponent {
 
                 <View
                   style={{
-                    marginTop: 5
+                    marginTop: normalize(5, "height")
                   }}
                 >
                   <View
                     style={{
-                      marginLeft: check_icon_size + 15
+                      marginLeft: check_icon_size + normalize(15, "width")
                     }}
                   >
                     <Text style={styles.versus_text}>
@@ -346,7 +347,7 @@ export default class PremiumAd extends React.PureComponent {
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    marginTop: 21
+                    marginTop: normalize(21, "height")
                   }}
                 >
                   <View
@@ -361,7 +362,7 @@ export default class PremiumAd extends React.PureComponent {
 
                   <View
                     style={{
-                      marginLeft: 15
+                      marginLeft: normalize(15, "width")
                     }}
                   >
                     <Text style={styles.benefit_text}>
@@ -373,12 +374,12 @@ export default class PremiumAd extends React.PureComponent {
 
                 <View
                   style={{
-                    marginTop: 5
+                    marginTop: normalize(5, "height")
                   }}
                 >
                   <View
                     style={{
-                      marginLeft: check_icon_size + 15
+                      marginLeft: check_icon_size + normalize(15, "width")
                     }}
                   >
                     <Text style={styles.versus_text}>
@@ -392,7 +393,7 @@ export default class PremiumAd extends React.PureComponent {
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    marginTop: 21
+                    marginTop: normalize(21, "height")
                   }}
                 >
                   <View
@@ -407,7 +408,7 @@ export default class PremiumAd extends React.PureComponent {
 
                   <View
                     style={{
-                      marginLeft: 15,
+                      marginLeft: normalize(15, "width"),
                       flexDirection: "row",
                       alignItems: "center"
                     }}
@@ -420,12 +421,12 @@ export default class PremiumAd extends React.PureComponent {
 
                 <View
                   style={{
-                    marginTop: 5
+                    marginTop: normalize(5, "height")
                   }}
                 >
                   <View
                     style={{
-                      marginLeft: check_icon_size + 15
+                      marginLeft: check_icon_size + normalize(15, "width")
                     }}
                   >
                     <Text style={styles.versus_text}>
@@ -438,7 +439,7 @@ export default class PremiumAd extends React.PureComponent {
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    marginTop: 21
+                    marginTop: normalize(21, "height")
                   }}
                 >
                   <View
@@ -453,7 +454,7 @@ export default class PremiumAd extends React.PureComponent {
 
                   <View
                     style={{
-                      marginLeft: 15,
+                      marginLeft: normalize(15, "width"),
                       flexDirection: "row",
                       alignItems: "center"
                     }}
@@ -469,8 +470,8 @@ export default class PremiumAd extends React.PureComponent {
                 style={{
                   justifyContent: "center",
                   alignItems: "center",
-                  marginTop: 52,
-                  marginBottom: 93
+                  marginTop: normalize(52, "height"),
+                  marginBottom: normalize(93, "height")
                 }}
               >
                 {this.state.is_pay_button_usable ? (

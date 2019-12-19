@@ -1,14 +1,13 @@
 import React from "react";
 import { ProgressCircle } from "react-native-svg-charts";
-import { View, Text, TouchableOpacity, Dimensions, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 
 import { Map, fromJS, OrderedMap, isKeyed } from "immutable";
 import { styles } from "./styles/styles";
 import * as Haptics from "expo-haptics";
 import { Audio } from "expo-av";
 import PremiumAd from "../../../../../shared/components/premium-ad/PremiumAd.Container";
-
-const window_width = Dimensions.get("window").width;
+import { normalize } from "../../../../../shared/helpers";
 const no_main_reward_1x = require("../../../../../../assets/pngs/no_main_reward_1x.png");
 
 export default class TrackingSection extends React.PureComponent {
@@ -37,7 +36,7 @@ export default class TrackingSection extends React.PureComponent {
     if (this.state.can_choose) {
       let purchase_history_map = OrderedMap(this.props.purchase_history),
         rewards = OrderedMap(this.props.rewards),
-        balance = parseFloat(this.props.balance),
+        balance = parseFloat(this.props.balance).toFixed(3),
         main_reward_map = rewards.get(this.props.main_reward),
         reward_id = main_reward_map.get("id"),
         reward_value = main_reward_map.get("value"),
@@ -240,7 +239,7 @@ export default class TrackingSection extends React.PureComponent {
       main_reward_name = "",
       main_reward_value = 0,
       progress_percent = 0,
-      balance = parseFloat(this.props.balance),
+      balance = parseFloat(this.props.balance).toFixed(3),
       rewards_map = OrderedMap(this.props.rewards),
       can_get_reward_bool = false,
       motivating_text = "";
@@ -250,7 +249,7 @@ export default class TrackingSection extends React.PureComponent {
     } else {
       main_reward_name = rewards_map.getIn([main_reward, "name"]);
       main_reward_value = rewards_map.getIn([main_reward, "value"]);
-      progress_percent = balance / parseFloat(main_reward_value);
+      progress_percent = balance / parseFloat(main_reward_value).toFixed(3);
 
       if (progress_percent >= 1) {
         motivating_text = "You nailed it!";
@@ -269,7 +268,7 @@ export default class TrackingSection extends React.PureComponent {
         style={{
           justifyContent: "center",
           alignItems: "center",
-          marginVertical: 40
+          marginVertical: normalize(40, "height")
         }}
       >
         {no_main_reward_bool ? (
@@ -278,13 +277,13 @@ export default class TrackingSection extends React.PureComponent {
               justifyContent: "center",
               alignItems: "center",
               backgroundColor: "white",
-              marginHorizontal: 22
+              marginHorizontal: normalize(22, "width")
             }}
           >
             <View
               style={{
-                height: 254,
-                borderRadius: 10,
+                height: normalize(254, "height"),
+                borderRadius: normalize(10, "width"),
                 justifyContent: "center",
                 alignItems: "center"
               }}
@@ -299,7 +298,7 @@ export default class TrackingSection extends React.PureComponent {
 
               <View
                 style={{
-                  marginTop: 10
+                  marginTop: normalize(10, "height")
                 }}
               >
                 <Text style={styles.no_reward_tracked_text}>
@@ -315,7 +314,7 @@ export default class TrackingSection extends React.PureComponent {
         ) : (
           <View
             style={{
-              borderRadius: 10,
+              borderRadius: normalize(10, "width"),
               backgroundColor: "white",
               shadowOffset: {
                 width: 4,
@@ -326,10 +325,11 @@ export default class TrackingSection extends React.PureComponent {
               shadowColor: "rgba(0, 0, 0, 0.08)",
               justifyContent: "center",
               alignItems: "center",
-              paddingHorizontal: 22,
-              paddingVertical: 49,
-              marginHorizontal: 22,
-              opacity: this.state.can_choose ? 1 : 0.5
+              paddingHorizontal: normalize(22, "width"),
+              paddingVertical: normalize(49, "height"),
+              marginHorizontal: normalize(22, "width"),
+              opacity: this.state.can_choose ? 1 : 0.5,
+              elevation: 8
             }}
           >
             <View
@@ -372,18 +372,18 @@ export default class TrackingSection extends React.PureComponent {
                   position: "relative",
                   justifyContent: "center",
                   alignItems: "center",
-                  height: 139
+                  height: normalize(139, "height")
                 }}
               >
                 <ProgressCircle
                   style={{
                     flex: 1,
-                    width: 159
+                    width: normalize(159, "width")
                   }}
                   progress={progress_percent}
                   progressColor={"#05838B"}
                   backgroundColor={"rgba(0, 0, 0, 0.05)"}
-                  strokeWidth={15}
+                  strokeWidth={normalize(15, "width")}
                   cornerRadius={0}
                   animate={false}
                 />

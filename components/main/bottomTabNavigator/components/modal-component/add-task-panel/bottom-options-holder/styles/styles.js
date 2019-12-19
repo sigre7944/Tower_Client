@@ -4,6 +4,7 @@ import {
 } from 'react-native'
 
 import * as CommonStyle from '../../../../../../../shared/styles/style'
+import { normalize } from "../../../../../../../shared/helpers";
 
 export const styles = StyleSheet.create({
     option_container: {
@@ -23,6 +24,7 @@ export const styles = StyleSheet.create({
             height: 4,
         },
         shadowOpacity: 1,
-        shadowColor: "rgba(0, 0, 0, 0.15)"
+        shadowColor: "rgba(0, 0, 0, 0.15)",
+        elevation: 8,
     }
 })

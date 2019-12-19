@@ -1,23 +1,14 @@
 import React from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  Dimensions
-} from "react-native";
-import { Map, List } from "immutable";
+import { View, Text, TouchableOpacity, Dimensions } from "react-native";
 import { styles } from "./styles/styles";
 
 import WeekChartHolder from "./week-chart-holder/WeekChartHolder.Container";
 import MonthChartHolder from "./month-chart-holder/MonthChartHolder.Container";
 import YearChartHolder from "./year-chart-holder/YearChartHolder.Container";
-
+import { normalize } from "../../../../../shared/helpers";
 const window_width = Dimensions.get("window").width;
-const mark_total_width = 278;
-const mark_container_width = 106;
+const mark_total_width = normalize(278, "width");
+const mark_container_width = normalize(106, "width");
 
 export default class ChartsHolder extends React.PureComponent {
   state = {
@@ -40,7 +31,7 @@ export default class ChartsHolder extends React.PureComponent {
         style={{
           alignItems: "center",
           flex: 1,
-          marginVertical: 36
+          marginVertical: normalize(36, "height")
         }}
       >
         <Text style={styles.big_title_text}>Number of completed tasks</Text>
@@ -48,19 +39,19 @@ export default class ChartsHolder extends React.PureComponent {
         <View
           style={{
             flexDirection: "row",
-            marginTop: 26,
+            marginTop: normalize(26, "height"),
             justifyContent: "center"
           }}
         >
           <View
             style={{
-              width: 255,
-              height: 26,
+              width: normalize(255, "width"),
+              height: normalize(26, "height"),
               flexDirection: "row",
               alignItems: "center",
               borderWidth: 1,
               borderColor: "#B4DADC",
-              borderRadius: 30
+              borderRadius: normalize(30, "width")
             }}
           >
             <AnnotationHolder
@@ -91,7 +82,7 @@ export default class ChartsHolder extends React.PureComponent {
 
         <View
           style={{
-            marginTop: 26
+            marginTop: normalize(26, "height")
           }}
         >
           {this.state.current_annotation_index === 0 ? (
@@ -109,14 +100,14 @@ export default class ChartsHolder extends React.PureComponent {
 
         <View
           style={{
-            marginTop: 43,
+            marginTop: normalize(43, "height"),
             width: window_width
           }}
         >
           <View
             style={{
               flexDirection: "row",
-              marginLeft: 40
+              marginLeft: normalize(40, "width")
             }}
           >
             <View
@@ -136,7 +127,7 @@ export default class ChartsHolder extends React.PureComponent {
                 flexDirection: "row",
                 alignItems: "center",
                 width: mark_container_width,
-                marginLeft: 80
+                marginLeft: normalize(80, "width")
               }}
             >
               <View style={styles.delay_mark_container}></View>
@@ -148,8 +139,8 @@ export default class ChartsHolder extends React.PureComponent {
           <View
             style={{
               flexDirection: "row",
-              marginTop: 20,
-              marginLeft: 40
+              marginTop: normalize(20, "height"),
+              marginLeft: normalize(40, "width")
             }}
           >
             <View
@@ -169,7 +160,7 @@ export default class ChartsHolder extends React.PureComponent {
                 flexDirection: "row",
                 alignItems: "center",
                 width: mark_container_width,
-                marginLeft: 80
+                marginLeft: normalize(80, "width")
               }}
             >
               <View style={styles.delegate_mark_container}></View>

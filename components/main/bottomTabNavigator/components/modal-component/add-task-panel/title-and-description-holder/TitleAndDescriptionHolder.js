@@ -1,22 +1,13 @@
-import React, { Component } from "react";
+import React from "react";
 
-import {
-  View,
-  Text,
-  TouchableHighlight,
-  TextInput,
-  Dimensions,
-  KeyboardAvoidingView,
-  Animated,
-  Keyboard,
-  ScrollView
-} from "react-native";
+import { View, Text, TextInput, Keyboard } from "react-native";
 
 import PremiumAd from "../../../../../../shared/components/premium-ad/PremiumAd.Container";
 
 import { styles } from "./styles/styles";
 
 import { Map, List, fromJS, OrderedMap } from "immutable";
+import { normalize } from "../../../../../../shared/helpers";
 const uuidv1 = require("uuid");
 
 export default class TitleAndDescriptionHolder extends React.PureComponent {
@@ -272,9 +263,9 @@ class TaskTitleElement extends React.PureComponent {
     return (
       <View
         style={{
-          height: 52,
-          marginHorizontal: 20,
-          marginTop: 13
+          height: normalize(52, "height"),
+          marginHorizontal: normalize(20, "width"),
+          marginTop: normalize(13, "height")
         }}
       >
         <Text style={styles.title_description_text}>Task Title</Text>
@@ -449,9 +440,9 @@ class TaskDescriptionElement extends React.PureComponent {
     return (
       <View
         style={{
-          height: 52,
-          marginHorizontal: 20,
-          marginTop: 15
+          height: normalize(52, "height"),
+          marginHorizontal: normalize(20, "width"),
+          marginTop: normalize(15, "height")
         }}
       >
         <Text style={styles.title_description_text}>Task Description</Text>
