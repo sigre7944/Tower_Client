@@ -1,7 +1,10 @@
 // import * as Font from 'expo-font'
 
-export const sf_ui_display_light_font = "sf-ui-display-light"
-export const sf_ui_display_medium_font = "sf-ui-display-medium"
+// export const sf_ui_display_light_font = "sf-ui-display-light"
+// export const sf_ui_display_medium_font = "sf-ui-display-medium"
+
+export const sf_ui_display_light_font = "Arial"
+export const sf_ui_display_medium_font = "Arial"
 
 export const primary_colors = {
     prim_1: "#05838B",

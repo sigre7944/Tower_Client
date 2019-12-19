@@ -1,8 +1,6 @@
 import React from "react";
-import { Image } from "react-native";
-
 import MainNavigator from "./components/main/Main"; //Main screen
-import { Dimensions, Animated, Easing } from "react-native";
+import { Dimensions, Image } from "react-native";
 import {
   createStackNavigator,
   createAppContainer,
@@ -21,7 +19,7 @@ import SettingsAccountScreen from "./components/settings-account-screen/Settings
 import MainLoading from "./components/loading/MainLoading";
 
 import * as Font from "expo-font";
-import { AppLoading } from "expo";
+// import { AppLoading } from "expo";
 import { Asset } from "expo-asset";
 import { PersistGate } from "redux-persist/lib/integration/react";
 import { persistor, store } from "./store/index";
@@ -66,22 +64,6 @@ export default class App extends React.Component {
     );
   };
 
-  _loadAssetsAsync = async () => {
-    const imageAssets = cacheImages([
-      require("./assets/pngs/logo.png"),
-      require("./assets/pngs/no_main_reward_1x.png"),
-      require("./assets/pngs/premium_1x.png"),
-      require("./assets/pngs/have_no_reward_1x.png")
-    ]);
-
-    const fontAssets = Font.loadAsync({
-      "sf-ui-display-light": require("./assets/fonts/sf-ui-display/sf-ui-display-light.otf"),
-      "sf-ui-display-medium": require("./assets/fonts/sf-ui-display/sf-ui-display-medium.otf")
-    });
-
-    await Promise.all([...imageAssets, fontAssets]);
-  };
-
   _setReady = () => {
     this.setState({
       is_ready: true
@@ -92,6 +74,7 @@ export default class App extends React.Component {
 
   componentDidMount() {
     // this.reset()
+    this._setReady()
   }
 
   render() {
@@ -99,16 +82,17 @@ export default class App extends React.Component {
       <>
         {this.state.is_ready ? (
           <Provider store={store}>
-            {/* <PersistGate loading={loading_screen} persistor={persistor}> */}
+            {/* <PersistGate persistor={persistor}> */}
             <AppContainer />
             {/* </PersistGate> */}
           </Provider>
         ) : (
-          <AppLoading
-            startAsync={this._loadAssetsAsync}
-            onFinish={this._setReady}
-            onError={console.warn}
-          />
+          // <AppLoading
+          //   startAsync={this._loadAssetsAsync}
+          //   onFinish={this._setReady}
+          //   onError={console.warn}
+          // />
+          <></>
         )}
       </>
     );
