@@ -68,24 +68,30 @@ export default class AccountRow extends React.PureComponent {
     });
   };
 
-  _shouldDisplayChangePlanBanner = new_plan => {
+  _shouldDisplayChangePlanBanner = (uuid, new_plan) => {
     let current_plan = Map(this.props.generalSettings).getIn([
-      "account",
-      "package",
-      "plan"
-    ]);
+        "account",
+        "package",
+        "plan"
+      ]),
+      current_uuid = Map(this.props.generalSettings).getIn(["account", "uuid"]);
 
-    if (current_plan !== new_plan) {
-      if (new_plan === "free") {
-        this.setState(prevState => ({
-          should_display_change_plan_banner: !prevState.should_display_change_plan_banner,
-          change_plan_banner: new_plan
-        }));
-      } else {
-        this.setState(prevState => ({
-          should_display_change_plan_banner: !prevState.should_display_change_plan_banner,
-          change_plan_banner: new_plan
-        }));
+    // Display change plan banner if user uses the same account, but its plan was changed
+    // from free to premium by 1. referral code is used and 2. buy premium sub, and from premium
+    // to free by 1. expiry timestamp is past date.
+    if (uuid === current_uuid) {
+      if (current_plan !== new_plan) {
+        if (new_plan === "free") {
+          this.setState(prevState => ({
+            should_display_change_plan_banner: !prevState.should_display_change_plan_banner,
+            change_plan_banner: new_plan
+          }));
+        } else {
+          this.setState(prevState => ({
+            should_display_change_plan_banner: !prevState.should_display_change_plan_banner,
+            change_plan_banner: new_plan
+          }));
+        }
       }
     }
   };
@@ -126,21 +132,6 @@ export default class AccountRow extends React.PureComponent {
     }
   };
 
-  _validateProcess = async (receipt_data, uuid) => {
-    try {
-      let promises = [
-        this._validateSubscription(receipt_data, uuid),
-        this._validateExpiryTimestamp(uuid)
-      ];
-
-      let promises_results = await Promise.all(promises);
-
-      alert(`${(promises_results[0], promises_results[1])}`);
-    } catch (err) {
-      // TO DO
-    }
-  };
-
   componentDidMount() {
     firebase.auth().onAuthStateChanged(
       user => {
@@ -154,21 +145,25 @@ export default class AccountRow extends React.PureComponent {
                 doc => {
                   let doc_data = doc.data();
 
+                  // If the accounut's expiry timestamp is past date, we need to validate
+                  // it with the server to process further.
                   if (doc_data.expiryTimestamp < Date.now()) {
-                    this._validateExpiryTimestamp(doc_data.uuid)
+                    this._validateExpiryTimestamp(doc_data.uuid);
                   }
                   // If logged in account is a paid account
                   if (doc_data.package.billed) {
                     // If its renewal timestamp is past date, we need to validate the subscription to see
                     // whether the subscriptions expires or not
-
                     if (doc_data.package.renewalTimestamp < Date.now()) {
-                      this._validateSubscription(doc_data.iosLatestReceipt, doc_data.uuid)
+                      this._validateSubscription(
+                        doc_data.iosLatestReceipt,
+                        doc_data.uuid
+                      );
                     }
                   }
 
-                  this._shouldDisplayChangePlanBanner(doc.data().package.plan);
-                  this._updateAccountRedux(doc.data(), true);
+                  this._shouldDisplayChangePlanBanner(doc_data.uuid, doc_data.package.plan);
+                  this._updateAccountRedux(doc_data, true);
                   this._updateAccountLogInState(doc_data.fullName, true);
                 },
                 err => {

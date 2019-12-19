@@ -71,38 +71,43 @@ export default class MainLoading extends React.PureComponent {
     let account = Map(this.props.generalSettings).get("account"),
       is_logged_in = Map(account).get("isLoggedIn");
 
-    // If there is current logged in user, we do validations on subscription
-    if (is_logged_in) {
-      let billed = Map(account).getIn(["package", "billed"]);
+    try {
+      // If there is current logged in user, we do validations on subscription and expiry timestamp
+      if (is_logged_in) {
+        let billed = Map(account).getIn(["package", "billed"]),
+          uuid = Map(account).get("uuid"),
+          expiry_timestamp = Map(account).get("expiryTimestamp");
 
-      // If paid account, we validate its subscription
-      if (billed) {
-        let receipt_data = Map(account).get("iosLatestReceipt"),
-          uuid = Map(account).get("uuid");
-        try {
-          let promises = [
-            this._validateSubscription(receipt_data, uuid),
-            this._validateExpiryTimestamp(uuid)
-          ];
-
-          let promises_results = await Promise.all(promises);
-
-          firebase
-            .firestore()
-            .collection("users")
-            .doc(uuid)
-            .get()
-            .then(doc => {
-              this._updateAccountRedux(doc.data(), true);
-              this.props._setReady();
-            })
-            .catch(err => {});
-        } catch (err) {
-          // TO DO
+        // If expiry timestamp is past date, we have to validate with server
+        if (expiry_timestamp < Date.now()) {
+          let validate_expiry_timestamp_response = await this._validateExpiryTimestamp(
+            uuid
+          );
         }
+
+        // If paid account, we validate its subscription
+        if (billed) {
+          let receipt_data = Map(account).get("iosLatestReceipt");
+
+          let validate_sub_response = await this._validateSubscription(
+            receipt_data,
+            uuid
+          );
+        }
+
+        let get_user_doc = await firebase
+          .firestore()
+          .collection("users")
+          .doc(uuid)
+          .get();
+
+        this._updateAccountRedux(doc.data(), true);
+        this.props._setReady();
+      } else {
+        this._updateAccountRedux({ package: { plan: "free" } }, false);
       }
-    } else {
-      this._updateAccountRedux({ package: { plan: "free" } }, false);
+    } catch (err) {
+      // TODO
     }
   };
 
