@@ -16,10 +16,8 @@ import SignInSignUpOptions from "./components/sign-in-sign-up-screen/SignInSignU
 import SignInScreen from "./components/sign-in-screen/SignInScreen";
 import SignUpScreen from "./components/sign-up-screen/SignUpScreen";
 import SettingsAccountScreen from "./components/settings-account-screen/SettingsAccountScreen.Container";
-import MainLoading from "./components/loading/MainLoading";
+import MainLoading from "./components/loading/MainLoading.Container";
 
-import * as Font from "expo-font";
-// import { AppLoading } from "expo";
 import { Asset } from "expo-asset";
 import { PersistGate } from "redux-persist/lib/integration/react";
 import { persistor, store } from "./store/index";
@@ -53,15 +51,21 @@ export default class App extends React.Component {
     is_ready: false
   };
 
-  reset = () => {
-    FileSystem.readDirectoryAsync(FileSystem.documentDirectory).then(string => {
-      console.log(string);
-    });
-    FileSystem.deleteAsync(FileSystem.documentDirectory + "reduxPersist").then(
-      () => {
-        console.log("reset!");
-      }
-    );
+  reset = async () => {
+    try {
+      let read_res = await FileSystem.readDirectoryAsync(
+        FileSystem.documentDirectory
+      );
+
+      console.log(read_res);
+      let delete_res = await FileSystem.deleteAsync(
+        FileSystem.documentDirectory + "reduxPersist"
+      );
+
+      console.log("delete");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   _setReady = () => {
@@ -70,30 +74,23 @@ export default class App extends React.Component {
     });
   };
 
-  _loadError = () => {};
-
   componentDidMount() {
-    // this.reset()
-    this._setReady()
+    // this.reset();
   }
 
   render() {
     return (
       <>
-        {this.state.is_ready ? (
-          <Provider store={store}>
-            {/* <PersistGate persistor={persistor}> */}
+        <Provider store={store}>
+          {this.state.is_ready ? (
             <AppContainer />
-            {/* </PersistGate> */}
-          </Provider>
-        ) : (
-          // <AppLoading
-          //   startAsync={this._loadAssetsAsync}
-          //   onFinish={this._setReady}
-          //   onError={console.warn}
-          // />
-          <></>
-        )}
+          ) : (
+            // <PersistGate persistor={persistor}>
+            //   <AppContainer />
+            // </PersistGate>
+            <MainLoading _setReady={this._setReady} />
+          )}
+        </Provider>
       </>
     );
   }

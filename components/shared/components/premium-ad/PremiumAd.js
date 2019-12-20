@@ -19,7 +19,7 @@ import { styles } from "./styles/styles";
 import { close_icon, check_icon } from "../../icons";
 import { normalize } from "../../helpers";
 import { Map } from "immutable";
-import * as InAppPurchase from "expo-in-app-purchases";
+// import * as InAppPurchase from "expo-in-app-purchases";
 import * as firebase from "firebase";
 import axios from "axios";
 import { SERVER_URL } from "../../../../config";

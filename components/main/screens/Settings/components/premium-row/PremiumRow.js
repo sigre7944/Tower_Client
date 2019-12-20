@@ -13,6 +13,7 @@ const window_width = Dimensions.get("window").width;
 export default class Settings extends React.PureComponent {
   state = {
     account_plan: "free",
+    account_billed: false,
     should_display_premium_ad: false
   };
 
@@ -24,13 +25,19 @@ export default class Settings extends React.PureComponent {
 
   _updateAccountPlan = () => {
     let account_plan = Map(this.props.generalSettings).getIn([
-      "account",
-      "package",
-      "plan"
-    ]);
+        "account",
+        "package",
+        "plan"
+      ]),
+      account_billed = Map(this.props.generalSettings).getIn([
+        "account",
+        "package",
+        "billed"
+      ]);
 
     this.setState({
-      account_plan
+      account_plan,
+      account_billed
     });
   };
 
@@ -52,7 +59,9 @@ export default class Settings extends React.PureComponent {
   componentDidUpdate(prevProps, prevState) {
     if (
       Map(this.props.generalSettings).getIn(["account", "package", "plan"]) ||
-      Map(prevProps.generalSettings).getIn(["account", "package", "plan"])
+      Map(prevProps.generalSettings).getIn(["account", "package", "plan"]) ||
+      Map(this.props.generalSettings).getIn(["account", "package", "billed"]) ||
+      Map(prevProps.generalSettings).getIn(["account", "package", "billed"])
     ) {
       this._updateAccountPlan();
     }
@@ -78,7 +87,7 @@ export default class Settings extends React.PureComponent {
           shadowColor: "rgb(0, 0, 0)",
           shadowOpacity: 0.08,
           backgroundColor: "white",
-          elevation: 4,
+          elevation: 4
         }}
         onPress={this._togglePremiumAdvert}
       >
@@ -89,7 +98,11 @@ export default class Settings extends React.PureComponent {
           }}
         >
           <View style={styles.plan_icon_container}>
-            <Ionicons name="ios-star-outline" color="#05838B" size={normalize(26, "width")} />
+            <Ionicons
+              name="ios-star-outline"
+              color="#05838B"
+              size={normalize(26, "width")}
+            />
           </View>
 
           {this.state.account_plan === "free" ? (
@@ -112,25 +125,49 @@ export default class Settings extends React.PureComponent {
             </>
           ) : (
             <>
-              <View
-                style={{
-                  marginLeft: normalize(15, "width")
-                }}
-              >
-                <Text
-                  style={{ ...styles.normal_text, ...{ color: "#05838B" } }}
-                >
-                  You're using Premium plan
-                </Text>
-
+              {this.state.account_billed ? (
                 <View
                   style={{
-                    marginTop: normalize(2, "height")
+                    marginLeft: normalize(15, "width")
                   }}
                 >
-                  <Text style={styles.small_text}>See all features</Text>
+                  <Text
+                    style={{ ...styles.normal_text, ...{ color: "#05838B" } }}
+                  >
+                    You're using Premium plan
+                  </Text>
+
+                  <View
+                    style={{
+                      marginTop: normalize(2, "height")
+                    }}
+                  >
+                    <Text style={styles.small_text}>See all features</Text>
+                  </View>
                 </View>
-              </View>
+              ) : (
+                <View
+                  style={{
+                    marginLeft: normalize(15, "width")
+                  }}
+                >
+                  <Text
+                    style={{ ...styles.normal_text, ...{ color: "#05838B" } }}
+                  >
+                    You're using Premium plan
+                  </Text>
+
+                  <View
+                    style={{
+                      marginTop: normalize(2, "height")
+                    }}
+                  >
+                    <Text style={styles.small_text}>
+                      Upgrade to never run out of benefits
+                    </Text>
+                  </View>
+                </View>
+              )}
             </>
           )}
         </View>
@@ -149,7 +186,16 @@ export default class Settings extends React.PureComponent {
                 _goToLogin={this._goToLogin}
               />
             ) : (
-              <PremiumFeatures dismissAction={this._togglePremiumAdvert} />
+              <>
+                {this.state.account_billed ? (
+                  <PremiumFeatures dismissAction={this._togglePremiumAdvert} />
+                ) : (
+                  <PremiumAd
+                    dismissAction={this._togglePremiumAdvert}
+                    _goToLogin={this._goToLogin}
+                  />
+                )}
+              </>
             )}
           </>
         ) : null}

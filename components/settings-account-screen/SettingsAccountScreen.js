@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  ActivityIndicator
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
@@ -36,6 +43,8 @@ export default class SettingsAccountScreen extends React.PureComponent {
 
   state = {
     image: null,
+    is_uploading_image: false,
+    progress_percentage: 0,
     uuid: "",
     email: "",
     referral_code: "",
@@ -46,7 +55,7 @@ export default class SettingsAccountScreen extends React.PureComponent {
     full_name: ""
   };
 
-  getPermissionAsync = async () => {
+  _getPermissionAsync = async () => {
     if (Constants.platform.ios) {
       const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
       if (status !== "granted") {
@@ -57,19 +66,90 @@ export default class SettingsAccountScreen extends React.PureComponent {
 
   _pickImage = async () => {
     try {
-      let permission = await this.getPermissionAsync();
+      let permission = await this._getPermissionAsync();
 
       let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [4, 3],
+        aspect: [5, 5],
         quality: 1
       });
 
       if (!result.cancelled) {
-        this.setState({ image: result.uri });
+        let account = Map(this.props.generalSettings).get("account");
+        let account_uuid = Map(account).get("uuid");
+        let storage = firebase.storage();
+        let storage_ref = storage.ref();
+        let user_avatar_child_ref = storage_ref
+          .child("images")
+          .child(account_uuid)
+          .child("avatar.jpg");
+
+        let image_file = await fetch(result.uri);
+        let image_blob = await image_file.blob();
+
+        let upload_image_res = user_avatar_child_ref.put(image_blob, {
+          contentType: "image/jpeg"
+        });
+
+        this.setState({
+          is_uploading_image: true
+        });
+
+        let image_download_url = "";
+
+        upload_image_res.on(
+          "state_changed",
+          snapshot => {
+            let progress_percentage = parseFloat(
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+            ).toFixed(2);
+
+            this.setState({
+              progress_percentage
+            });
+          },
+          err => {
+            alert("Could not upload avatar.");
+            this.setState({
+              image: null,
+              is_uploading_image: false
+            });
+          },
+          () => {
+            upload_image_res.snapshot.ref
+              .getDownloadURL()
+              .then(download_url => {
+                image_download_url = download_url;
+                return firebase
+                  .firestore()
+                  .collection("users")
+                  .doc(account_uuid)
+                  .update({
+                    avatarUrl: download_url
+                  });
+              })
+              .then(() => {
+                this.setState({
+                  image: image_download_url,
+                  is_uploading_image: false
+                });
+              })
+              .catch(err => {
+                this.setState({
+                  image: null,
+                  is_uploading_image: false
+                });
+              });
+          }
+        );
       }
-    } catch (err) {}
+    } catch (err) {
+      this.setState({
+        image: null,
+        is_uploading_image: false
+      });
+    }
   };
 
   _goBackToSettings = () => {
@@ -98,8 +178,16 @@ export default class SettingsAccountScreen extends React.PureComponent {
       });
   };
 
+  _imageOnError = () => {
+    this.setState({
+      is_uploading_image: false,
+      image: null
+    });
+  };
+
   componentDidMount() {
-    let account = Map(Map(this.props.generalSettings).get("account"));
+    let account = Map(Map(this.props.generalSettings).get("account")),
+      account_image_url = account.get("avatarUrl");
 
     let email = account.get("email");
 
@@ -117,7 +205,8 @@ export default class SettingsAccountScreen extends React.PureComponent {
       renewal_timestamp: parseInt(
         account.getIn(["package", "renewalTimestamp"])
       ),
-      plan: account.getIn(["package", "plan"])
+      plan: account.getIn(["package", "plan"]),
+      image: account_image_url
     });
   }
 
@@ -146,12 +235,52 @@ export default class SettingsAccountScreen extends React.PureComponent {
             marginTop: normalize(12, "height")
           }}
         >
-          <TouchableOpacity
-            style={styles.image_container}
-            onPress={this._pickImage}
-          >
-            {plus_icon(normalize(18, "width"), "#05838B")}
-          </TouchableOpacity>
+          {this.state.is_uploading_image ? (
+            <View style={styles.image_container}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center"
+                }}
+              >
+                <Text style={styles.progress_percentage_text}>
+                  {this.state.progress_percentage} %
+                </Text>
+
+                <View style={{ marginLeft: 5 }}>
+                  <ActivityIndicator color="#05838B" size="small" />
+                </View>
+              </View>
+            </View>
+          ) : (
+            <>
+              {this.state.image ? (
+                <TouchableOpacity
+                  style={styles.image_container}
+                  onPress={this._pickImage}
+                >
+                  <Image
+                    source={{ uri: this.state.image }}
+                    style={{
+                      width: normalize(150, "width"),
+                      height: normalize(150, "width"),
+                      borderRadius: normalize(150 / 2, "width"),
+                      overflow: "hidden"
+                    }}
+                    resizeMode="contain"
+                    onError={this._imageOnError}
+                  />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={styles.image_container}
+                  onPress={this._pickImage}
+                >
+                  {plus_icon(normalize(18, "width"), "#05838B")}
+                </TouchableOpacity>
+              )}
+            </>
+          )}
         </View>
 
         <View
@@ -314,7 +443,7 @@ export default class SettingsAccountScreen extends React.PureComponent {
               },
               shadowRadius: 8,
               shadowOpacity: 0.12,
-              elevation: 8,
+              elevation: 8
             }}
             onPress={this._logOut}
           >
