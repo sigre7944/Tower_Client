@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Dimensions } from "react-native";
+import { View, Text, TouchableOpacity, Dimensions, Image } from "react-native";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
@@ -31,6 +31,10 @@ export default class Settings extends React.PureComponent {
       "fullName"
     ]);
 
+    let account_avatar = Map(this.props.generalSettings).getIn([
+      "account",
+      "avatarUrl"
+    ]);
     return (
       <>
         {is_logged_in ? (
@@ -62,13 +66,38 @@ export default class Settings extends React.PureComponent {
                 alignItems: "center"
               }}
             >
-              <View style={styles.user_icon_container}>
-                <MaterialCommunityIcons
-                  name="account"
-                  color="white"
-                  size={normalize(30, "width")}
-                />
-              </View>
+              {account_avatar ? (
+                <View
+                  style={{
+                    width: normalize(48, "width"),
+                    height: normalize(48, "width"),
+                    borderRadius: normalize(48, "width"),
+                    backgroundColor: "white",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                >
+                  <Image
+                    source={{
+                      uri: account_avatar
+                    }}
+                    style={{
+                      width: normalize(48, "width"),
+                      height: normalize(48, "width"),
+                      borderRadius: normalize(48 / 2, "width")
+                    }}
+                    resizeMode="contain"
+                  />
+                </View>
+              ) : (
+                <View style={styles.user_icon_container}>
+                  <MaterialCommunityIcons
+                    name="account"
+                    color="white"
+                    size={normalize(30, "width")}
+                  />
+                </View>
+              )}
 
               <View
                 style={{

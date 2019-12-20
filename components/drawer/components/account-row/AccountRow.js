@@ -1,6 +1,6 @@
 import React from "react";
 import { DrawerActions } from "react-navigation-drawer";
-import { TouchableOpacity, Text, View } from "react-native";
+import { TouchableOpacity, Text, View, Image } from "react-native";
 
 import { styles } from "./styles/styles";
 
@@ -18,8 +18,6 @@ export default class AccountRow extends React.PureComponent {
   state = {
     is_logged_in: false,
     account_name: "",
-    image: null,
-
     should_display_change_plan_banner: false,
     change_plan_banner: "premium"
   };
@@ -153,7 +151,10 @@ export default class AccountRow extends React.PureComponent {
                     }
                   }
 
-                  this._shouldDisplayChangePlanBanner(doc_data.uuid, doc_data.package.plan);
+                  this._shouldDisplayChangePlanBanner(
+                    doc_data.uuid,
+                    doc_data.package.plan
+                  );
                   this._updateAccountRedux(doc_data, true);
                   this._updateAccountLogInState(doc_data.fullName, true);
                 },
@@ -237,18 +238,47 @@ export default class AccountRow extends React.PureComponent {
             }}
             onPress={this._goToProfileScreen}
           >
-            <View
-              style={{
-                width: normalize(34, "width"),
-                height: normalize(34, "width"),
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: normalize(34, "width"),
-                backgroundColor: "white"
-              }}
-            >
-              {user_icon(normalize(26, "width"), "#05838B")}
-            </View>
+            {Map(this.props.generalSettings).getIn(["account", "avatarUrl"]) ? (
+              <View
+                style={{
+                  width: normalize(34, "width"),
+                  height: normalize(34, "width"),
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: normalize(34, "width"),
+                  backgroundColor: "white"
+                }}
+              >
+                <Image
+                  source={{
+                    uri: Map(this.props.generalSettings).getIn([
+                      "account",
+                      "avatarUrl"
+                    ])
+                  }}
+                  resizeMode="contain"
+                  style={{
+                    width: normalize(34, "width"),
+                    height: normalize(34, "width"),
+                    borderRadius: normalize(34 / 2, "width"),
+                    overflow: "hidden"
+                  }}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  width: normalize(34, "width"),
+                  height: normalize(34, "width"),
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: normalize(34, "width"),
+                  backgroundColor: "white"
+                }}
+              >
+                {user_icon(normalize(26, "width"), "#05838B")}
+              </View>
+            )}
 
             <View
               style={{

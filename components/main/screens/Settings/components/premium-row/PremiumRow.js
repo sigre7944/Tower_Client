@@ -162,7 +162,9 @@ export default class Settings extends React.PureComponent {
                       marginTop: normalize(2, "height")
                     }}
                   >
-                    <Text style={styles.small_text}>Upgrade to never run out of benefits</Text>
+                    <Text style={styles.small_text}>
+                      Upgrade to never run out of benefits
+                    </Text>
                   </View>
                 </View>
               )}
@@ -184,7 +186,16 @@ export default class Settings extends React.PureComponent {
                 _goToLogin={this._goToLogin}
               />
             ) : (
-              <PremiumFeatures dismissAction={this._togglePremiumAdvert} />
+              <>
+                {this.state.account_billed ? (
+                  <PremiumFeatures dismissAction={this._togglePremiumAdvert} />
+                ) : (
+                  <PremiumAd
+                    dismissAction={this._togglePremiumAdvert}
+                    _goToLogin={this._goToLogin}
+                  />
+                )}
+              </>
             )}
           </>
         ) : null}

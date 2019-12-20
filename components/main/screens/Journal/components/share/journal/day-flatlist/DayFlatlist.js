@@ -191,7 +191,7 @@ export default class DayFlatlist extends React.Component {
           ref={this.setRef}
           onScroll={this._onScroll}
           scrollEventThrottle={5}
-          removeClippedSubviews={true}
+          // removeClippedSubviews={true}
           showsHorizontalScrollIndicator={false}
           onLayout={this._onLayout}
           windowSize={7}

@@ -44,5 +44,13 @@ export const styles = StyleSheet.create({
     fontSize: normalize(18, "width"),
     lineHeight: normalize(21, "height"),
     color: "#EB5757"
+  },
+
+  progress_percentage_text: {
+    fontFamily: CommonStyles.sf_ui_display_light_font,
+    fontSize: normalize(16, "width"),
+    lineHeight: normalize(19, "height"),
+    letterSpacing: -0.02,
+    color: CommonStyles.primary_colors.prim_1
   }
 });

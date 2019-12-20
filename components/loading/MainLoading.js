@@ -37,7 +37,7 @@ export default class MainLoading extends React.Component {
   };
 
   _cacheResourcesAsync = async () => {
-    const images = [
+    let images = [
       require("../../assets/pngs/logo.png"),
       require("../../assets/pngs/no_main_reward_1x.png"),
       require("../../assets/pngs/premium_1x.png"),
