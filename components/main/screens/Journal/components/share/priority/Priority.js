@@ -15,7 +15,7 @@ import {
   Platform
 } from "react-native";
 
-// import { Linking } from "expo";
+import { Linking } from "expo";
 
 import {
   check_icon,
@@ -100,7 +100,7 @@ export default class Priority extends React.PureComponent {
     // this.setState(prevState => ({
     //   should_display_decision_matrix: !prevState.should_display_decision_matrix
     // }));
-    // Linking.openURL("https://www.google.com/");
+    Linking.openURL("https://www.google.com/");
   };
 
   _choosePriorityPicker = () => {
