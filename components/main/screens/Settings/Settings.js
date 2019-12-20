@@ -244,7 +244,7 @@ export default class Settings extends React.Component {
             </TouchableOpacity>
           </View> */}
 
-          <View
+          {/* <View
             style={{
               paddingHorizontal: normalize(22, "width"),
               marginTop: normalize(32, "height"),
@@ -309,7 +309,7 @@ export default class Settings extends React.Component {
                 color="#6E6E6E"
               />
             </TouchableOpacity>
-          </View>
+          </View> */}
         </ScrollView>
       </View>
     );
