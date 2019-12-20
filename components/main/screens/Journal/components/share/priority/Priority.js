@@ -12,10 +12,11 @@ import {
   Keyboard,
   UIManager,
   Dimensions,
-  Platform
+  Platform,
+  Linking
 } from "react-native";
 
-import { Linking } from "expo";
+// import { Linking } from "expo";
 
 import {
   check_icon,

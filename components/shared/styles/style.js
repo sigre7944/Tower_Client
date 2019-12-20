@@ -1,6 +1,5 @@
-import * as Font from "expo-font";
-export const sf_ui_display_light_font = "sf-ui-display-light";
-export const sf_ui_display_medium_font = "sf-ui-display-medium";
+export const sf_ui_display_light_font = "SFUIDisplay-Light";
+export const sf_ui_display_medium_font = "SFUIDisplay-Medium";
 
 // export const sf_ui_display_light_font = "Arial"
 // export const sf_ui_display_medium_font = "Arial"
