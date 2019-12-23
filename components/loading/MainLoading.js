@@ -7,33 +7,11 @@ import { Map } from "immutable";
 import axios from "axios";
 import { SERVER_URL } from "../../config";
 import { fromJS } from "immutable";
-import { SplashScreen, AppLoading } from "expo";
+// import SplashScreen from "react-native-splash-screen";
 
 export default class MainLoading extends React.Component {
   state = {
-    is_splash_ready: false,
     is_app_ready: false
-  };
-
-  _cacheSplashResourcesAsync = async () => {
-    const splash = require("../../assets/splash_screen.png");
-
-    const cacheSplash = Asset.fromModule(splash).downloadAsync();
-
-    const fonts = [
-      {
-        "sf-ui-display-light": require("../../assets/fonts/sf-ui-display/sf-ui-display-light.otf")
-      },
-      {
-        "sf-ui-display-medium": require("../../assets/fonts/sf-ui-display/sf-ui-display-medium.otf")
-      }
-    ];
-
-    const cacheFonts = fonts.map(font => {
-      return Font.loadAsync(font);
-    });
-
-    await Promise.all([cacheSplash, ...cacheFonts]);
   };
 
   _cacheResourcesAsync = async () => {
@@ -52,7 +30,21 @@ export default class MainLoading extends React.Component {
       }
     });
 
-    await Promise.all([cacheImages]);
+    // const fonts = [
+    //   {
+    //     "sf-ui-display-light": require("../../assets/fonts/sf-ui-display-light.otf")
+    //   },
+    //   {
+    //     "sf-ui-display-medium": require("../../assets/fonts/sf-ui-display-medium.otf")
+    //   }
+    // ];
+
+    // const cacheFonts = fonts.map(font => {
+    //   return Font.loadAsync(font);
+    // });
+
+    // await Promise.all([...cacheImages, ...cacheFonts]);
+    await Promise.all([cacheImages])
   };
 
   _updateAccountRedux = (data, is_logged_in) => {
@@ -132,38 +124,26 @@ export default class MainLoading extends React.Component {
     }
   };
 
-  _appLoadingOnFinish = () => {
-    this.setState({
-      is_splash_ready: true
-    });
-  };
-
   _imageOnLoad = () => {
     this._cacheResourcesAsync();
     this._checkAndUpdateCurrentUserAccount();
     this.setState({ is_app_ready: true });
   };
 
+  componentDidMount() {
+    // SplashScreen.preventAutoHide();
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if (this.state.is_app_ready !== prevState.is_app_ready) {
       if (this.state.is_app_ready) {
-        SplashScreen.hide();
+        // SplashScreen.hide();
         this.props._setReady();
       }
     }
   }
 
   render() {
-    if (!this.state.is_splash_ready) {
-      return (
-        <AppLoading
-          startAsync={this._cacheSplashResourcesAsync}
-          onFinish={this._appLoadingOnFinish}
-          autoHideSplash={false}
-        />
-      );
-    }
-
     if (!this.state.is_app_ready) {
       return (
         <View

@@ -18,7 +18,6 @@ import SignUpScreen from "./components/sign-up-screen/SignUpScreen";
 import SettingsAccountScreen from "./components/settings-account-screen/SettingsAccountScreen.Container";
 import MainLoading from "./components/loading/MainLoading.Container";
 
-import { Asset } from "expo-asset";
 import { PersistGate } from "redux-persist/lib/integration/react";
 import { persistor, store } from "./store/index";
 import * as FileSystem from "expo-file-system";
@@ -28,19 +27,6 @@ import "firebase/firestore";
 import { FIREBASE_CONFIG } from "./config/index";
 
 firebase.initializeApp(FIREBASE_CONFIG);
-
-const logo = require("./assets/pngs/logo.png");
-const loading_screen = <MainLoading logo={logo} />;
-
-function cacheImages(images) {
-  return images.map(image => {
-    if (typeof image === "string") {
-      return Image.prefetch(image);
-    } else {
-      return Asset.fromModule(image).downloadAsync();
-    }
-  });
-}
 
 export default class App extends React.Component {
   initialState = {};
@@ -83,11 +69,11 @@ export default class App extends React.Component {
       <>
         <Provider store={store}>
           {this.state.is_ready ? (
-            <AppContainer />
+            // <AppContainer />
+            <PersistGate persistor={persistor}>
+              <AppContainer />
+            </PersistGate>
           ) : (
-            // <PersistGate persistor={persistor}>
-            //   <AppContainer />
-            // </PersistGate>
             <MainLoading _setReady={this._setReady} />
           )}
         </Provider>

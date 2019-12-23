@@ -12,7 +12,8 @@ import {
   Keyboard,
   UIManager,
   Dimensions,
-  Platform
+  Platform,
+  Linking
 } from "react-native";
 
 // import { Linking } from "expo";
@@ -100,7 +101,7 @@ export default class Priority extends React.PureComponent {
     // this.setState(prevState => ({
     //   should_display_decision_matrix: !prevState.should_display_decision_matrix
     // }));
-    // Linking.openURL("https://www.google.com/");
+    Linking.openURL("https://www.google.com/");
   };
 
   _choosePriorityPicker = () => {
