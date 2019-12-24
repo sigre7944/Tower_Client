@@ -94,9 +94,7 @@ export default class AddEditReward extends React.PureComponent {
 
   onChangeRewardValue = e => {
     this.setState({
-      reward_value: e.nativeEvent.text
-        .replace(/[^0-9,.]/g, "")
-        .replace(/[,]/g, ".")
+      reward_value: e.nativeEvent.text.replace(/[^0-9]/g, "")
     });
   };
 
@@ -132,7 +130,7 @@ export default class AddEditReward extends React.PureComponent {
     if (
       this.state.reward_title.length > 0 &&
       this.state.reward_value.length > 0 &&
-      parseFloat(this.state.reward_value).toFixed(3) > 0
+      parseInt(this.state.reward_value) > 0
     ) {
       if (this.props.edit) {
         let edit_reward_id = Map(this.props.edit_reward_data).get("id");
@@ -140,9 +138,7 @@ export default class AddEditReward extends React.PureComponent {
         let new_reward_data = Map(this.props.edit_reward_data).asMutable();
 
         new_reward_data.update("name", v => this.state.reward_title);
-        new_reward_data.update("value", v =>
-          parseFloat(this.state.reward_value).toFixed(3)
-        );
+        new_reward_data.update("value", v => parseInt(this.state.reward_value));
 
         let sending_obj = {
           edit_reward_data: {
@@ -201,7 +197,7 @@ export default class AddEditReward extends React.PureComponent {
                   fromJS({
                     id: reward_id,
                     name: this.state.reward_title,
-                    value: parseFloat(this.state.reward_value).toFixed(3),
+                    value: parseInt(this.state.reward_value),
                     created_at: new Date().getTime(),
                     plan: assigned_plan
                   })
@@ -508,7 +504,7 @@ export default class AddEditReward extends React.PureComponent {
                       style={styles.reward_input}
                       onChange={this.onChangeRewardValue}
                       value={this.state.reward_value}
-                      keyboardType={"numeric"}
+                      keyboardType={"number-pad"}
                       maxLength={9}
                       placeholder={
                         this.props.edit_reward_data

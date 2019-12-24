@@ -18,7 +18,7 @@ import { styles } from "./styles/styles";
 import { close_icon, check_icon } from "../../icons";
 import { normalize } from "../../helpers";
 import { Map } from "immutable";
-import * as InAppPurchase from "expo-in-app-purchases";
+// import * as InAppPurchase from "expo-in-app-purchases";
 import axios from "axios";
 import { SERVER_URL } from "../../../../config";
 
@@ -93,67 +93,67 @@ export default class PremiumAd extends React.PureComponent {
     });
   };
 
-  _pay = async () => {
-    if (this.state.is_logged_in) {
-      // PROCESS PAYMENT HERE
-      try {
-        this.setState({
-          is_pay_button_usable: false
-        });
+  // _pay = async () => {
+  //   if (this.state.is_logged_in) {
+  //     // PROCESS PAYMENT HERE
+  //     try {
+  //       this.setState({
+  //         is_pay_button_usable: false
+  //       });
 
-        const history = await InAppPurchase.connectAsync();
+  //       const history = await InAppPurchase.connectAsync();
 
-        if (history.responseCode === InAppPurchase.IAPResponseCode.OK) {
-          history.results.forEach(result => {});
+  //       if (history.responseCode === InAppPurchase.IAPResponseCode.OK) {
+  //         history.results.forEach(result => {});
 
-          const items = Platform.select({
-            ios: ["premium_monthly_sub"]
-          });
+  //         const items = Platform.select({
+  //           ios: ["premium_monthly_sub"]
+  //         });
 
-          const {
-            responseCode,
-            results
-          } = await InAppPurchase.getProductsAsync(items);
+  //         const {
+  //           responseCode,
+  //           results
+  //         } = await InAppPurchase.getProductsAsync(items);
 
-          if (responseCode === InAppPurchase.IAPResponseCode.OK) {
-            this.setState({ purchase_items: results });
+  //         if (responseCode === InAppPurchase.IAPResponseCode.OK) {
+  //           this.setState({ purchase_items: results });
 
-            const purchase_async = await InAppPurchase.purchaseItemAsync(
-              items[0]
-            );
+  //           const purchase_async = await InAppPurchase.purchaseItemAsync(
+  //             items[0]
+  //           );
 
-            this._close();
-          } else {
-            this.setState({
-              is_pay_button_usable: true
-            });
-          }
-        } else {
-          this.setState({
-            is_pay_button_usable: true
-          });
-        }
-      } catch (err) {
-        alert(`Error: ${err}`);
-        InAppPurchase.disconnectAsync()
-          .then(() => {
-            this.setState({
-              is_pay_button_usable: true
-            });
-          })
-          .catch(err => {
-            this.setState({
-              is_pay_button_usable: true
-            });
-            alert(err);
-          });
-      }
-    } else {
-      if (this.props._goToLogin) {
-        this._endAnim(this.props._goToLogin);
-      }
-    }
-  };
+  //           this._close();
+  //         } else {
+  //           this.setState({
+  //             is_pay_button_usable: true
+  //           });
+  //         }
+  //       } else {
+  //         this.setState({
+  //           is_pay_button_usable: true
+  //         });
+  //       }
+  //     } catch (err) {
+  //       alert(`Error: ${err}`);
+  //       InAppPurchase.disconnectAsync()
+  //         .then(() => {
+  //           this.setState({
+  //             is_pay_button_usable: true
+  //           });
+  //         })
+  //         .catch(err => {
+  //           this.setState({
+  //             is_pay_button_usable: true
+  //           });
+  //           alert(err);
+  //         });
+  //     }
+  //   } else {
+  //     if (this.props._goToLogin) {
+  //       this._endAnim(this.props._goToLogin);
+  //     }
+  //   }
+  // };
 
   _updateNumbers = () => {
     let generalSettings = Map(this.props.generalSettings),
@@ -533,41 +533,41 @@ const _handleSuccessfulPurchase = async purchase => {
   }
 };
 
-// Set purchase listener
-InAppPurchase.setPurchaseListener(
-  async ({ responseCode, results, errorCode }) => {
-    // Purchase was successful
-    if (responseCode === InAppPurchase.IAPResponseCode.OK) {
-      results.forEach(purchase => {
-        _handleSuccessfulPurchase(purchase);
-      });
-    }
+// // Set purchase listener
+// InAppPurchase.setPurchaseListener(
+//   async ({ responseCode, results, errorCode }) => {
+//     // Purchase was successful
+//     if (responseCode === InAppPurchase.IAPResponseCode.OK) {
+//       results.forEach(purchase => {
+//         _handleSuccessfulPurchase(purchase);
+//       });
+//     }
 
-    // Else find out what went wrong
-    else if (responseCode === InAppPurchase.IAPResponseCode.USER_CANCELED) {
-      InAppPurchase.disconnectAsync()
-        .then(() => {})
-        .catch(err => {
-          alert(err);
-        });
-    } else if (responseCode === InAppPurchase.IAPResponseCode.DEFERRED) {
-      // alert('User does not have permissions to buy but requested parental approval (iOS only)');
-      InAppPurchase.disconnectAsync()
-        .then(() => {})
-        .catch(err => {
-          alert(err);
-        });
-    } else {
-      // alert(`Something went wrong with the purchase. Received errorCode ${errorCode}`);
-      InAppPurchase.disconnectAsync()
-        .then(() => {})
-        .catch(err => {
-          alert(err);
-        });
-    }
-  }
-)
-  .then(() => {})
-  .catch(err => {
-    alert(err);
-  });
+//     // Else find out what went wrong
+//     else if (responseCode === InAppPurchase.IAPResponseCode.USER_CANCELED) {
+//       InAppPurchase.disconnectAsync()
+//         .then(() => {})
+//         .catch(err => {
+//           alert(err);
+//         });
+//     } else if (responseCode === InAppPurchase.IAPResponseCode.DEFERRED) {
+//       // alert('User does not have permissions to buy but requested parental approval (iOS only)');
+//       InAppPurchase.disconnectAsync()
+//         .then(() => {})
+//         .catch(err => {
+//           alert(err);
+//         });
+//     } else {
+//       // alert(`Something went wrong with the purchase. Received errorCode ${errorCode}`);
+//       InAppPurchase.disconnectAsync()
+//         .then(() => {})
+//         .catch(err => {
+//           alert(err);
+//         });
+//     }
+//   }
+// )
+//   .then(() => {})
+//   .catch(err => {
+//     alert(err);
+//   });

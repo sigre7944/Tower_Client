@@ -238,9 +238,7 @@ export default class Priority extends React.PureComponent {
 
   _onRewardValueChange = e => {
     this.setState({
-      reward_value: e.nativeEvent.text
-        .replace(/[^0-9,.]/g, "")
-        .replace(/[,]/g, ".")
+      reward_value: e.nativeEvent.text.replace(/[^0-9]/g, "")
     });
   };
 
@@ -300,7 +298,7 @@ export default class Priority extends React.PureComponent {
         notSetValue: {},
         updater: value =>
           fromJS({
-            value: parseFloat(reward_value).toFixed(3)
+            value: parseInt(reward_value)
           })
       }
     };
@@ -354,7 +352,7 @@ export default class Priority extends React.PureComponent {
   _keyboardWillHideHandler = e => {
     if (
       this.state.reward_value.length === 0 ||
-      parseFloat(this.state.reward_value) === 0
+      parseInt(this.state.reward_value) === 0
     ) {
       this._setDefaultRewardValue();
     }
@@ -848,7 +846,7 @@ export default class Priority extends React.PureComponent {
                     maxLength={9}
                     value={this.state.reward_value}
                     onChange={this._onRewardValueChange}
-                    keyboardType="numeric"
+                    keyboardType="number-pad"
                   />
 
                   <Text style={styles.currency}>pts</Text>

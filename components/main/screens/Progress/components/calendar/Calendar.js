@@ -339,7 +339,7 @@ class MonthHolder extends React.Component {
       .toString();
     let month_chart_stats_map = Map(this.props.month_chart_stats);
 
-    return parseFloat(
+    return parseInt(
       month_chart_stats_map.getIn([month_timestamp_toString, "totalPoints"])
     );
   };
@@ -595,7 +595,7 @@ class WeekHolder extends React.Component {
   _calculateTotalPointsWeek = () => {
     let week_chart_stats_map = Map(this.props.week_chart_stats);
 
-    return parseFloat(
+    return parseInt(
       week_chart_stats_map.getIn([this.week_timestamp_toString, "totalPoints"])
     );
   };
@@ -674,7 +674,7 @@ class DayHolder extends React.Component {
   _calculateTotalPointsDay = () => {
     let day_chart_stats_map = Map(this.props.day_chart_stats);
 
-    return parseFloat(
+    return parseInt(
       day_chart_stats_map.getIn([this.day_timestamp_toString, "totalPoints"])
     );
   };
@@ -760,7 +760,7 @@ class UnchosenDayHolder extends React.Component {
   _calculateTotalPointsDay = () => {
     let day_chart_stats_map = Map(this.props.day_chart_stats);
 
-    return parseFloat(
+    return parseInt(
       day_chart_stats_map.getIn([this.day_timestamp_toString, "totalPoints"])
     );
   };

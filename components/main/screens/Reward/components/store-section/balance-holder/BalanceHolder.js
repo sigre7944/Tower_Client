@@ -52,7 +52,7 @@ export default class BalanceHolder extends React.PureComponent {
             marginTop: normalize(15, "height")
           }}
         >
-          <Text style={styles.balance_value}>{this.props.balance}</Text>
+          <Text style={styles.balance_value}>{parseInt(this.props.balance).toLocaleString()}</Text>
 
           <Text style={styles.currency}>{currency}</Text>
         </View>

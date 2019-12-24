@@ -155,7 +155,7 @@ export default class DeleteMultiple extends React.PureComponent {
                             year_toString = year.toString()
 
                         if (completed_tasks_map.hasIn([task_id, timestamp_toString])) {
-                            let total_points = parseFloat(completed_tasks_map.getIn([task_id, timestamp_toString, "totalPoints"], 0)).toFixed(3),
+                            let total_points = parseInt(completed_tasks_map.getIn([task_id, timestamp_toString, "totalPoints"], 0)),
                                 completed_priority_array = List(completed_tasks_map.getIn([task_id, timestamp_toString, "completed_priority_array"]))
 
                             if (new_day_chart_stats_map.has(timestamp_toString)) {
@@ -228,7 +228,7 @@ export default class DeleteMultiple extends React.PureComponent {
                                     year_toString = year.toString(),
                                     month_timestamp_toString = new Date(year, month_in_year).getTime().toString(),
                                     day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
-                                    total_points = parseFloat(total_points_array.get(day_in_week_index)).toFixed(3)
+                                    total_points = parseInt(total_points_array.get(day_in_week_index))
 
                                 if (new_day_chart_stats_map.has(day_timestamp_toString)) {
                                     new_day_chart_stats_map.updateIn([day_timestamp_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
@@ -317,7 +317,7 @@ export default class DeleteMultiple extends React.PureComponent {
                                     monday = this.getMonday(date),
                                     day_timestamp_toString = date.getTime().toString(),
                                     week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
-                                    total_points = parseFloat(total_points_array.get(day_in_month_index)).toFixed(3)
+                                    total_points = parseInt(total_points_array.get(day_in_month_index))
 
                                 if (new_day_chart_stats_map.has(day_timestamp_toString)) {
                                     new_day_chart_stats_map.updateIn([day_timestamp_toString, "totalPoints"], (value) => value - total_points < 0 ? 0 : value - total_points)
@@ -399,7 +399,7 @@ export default class DeleteMultiple extends React.PureComponent {
                                         week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
                                         month_timestamp_toString = new Date(year, month_in_year).getTime().toString(),
                                         day_timestamp_toString = key,
-                                        total_points = parseFloat(completed_tasks_key_data.getIn(["totalPoints"], 0)).toFixed(3)
+                                        total_points = parseInt(completed_tasks_key_data.getIn(["totalPoints"], 0))
 
                                     if (new_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
                                         new_day_chart_stats_map.updateIn(
@@ -523,7 +523,7 @@ export default class DeleteMultiple extends React.PureComponent {
                                             year_toString = year.toString(),
                                             month_timestamp_toString = new Date(year, month_in_year).getTime().toString(),
                                             day_timestamp_toString = new Date(year, month_in_year, day_in_month).getTime().toString(),
-                                            total_points = parseFloat(total_points_array.get(day_in_week_index)).toFixed(3)
+                                            total_points = parseInt(total_points_array.get(day_in_week_index))
 
                                         if (new_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
                                             new_day_chart_stats_map.updateIn(
@@ -649,7 +649,7 @@ export default class DeleteMultiple extends React.PureComponent {
                                             monday = this.getMonday(date),
                                             day_timestamp_toString = date.getTime().toString(),
                                             week_timestamp_toString = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()).getTime().toString(),
-                                            total_points = parseFloat(total_points_array.get(day_in_month_index)).toFixed(3)
+                                            total_points = parseInt(total_points_array.get(day_in_month_index))
 
                                         if (new_day_chart_stats_map.hasIn([day_timestamp_toString, "totalPoints"])) {
                                             new_day_chart_stats_map.updateIn(
