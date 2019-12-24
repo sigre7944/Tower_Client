@@ -11,7 +11,12 @@ import {
 
 import { styles } from "./styles/styles";
 
-import { check_icon, close_icon } from "../../../../../../../shared/icons";
+import {
+  check_icon,
+  close_icon,
+  left_chevron_icon,
+  right_chevron_icon
+} from "../../../../../../../shared/icons";
 import { normalize } from "../../../../../../../shared/helpers";
 const icon_size = normalize(19, "width");
 const icon_color = "white";
@@ -311,6 +316,14 @@ class YearHolder extends React.Component {
     this.props.scrollToYear(this.props.present_year_index);
   };
 
+  _goToPreviousYear = () => {
+    this.props.scrollToYear(this.props.year_index - 1);
+  };
+
+  _goToNextYear = () => {
+    this.props.scrollToYear(this.props.year_index + 1);
+  };
+
   componentDidMount() {
     let { year } = this.props.data;
 
@@ -328,22 +341,63 @@ class YearHolder extends React.Component {
 
   render() {
     return (
-      <View
-        style={{
-          width: panel_width,
-          alignItems: "center"
-        }}
-      >
-        <TouchableOpacity
+      <View>
+        <View
           style={{
             marginTop: margin_top_for_month_year_text,
-            flexDirection: "row",
+            width: panel_width - 2 * outer_panel_padding,
             alignItems: "center"
           }}
-          onPress={this._returnToCurrentYear}
         >
-          <Text style={styles.year_text}>{this.props.data.year}</Text>
-        </TouchableOpacity>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              width: normalize(250, "width")
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                width: normalize(24, "width"),
+                height: normalize(24, "width"),
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+              onPress={this._goToPreviousYear}
+            >
+              {left_chevron_icon(normalize(18, "width"), "rgba(0, 0, 0, 0.54)")}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                marginHorizontal: normalize(25, "width"),
+                flex: 1
+              }}
+              onPress={this._returnToCurrentYear}
+            >
+              <Text style={styles.year_text}>{this.props.data.year}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{
+                width: normalize(24, "width"),
+                height: normalize(24, "width"),
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+              onPress={this._goToNextYear}
+            >
+              {right_chevron_icon(
+                normalize(18, "width"),
+                "rgba(0, 0, 0, 0.54)"
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
 
         <View
           style={{

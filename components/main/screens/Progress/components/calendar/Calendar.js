@@ -197,7 +197,7 @@ export default class Calendar extends React.Component {
         style={{
           position: "relative",
           flex: 1,
-          width: panel_width
+          alignItems: "center"
         }}
       >
         <View>
@@ -233,8 +233,10 @@ export default class Calendar extends React.Component {
               margin_top_for_calendar_row +
               (normalize(19, "height") + normalize(20, "height")),
             flexDirection: "row",
+            justifyContent: "center",
             alignItems: "center",
-            width: panel_width
+            left: 0,
+            right: 0
           }}
         >
           <WeekText text="Week" />
@@ -395,7 +397,6 @@ class MonthHolder extends React.Component {
       number_of_weeks =
         Math.round((end_timestamp - start_timestamp) / (7 * 86400 * 1000)) + 1;
 
-
     for (
       let noWeekInMonth = 1;
       noWeekInMonth <= number_of_weeks;
@@ -498,7 +499,7 @@ class MonthHolder extends React.Component {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
-              width: normalize(200, "width")
+              width: normalize(250, "width")
             }}
           >
             <TouchableOpacity
@@ -517,7 +518,9 @@ class MonthHolder extends React.Component {
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                marginHorizontal: normalize(15, "width")
+                justifyContent: "center",
+                marginHorizontal: normalize(25, "width"),
+                flex: 1
               }}
               onPress={this._returnToCurrentMonth}
             >
@@ -547,7 +550,6 @@ class MonthHolder extends React.Component {
         <View
           style={{
             marginTop: margin_top_for_calendar_row + normalize(32, "height")
-            // height: calendar_total_height,
           }}
         >
           <FlatList
