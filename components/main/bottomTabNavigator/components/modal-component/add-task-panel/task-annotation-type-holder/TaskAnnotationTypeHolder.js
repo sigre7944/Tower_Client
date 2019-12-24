@@ -77,7 +77,20 @@ class AnnotationButton extends React.PureComponent {
         annotation_text_style: styles.not_chosen_annotation_text
       };
     }
-    return null;
+  }
+
+  _initializeCurrentAnnotationBasedOnChosenRoute = () => {
+    const current_route = this.props.currentRoute;
+
+    if (
+      String(current_route).toLowerCase() === this.props.annotation_lowercase
+    ) {
+      this.props.setCurrentAnnotation(this.props.annotation_lowercase);
+    }
+  };
+
+  componentDidMount() {
+    this._initializeCurrentAnnotationBasedOnChosenRoute();
   }
 
   render() {

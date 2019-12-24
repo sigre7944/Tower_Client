@@ -351,11 +351,19 @@ class MonthHolder extends React.Component {
   };
 
   _goToPreviousMonth = () => {
-    this.props.scrollToMonth(this.props.month_index - 1);
+    if (this.props.chart_change_calendar_available) {
+      this.props.scrollToMonth(this.props.month_index - 1);
+    } else {
+      this.props._toggleDisplayPremiumAd();
+    }
   };
 
   _goToNextMonth = () => {
-    this.props.scrollToMonth(this.props.month_index + 1);
+    if (this.props.chart_change_calendar_available) {
+      this.props.scrollToMonth(this.props.month_index + 1);
+    } else {
+      this.props._toggleDisplayPremiumAd();
+    }
   };
 
   shouldComponentUpdate(nextProps, nextState) {
