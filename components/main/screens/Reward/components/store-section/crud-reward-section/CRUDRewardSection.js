@@ -421,6 +421,8 @@ class RewardHolder extends React.PureComponent {
     let reward_value = Map(this.props.data).get("value"),
       reward_name = Map(this.props.data).get("name");
 
+    reward_value = parseInt(reward_value).toLocaleString();
+
     return (
       <View
         style={{

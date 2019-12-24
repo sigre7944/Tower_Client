@@ -6,7 +6,9 @@ import {
     faStore,
     faChartBar,
     faQuestion,
-    faTrophy
+    faTrophy,
+    faChevronLeft,
+    faChevronRight
 } from '@fortawesome/free-solid-svg-icons'
 
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -36,3 +38,7 @@ export const question_icon = (icon_size, icon_color) => <FontAwesomeIcon icon={f
 
 export const user_icon = (icon_size, icon_color) => <MaterialCommunityIcons name="account" size={icon_size} color={icon_color} />
 export const left_arrow_icon = (icon_size, icon_color) => <Feather name="arrow-left" size={icon_size} color={icon_color} />
+
+export const left_chevron_icon = (icon_size, icon_color) => <FontAwesomeIcon icon={faChevronLeft} size={icon_size} color={icon_color} />
+export const right_chevron_icon = (icon_size, icon_color) => <FontAwesomeIcon icon={faChevronRight} size={icon_size} color={icon_color} />
+

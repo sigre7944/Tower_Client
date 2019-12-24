@@ -647,7 +647,7 @@ class MonthHolder extends React.Component {
       end_timestamp = this.getMonday(last_day_from_next_month).getTime(),
       tracking_timestamp = start_timestamp,
       number_of_weeks =
-        Math.floor((end_timestamp - start_timestamp) / (7 * 86400 * 1000)) + 1;
+        Math.round((end_timestamp - start_timestamp) / (7 * 86400 * 1000)) + 1;
 
     for (
       let noWeekInMonth = 1;
