@@ -25,3 +25,7 @@ export const returnNewCategories = (data) => ({
     type: "RETURN_NEW_CATEGORIES",
     data
 })
+
+export const resetCategories = () => ({
+    type: "RESET_CATEGORIES"
+})

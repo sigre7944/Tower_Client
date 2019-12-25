@@ -72,44 +72,65 @@ export const deleteTaskAndHistoryAtTimeThunk = ({
 
         // Update deleted timestamp, task info in deleted_day/week/month_tasks
         updateTask(deleted_task_data.type, deleted_task_data.keyPath, deleted_task_data.notSetValue, deleted_task_data.updater),
+
+        // Update deleted timestamp's task records in day/week/month/year_chart_stats
+        returnNewChartStats(
+            delete_timestamp_day_chart_stats_data.type,
+            delete_timestamp_day_chart_stats_data.data
+        ),
+
+        returnNewChartStats(
+            delete_timestamp_week_chart_stats_data.type,
+            delete_timestamp_week_chart_stats_data.data,
+        ),
+
+        returnNewChartStats(
+            delete_timestamp_month_chart_stats_data.type,
+            delete_timestamp_month_chart_stats_data.data,
+        ),
+
+        returnNewChartStats(
+            delete_timestamp_year_chart_stats_data.type,
+            delete_timestamp_year_chart_stats_data.data,
+        ),
     ]
 
-    if (delete_timestamp_day_chart_stats_data.action_bool) {
-        action_array.push(
-            // Update deleted timestamp's task records in day/week/month/year_chart_stats
-            returnNewChartStats(
-                delete_timestamp_day_chart_stats_data.type,
-                delete_timestamp_day_chart_stats_data.data
-            ),
-        )
-    }
+    // if (delete_timestamp_day_chart_stats_data.action_bool) {
+    //     action_array.push(
+    //         // Update deleted timestamp's task records in day/week/month/year_chart_stats
+    //         returnNewChartStats(
+    //             delete_timestamp_day_chart_stats_data.type,
+    //             delete_timestamp_day_chart_stats_data.data
+    //         ),
+    //     )
+    // }
 
-    if (delete_timestamp_week_chart_stats_data.action_bool) {
-        action_array.push(
-            returnNewChartStats(
-                delete_timestamp_week_chart_stats_data.type,
-                delete_timestamp_week_chart_stats_data.data,
-            ),
-        )
-    }
+    // if (delete_timestamp_week_chart_stats_data.action_bool) {
+    //     action_array.push(
+    //         returnNewChartStats(
+    //             delete_timestamp_week_chart_stats_data.type,
+    //             delete_timestamp_week_chart_stats_data.data,
+    //         ),
+    //     )
+    // }
 
-    if (delete_timestamp_month_chart_stats_data.action_bool) {
-        action_array.push(
-            returnNewChartStats(
-                delete_timestamp_month_chart_stats_data.type,
-                delete_timestamp_month_chart_stats_data.data,
-            ),
-        )
-    }
+    // if (delete_timestamp_month_chart_stats_data.action_bool) {
+    //     action_array.push(
+    //         returnNewChartStats(
+    //             delete_timestamp_month_chart_stats_data.type,
+    //             delete_timestamp_month_chart_stats_data.data,
+    //         ),
+    //     )
+    // }
 
-    if (delete_timestamp_year_chart_stats_data.action_bool) {
-        action_array.push(
-            returnNewChartStats(
-                delete_timestamp_year_chart_stats_data.type,
-                delete_timestamp_year_chart_stats_data.data,
-            ),
-        )
-    }
+    // if (delete_timestamp_year_chart_stats_data.action_bool) {
+    //     action_array.push(
+    //         returnNewChartStats(
+    //             delete_timestamp_year_chart_stats_data.type,
+    //             delete_timestamp_year_chart_stats_data.data,
+    //         ),
+    //     )
+    // }
 
     dispatch(batchActions(action_array))
 }

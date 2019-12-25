@@ -1091,22 +1091,22 @@ export default class DeleteModal extends React.PureComponent {
             })
         },
         delete_timestamp_day_chart_stats_data: {
-          action_bool: false,
+          // action_bool: false,
           type: "RETURN_NEW_DAY_CHART_STATS",
           data: returning_day_chart_stats_map
         },
         delete_timestamp_week_chart_stats_data: {
-          action_bool: false,
+          // action_bool: false,
           type: "RETURN_NEW_WEEK_CHART_STATS",
           data: returning_week_chart_stats_map
         },
         delete_timestamp_month_chart_stats_data: {
-          action_bool: false,
+          // action_bool: false,
           type: "RETURN_NEW_MONTH_CHART_STATS",
           data: returning_month_chart_stats_map
         },
         delete_timestamp_year_chart_stats_data: {
-          action_bool: false,
+          // action_bool: false,
           type: "RETURN_NEW_YEAR_CHART_STATS",
           data: returning_year_chart_stats_map
         }
@@ -1259,13 +1259,13 @@ export default class DeleteModal extends React.PureComponent {
           }
         });
 
-        sending_data.delete_timestamp_day_chart_stats_data.action_bool = true;
+        // sending_data.delete_timestamp_day_chart_stats_data.action_bool = true;
 
-        sending_data.delete_timestamp_week_chart_stats_data.action_bool = true;
+        // sending_data.delete_timestamp_week_chart_stats_data.action_bool = true;
 
-        sending_data.delete_timestamp_month_chart_stats_data.action_bool = true;
+        // sending_data.delete_timestamp_month_chart_stats_data.action_bool = true;
 
-        sending_data.delete_timestamp_year_chart_stats_data.action_bool = true;
+        // sending_data.delete_timestamp_year_chart_stats_data.action_bool = true;
       }
 
       sending_data.delete_timestamp_completed_task_data.keyPath = [
@@ -1439,13 +1439,13 @@ export default class DeleteModal extends React.PureComponent {
           }
         );
 
-        sending_data.delete_timestamp_day_chart_stats_data.action_bool = true;
+        // sending_data.delete_timestamp_day_chart_stats_data.action_bool = true;
 
-        sending_data.delete_timestamp_week_chart_stats_data.action_bool = true;
+        // sending_data.delete_timestamp_week_chart_stats_data.action_bool = true;
 
-        sending_data.delete_timestamp_month_chart_stats_data.action_bool = true;
+        // sending_data.delete_timestamp_month_chart_stats_data.action_bool = true;
 
-        sending_data.delete_timestamp_year_chart_stats_data.action_bool = true;
+        // sending_data.delete_timestamp_year_chart_stats_data.action_bool = true;
       }
 
       sending_data.delete_timestamp_completed_task_data.keyPath = [
@@ -1616,13 +1616,13 @@ export default class DeleteModal extends React.PureComponent {
           }
         );
 
-        sending_data.delete_timestamp_day_chart_stats_data.action_bool = true;
+        // sending_data.delete_timestamp_day_chart_stats_data.action_bool = true;
 
-        sending_data.delete_timestamp_week_chart_stats_data.action_bool = true;
+        // sending_data.delete_timestamp_week_chart_stats_data.action_bool = true;
 
-        sending_data.delete_timestamp_month_chart_stats_data.action_bool = true;
+        // sending_data.delete_timestamp_month_chart_stats_data.action_bool = true;
 
-        sending_data.delete_timestamp_year_chart_stats_data.action_bool = true;
+        // sending_data.delete_timestamp_year_chart_stats_data.action_bool = true;
       }
 
       sending_data.delete_timestamp_completed_task_data.keyPath = [

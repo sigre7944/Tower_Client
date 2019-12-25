@@ -1,11 +1,12 @@
 import { connect } from "react-redux";
 import { chooseCategory } from "../shared/actions/categoryAction";
 import {
-  deleteTasksAndHistory,
-  deleteOnlyTasks
+  deleteCategoryWithTasksAndHistory,
+  deleteTasksAndHistoryNotCategory,
+  resetApplication
 } from "./actions/deleteActionThunk";
-import { updateGeneralSettings } from "../shared/actions/otherAction";
 import Drawer from "./Drawer";
+
 const mapStateToProps = (state, ownProps) => {
   return {
     currentRoute: state["currentRoute"],
@@ -27,14 +28,21 @@ const mapStateToProps = (state, ownProps) => {
 
     current_chosen_category: state["currentChosenCategory"],
 
+    deleted_day_tasks: state["deleted_day_tasks"],
+    deleted_week_tasks: state["deleted_week_tasks"],
+    deleted_month_tasks: state["deleted_month_tasks"],
+
     generalSettings: state["generalSettings"]
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   chooseCategory: category => dispatch(chooseCategory(category)),
-  deleteTasksAndHistory: data => dispatch(deleteTasksAndHistory(data)),
-  deleteOnlyTasks: data => dispatch(deleteOnlyTasks(data)),
+  deleteCategoryWithTasksAndHistory: data =>
+    dispatch(deleteCategoryWithTasksAndHistory(data)),
+  deleteTasksAndHistoryNotCategory: data =>
+    dispatch(deleteTasksAndHistoryNotCategory(data)),
+  resetApplication: (data) => dispatch(resetApplication(data))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Drawer);

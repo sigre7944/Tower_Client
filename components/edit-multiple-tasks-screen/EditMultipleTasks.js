@@ -1363,7 +1363,7 @@ class TaskCard extends React.PureComponent {
       category = task_map.get("category"), //category id
       current_goal_value = 0;
 
-    if (current_chosen_category === category) {
+    if (current_chosen_category === category || current_chosen_category === "cate_all") {
       if (type === "day") {
         let { day, month, year } = chosen_date_data,
           chosen_day_timestamp = new Date(year, month, day).getTime(),

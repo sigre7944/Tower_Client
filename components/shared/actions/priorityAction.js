@@ -10,3 +10,7 @@ export const returnNewPriorities = (data) => ({
     type: "RETURN_NEW_PRIORITIES",
     data
 })
+
+export const resetPriorities = () => ({
+    type: "RESET_PRIORITIES"
+})

@@ -381,7 +381,7 @@ export default class PremiumAd extends React.PureComponent {
                     }}
                   >
                     <Text style={styles.versus_text}>
-                      ({this.state.number_of_rewards_free} categories and
+                      ({this.state.number_of_categories_free} categories and
                       rewards in Free plan)
                     </Text>
                   </View>

@@ -113,7 +113,7 @@ export default class AddCategoryPanel extends React.PureComponent {
         "number_of_categories"
       ]);
 
-      let current_number_of_categories = OrderedMap(this.props.categories).size;
+      let current_number_of_categories = OrderedMap(this.props.categories).size; 
 
       let assigned_plan = "free";
 
@@ -295,9 +295,10 @@ export default class AddCategoryPanel extends React.PureComponent {
                 <View style={styles.button_container}>
                   <TextInput
                     style={styles.text_input}
-                    placeholder="Work"
+                    placeholder="Max 32 characters"
                     value={this.state.category_title}
                     onChange={this._onCategoryTitleChange}
+                    maxLength={32}
                   />
                 </View>
               </View>
