@@ -5,7 +5,6 @@ import {
   Text,
   View,
   Modal,
-  TextInput,
   FlatList,
   Dimensions,
   Animated
@@ -14,7 +13,7 @@ import {
 import AddCategoryPanel from "../main/screens/Journal/components/share/category/add-category-panel/AddCategoryPanel.Container";
 import EditCategoryPanel from "../main/screens/Journal/components/share/category/edit-category-panel/EditCategoryPanel.Container";
 import AccountRow from "./components/account-row/AccountRow.Container";
-
+import InviteFriends from "./components/invite-friends/InviteFriends.Container";
 import { Map, List, OrderedMap } from "immutable";
 
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -23,7 +22,12 @@ import { styles } from "./styles/styles";
 
 import Swipeable from "react-native-gesture-handler/Swipeable";
 
-import { category_icon, plus_icon } from "../shared/icons";
+import {
+  category_icon,
+  plus_icon,
+  home_icon,
+  paper_plane_icon
+} from "../shared/icons";
 import { normalize } from "../shared/helpers";
 import PremiumAd from "../shared/components/premium-ad/PremiumAd.Container";
 
@@ -54,7 +58,9 @@ export default class Drawer extends React.PureComponent {
 
     add_new_category_bool: false,
 
-    edit_category_bool: false
+    edit_category_bool: false,
+
+    delete_tasks_not_category_flag: ""
   };
 
   getWeek = date => {
@@ -100,10 +106,11 @@ export default class Drawer extends React.PureComponent {
     }));
   };
 
-  _toggleDeleteWarning = data => {
+  _toggleDeleteWarning = (data, delete_tasks_not_category_flag = "") => {
     this.category_data = data;
     this.setState(prevState => ({
-      delete_category_bool: !prevState.delete_category_bool
+      delete_category_bool: !prevState.delete_category_bool,
+      delete_tasks_not_category_flag
     }));
   };
 
@@ -147,7 +154,7 @@ export default class Drawer extends React.PureComponent {
               month_timestamp_toString = new Date(year, month_in_year)
                 .getTime()
                 .toString(),
-              total_points = parseFloat(data.get("totalPoints")).toFixed(3);
+              total_points = parseInt(data.get("totalPoints"));
 
             if (
               new_day_chart_stats.hasIn([day_timestamp_toString, "totalPoints"])
@@ -424,7 +431,9 @@ export default class Drawer extends React.PureComponent {
                     )
                       .getTime()
                       .toString(),
-                    total_points = parseFloat(total_points_array.get(day_in_week_index)).toFixed(3);
+                    total_points = parseInt(
+                      total_points_array.get(day_in_week_index)
+                    );
 
                   if (
                     new_day_chart_stats.hasIn([
@@ -738,7 +747,9 @@ export default class Drawer extends React.PureComponent {
                     )
                       .getTime()
                       .toString(),
-                    total_points = parseFloat(total_points_array.get(day_in_month_index)).toFixed(3);
+                    total_points = parseInt(
+                      total_points_array.get(day_in_month_index)
+                    );
 
                   if (
                     new_day_chart_stats.hasIn([
@@ -1039,9 +1050,61 @@ export default class Drawer extends React.PureComponent {
     return new_priorities;
   };
 
+  _updateDeletedTasks = () => {
+    let new_deleted_day_tasks = Map(this.props.deleted_day_tasks).asMutable(),
+      new_deleted_week_tasks = Map(this.props.deleted_week_tasks).asMutable(),
+      new_deleted_month_tasks = Map(this.props.deleted_month_tasks).asMutable(),
+      day_tasks = Map(this.props.day_tasks),
+      week_tasks = Map(this.props.week_tasks),
+      month_tasks = Map(this.props.month_tasks),
+      category_id = Map(this.category_data).get("id");
+
+    day_tasks.valueSeq().forEach(value => {
+      if (value.get("category") === category_id) {
+        new_deleted_day_tasks.delete(value.get("id"));
+        new_deleted_week_tasks.delete(value.get("id"));
+        new_deleted_month_tasks.delete(value.get("id"));
+      }
+    });
+
+    week_tasks.valueSeq().forEach(value => {
+      if (value.get("category") === category_id) {
+        new_deleted_day_tasks.delete(value.get("id"));
+        new_deleted_week_tasks.delete(value.get("id"));
+        new_deleted_month_tasks.delete(value.get("id"));
+      }
+    });
+
+    month_tasks.valueSeq().forEach(value => {
+      if (value.get("category") === category_id) {
+        new_deleted_day_tasks.delete(value.get("id"));
+        new_deleted_week_tasks.delete(value.get("id"));
+        new_deleted_month_tasks.delete(value.get("id"));
+      }
+    });
+
+    return {
+      new_deleted_day_tasks,
+      new_deleted_week_tasks,
+      new_deleted_month_tasks
+    };
+  };
+
+  _removeAllTasksFromAllCategories = () => {
+    let new_categories = OrderedMap(this.props.categories).asMutable();
+
+    new_categories.forEach((category, index, ordered_map) => {
+      ordered_map.updateIn([category.get("id"), "quantity"], 0, v => 0);
+    });
+
+    return { new_categories };
+  };
+
   _deleteCategoryAffectingTasksAndHistory = () => {
     let category_data = Map(this.category_data),
-      new_data = this._updateNewData();
+      new_data = this._updateNewData(),
+      { delete_tasks_not_category_flag } = this.state,
+      _updateDeletedTasks = this._updateDeletedTasks();
 
     let sending_obj = {
       category_id: category_data.get("id"),
@@ -1049,23 +1112,25 @@ export default class Drawer extends React.PureComponent {
       new_day_chart_stats: new_data.new_day_chart_stats,
       new_week_chart_stats: new_data.new_week_chart_stats,
       new_month_chart_stats: new_data.new_month_chart_stats,
-      new_year_chart_stats: new_data.new_year_chart_stats
+      new_year_chart_stats: new_data.new_year_chart_stats,
+
+      new_deleted_day_tasks: _updateDeletedTasks.new_deleted_day_tasks,
+      new_deleted_week_tasks: _updateDeletedTasks.new_deleted_week_tasks,
+      new_deleted_month_tasks: _updateDeletedTasks.new_deleted_month_tasks
     };
 
-    this.props.deleteTasksAndHistory(sending_obj);
-    this._toggleDeleteWarning();
-  };
+    if (delete_tasks_not_category_flag === "inbox") {
+      this.props.deleteTasksAndHistoryNotCategory(sending_obj);
+    } else if (delete_tasks_not_category_flag === "all") {
+      let _removeAllTasksFromAllCategories = this._removeAllTasksFromAllCategories(),
+        sending_obj = {
+          new_categories: _removeAllTasksFromAllCategories.new_categories
+        };
+      this.props.resetApplication(sending_obj);
+    } else {
+      this.props.deleteCategoryWithTasksAndHistory(sending_obj);
+    }
 
-  _deleteCategoryAffectingOnlyTasks = () => {
-    let category_data = Map(this.category_data),
-      new_priorities = this._updateNewPriorities();
-
-    let sending_obj = {
-      category_id: category_data.get("id"),
-      new_priorities
-    };
-
-    this.props.deleteOnlyTasks(sending_obj);
     this._toggleDeleteWarning();
   };
 
@@ -1073,6 +1138,8 @@ export default class Drawer extends React.PureComponent {
     return (
       <View style={styles.container}>
         <AccountRow navigation={this.props.navigation} />
+
+        <InviteFriends navigation={this.props.navigation} />
 
         <CategoryFlatlist
           categories={this.props.categories}
@@ -1088,6 +1155,7 @@ export default class Drawer extends React.PureComponent {
             "package",
             "plan"
           ])}
+          updateNewTasksCategory={this.props.updateNewTasksCategory}
         />
 
         <AddNewCategory _toggleAddNewCategory={this._toggleAddNewCategory} />
@@ -1111,10 +1179,10 @@ export default class Drawer extends React.PureComponent {
                     _deleteCategoryAffectingTasksAndHistory={
                       this._deleteCategoryAffectingTasksAndHistory
                     }
-                    _deleteCategoryAffectingOnlyTasks={
-                      this._deleteCategoryAffectingOnlyTasks
-                    }
                     _toggleDeleteWarning={this._toggleDeleteWarning}
+                    delete_tasks_not_category_flag={
+                      this.state.delete_tasks_not_category_flag
+                    }
                   />
                 ) : null}
               </>
@@ -1129,22 +1197,25 @@ export default class Drawer extends React.PureComponent {
 class CategoryFlatlist extends React.PureComponent {
   state = {
     current_category_index: 0,
-    last_category_index: -1,
-    should_flatlist_update: 0
+    last_category_index: -1
+    // should_flatlist_update: 0
   };
 
   _chooseCategoryIndex = (index, category_data) => {
+    let category_id = Map(category_data).get("id");
+
     if (this.state.current_category_index !== index) {
       this.setState(
         prevState => ({
           current_category_index: index,
-          last_category_index: prevState.current_category_index,
-          should_flatlist_update: prevState.should_flatlist_update + 1
+          last_category_index: prevState.current_category_index
+          // should_flatlist_update: prevState.should_flatlist_update + 1
         }),
         () => {
           this._scrollToRow();
           this.props._setEditCategoryData(category_data);
-          this.props.chooseCategory(Map(category_data).get("id"));
+
+          this.props.chooseCategory(category_id);
 
           this.props.navigation.dispatch(DrawerActions.closeDrawer());
 
@@ -1154,13 +1225,18 @@ class CategoryFlatlist extends React.PureComponent {
             this.props.currentRoute !== "Month"
           ) {
             this.props.navigation.navigate("Journal");
+            if (category_id !== "cate_all") {
+              this.props.updateNewTasksCategory(category_id);
+            } else {
+              this.props.updateNewTasksCategory("cate_0");
+            }
           }
         }
       );
     } else {
       this._scrollToRow();
       this.props._setEditCategoryData(category_data);
-      this.props.chooseCategory(Map(category_data).get("id"));
+      this.props.chooseCategory(category_id);
 
       this.props.navigation.dispatch(DrawerActions.closeDrawer());
 
@@ -1170,6 +1246,11 @@ class CategoryFlatlist extends React.PureComponent {
         this.props.currentRoute !== "Month"
       ) {
         this.props.navigation.navigate("Journal");
+        if (category_id !== "cate_all") {
+          this.props.updateNewTasksCategory(category_id);
+        } else {
+          this.props.updateNewTasksCategory("cate_0");
+        }
       }
     }
   };
@@ -1198,10 +1279,11 @@ class CategoryFlatlist extends React.PureComponent {
       return (
         <InboxRow
           data={item[1]}
-          index={index}
+          index={index + 1}
           current_category_index={this.state.current_category_index}
           last_category_index={this.state.last_category_index}
           _chooseCategoryIndex={this._chooseCategoryIndex}
+          _toggleDeleteWarning={this.props._toggleDeleteWarning}
         />
       );
     }
@@ -1210,7 +1292,7 @@ class CategoryFlatlist extends React.PureComponent {
         data={item[1]}
         _toggleEditCategory={this.props._toggleEditCategory}
         _setEditCategoryData={this.props._setEditCategoryData}
-        index={index}
+        index={index + 1}
         current_category_index={this.state.current_category_index}
         last_category_index={this.state.last_category_index}
         _chooseCategoryIndex={this._chooseCategoryIndex}
@@ -1242,9 +1324,9 @@ class CategoryFlatlist extends React.PureComponent {
       this.props.categories !== prevProps.categories ||
       this.props.account_plan !== prevProps.account_plan
     ) {
-      this.setState(prevState => ({
-        should_flatlist_update: prevState.should_flatlist_update + 1
-      }));
+      // this.setState(prevState => ({
+      //    should_flatlist_update: prevState.should_flatlist_update + 1
+      // }));
     }
   }
 
@@ -1252,13 +1334,27 @@ class CategoryFlatlist extends React.PureComponent {
     return (
       <View
         style={{
-          marginTop: normalize(20, "height"),
           flex: 1
         }}
       >
+        <AllTasksRow
+          index={0}
+          data={Map({
+            id: `cate_all`,
+            name: "All tasks",
+            color: "#B4DADC",
+            plan: "free",
+            created_at: Date.now()
+          })}
+          current_category_index={this.state.current_category_index}
+          last_category_index={this.state.last_category_index}
+          _chooseCategoryIndex={this._chooseCategoryIndex}
+          categories={this.props.categories}
+          _toggleDeleteWarning={this.props._toggleDeleteWarning}
+        />
         <FlatList
           data={OrderedMap(this.props.categories).toArray()}
-          extraData={this.state.should_flatlist_update}
+          // extraData={this.state.should_flatlist_update}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
           getItemLayout={this._getItemLayout}
@@ -1266,10 +1362,150 @@ class CategoryFlatlist extends React.PureComponent {
           windowSize={3}
           maxToRenderPerBatch={3}
           initialNumToRender={3}
-          removeClippedSubviews={true}
+          // removeClippedSubviews={true}
           showsVerticalScrollIndicator={false}
         />
       </View>
+    );
+  }
+}
+
+class AllTasksRow extends React.Component {
+  _chooseCategory = () => {
+    this.props._chooseCategoryIndex(this.props.index, this.props.data);
+  };
+
+  shouldComponentUpdate(nextProps, nextState) {
+    let current_all_task_quantity = OrderedMap(this.props.categories).reduce(
+        (total, category) => total + category.get("quantity"),
+        0
+      ),
+      next_all_task_quantity = OrderedMap(nextProps.categories).reduce(
+        (total, category) => total + category.get("quantity"),
+        0
+      );
+    return (
+      this.props.index === nextProps.current_category_index ||
+      this.props.index === nextProps.last_category_index ||
+      current_all_task_quantity !== next_all_task_quantity
+    );
+  }
+
+  _deleteCategory = () => {
+    this.props._toggleDeleteWarning(this.props.data, "all");
+  };
+
+  _renderRightActions = (progress, dragX) => {
+    const trans = dragX.interpolate({
+      inputRange: [-50, 0],
+      outputRange: [0, 50],
+      extrapolate: "clamp"
+    });
+    return (
+      <Animated.View
+        style={{
+          marginTop: normalize(20, "height"),
+          flexDirection: "row",
+          transform: [{ translateX: trans }]
+        }}
+      >
+        <TouchableOpacity
+          style={styles.delete_container}
+          onPress={this._deleteCategory}
+        >
+          <FontAwesomeIcon
+            icon={faTrashAlt}
+            color="white"
+            size={normalize(14, "width")}
+          />
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  };
+
+  render() {
+    let category_color =
+        Map(this.props.data).get("color") === "white" ||
+        Map(this.props.data).get("color") === "no color"
+          ? "transparent"
+          : Map(this.props.data).get("color"),
+      category_name = Map(this.props.data).get("name"),
+      category_quantity = OrderedMap(this.props.categories).reduce(
+        (total, category) => total + category.get("quantity"),
+        0
+      );
+    (row_color = category_color), (alpha_hex = "CC");
+
+    if (this.props.index === this.props.current_category_index) {
+      if (row_color === "transparent") {
+        row_color = "#BDBDBDCC";
+      } else {
+        row_color = row_color + alpha_hex;
+      }
+    } else {
+      row_color = "transparent";
+    }
+
+    return (
+      <Swipeable
+        renderRightActions={this._renderRightActions}
+        overshootRight={false}
+        useNativeAnimations={true}
+        rightThreshold={1}
+        friction={3}
+        overshootFriction={8}
+      >
+        <TouchableOpacity
+          style={{
+            marginVertical: normalize(20, "height"),
+            height: category_row_height,
+            flexDirection: "row",
+            backgroundColor: row_color
+          }}
+          onPress={this._chooseCategory}
+        >
+          <View
+            style={{
+              height: category_row_height,
+              width: normalize(4, "width"),
+              backgroundColor: category_color,
+              borderTopRightRadius: normalize(3, "width"),
+              borderBottomRightRadius: normalize(3, "width")
+            }}
+          ></View>
+
+          <View
+            style={{
+              flex: 1,
+              marginLeft: normalize(18, "width"),
+              marginRight: normalize(22, "width"),
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                alignItems: "center"
+              }}
+            >
+              {home_icon(normalize(18, "width"), "white")}
+              <Text
+                style={{
+                  ...styles.text,
+                  ...{ marginLeft: normalize(16, "width") }
+                }}
+              >
+                {category_name}
+              </Text>
+            </View>
+
+            <Text style={styles.text}>{category_quantity}</Text>
+          </View>
+        </TouchableOpacity>
+      </Swipeable>
     );
   }
 }
@@ -1286,6 +1522,38 @@ class InboxRow extends React.Component {
       this.props.data !== nextProps.data
     );
   }
+
+  _deleteTasksAndHistory = () => {
+    this.props._toggleDeleteWarning(this.props.data, "inbox");
+  };
+
+  _renderRightActions = (progress, dragX) => {
+    const trans = dragX.interpolate({
+      inputRange: [-50, 0],
+      outputRange: [0, 50],
+      extrapolate: "clamp"
+    });
+    return (
+      <Animated.View
+        style={{
+          marginTop: normalize(20, "height"),
+          flexDirection: "row",
+          transform: [{ translateX: trans }]
+        }}
+      >
+        <TouchableOpacity
+          style={styles.delete_container}
+          onPress={this._deleteTasksAndHistory}
+        >
+          <FontAwesomeIcon
+            icon={faTrashAlt}
+            color="white"
+            size={normalize(14, "width")}
+          />
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  };
 
   render() {
     let category_color =
@@ -1305,61 +1573,69 @@ class InboxRow extends React.Component {
     }
 
     return (
-      <TouchableOpacity
-        style={{
-          marginTop: normalize(20, "height"),
-          height: category_row_height,
-          flexDirection: "row",
-          backgroundColor: row_color
-        }}
-        onPress={this._chooseCategory}
+      <Swipeable
+        renderRightActions={this._renderRightActions}
+        overshootRight={false}
+        useNativeAnimations={true}
+        rightThreshold={1}
+        friction={3}
+        overshootFriction={8}
       >
-        <View
+        <TouchableOpacity
           style={{
             height: category_row_height,
-            width: normalize(4, "width"),
-            backgroundColor: category_color,
-            borderTopRightRadius: normalize(3, "width"),
-            borderBottomRightRadius: normalize(3, "width")
-          }}
-        ></View>
-
-        <View
-          style={{
-            flex: 1,
-            marginLeft: normalize(18, "width"),
-            marginRight: normalize(22, "width"),
             flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center"
+            backgroundColor: row_color
           }}
+          onPress={this._chooseCategory}
         >
           <View
             style={{
+              height: category_row_height,
+              width: normalize(4, "width"),
+              backgroundColor: category_color,
+              borderTopRightRadius: normalize(3, "width"),
+              borderBottomRightRadius: normalize(3, "width")
+            }}
+          ></View>
+
+          <View
+            style={{
+              flex: 1,
+              marginLeft: normalize(18, "width"),
+              marginRight: normalize(22, "width"),
               flexDirection: "row",
-              alignItems: "center",
+              justifyContent: "space-between",
               alignItems: "center"
             }}
           >
-            <FontAwesomeIcon
-              icon={faInbox}
-              color="white"
-              size={normalize(18, "width")}
-            />
-
-            <Text
+            <View
               style={{
-                ...styles.text,
-                ...{ marginLeft: normalize(16, "width") }
+                flexDirection: "row",
+                alignItems: "center",
+                alignItems: "center"
               }}
             >
-              {category_name}
-            </Text>
-          </View>
+              <FontAwesomeIcon
+                icon={faInbox}
+                color="white"
+                size={normalize(18, "width")}
+              />
 
-          <Text style={styles.text}>{category_quantity}</Text>
-        </View>
-      </TouchableOpacity>
+              <Text
+                style={{
+                  ...styles.text,
+                  ...{ marginLeft: normalize(16, "width") }
+                }}
+              >
+                {category_name}
+              </Text>
+            </View>
+
+            <Text style={styles.text}>{category_quantity}</Text>
+          </View>
+        </TouchableOpacity>
+      </Swipeable>
     );
   }
 }
@@ -1389,11 +1665,8 @@ class CategoryRow extends React.Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     return (
-      (this.props.index === nextProps.current_category_index &&
-        this.props.current_category_index !==
-          nextProps.current_category_index) ||
-      (this.props.index === nextProps.last_category_index &&
-        this.props.last_category_index !== nextProps.last_category_index) ||
+      this.props.index === nextProps.current_category_index ||
+      this.props.index === nextProps.last_category_index ||
       this.props.data !== nextProps.data ||
       this.props.account_plan !== nextProps.account_plan ||
       this.state !== nextState
@@ -1510,13 +1783,17 @@ class CategoryRow extends React.Component {
 
     let can_choose = this.state.can_choose;
 
+    if (category_name.length > 16) {
+      category_name = category_name.substring(0, 16) + "...";
+    }
+
     return (
       <Swipeable
         renderRightActions={this._renderRightActions}
         overshootRight={false}
         useNativeAnimations={true}
         rightThreshold={1}
-        friction={2}
+        friction={3}
         overshootFriction={8}
       >
         <View
@@ -1528,7 +1805,8 @@ class CategoryRow extends React.Component {
             style={{
               marginTop: normalize(20, "height"),
               flexDirection: "row",
-              height: category_row_height
+              height: category_row_height,
+              backgroundColor: row_color
             }}
             onPress={this._chooseCategory}
           >
@@ -1656,12 +1934,6 @@ class DeleteWarning extends React.PureComponent {
               paddingVertical: normalize(22, "height")
             }}
           >
-            {/* <Text
-                            style={styles.normal_warning_text}
-                        >
-                            Are you sure you want to delete the category?
-                        </Text> */}
-
             <TouchableOpacity
               style={{
                 flexDirection: "row",
@@ -1674,7 +1946,15 @@ class DeleteWarning extends React.PureComponent {
               onPress={this.props._deleteCategoryAffectingTasksAndHistory}
             >
               <Text style={{ ...styles.text, ...{ color: "white" } }}>
-                {"Delete category"}
+                {this.props.delete_tasks_not_category_flag === "inbox" ? (
+                  "Delete contained tasks"
+                ) : (
+                  <>
+                    {this.props.delete_tasks_not_category_flag === "all"
+                      ? "Delete all tasks"
+                      : "Delete category"}
+                  </>
+                )}
               </Text>
             </TouchableOpacity>
 
@@ -1684,31 +1964,17 @@ class DeleteWarning extends React.PureComponent {
               }}
             >
               <Text style={styles.small_warning_text}>
-                This action will delete all tasks and their records belonged to
-                the category
+                {this.props.delete_tasks_not_category_flag === "inbox" ? (
+                  "Delete contained tasks with their records."
+                ) : (
+                  <>
+                    {this.props.delete_tasks_not_category_flag === "all"
+                      ? "This action will delete everything but categories. Think twice before doing!"
+                      : "Delete the category with contained task info and task records."}
+                  </>
+                )}
               </Text>
             </View>
-
-            {/* <TouchableOpacity
-                            style={{
-                                flexDirection: "row",
-                                paddingHorizontal: 10,
-                                paddingVertical: 5,
-                                borderRadius: 5,
-                                justifyContent: "center",
-                                alignItems: "center",
-                                backgroundColor: "#ffb948",
-                                marginTop: 20,
-                            }}
-
-                            onPress={this.props._deleteCategoryAffectingOnlyTasks}
-                        >
-                            <Text
-                                style={{ ...styles.text, ...{ color: "white" } }}
-                            >
-                                {"DELETE ONLY TASKS"}
-                            </Text>
-                        </TouchableOpacity> */}
 
             <TouchableOpacity
               style={{

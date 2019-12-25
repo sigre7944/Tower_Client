@@ -90,15 +90,13 @@ export default class CRUDRewardSection extends React.PureComponent {
         require("../../../../../../../assets/sounds/GetReward01.wav")
       );
       await completing_sound.playAsync();
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   _getReward = (reward_id, reward_name, reward_value) => {
     let purchase_history_map = OrderedMap(this.props.purchase_history),
       rewards = OrderedMap(this.props.rewards),
-      balance = parseFloat(this.props.balance).toFixed(3);
+      balance = parseInt(this.props.balance);
 
     // Can buy when have enough balance
     if (balance >= reward_value) {
@@ -422,6 +420,8 @@ class RewardHolder extends React.PureComponent {
   render() {
     let reward_value = Map(this.props.data).get("value"),
       reward_name = Map(this.props.data).get("name");
+
+    reward_value = parseInt(reward_value).toLocaleString();
 
     return (
       <View

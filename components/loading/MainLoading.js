@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Image } from "react-native";
-import * as Font from "expo-font";
+import { View, Image, Modal, Animated, Platform } from "react-native";
+// import * as Font from "expo-font";
 import { Asset } from "expo-asset";
 import * as firebase from "firebase";
 import { Map } from "immutable";
@@ -9,7 +9,11 @@ import { SERVER_URL } from "../../config";
 import { fromJS } from "immutable";
 // import SplashScreen from "react-native-splash-screen";
 
+const waiting_time = 1000;
+
 export default class MainLoading extends React.Component {
+  opacity_value = new Animated.Value(1);
+
   state = {
     is_app_ready: false
   };
@@ -44,7 +48,7 @@ export default class MainLoading extends React.Component {
     // });
 
     // await Promise.all([...cacheImages, ...cacheFonts]);
-    await Promise.all([cacheImages])
+    await Promise.all([cacheImages]);
   };
 
   _updateAccountRedux = (data, is_logged_in) => {
@@ -124,9 +128,26 @@ export default class MainLoading extends React.Component {
     }
   };
 
+  _fade = callback => {
+    Animated.timing(this.opacity_value, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: Platform.OS === "android" ? true : false
+    }).start(() => {
+      callback();
+    });
+  };
+
   _imageOnLoad = () => {
     this._cacheResourcesAsync();
     this._checkAndUpdateCurrentUserAccount();
+
+    setTimeout(() => {
+      this._fade(this._setAppReady);
+    }, waiting_time);
+  };
+
+  _setAppReady = () => {
     this.setState({ is_app_ready: true });
   };
 
@@ -144,21 +165,31 @@ export default class MainLoading extends React.Component {
   }
 
   render() {
-    if (!this.state.is_app_ready) {
-      return (
-        <View
+    // if (!this.state.is_app_ready) {
+    return (
+      <Modal>
+        <Animated.View
           style={{
-            flex: 1
+            flex: 1,
+            backgroundColor: "white",
+            justifyContent: "center",
+            alignItems: "center",
+            opacity: this.opacity_value
           }}
         >
           <Image
-            source={require("../../assets/splash_screen.png")}
+            source={require("../../assets/icon.png")}
             onLoad={this._imageOnLoad}
+            style={{
+              width: 150,
+              height: 150
+            }}
           />
-        </View>
-      );
-    }
+        </Animated.View>
+      </Modal>
+    );
+    // }
 
-    return <></>;
+    // return <></>;
   }
 }

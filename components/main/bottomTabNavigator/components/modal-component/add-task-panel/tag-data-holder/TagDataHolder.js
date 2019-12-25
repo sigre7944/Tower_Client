@@ -80,6 +80,7 @@ class DayTagDataList extends React.PureComponent {
               categories={this.props.categories}
               priorities={this.props.priorities}
               currentAnnotation={this.props.currentAnnotation}
+              currentTask={this.props.currentTask}
             />
           ))}
       </>
@@ -156,52 +157,61 @@ class DayTagDataElement extends React.PureComponent {
         )
       });
     } else if (property === "repeat") {
-      let value = Map(this.props.data).getIn(["interval", "value"]),
-        type = Map(this.props.data).get("type");
+      let end_type = Map(this.props.currentTask).getIn(["end", "type"]),
+        end_value = Map(this.props.currentTask).getIn(["end", "occurrence"]);
 
-      if (type === "weekly") {
-        let days_in_week = List(
-            Map(this.props.data).getIn(["interval", "daysInWeek"])
-          ).toArray(),
-          string = "";
-
-        days_in_week.forEach((value, index) => {
-          if (value) {
-            let day_index = index + 1 === 7 ? 0 : index + 1;
-
-            string += this.short_daysInWeekText[day_index] + ", ";
-          }
-        });
-
-        if (string !== "" || string.length > 0) {
-          string = "(" + string.substring(0, string.length - 2) + ")";
-        }
-
+      if (end_type === "after" && end_value === 1) {
         this.setState({
-          render_component: (
-            <View style={styles.day_tag_container}>
-              {repeat_icon(icon_size, icon_color)}
-
-              <Text style={styles.day_tag_uncolorful_text}>
-                {`every ${value} week ${string}`}
-              </Text>
-            </View>
-          )
+          render_component: null
         });
       } else {
-        this.setState({
-          render_component: (
-            <View style={styles.day_tag_container}>
-              {repeat_icon(icon_size, icon_color)}
+        let value = Map(this.props.data).getIn(["interval", "value"]),
+          type = Map(this.props.data).get("type");
 
-              <Text style={styles.day_tag_uncolorful_text}>
-                {type === "daily"
-                  ? `every ${value} day`
-                  : `every ${value} month`}
-              </Text>
-            </View>
-          )
-        });
+        if (type === "weekly") {
+          let days_in_week = List(
+              Map(this.props.data).getIn(["interval", "daysInWeek"])
+            ).toArray(),
+            string = "";
+
+          days_in_week.forEach((value, index) => {
+            if (value) {
+              let day_index = index + 1 === 7 ? 0 : index + 1;
+
+              string += this.short_daysInWeekText[day_index] + ", ";
+            }
+          });
+
+          if (string !== "" || string.length > 0) {
+            string = "(" + string.substring(0, string.length - 2) + ")";
+          }
+
+          this.setState({
+            render_component: (
+              <View style={styles.day_tag_container}>
+                {repeat_icon(icon_size, icon_color)}
+
+                <Text style={styles.day_tag_uncolorful_text}>
+                  {`every ${value} week ${string}`}
+                </Text>
+              </View>
+            )
+          });
+        } else {
+          this.setState({
+            render_component: (
+              <View style={styles.day_tag_container}>
+                {repeat_icon(icon_size, icon_color)}
+
+                <Text style={styles.day_tag_uncolorful_text}>
+                  {type === "daily"
+                    ? `every ${value} day`
+                    : `every ${value} month`}
+                </Text>
+              </View>
+            )
+          });
+        }
       }
     } else if (property === "end") {
       let type = Map(this.props.data).getIn(["type"]);
@@ -236,17 +246,23 @@ class DayTagDataElement extends React.PureComponent {
       } else {
         let occurrences = Map(this.props.data).get("occurrence");
 
-        this.setState({
-          render_component: (
-            <View style={styles.day_tag_container}>
-              {end_icon(normalize(14, "width"), icon_color)}
+        if (occurrences === 1) {
+          this.setState({
+            render_component: null
+          });
+        } else {
+          this.setState({
+            render_component: (
+              <View style={styles.day_tag_container}>
+                {end_icon(normalize(14, "width"), icon_color)}
 
-              <Text style={styles.day_tag_uncolorful_text}>
-                {`after ${occurrences} occurrences`}
-              </Text>
-            </View>
-          )
-        });
+                <Text style={styles.day_tag_uncolorful_text}>
+                  {`after ${occurrences} occurrences`}
+                </Text>
+              </View>
+            )
+          });
+        }
       }
     } else if (property === "category") {
       let category_name = Map(this.props.categories).getIn([
@@ -326,6 +342,7 @@ class WeekTagDataList extends React.PureComponent {
               categories={this.props.categories}
               priorities={this.props.priorities}
               currentAnnotation={this.props.currentAnnotation}
+              currentTask={this.props.currentTask}
             />
           ))}
       </>
@@ -418,45 +435,54 @@ class WeekTagDataElement extends React.PureComponent {
         )
       });
     } else if (property === "repeat") {
-      let value = parseInt(Map(this.props.data).getIn(["interval", "value"])),
-        type = Map(this.props.data).get("type");
+      let end_type = Map(this.props.currentTask).getIn(["end", "type"]),
+        end_value = Map(this.props.currentTask).getIn(["end", "occurrence"]);
 
-      if (type === "weekly-m") {
-        let no_week_in_month = parseInt(
-            Map(this.props.data).getIn(["interval", "noWeekInMonth"])
-          ),
-          nth_week_array = ["1st", "2nd", "3rd", "4th"],
-          string = "";
-
-        if (no_week_in_month > 4) {
-          no_week_in_month = 4;
-        }
-
-        string = `${
-          nth_week_array[no_week_in_month - 1]
-        } week every ${value} month`;
-
+      if (end_type === "after" && end_value === 1) {
         this.setState({
-          render_component: (
-            <View style={styles.day_tag_container}>
-              {repeat_icon(icon_size, icon_color)}
-
-              <Text style={styles.day_tag_uncolorful_text}>{string}</Text>
-            </View>
-          )
+          render_component: null
         });
       } else {
-        this.setState({
-          render_component: (
-            <View style={styles.day_tag_container}>
-              {repeat_icon(icon_size, icon_color)}
+        let value = parseInt(Map(this.props.data).getIn(["interval", "value"])),
+          type = Map(this.props.data).get("type");
 
-              <Text style={styles.day_tag_uncolorful_text}>
-                {`every ${value} week`}
-              </Text>
-            </View>
-          )
-        });
+        if (type === "weekly-m") {
+          let no_week_in_month = parseInt(
+              Map(this.props.data).getIn(["interval", "noWeekInMonth"])
+            ),
+            nth_week_array = ["1st", "2nd", "3rd", "4th"],
+            string = "";
+
+          if (no_week_in_month > 4) {
+            no_week_in_month = 4;
+          }
+
+          string = `${
+            nth_week_array[no_week_in_month - 1]
+          } week every ${value} month`;
+
+          this.setState({
+            render_component: (
+              <View style={styles.day_tag_container}>
+                {repeat_icon(icon_size, icon_color)}
+
+                <Text style={styles.day_tag_uncolorful_text}>{string}</Text>
+              </View>
+            )
+          });
+        } else {
+          this.setState({
+            render_component: (
+              <View style={styles.day_tag_container}>
+                {repeat_icon(icon_size, icon_color)}
+
+                <Text style={styles.day_tag_uncolorful_text}>
+                  {`every ${value} week`}
+                </Text>
+              </View>
+            )
+          });
+        }
       }
     } else if (property === "end") {
       let type = Map(this.props.data).getIn(["type"]);
@@ -492,17 +518,23 @@ class WeekTagDataElement extends React.PureComponent {
       } else {
         let occurrences = Map(this.props.data).get("occurrence");
 
-        this.setState({
-          render_component: (
-            <View style={styles.day_tag_container}>
-              {end_icon(normalize(14, "width"), icon_color)}
+        if (occurrences === 1) {
+          this.setState({
+            render_component: null
+          });
+        } else {
+          this.setState({
+            render_component: (
+              <View style={styles.day_tag_container}>
+                {end_icon(normalize(14, "width"), icon_color)}
 
-              <Text style={styles.day_tag_uncolorful_text}>
-                {`after ${occurrences} occurrences`}
-              </Text>
-            </View>
-          )
-        });
+                <Text style={styles.day_tag_uncolorful_text}>
+                  {`after ${occurrences} occurrences`}
+                </Text>
+              </View>
+            )
+          });
+        }
       }
     } else if (property === "category") {
       let category_name = Map(this.props.categories).getIn([
@@ -582,6 +614,7 @@ class MonthTagDataList extends React.PureComponent {
               categories={this.props.categories}
               priorities={this.props.priorities}
               currentAnnotation={this.props.currentAnnotation}
+              currentTask={this.props.currentTask}
             />
           ))}
       </>
@@ -653,19 +686,28 @@ class MonthTagDataElement extends React.PureComponent {
         )
       });
     } else if (property === "repeat") {
-      let value = Map(this.props.data).getIn(["interval", "value"]);
+      let end_type = Map(this.props.currentTask).getIn(["end", "type"]),
+        end_value = Map(this.props.currentTask).getIn(["end", "occurrence"]);
 
-      this.setState({
-        render_component: (
-          <View style={styles.day_tag_container}>
-            {repeat_icon(icon_size, icon_color)}
+      if (end_type === "after" && end_value === 1) {
+        this.setState({
+          render_component: null
+        });
+      } else {
+        let value = Map(this.props.data).getIn(["interval", "value"]);
 
-            <Text style={styles.day_tag_uncolorful_text}>
-              every {value} month
-            </Text>
-          </View>
-        )
-      });
+        this.setState({
+          render_component: (
+            <View style={styles.day_tag_container}>
+              {repeat_icon(icon_size, icon_color)}
+
+              <Text style={styles.day_tag_uncolorful_text}>
+                every {value} month
+              </Text>
+            </View>
+          )
+        });
+      }
     } else if (property === "end") {
       let type = Map(this.props.data).getIn(["type"]);
 
@@ -700,17 +742,23 @@ class MonthTagDataElement extends React.PureComponent {
       } else {
         let occurrences = Map(this.props.data).get("occurrence");
 
-        this.setState({
-          render_component: (
-            <View style={styles.day_tag_container}>
-              {end_icon(normalize(14, "width"), icon_color)}
+        if (occurrences === 1) {
+          this.setState({
+            render_component: null
+          });
+        } else {
+          this.setState({
+            render_component: (
+              <View style={styles.day_tag_container}>
+                {end_icon(normalize(14, "width"), icon_color)}
 
-              <Text style={styles.day_tag_uncolorful_text}>
-                {`after ${occurrences} occurrences`}
-              </Text>
-            </View>
-          )
-        });
+                <Text style={styles.day_tag_uncolorful_text}>
+                  {`after ${occurrences} occurrences`}
+                </Text>
+              </View>
+            )
+          });
+        }
       }
     } else if (property === "category") {
       let category_name = Map(this.props.categories).getIn([

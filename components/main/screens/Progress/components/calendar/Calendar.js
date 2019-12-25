@@ -13,6 +13,10 @@ import { styles } from "./styles/styles";
 
 import PremiumAd from "../../../../../shared/components/premium-ad/PremiumAd.Container";
 import { normalize } from "../../../../../shared/helpers";
+import {
+  left_chevron_icon,
+  right_chevron_icon
+} from "../../../../../shared/icons";
 const panel_width = Dimensions.get("window").width;
 const margin_top_for_calendar_row = normalize(20, "height");
 const margin_top_for_month_year_text = normalize(30, "height");
@@ -193,7 +197,7 @@ export default class Calendar extends React.Component {
         style={{
           position: "relative",
           flex: 1,
-          width: panel_width
+          alignItems: "center"
         }}
       >
         <View>
@@ -229,8 +233,10 @@ export default class Calendar extends React.Component {
               margin_top_for_calendar_row +
               (normalize(19, "height") + normalize(20, "height")),
             flexDirection: "row",
+            justifyContent: "center",
             alignItems: "center",
-            width: panel_width
+            left: 0,
+            right: 0
           }}
         >
           <WeekText text="Week" />
@@ -339,9 +345,25 @@ class MonthHolder extends React.Component {
       .toString();
     let month_chart_stats_map = Map(this.props.month_chart_stats);
 
-    return parseFloat(
+    return parseInt(
       month_chart_stats_map.getIn([month_timestamp_toString, "totalPoints"])
     );
+  };
+
+  _goToPreviousMonth = () => {
+    if (this.props.chart_change_calendar_available) {
+      this.props.scrollToMonth(this.props.month_index - 1);
+    } else {
+      this.props._toggleDisplayPremiumAd();
+    }
+  };
+
+  _goToNextMonth = () => {
+    if (this.props.chart_change_calendar_available) {
+      this.props.scrollToMonth(this.props.month_index + 1);
+    } else {
+      this.props._toggleDisplayPremiumAd();
+    }
   };
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -381,7 +403,7 @@ class MonthHolder extends React.Component {
       end_timestamp = this.getMonday(last_day_from_next_month).getTime(),
       tracking_timestamp = start_timestamp,
       number_of_weeks =
-        Math.floor((end_timestamp - start_timestamp) / (7 * 86400 * 1000)) + 1;
+        Math.round((end_timestamp - start_timestamp) / (7 * 86400 * 1000)) + 1;
 
     for (
       let noWeekInMonth = 1;
@@ -475,25 +497,67 @@ class MonthHolder extends React.Component {
 
           <Text style={styles.points_text}>{total_points}</Text>
         </View>
-        <TouchableOpacity
+        <View
           style={{
-            marginTop: margin_top_for_month_year_text,
-            flexDirection: "row",
-            alignItems: "center"
+            marginTop: margin_top_for_month_year_text
           }}
-          onPress={this._returnToCurrentMonth}
         >
-          <Text style={styles.month_text}>
-            {this.month_names[this.props.data.month]}
-          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              width: normalize(250, "width")
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                width: normalize(24, "width"),
+                height: normalize(24, "width"),
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+              onPress={this._goToPreviousMonth}
+            >
+              {left_chevron_icon(normalize(18, "width"), "rgba(0, 0, 0, 0.54)")}
+            </TouchableOpacity>
 
-          <Text style={styles.year_text}>{this.props.data.year}</Text>
-        </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                marginHorizontal: normalize(25, "width"),
+                flex: 1
+              }}
+              onPress={this._returnToCurrentMonth}
+            >
+              <Text style={styles.month_text}>
+                {this.month_names[this.props.data.month]}
+              </Text>
+              <Text style={styles.year_text}>{this.props.data.year}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{
+                width: normalize(24, "width"),
+                height: normalize(24, "width"),
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+              onPress={this._goToNextMonth}
+            >
+              {right_chevron_icon(
+                normalize(18, "width"),
+                "rgba(0, 0, 0, 0.54)"
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
 
         <View
           style={{
             marginTop: margin_top_for_calendar_row + normalize(32, "height")
-            // height: calendar_total_height,
           }}
         >
           <FlatList
@@ -595,7 +659,7 @@ class WeekHolder extends React.Component {
   _calculateTotalPointsWeek = () => {
     let week_chart_stats_map = Map(this.props.week_chart_stats);
 
-    return parseFloat(
+    return parseInt(
       week_chart_stats_map.getIn([this.week_timestamp_toString, "totalPoints"])
     );
   };
@@ -674,7 +738,7 @@ class DayHolder extends React.Component {
   _calculateTotalPointsDay = () => {
     let day_chart_stats_map = Map(this.props.day_chart_stats);
 
-    return parseFloat(
+    return parseInt(
       day_chart_stats_map.getIn([this.day_timestamp_toString, "totalPoints"])
     );
   };
@@ -760,7 +824,7 @@ class UnchosenDayHolder extends React.Component {
   _calculateTotalPointsDay = () => {
     let day_chart_stats_map = Map(this.props.day_chart_stats);
 
-    return parseFloat(
+    return parseInt(
       day_chart_stats_map.getIn([this.day_timestamp_toString, "totalPoints"])
     );
   };

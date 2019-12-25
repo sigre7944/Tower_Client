@@ -36,7 +36,7 @@ export default class TrackingSection extends React.PureComponent {
     if (this.state.can_choose) {
       let purchase_history_map = OrderedMap(this.props.purchase_history),
         rewards = OrderedMap(this.props.rewards),
-        balance = parseFloat(this.props.balance).toFixed(3),
+        balance = parseInt(this.props.balance),
         main_reward_map = rewards.get(this.props.main_reward),
         reward_id = main_reward_map.get("id"),
         reward_value = main_reward_map.get("value"),
@@ -220,6 +220,83 @@ export default class TrackingSection extends React.PureComponent {
     );
   };
 
+  _convertIntToText = number => {
+    let number_length = number.toString().length,
+      return_number_text = number.toString();
+
+    if (number_length >= 5) {
+      if (number_length === 5) {
+        if (number % 1000 === 0) {
+          return_number_text = (number / 1000).toString() + "k";
+        } else {
+          return_number_text =
+            (number / 1000)
+              .toFixed(1)
+              .toString()
+              .replace(/[.]/g, ",") + "k";
+        }
+      } else if (number_length === 6) {
+        if (number % 1000 === 0) {
+          return_number_text = (number / 1000).toString() + "k";
+        } else {
+          return_number_text =
+            parseInt(number / 1000)
+              .toString()
+              .replace(/[.]/g, ",") + "k";
+        }
+      } else if (number_length === 7) {
+        if (number % 1000000 === 0) {
+          return_number_text = (number / 1000000).toString() + "mil";
+        } else {
+          return_number_text =
+            (number / 1000000)
+              .toFixed(2)
+              .toString()
+              .replace(/[.]/g, ",") + "mil";
+        }
+      } else if (number_length === 8) {
+        if (number % 1000000 === 0) {
+          return_number_text = (number / 1000000).toString() + "mil";
+        } else {
+          return_number_text =
+            (number / 1000000)
+              .toFixed(1)
+              .toString()
+              .replace(/[.]/g, ",") + "mil";
+        }
+      } else if (number_length === 9) {
+        if (number % 1000000000 === 0) {
+          return_number_text = (number / 1000000000).toString() + "bil";
+        } else {
+          return_number_text =
+            (number / 1000000000)
+              .toFixed(2)
+              .toString()
+              .replace(/[.]/g, ",") + "bil";
+        }
+      } else if (number_length === 10) {
+        if (number % 1000000000 === 0) {
+          return_number_text = (number / 1000000000).toString() + "bil";
+        } else {
+          return_number_text =
+            (number / 1000000000)
+              .toFixed(1)
+              .toString()
+              .replace(/[.]/g, ",") + "bil";
+        }
+      } else {
+        if (number % 1000000000 === 0) {
+          return_number_text = (number / 1000000000).toString() + "bil";
+        } else {
+          return_number_text =
+            (number / 1000000000).toString().replace(/[.]/g, ",") + "bil";
+        }
+      }
+    }
+
+    return return_number_text;
+  };
+
   componentDidMount() {
     this._checkIfCanChoose();
   }
@@ -239,7 +316,7 @@ export default class TrackingSection extends React.PureComponent {
       main_reward_name = "",
       main_reward_value = 0,
       progress_percent = 0,
-      balance = parseFloat(this.props.balance).toFixed(3),
+      balance = parseInt(this.props.balance),
       rewards_map = OrderedMap(this.props.rewards),
       can_get_reward_bool = false,
       motivating_text = "";
@@ -248,8 +325,8 @@ export default class TrackingSection extends React.PureComponent {
       no_main_reward_bool = true;
     } else {
       main_reward_name = rewards_map.getIn([main_reward, "name"]);
-      main_reward_value = rewards_map.getIn([main_reward, "value"]);
-      progress_percent = balance / parseFloat(main_reward_value).toFixed(3);
+      main_reward_value = parseInt(rewards_map.getIn([main_reward, "value"]));
+      progress_percent = balance / main_reward_value;
 
       if (progress_percent >= 1) {
         motivating_text = "You nailed it!";
@@ -261,6 +338,9 @@ export default class TrackingSection extends React.PureComponent {
       } else {
         motivating_text = "You can do this!";
       }
+
+      balance = this._convertIntToText(balance);
+      main_reward_value = this._convertIntToText(main_reward_value);
     }
 
     return (

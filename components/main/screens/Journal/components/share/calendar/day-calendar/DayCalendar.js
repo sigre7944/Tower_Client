@@ -13,7 +13,12 @@ import { Map, fromJS } from "immutable";
 
 import { styles } from "./styles/styles";
 
-import { check_icon, close_icon } from "../../../../../../../shared/icons";
+import {
+  check_icon,
+  close_icon,
+  left_chevron_icon,
+  right_chevron_icon
+} from "../../../../../../../shared/icons";
 
 import { normalize } from "../../../../../../../shared/helpers";
 
@@ -466,6 +471,14 @@ class MonthHolder extends React.Component {
     this.props.scrollToMonth(this.props.present_month_index);
   };
 
+  _goToPreviousMonth = () => {
+    this.props.scrollToMonth(this.props.month_index - 1);
+  };
+
+  _goToNextMonth = () => {
+    this.props.scrollToMonth(this.props.month_index + 1);
+  };
+
   componentDidMount() {
     let { month, year } = this.props.data,
       first_day_of_month = new Date(year, month, 1),
@@ -520,26 +533,66 @@ class MonthHolder extends React.Component {
 
   render() {
     return (
-      <View
-        style={{
-          width: panel_width,
-          alignItems: "center"
-        }}
-      >
-        <TouchableOpacity
+      <View>
+        <View
           style={{
             marginTop: margin_top_for_month_year_text,
-            flexDirection: "row",
+            width: panel_width - 2 * outer_panel_padding,
             alignItems: "center"
           }}
-          onPress={this._returnToCurrentMonth}
         >
-          <Text style={styles.month_text}>
-            {this.month_names[this.props.data.month]}
-          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              width: normalize(250, "width")
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                width: normalize(24, "width"),
+                height: normalize(24, "width"),
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+              onPress={this._goToPreviousMonth}
+            >
+              {left_chevron_icon(normalize(18, "width"), "rgba(0, 0, 0, 0.54)")}
+            </TouchableOpacity>
 
-          <Text style={styles.year_text}>{this.props.data.year}</Text>
-        </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                marginHorizontal: normalize(25, "width"),
+                flex: 1
+              }}
+              onPress={this._returnToCurrentMonth}
+            >
+              <Text style={styles.month_text}>
+                {this.month_names[this.props.data.month]}
+              </Text>
+              <Text style={styles.year_text}>{this.props.data.year}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{
+                width: normalize(24, "width"),
+                height: normalize(24, "width"),
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+              onPress={this._goToNextMonth}
+            >
+              {right_chevron_icon(
+                normalize(18, "width"),
+                "rgba(0, 0, 0, 0.54)"
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
 
         <View
           style={{

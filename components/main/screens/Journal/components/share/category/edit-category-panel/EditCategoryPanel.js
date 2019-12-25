@@ -240,6 +240,7 @@ export default class AddCategoryPanel extends React.PureComponent {
                     placeholder={Map(this.props.category_data).get("name")}
                     value={this.state.category_title}
                     onChange={this._onCategoryTitleChange}
+                    maxLength={32}
                   />
                 </View>
               </View>

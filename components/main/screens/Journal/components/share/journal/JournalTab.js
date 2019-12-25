@@ -410,9 +410,7 @@ class UncompletedTaskCardHolder extends React.PureComponent {
       data = [];
 
     let tasks_for_sorting_array = tasks_map.valueSeq().map((value, index) => {
-      let reward_value = parseFloat(
-          Map(value).getIn(["reward", "value"])
-        ).toFixed(3),
+      let reward_value = parseInt(Map(value).getIn(["reward", "value"])),
         id = Map(value).get("id");
 
       return [reward_value, id];
@@ -472,7 +470,7 @@ class UncompletedTaskCardHolder extends React.PureComponent {
         data={this.state.data}
         extraData={this.state.should_flatlist_update}
         showsVerticalScrollIndicator={false}
-        removeClippedSubviews={true}
+        // removeClippedSubviews={true}
         renderItem={this._renderItem}
         keyExtractor={this._keyExtractor}
         scrollEnabled={false}
@@ -1116,7 +1114,7 @@ class UncompletedTaskCard extends React.PureComponent {
       category = task_map.get("category"), //category id
       current_goal_value = 0;
 
-    if (current_chosen_category === category) {
+    if (current_chosen_category === category || current_chosen_category === "cate_all") {
       if (type === "day") {
         let { day, month, year } = chosen_date_data,
           chosen_day_timestamp = new Date(year, month, day).getTime(),
@@ -1431,9 +1429,7 @@ class CompletedTaskCardHolder extends React.PureComponent {
       data = [];
 
     let tasks_for_sorting_array = tasks_map.valueSeq().map((value, index) => {
-      let reward_value = parseFloat(
-          Map(value).getIn(["reward", "value"])
-        ).toFixed(3),
+      let reward_value = parseInt(Map(value).getIn(["reward", "value"])),
         id = Map(value).get("id");
 
       return [reward_value, id];
@@ -1492,7 +1488,7 @@ class CompletedTaskCardHolder extends React.PureComponent {
         data={this.state.data}
         extraData={this.state.should_flatlist_update}
         showsVerticalScrollIndicator={false}
-        removeClippedSubviews={true}
+        // removeClippedSubviews={true}
         renderItem={this._renderItem}
         keyExtractor={this._keyExtractor}
         scrollEnabled={false}
@@ -1523,7 +1519,7 @@ class CompletedTaskCard extends React.PureComponent {
         category = Map(task).get("category"), // category id
         current_goal_value = 0;
 
-      if (current_chosen_category === category) {
+      if (current_chosen_category === category || current_chosen_category === "cate_all") {
         if (type === "day") {
           let { day, month, year } = chosen_date_data,
             chosen_day_timestamp = new Date(year, month, day).getTime(),

@@ -74,7 +74,7 @@ export default class TaskCard extends React.PureComponent {
       task_id = task_map.get("id"),
       task_category = task_map.get("category"),
       task_priority = task_map.getIn(["priority", "value"]),
-      task_reward = parseFloat(task_map.getIn(["reward", "value"])).toFixed(3),
+      task_reward = parseInt(task_map.getIn(["reward", "value"])),
       current_date = new Date(),
       monday = this.getMonday(current_date),
       data = Map(),
@@ -454,9 +454,9 @@ export default class TaskCard extends React.PureComponent {
         .toString(),
       year_timestamp_toString = current_date.getFullYear().toString(),
       task_priority = Map(this.props.task_data).getIn(["priority", "value"]),
-      task_reward = parseFloat(
+      task_reward = parseInt(
         Map(this.props.task_data).getIn(["reward", "value"])
-      ).toFixed(3),
+      ),
       task_type = Map(this.props.task_data).get("type");
 
     let day_chart_stats_update = this._updateDayChartStats(
@@ -1233,9 +1233,9 @@ export default class TaskCard extends React.PureComponent {
           "inc"
         );
 
-        let reward_value = parseFloat(
+        let reward_value = parseInt(
           Map(this.props.task_data).getIn(["reward", "value"])
-        ).toFixed(3);
+        );
 
         sending_obj.balance_data = this._updateBalanceData(
           reward_value,
@@ -1286,9 +1286,9 @@ export default class TaskCard extends React.PureComponent {
           "dec"
         );
 
-        let reward_value = parseFloat(
+        let reward_value = parseInt(
           Map(this.props.task_data).getIn(["reward", "value"])
-        ).toFixed(3);
+        );
 
         sending_obj.balance_data = this._updateBalanceData(
           reward_value,

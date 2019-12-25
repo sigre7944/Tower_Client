@@ -50,19 +50,19 @@ class AnnotationButton extends React.PureComponent {
 
   _setCurrentAnnotation = () => {
     this.props.setCurrentAnnotation(this.props.annotation_lowercase);
-    let sending_obj = {
-      keyPath: ["type"],
-      notSetValue: this.props.annotation_lowercase,
-      updater: value => this.props.annotation_lowercase
-    };
-    // this.props.updateType("UPDATE_NEW_DAY_TASK", this.props.annotation_lowercase)
 
-    this.props.updateType(
-      "UPDATE_NEW_DAY_TASK",
-      ["type"],
-      this.props.annotation_lowercase,
-      value => this.props.annotation_lowercase
-    );
+    // let sending_obj = {
+    //   keyPath: ["type"],
+    //   notSetValue: this.props.annotation_lowercase,
+    //   updater: value => this.props.annotation_lowercase
+    // };
+
+    // this.props.updateType(
+    //   "UPDATE_NEW_DAY_TASK",
+    //   ["type"],
+    //   this.props.annotation_lowercase,
+    //   value => this.props.annotation_lowercase
+    // );
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -77,7 +77,23 @@ class AnnotationButton extends React.PureComponent {
         annotation_text_style: styles.not_chosen_annotation_text
       };
     }
-    return null;
+  }
+
+  _initializeCurrentAnnotationBasedOnChosenRoute = () => {
+    const current_route = this.props.currentRoute;
+    if (
+      String(current_route).toLowerCase() === this.props.annotation_lowercase
+    ) {
+      this.props.setCurrentAnnotation(this.props.annotation_lowercase);
+    }
+  };
+
+  componentDidMount() {
+    let { currentAnnotation } = this.props;
+
+    if (currentAnnotation.length === 0) {
+      this._initializeCurrentAnnotationBasedOnChosenRoute();
+    }
   }
 
   render() {

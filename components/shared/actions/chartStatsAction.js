@@ -10,3 +10,6 @@ export const returnNewChartStats = (type, data) => ({
     data
 })
 
+export const resetChartStats = (type) => ({
+    type
+})

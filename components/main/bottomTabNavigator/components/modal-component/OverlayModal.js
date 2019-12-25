@@ -47,7 +47,7 @@ export default class OverlayModal extends React.PureComponent {
   should_go_to_login_screen = false;
 
   state = {
-    currentAnnotation: "day",
+    currentAnnotation: "",
     calendarChosen: false,
     repeatChosen: false,
     categoryChosen: false,
