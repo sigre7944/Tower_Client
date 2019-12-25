@@ -13,7 +13,7 @@ import {
 import AddCategoryPanel from "../main/screens/Journal/components/share/category/add-category-panel/AddCategoryPanel.Container";
 import EditCategoryPanel from "../main/screens/Journal/components/share/category/edit-category-panel/EditCategoryPanel.Container";
 import AccountRow from "./components/account-row/AccountRow.Container";
-
+import InviteFriends from "./components/invite-friends/InviteFriends.Container";
 import { Map, List, OrderedMap } from "immutable";
 
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -22,7 +22,12 @@ import { styles } from "./styles/styles";
 
 import Swipeable from "react-native-gesture-handler/Swipeable";
 
-import { category_icon, plus_icon, home_icon } from "../shared/icons";
+import {
+  category_icon,
+  plus_icon,
+  home_icon,
+  paper_plane_icon
+} from "../shared/icons";
 import { normalize } from "../shared/helpers";
 import PremiumAd from "../shared/components/premium-ad/PremiumAd.Container";
 
@@ -1134,6 +1139,8 @@ export default class Drawer extends React.PureComponent {
       <View style={styles.container}>
         <AccountRow navigation={this.props.navigation} />
 
+        <InviteFriends navigation={this.props.navigation} />
+
         <CategoryFlatlist
           categories={this.props.categories}
           _toggleEditCategory={this._toggleEditCategory}
@@ -1190,8 +1197,8 @@ export default class Drawer extends React.PureComponent {
 class CategoryFlatlist extends React.PureComponent {
   state = {
     current_category_index: 0,
-    last_category_index: -1,
-    should_flatlist_update: 0
+    last_category_index: -1
+    // should_flatlist_update: 0
   };
 
   _chooseCategoryIndex = (index, category_data) => {
@@ -1201,8 +1208,8 @@ class CategoryFlatlist extends React.PureComponent {
       this.setState(
         prevState => ({
           current_category_index: index,
-          last_category_index: prevState.current_category_index,
-          should_flatlist_update: prevState.should_flatlist_update + 1
+          last_category_index: prevState.current_category_index
+          // should_flatlist_update: prevState.should_flatlist_update + 1
         }),
         () => {
           this._scrollToRow();
@@ -1317,9 +1324,9 @@ class CategoryFlatlist extends React.PureComponent {
       this.props.categories !== prevProps.categories ||
       this.props.account_plan !== prevProps.account_plan
     ) {
-      this.setState(prevState => ({
-        should_flatlist_update: prevState.should_flatlist_update + 1
-      }));
+      // this.setState(prevState => ({
+      //    should_flatlist_update: prevState.should_flatlist_update + 1
+      // }));
     }
   }
 
@@ -1327,7 +1334,6 @@ class CategoryFlatlist extends React.PureComponent {
     return (
       <View
         style={{
-          marginTop: normalize(20, "height"),
           flex: 1
         }}
       >
@@ -1348,7 +1354,7 @@ class CategoryFlatlist extends React.PureComponent {
         />
         <FlatList
           data={OrderedMap(this.props.categories).toArray()}
-          extraData={this.state.should_flatlist_update}
+          // extraData={this.state.should_flatlist_update}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
           getItemLayout={this._getItemLayout}
@@ -1356,7 +1362,7 @@ class CategoryFlatlist extends React.PureComponent {
           windowSize={3}
           maxToRenderPerBatch={3}
           initialNumToRender={3}
-          removeClippedSubviews={true}
+          // removeClippedSubviews={true}
           showsVerticalScrollIndicator={false}
         />
       </View>
@@ -1451,7 +1457,7 @@ class AllTasksRow extends React.Component {
       >
         <TouchableOpacity
           style={{
-            marginTop: normalize(20, "height"),
+            marginVertical: normalize(20, "height"),
             height: category_row_height,
             flexDirection: "row",
             backgroundColor: row_color
@@ -1577,7 +1583,6 @@ class InboxRow extends React.Component {
       >
         <TouchableOpacity
           style={{
-            marginTop: normalize(20, "height"),
             height: category_row_height,
             flexDirection: "row",
             backgroundColor: row_color

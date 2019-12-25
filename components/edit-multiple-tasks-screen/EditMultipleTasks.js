@@ -706,7 +706,7 @@ class TaskCardsFlatlist extends React.PureComponent {
         windowSize={5}
         maxToRenderPerBatch={5}
         initialNumToRender={5}
-        removeClippedSubviews={true}
+        // removeClippedSubviews={true}
       />
     );
   }

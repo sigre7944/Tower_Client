@@ -60,7 +60,8 @@ export default class RepeatValueHolder extends React.PureComponent {
         >
           <View
             style={{
-              flexDirection: "row"
+              flexDirection: "row",
+              alignItems: "center"
             }}
           >
             <Text style={every_text_style}>Every</Text>

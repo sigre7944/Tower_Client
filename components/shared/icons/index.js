@@ -14,6 +14,7 @@ import {
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Entypo from "react-native-vector-icons/Entypo";
 
 export const calendar_icon = (icon_size, icon_color) => (
   <AntDesign name="calendar" size={icon_size} color={icon_color} />
@@ -81,6 +82,11 @@ export const left_chevron_icon = (icon_size, icon_color) => (
 export const right_chevron_icon = (icon_size, icon_color) => (
   <FontAwesomeIcon icon={faChevronRight} size={icon_size} color={icon_color} />
 );
+
+export const paper_plane_icon = (icon_size, icon_color) => (
+  <Entypo name="paper-plane" size={icon_size} color={icon_color} />
+);
+
 export const home_icon = (icon_size, icon_color) => (
   <AntDesign name="home" size={icon_size} color={icon_color} />
 );

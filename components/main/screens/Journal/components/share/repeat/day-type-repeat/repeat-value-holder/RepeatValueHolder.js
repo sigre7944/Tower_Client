@@ -103,7 +103,8 @@ export default class RepeatValueHolder extends React.PureComponent {
         >
           <TouchableOpacity
             style={{
-              flexDirection: "row"
+              flexDirection: "row",
+              alignItems: "center"
             }}
             onPress={this._chooseInput}
           >

@@ -21,6 +21,8 @@ import ChooseDayInWeekOption from "./choose-day-in-week-option/ChooseDayInWeekOp
 
 import RepeatEndOptionsHolder from "./repeat-end-options-holder/RepeatEndOptionsHolder";
 
+import Collapsible from "react-native-collapsible";
+
 import {
   goal_icon,
   close_icon,
@@ -75,7 +77,9 @@ export default class DayTypeRepeat extends React.PureComponent {
 
     end_at_chosen_day: this.date.getDate(),
     end_at_chosen_month: this.date.getMonth(),
-    end_at_chosen_year: this.date.getFullYear()
+    end_at_chosen_year: this.date.getFullYear(),
+
+    should_collapsed: true
   };
 
   _setEndAtDayMonthYear = (day, month, year) => {
@@ -97,7 +101,8 @@ export default class DayTypeRepeat extends React.PureComponent {
 
   _setRepeatType = repeat_type => {
     this.setState({
-      selected_repeat_type: repeat_type
+      selected_repeat_type: repeat_type,
+      should_collapsed: repeat_type === "week" ? false : true
     });
   };
 
@@ -518,11 +523,13 @@ export default class DayTypeRepeat extends React.PureComponent {
               _setRepeatType={this._setRepeatType}
             />
 
-            <ChooseDayInWeekOption
-              selected_repeat_type={this.state.selected_repeat_type}
-              _toggleDayInWeek={this._toggleDayInWeek}
-              days_in_week_option_array={this.state.days_in_week_option_array}
-            />
+            <Collapsible collapsed={this.state.should_collapsed}>
+              <ChooseDayInWeekOption
+                selected_repeat_type={this.state.selected_repeat_type}
+                _toggleDayInWeek={this._toggleDayInWeek}
+                days_in_week_option_array={this.state.days_in_week_option_array}
+              />
+            </Collapsible>
 
             {/* Separating line */}
             <View style={styles.separating_line}></View>
