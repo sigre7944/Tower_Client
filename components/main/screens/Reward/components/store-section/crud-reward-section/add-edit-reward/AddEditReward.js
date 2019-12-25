@@ -489,7 +489,7 @@ export default class AddEditReward extends React.PureComponent {
                       placeholder={
                         this.props.edit_reward_data
                           ? `${this.props.edit_reward_data.name}`
-                          : "Enter a reward title"
+                          : "Max 32 characters."
                       }
                     />
                   </View>
@@ -509,7 +509,7 @@ export default class AddEditReward extends React.PureComponent {
                       placeholder={
                         this.props.edit_reward_data
                           ? `${this.props.edit_reward_data.value}`
-                          : "Example: 99.999"
+                          : "Max 9 characters"
                       }
                     />
                   </View>

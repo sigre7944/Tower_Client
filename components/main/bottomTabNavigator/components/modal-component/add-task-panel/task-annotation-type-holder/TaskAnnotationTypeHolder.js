@@ -81,7 +81,7 @@ class AnnotationButton extends React.PureComponent {
 
   _initializeCurrentAnnotationBasedOnChosenRoute = () => {
     const current_route = this.props.currentRoute;
-
+    console.log(current_route)
     if (
       String(current_route).toLowerCase() === this.props.annotation_lowercase
     ) {
