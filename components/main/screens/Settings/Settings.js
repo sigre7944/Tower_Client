@@ -2,7 +2,6 @@ import React from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
   Dimensions,
   ScrollView,
   Switch
@@ -11,7 +10,6 @@ import {
 import SettingHeader from "./components/header/SettingHeader";
 import UserAccount from "./components/user-account/UserAccount.Container";
 import PremiumRow from "./components/premium-row/PremiumRow.Container";
-import Feather from "react-native-vector-icons/Feather";
 import { styles } from "./styles/styles";
 import { normalize } from "../../../shared/helpers";
 import { Map } from "immutable";
