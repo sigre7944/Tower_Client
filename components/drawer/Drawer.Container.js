@@ -3,7 +3,8 @@ import { chooseCategory } from "../shared/actions/categoryAction";
 import {
   deleteCategoryWithTasksAndHistory,
   deleteTasksAndHistoryNotCategory,
-  resetApplication
+  resetApplication,
+  updateNewTasksCategory
 } from "./actions/deleteActionThunk";
 import Drawer from "./Drawer";
 
@@ -42,7 +43,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     dispatch(deleteCategoryWithTasksAndHistory(data)),
   deleteTasksAndHistoryNotCategory: data =>
     dispatch(deleteTasksAndHistoryNotCategory(data)),
-  resetApplication: (data) => dispatch(resetApplication(data))
+  resetApplication: data => dispatch(resetApplication(data)),
+  updateNewTasksCategory: data => dispatch(updateNewTasksCategory(data))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Drawer);

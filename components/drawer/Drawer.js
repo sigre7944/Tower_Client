@@ -14,7 +14,7 @@ import AddCategoryPanel from "../main/screens/Journal/components/share/category/
 import EditCategoryPanel from "../main/screens/Journal/components/share/category/edit-category-panel/EditCategoryPanel.Container";
 import AccountRow from "./components/account-row/AccountRow.Container";
 
-import { Map, List, OrderedMap, fromJS, isKeyed } from "immutable";
+import { Map, List, OrderedMap } from "immutable";
 
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faInbox, faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
@@ -1148,6 +1148,7 @@ export default class Drawer extends React.PureComponent {
             "package",
             "plan"
           ])}
+          updateNewTasksCategory={this.props.updateNewTasksCategory}
         />
 
         <AddNewCategory _toggleAddNewCategory={this._toggleAddNewCategory} />
@@ -1194,6 +1195,8 @@ class CategoryFlatlist extends React.PureComponent {
   };
 
   _chooseCategoryIndex = (index, category_data) => {
+    let category_id = Map(category_data).get("id");
+
     if (this.state.current_category_index !== index) {
       this.setState(
         prevState => ({
@@ -1204,7 +1207,8 @@ class CategoryFlatlist extends React.PureComponent {
         () => {
           this._scrollToRow();
           this.props._setEditCategoryData(category_data);
-          this.props.chooseCategory(Map(category_data).get("id"));
+
+          this.props.chooseCategory(category_id);
 
           this.props.navigation.dispatch(DrawerActions.closeDrawer());
 
@@ -1214,13 +1218,18 @@ class CategoryFlatlist extends React.PureComponent {
             this.props.currentRoute !== "Month"
           ) {
             this.props.navigation.navigate("Journal");
+            if (category_id !== "cate_all") {
+              this.props.updateNewTasksCategory(category_id);
+            } else {
+              this.props.updateNewTasksCategory("cate_0");
+            }
           }
         }
       );
     } else {
       this._scrollToRow();
       this.props._setEditCategoryData(category_data);
-      this.props.chooseCategory(Map(category_data).get("id"));
+      this.props.chooseCategory(category_id);
 
       this.props.navigation.dispatch(DrawerActions.closeDrawer());
 
@@ -1230,6 +1239,11 @@ class CategoryFlatlist extends React.PureComponent {
         this.props.currentRoute !== "Month"
       ) {
         this.props.navigation.navigate("Journal");
+        if (category_id !== "cate_all") {
+          this.props.updateNewTasksCategory(category_id);
+        } else {
+          this.props.updateNewTasksCategory("cate_0");
+        }
       }
     }
   };

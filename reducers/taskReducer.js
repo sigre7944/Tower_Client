@@ -297,7 +297,7 @@ export const currentMonthTask = (state = initial_currentMonthTask, action) => {
       return state.updateIn(action.keyPath, action.notSetValue, action.updater);
 
     case "RESET_NEW_MONTH_TASK":
-      return Map(initial_currentMonthTask).toMap();
+      return Map(initial_currentMonthTask);
 
     default:
       return state;
@@ -310,7 +310,7 @@ export const currentDayTask = (state = initial_currentDayTask, action) => {
       return state.updateIn(action.keyPath, action.notSetValue, action.updater);
 
     case "RESET_NEW_DAY_TASK":
-      return Map(initial_currentDayTask).toMap();
+      return Map(initial_currentDayTask);
 
     default:
       return state;
@@ -323,7 +323,7 @@ export const currentWeekTask = (state = initial_currentWeekTask, action) => {
       return state.updateIn(action.keyPath, action.notSetValue, action.updater);
 
     case "RESET_NEW_WEEK_TASK":
-      return Map(initial_currentWeekTask).toMap();
+      return Map(initial_currentWeekTask);
 
     default:
       return state;

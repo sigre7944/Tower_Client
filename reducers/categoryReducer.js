@@ -1,4 +1,4 @@
-import { fromJS, isKeyed, OrderedMap } from "immutable";
+import { fromJS, isKeyed } from "immutable";
 
 // let test_obj = {};
 
@@ -50,7 +50,7 @@ export const categories = (state = initialState, action) => {
   }
 };
 
-export const currentChosenCategory = (state = "cate_0", action) => {
+export const currentChosenCategory = (state = "cate_all", action) => {
   switch (action.type) {
     case "UPDATE_CURRENT_CHOSEN_CATEGORY":
       return action.data;

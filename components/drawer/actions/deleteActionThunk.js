@@ -11,7 +11,8 @@ import { batchActions } from "redux-batched-actions";
 import {
   deleteAllTasksInCategory,
   returnNewTasks,
-  resetTasks
+  resetTasks,
+  updateTask
 } from "../../shared/actions/taskAction";
 import {
   returnNewPriorities,
@@ -158,4 +159,16 @@ export const resetApplication = ({ new_categories }) => (
       resetTasks("RESET_DELETED_MONTH_TASKS")
     ])
   );
+};
+
+export const updateNewTasksCategory = category_id => (dispatch, getState) => {
+  dispatch(
+    batchActions(
+      [
+        updateTask("UPDATE_NEW_DAY_TASK", ["category"], "", (v) => category_id),
+        updateTask("UPDATE_NEW_WEEK_TASK", ["category"], "", (v) => category_id),
+        updateTask("UPDATE_NEW_MONTH_TASK", ["category"], "", (v) => category_id)
+      ]
+    )
+  )
 };
