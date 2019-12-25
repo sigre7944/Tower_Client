@@ -1,6 +1,6 @@
 import React from "react";
 import MainNavigator from "./components/main/Main"; //Main screen
-import { Dimensions, Image } from "react-native";
+import { Dimensions } from "react-native";
 import {
   createStackNavigator,
   createAppContainer,
@@ -68,12 +68,12 @@ export default class App extends React.Component {
     return (
       <>
         <Provider store={store}>
-          {this.state.is_ready ? (
-            <AppContainer />
-          ) : (
-            // <PersistGate persistor={persistor}>
-            //   <AppContainer />
-            // </PersistGate>
+          <AppContainer />
+          {/* <PersistGate persistor={persistor}>
+               <AppContainer />
+             </PersistGate> */}
+
+          {this.state.is_ready ? null : (
             <MainLoading _setReady={this._setReady} />
           )}
         </Provider>

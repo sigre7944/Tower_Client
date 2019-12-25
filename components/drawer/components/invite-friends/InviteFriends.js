@@ -131,7 +131,7 @@ class Banner extends React.PureComponent {
     try {
       const result = await Share.share(
         {
-          message: "this.props.referral_code"
+          message: `Join Quint now and get 1 month free of Premium plan for both you and your friend! Use this referral code: ${this.props.referral_code} while signing up.`
         },
         {
           dialogTitle: "Share referral code from Quint"
