@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, SafeAreaView } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { styles } from "./styles/styles";
@@ -12,12 +12,13 @@ export default class PurchaseHistoryHeader extends React.PureComponent {
 
   render() {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <View
           style={{
             flexDirection: "row",
             alignItems: "center",
-            justifyContent: "space-between"
+            justifyContent: "space-between",
+            marginTop: normalize(17, "height")
           }}
         >
           <TouchableOpacity
@@ -40,7 +41,7 @@ export default class PurchaseHistoryHeader extends React.PureComponent {
             onPress={this._openPurchaseHistoryTab}
           ></TouchableOpacity>
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 }

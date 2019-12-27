@@ -488,7 +488,7 @@ class MonthHolder extends React.Component {
       >
         <View
           style={{
-            marginTop: normalize(20, "height"),
+            marginTop: normalize(10, "height"),
             flexDirection: "row",
             alignItems: "center"
           }}

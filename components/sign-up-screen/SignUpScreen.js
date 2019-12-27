@@ -1,5 +1,4 @@
 import React from "react";
-import { DrawerActions } from "react-navigation-drawer";
 import {
   TouchableOpacity,
   Text,
@@ -11,6 +10,7 @@ import {
   UIManager,
   Keyboard,
   ActivityIndicator,
+  SafeAreaView
 } from "react-native";
 
 import { styles } from "./styles/styles";
@@ -68,11 +68,6 @@ export default class SignUpScreen extends React.PureComponent {
     should_referral_code_inform_collapsed: true,
     referral_code_inform_text: null,
     referral_code_inform_icon: null
-  };
-
-  _goBack = () => {
-    this.props.navigation.dispatch(DrawerActions.openDrawer());
-    this.props.navigation.navigate("Journal");
   };
 
   _goToSignInScreen = () => {
@@ -384,30 +379,30 @@ export default class SignUpScreen extends React.PureComponent {
 
   render() {
     return (
-      <View
+      <SafeAreaView
         style={{
           flex: 1,
           backgroundColor: "white",
-          paddingHorizontal: normalize(32, "width"),
           overflow: "hidden"
         }}
       >
         <Animated.View
           style={{
-            transform: [{ translateY: this.translate_y_value }]
+            transform: [{ translateY: this.translate_y_value }],
+            paddingHorizontal: normalize(32, "width"),
           }}
         >
           <ScrollView showsVerticalScrollIndicator={false}>
             <View
               style={{
-                marginTop: normalize(45, "height")
+                marginTop: normalize(24, "height")
               }}
             >
               <TouchableOpacity
                 style={{
                   width: icon_size
                 }}
-                onPress={this._goBack}
+                onPress={this._goToSignInScreen}
               >
                 {left_arrow_icon(icon_size, icon_color)}
               </TouchableOpacity>
@@ -690,7 +685,7 @@ export default class SignUpScreen extends React.PureComponent {
             error_msg={this.state.error_msg}
           />
         ) : null}
-      </View>
+      </SafeAreaView>
     );
   }
 }

@@ -1536,7 +1536,6 @@ class InboxRow extends React.Component {
     return (
       <Animated.View
         style={{
-          marginTop: normalize(20, "height"),
           flexDirection: "row",
           transform: [{ translateX: trans }]
         }}

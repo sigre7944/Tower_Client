@@ -6,7 +6,7 @@
     "ios": "react-native run-ios",
     "web": "expo start --web",
     "test": "jest",
-    "postinstall": "jetify && jetify"
+    "postinstall": "jetify && jetify && jetify"
   },
   "jest": {
     "preset": "react-native"

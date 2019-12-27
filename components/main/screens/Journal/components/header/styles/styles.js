@@ -5,8 +5,7 @@ import { normalize } from "../../../../../../shared/helpers";
 
 export const styles = StyleSheet.create({
   container: {
-    paddingTop: normalize(57, "height"),
-    height: normalize(125, "height"),
+    height: normalize(27 + 32 + 23 + 10, "height"),
     backgroundColor: "white"
   },
   middle_text_style: {
