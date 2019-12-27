@@ -91,7 +91,7 @@ const DrawerNavigator = createDrawerNavigator(
     contentComponent: Drawer,
     drawerType: "slide",
     drawerWidth: Dimensions.get("window").width * 0.8,
-    overlayColor: "gray"
+    overlayColor: "gray",
   }
 );
 

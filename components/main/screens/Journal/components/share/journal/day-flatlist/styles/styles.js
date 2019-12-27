@@ -9,7 +9,8 @@ export const styles = StyleSheet.create({
     height: normalize(22, "width"),
     borderRadius: normalize(22, "width"),
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    overflow: "hidden",
   },
 
   chosen_day: {
@@ -19,7 +20,8 @@ export const styles = StyleSheet.create({
     borderRadius: normalize(30, "width"),
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: CommonStyles.primary_colors.prim_3
+    backgroundColor: CommonStyles.primary_colors.prim_3,
+    overflow: "hidden",
   },
 
   not_chosen_text: {

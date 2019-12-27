@@ -236,7 +236,7 @@ class PurchasedItem extends React.PureComponent {
     return (
       <View
         style={{
-          marginTop: normalize(6, "height"),
+          marginVertical: normalize(3, "height"),
           flexDirection: "row",
           height: normalize(72, "height"),
           backgroundColor: "white",

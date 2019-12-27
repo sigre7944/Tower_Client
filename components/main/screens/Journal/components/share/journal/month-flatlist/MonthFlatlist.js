@@ -6,7 +6,7 @@ import { normalize } from "../../../../../../../shared/helpers";
 
 const month_holder_width = normalize(97, "width");
 
-export default class MonthFlatlist extends React.Component {
+export default class MonthFlatlist extends React.PureComponent {
   month_text_arr = [
     "Jan",
     "Feb",
@@ -26,32 +26,34 @@ export default class MonthFlatlist extends React.Component {
 
   _flatlistRef = React.createRef();
 
-  start_index = 0;
+  start_index = -1;
 
   state = {
-    should_update: 0,
+    // should_update: 0,
 
     current_month_index: 0,
     last_month_index: 0
   };
 
   chooseMonth = month_index => {
-    this.setState(
-      prevState => ({
-        last_month_index: prevState.current_month_index,
-        current_month_index: month_index,
+    if (this.state.current_month_index !== month_index) {
+      this.setState(
+        prevState => ({
+          last_month_index: prevState.current_month_index,
+          current_month_index: month_index,
 
-        should_update: prevState.should_update + 1
-      }),
-      () => {
-        let month = this.month_data[month_index].month,
-          year = this.month_data[month_index].year;
+          // should_update: prevState.should_update + 1
+        }),
+        () => {
+          let month = this.month_data[month_index].month,
+            year = this.month_data[month_index].year;
 
-        this.props.setChosenDateData({ month, year });
+          this.props.setChosenDateData({ month, year });
 
-        this.scrollToIndex(month_index);
-      }
-    );
+          this.scrollToIndex(month_index);
+        }
+      );
+    }
   };
 
   scrollToIndex = index => {
@@ -63,7 +65,7 @@ export default class MonthFlatlist extends React.Component {
     }
   };
 
-  _keyExtractor = (item, index) => `month-${index}`;
+  _keyExtractor = (item, index) => `journal-month-panel-month-${index}`;
 
   _renderItem = ({ item, index }) => {
     return (
@@ -194,7 +196,7 @@ export default class MonthFlatlist extends React.Component {
       >
         <FlatList
           data={this.month_data}
-          extraData={this.state.should_update}
+          // extraData={this.state.should_update}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
           horizontal={true}
@@ -276,9 +278,7 @@ class MonthHolder extends React.Component {
         style={{
           marginHorizontal: normalize(7, "width"),
           justifyContent: "center",
-          alignItems: "center",
-          width: normalize(83, "width"),
-          backgroundColor: "white"
+          alignItems: "center"
         }}
         onPress={this._onPress}
       >

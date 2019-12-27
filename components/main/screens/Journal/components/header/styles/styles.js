@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 
 import * as CommonStyles from "../../../../../../shared/styles/style";
 import { normalize } from "../../../../../../shared/helpers";
@@ -6,6 +6,7 @@ import { normalize } from "../../../../../../shared/helpers";
 export const styles = StyleSheet.create({
   container: {
     height: normalize(27 + 32 + 23 + 10, "height"),
+    paddingTop: Platform.OS === "android" ? 25 : 0,
     backgroundColor: "white"
   },
   middle_text_style: {
