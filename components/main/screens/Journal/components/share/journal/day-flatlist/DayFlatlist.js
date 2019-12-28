@@ -7,7 +7,7 @@ import { normalize } from "../../../../../../../shared/helpers";
 
 const day_holder_width = normalize(64, "width"); // each dayholder has a width of 64 (width = 50, marginHorizontal = 7)
 
-export default class DayFlatlist extends React.Component {
+export default class DayFlatlist extends React.PureComponent {
   day_data = [];
 
   month = new Date().getMonth();
@@ -34,30 +34,32 @@ export default class DayFlatlist extends React.Component {
   start_index = -1;
 
   state = {
-    should_update: 0,
+    // should_update: 0,
 
     current_day_index: 0,
     last_day_index: 0
   };
 
   chooseDay = day_index => {
-    this.setState(
-      prevState => ({
-        last_day_index: prevState.current_day_index,
-        current_day_index: day_index,
+    if (this.state.current_day_index !== day_index) {
+      this.setState(
+        prevState => ({
+          last_day_index: prevState.current_day_index,
+          current_day_index: day_index,
 
-        should_update: prevState.should_update + 1
-      }),
-      () => {
-        let day = this.day_data[day_index].day,
-          month = this.day_data[day_index].month,
-          year = this.day_data[day_index].year;
+          // should_update: prevState.should_update + 1
+        }),
+        () => {
+          let day = this.day_data[day_index].day,
+            month = this.day_data[day_index].month,
+            year = this.day_data[day_index].year;
 
-        this.props.setChosenDateData({ day, month, year });
+          this.props.setChosenDateData({ day, month, year });
 
-        this.scrollToIndex(day_index);
-      }
-    );
+          this.scrollToIndex(day_index);
+        }
+      );
+    }
   };
 
   scrollToIndex = index => {
@@ -69,7 +71,7 @@ export default class DayFlatlist extends React.Component {
     }
   };
 
-  _keyExtractor = (item, index) => `day-${index}`;
+  _keyExtractor = (item, index) => `journal-day-panel-day-${index}`;
 
   _renderItem = ({ item, index }) => {
     return (
@@ -182,7 +184,7 @@ export default class DayFlatlist extends React.Component {
       >
         <FlatList
           data={this.day_data}
-          extraData={this.state.should_update}
+          // extraData={this.state.should_update}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
           horizontal={true}
@@ -246,8 +248,7 @@ class DayHolder extends React.Component {
           marginHorizontal: normalize(7, "width"),
           justifyContent: "center",
           alignItems: "center",
-          width: normalize(50, "width"),
-          backgroundColor: "white"
+          width: normalize(50, "width")
         }}
         onPress={this._onPress}
       >

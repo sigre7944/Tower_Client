@@ -8,7 +8,8 @@ export const styles = StyleSheet.create({
     height: normalize(23, "height"),
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: normalize(20, "width")
+    borderRadius: normalize(20, "width"),
+    overflow: "hidden"
   },
 
   chosen_month: {
@@ -17,7 +18,8 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: normalize(20, "width"),
-    backgroundColor: CommonStyles.primary_colors.prim_3
+    backgroundColor: CommonStyles.primary_colors.prim_3,
+    overflow: "hidden"
   },
 
   not_chosen_month_text: {

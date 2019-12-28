@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, SafeAreaView } from "react-native";
 import { DrawerActions } from "react-navigation-drawer";
 import { styles } from "./styles/styles";
+import { normalize } from "../../../../../shared/helpers";
 
 export default class SettingHeader extends React.PureComponent {
   _openDrawer = () => {
@@ -9,12 +10,13 @@ export default class SettingHeader extends React.PureComponent {
   };
   render() {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <View
           style={{
             flexDirection: "row",
             alignItems: "center",
-            justifyContent: "space-between"
+            justifyContent: "space-between",
+            marginTop: normalize(17, "height")
           }}
         >
           <View style={styles.end_icon_container}></View>
@@ -25,7 +27,7 @@ export default class SettingHeader extends React.PureComponent {
 
           <View style={styles.end_icon_container}></View>
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 }

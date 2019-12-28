@@ -9,7 +9,7 @@ import { SERVER_URL } from "../../config";
 import { fromJS } from "immutable";
 // import SplashScreen from "react-native-splash-screen";
 
-const waiting_time = 1000;
+const waiting_time = 0; // 1s to load components
 
 export default class MainLoading extends React.Component {
   opacity_value = new Animated.Value(1);

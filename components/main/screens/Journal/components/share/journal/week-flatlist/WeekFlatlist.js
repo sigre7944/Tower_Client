@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, FlatList } from "react-native";
 import { styles } from "./styles/styles";
 import { normalize } from "../../../../../../../shared/helpers";
 const week_holder_width = normalize(102, "width");
-export default class WeekFlatlist extends React.Component {
+export default class WeekFlatlist extends React.PureComponent {
   month_text_arr = [
     "Jan",
     "Feb",
@@ -27,48 +27,49 @@ export default class WeekFlatlist extends React.Component {
   start_index = 0;
 
   state = {
-    should_update: 0,
+    // should_update: 0,
 
     current_week_index: 0,
     last_week_index: 0
   };
 
   chooseWeek = week_index => {
-    this.setState(
-      prevState => ({
-        last_week_index: prevState.current_week_index,
-        current_week_index: week_index,
+    if (this.state.current_week_index !== week_index) {
+      this.setState(
+        prevState => ({
+          last_week_index: prevState.current_week_index,
+          current_week_index: week_index,
+          // should_update: prevState.should_update + 1
+        }),
+        () => {
+          let {
+            monday,
+            sunday,
+            week,
+            start_month,
+            end_month,
+            start_year,
+            end_year,
+            start_noWeekInMonth,
+            end_noWeekInMonth
+          } = this.week_data[week_index];
 
-        should_update: prevState.should_update + 1
-      }),
-      () => {
-        let {
-          monday,
-          sunday,
-          week,
-          start_month,
-          end_month,
-          start_year,
-          end_year,
-          start_noWeekInMonth,
-          end_noWeekInMonth
-        } = this.week_data[week_index];
+          this.props.setChosenDateData({
+            monday,
+            sunday,
+            week,
+            start_month,
+            end_month,
+            start_year,
+            end_year,
+            start_noWeekInMonth,
+            end_noWeekInMonth
+          });
 
-        this.props.setChosenDateData({
-          monday,
-          sunday,
-          week,
-          start_month,
-          end_month,
-          start_year,
-          end_year,
-          start_noWeekInMonth,
-          end_noWeekInMonth
-        });
-
-        this.scrollToIndex(week_index);
-      }
-    );
+          this.scrollToIndex(week_index);
+        }
+      );
+    }
   };
 
   scrollToIndex = index => {
@@ -80,7 +81,7 @@ export default class WeekFlatlist extends React.Component {
     }
   };
 
-  _keyExtractor = (item, index) => `week-${index}`;
+  _keyExtractor = (item, index) => `journal-week-panel-week-${index}`;
 
   _renderItem = ({ item, index }) => {
     return (
@@ -233,7 +234,7 @@ export default class WeekFlatlist extends React.Component {
       >
         <FlatList
           data={this.week_data}
-          extraData={this.state.should_update}
+          // extraData={this.state.should_update}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
           horizontal={true}
@@ -270,12 +271,12 @@ class WeekHolder extends React.Component {
     "Dec"
   ];
 
-  state = {
-    week_style: styles.not_chosen_week,
-    text_style: styles.not_chosen_week_text,
-    inform_text_style: styles.not_chosen_inform_text,
-    inform_text_container_style: styles.not_chosen_inform_text_container
-  };
+  // state = {
+  //   week_style: styles.not_chosen_week,
+  //   text_style: styles.not_chosen_week_text,
+  //   inform_text_style: styles.not_chosen_inform_text,
+  //   inform_text_container_style: styles.not_chosen_inform_text_container
+  // };
 
   shouldComponentUpdate(nextProps, nextState) {
     return (
@@ -284,50 +285,58 @@ class WeekHolder extends React.Component {
     );
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.week_index === nextProps.current_week_index) {
-      return {
-        week_style: styles.chosen_week,
-        text_style: styles.chosen_week_text,
-        inform_text_style: styles.chosen_inform_text,
-        inform_text_container_style: styles.chosen_inform_text_container
-      };
-    } else if (nextProps.week_index === nextProps.last_week_index) {
-      return {
-        week_style: styles.not_chosen_week,
-        text_style: styles.not_chosen_week_text,
-        inform_text_style: styles.not_chosen_inform_text,
-        inform_text_container_style: styles.not_chosen_inform_text_container
-      };
-    }
+  // static getDerivedStateFromProps(nextProps, prevState) {
+  //   if (nextProps.week_index === nextProps.current_week_index) {
+  //     return {
+  //       week_style: styles.chosen_week,
+  //       text_style: styles.chosen_week_text,
+  //       inform_text_style: styles.chosen_inform_text,
+  //       inform_text_container_style: styles.chosen_inform_text_container
+  //     };
+  //   } else if (nextProps.week_index === nextProps.last_week_index) {
+  //     return {
+  //       week_style: styles.not_chosen_week,
+  //       text_style: styles.not_chosen_week_text,
+  //       inform_text_style: styles.not_chosen_inform_text,
+  //       inform_text_container_style: styles.not_chosen_inform_text_container
+  //     };
+  //   }
 
-    return null;
-  }
+  //   return null;
+  // }
 
   _onPress = () => {
     this.props.chooseWeek(this.props.week_index);
   };
 
   render() {
+    let week_style = styles.not_chosen_week,
+      text_style = styles.not_chosen_week_text,
+      inform_text_style = styles.not_chosen_inform_text,
+      inform_text_container_style = styles.not_chosen_inform_text_container;
+
+    if (this.props.week_index === this.props.current_week_index) {
+      week_style = styles.chosen_week;
+      text_style = styles.chosen_week_text;
+      inform_text_style = styles.chosen_inform_text;
+      inform_text_container_style = styles.chosen_inform_text_container;
+    }
+
     return (
       <TouchableOpacity
         style={{
           marginHorizontal: normalize(7, "width"),
           justifyContent: "center",
-          alignItems: "center",
-          width: normalize(88, "width"),
-          backgroundColor: "white"
+          alignItems: "center"
         }}
         onPress={this._onPress}
       >
-        <View style={this.state.week_style}>
-          <Text style={this.state.text_style}>
-            {`Week ${this.props.data.week}`}
-          </Text>
+        <View style={week_style}>
+          <Text style={text_style}>{`Week ${this.props.data.week}`}</Text>
         </View>
 
-        <View style={this.state.inform_text_container_style}>
-          <Text style={this.state.inform_text_style}>
+        <View style={inform_text_container_style}>
+          <Text style={inform_text_style}>
             {`${this.props.data.monday} ${
               this.month_text_arr[this.props.data.start_month]
             } - ${this.props.data.sunday} ${

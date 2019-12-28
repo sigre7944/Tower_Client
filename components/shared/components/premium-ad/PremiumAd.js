@@ -10,7 +10,8 @@ import {
   Animated,
   Easing,
   Platform,
-  ActivityIndicator
+  ActivityIndicator,
+  SafeAreaView
 } from "react-native";
 
 import { styles } from "./styles/styles";
@@ -18,7 +19,7 @@ import { styles } from "./styles/styles";
 import { close_icon, check_icon } from "../../icons";
 import { normalize } from "../../helpers";
 import { Map } from "immutable";
-// import * as InAppPurchase from "expo-in-app-purchases";
+import * as InAppPurchase from "expo-in-app-purchases";
 import axios from "axios";
 import { SERVER_URL } from "../../../../config";
 
@@ -93,67 +94,67 @@ export default class PremiumAd extends React.PureComponent {
     });
   };
 
-  // _pay = async () => {
-  //   if (this.state.is_logged_in) {
-  //     // PROCESS PAYMENT HERE
-  //     try {
-  //       this.setState({
-  //         is_pay_button_usable: false
-  //       });
+  _pay = async () => {
+    if (this.state.is_logged_in) {
+      // PROCESS PAYMENT HERE
+      try {
+        this.setState({
+          is_pay_button_usable: false
+        });
 
-  //       const history = await InAppPurchase.connectAsync();
+        const history = await InAppPurchase.connectAsync();
 
-  //       if (history.responseCode === InAppPurchase.IAPResponseCode.OK) {
-  //         history.results.forEach(result => {});
+        if (history.responseCode === InAppPurchase.IAPResponseCode.OK) {
+          history.results.forEach(result => {});
 
-  //         const items = Platform.select({
-  //           ios: ["premium_monthly_sub"]
-  //         });
+          const items = Platform.select({
+            ios: ["premium_monthly_sub"]
+          });
 
-  //         const {
-  //           responseCode,
-  //           results
-  //         } = await InAppPurchase.getProductsAsync(items);
+          const {
+            responseCode,
+            results
+          } = await InAppPurchase.getProductsAsync(items);
 
-  //         if (responseCode === InAppPurchase.IAPResponseCode.OK) {
-  //           this.setState({ purchase_items: results });
+          if (responseCode === InAppPurchase.IAPResponseCode.OK) {
+            this.setState({ purchase_items: results });
 
-  //           const purchase_async = await InAppPurchase.purchaseItemAsync(
-  //             items[0]
-  //           );
+            const purchase_async = await InAppPurchase.purchaseItemAsync(
+              items[0]
+            );
 
-  //           this._close();
-  //         } else {
-  //           this.setState({
-  //             is_pay_button_usable: true
-  //           });
-  //         }
-  //       } else {
-  //         this.setState({
-  //           is_pay_button_usable: true
-  //         });
-  //       }
-  //     } catch (err) {
-  //       alert(`Error: ${err}`);
-  //       InAppPurchase.disconnectAsync()
-  //         .then(() => {
-  //           this.setState({
-  //             is_pay_button_usable: true
-  //           });
-  //         })
-  //         .catch(err => {
-  //           this.setState({
-  //             is_pay_button_usable: true
-  //           });
-  //           alert(err);
-  //         });
-  //     }
-  //   } else {
-  //     if (this.props._goToLogin) {
-  //       this._endAnim(this.props._goToLogin);
-  //     }
-  //   }
-  // };
+            this._close();
+          } else {
+            this.setState({
+              is_pay_button_usable: true
+            });
+          }
+        } else {
+          this.setState({
+            is_pay_button_usable: true
+          });
+        }
+      } catch (err) {
+        alert(`Error: ${err}`);
+        InAppPurchase.disconnectAsync()
+          .then(() => {
+            this.setState({
+              is_pay_button_usable: true
+            });
+          })
+          .catch(err => {
+            this.setState({
+              is_pay_button_usable: true
+            });
+            alert(err);
+          });
+      }
+    } else {
+      if (this.props._goToLogin) {
+        this._endAnim(this.props._goToLogin);
+      }
+    }
+  };
 
   _updateNumbers = () => {
     let generalSettings = Map(this.props.generalSettings),
@@ -239,260 +240,262 @@ export default class PremiumAd extends React.PureComponent {
               position: "absolute"
             }}
           >
-            <View
-              style={{
-                marginTop: normalize(42, "height"),
-                paddingHorizontal: normalize(22, "width"),
-                alignItems: "flex-start"
-              }}
-            >
-              <TouchableOpacity onPress={this._close}>
-                {close_icon(icon_size, icon_color)}
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView>
+            <SafeAreaView style={{}}>
               <View
                 style={{
-                  marginTop: normalize(12, "height"),
-                  justifyContent: "center",
-                  alignItems: "center"
+                  marginTop: normalize(21, "height"),
+                  paddingHorizontal: normalize(22, "width"),
+                  alignItems: "flex-start"
                 }}
               >
-                {this.props.motivation_text &&
-                this.props.motivation_text.length > 0 &&
-                this.props.motivation_text !== "" ? (
-                  <View style={{ marginBottom: normalize(10, "height") }}>
-                    <Text style={styles.motivation_text}>
-                      {this.props.motivation_text}
-                    </Text>
-                  </View>
-                ) : null}
-
-                <Text style={styles.title}>Upgrade to Premium</Text>
+                <TouchableOpacity onPress={this._close}>
+                  {close_icon(icon_size, icon_color)}
+                </TouchableOpacity>
               </View>
 
-              <View
-                style={{
-                  height: normalize(220, "height"),
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginTop: normalize(48, "height")
-                }}
-              >
-                <Image
-                  source={premium_1x_image}
-                  resizeMode="contain"
-                  style={{
-                    flex: 1
-                  }}
-                />
-              </View>
-
-              <View
-                style={{
-                  marginTop: normalize(27, "height"),
-                  paddingHorizontal: normalize(35, "width")
-                }}
-              >
+              <ScrollView>
                 <View
                   style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginTop: normalize(21, "height")
+                    marginTop: normalize(12, "height"),
+                    justifyContent: "center",
+                    alignItems: "center"
                   }}
                 >
-                  <View
-                    style={{
-                      width: check_icon_size,
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }}
-                  >
-                    {check_icon(check_icon_size, icon_color)}
-                  </View>
-
-                  <View
-                    style={{
-                      marginLeft: normalize(15, "width")
-                    }}
-                  >
-                    <Text style={styles.benefit_text}>
-                      Up to {this.state.number_of_tasks_per_category_premium}{" "}
-                      tasks per category.
-                    </Text>
-                  </View>
-                </View>
-
-                <View
-                  style={{
-                    marginTop: normalize(5, "height")
-                  }}
-                >
-                  <View
-                    style={{
-                      marginLeft: check_icon_size + normalize(15, "width")
-                    }}
-                  >
-                    <Text style={styles.versus_text}>
-                      ({this.state.number_of_tasks_per_category_free} tasks per
-                      category in Free plan)
-                    </Text>
-                  </View>
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginTop: normalize(21, "height")
-                  }}
-                >
-                  <View
-                    style={{
-                      width: check_icon_size,
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }}
-                  >
-                    {check_icon(check_icon_size, icon_color)}
-                  </View>
-
-                  <View
-                    style={{
-                      marginLeft: normalize(15, "width")
-                    }}
-                  >
-                    <Text style={styles.benefit_text}>
-                      Up to {this.state.number_of_categories_premium} categories
-                      and rewards.
-                    </Text>
-                  </View>
-                </View>
-
-                <View
-                  style={{
-                    marginTop: normalize(5, "height")
-                  }}
-                >
-                  <View
-                    style={{
-                      marginLeft: check_icon_size + normalize(15, "width")
-                    }}
-                  >
-                    <Text style={styles.versus_text}>
-                      ({this.state.number_of_categories_free} categories and
-                      rewards in Free plan)
-                    </Text>
-                  </View>
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginTop: normalize(21, "height")
-                  }}
-                >
-                  <View
-                    style={{
-                      width: check_icon_size,
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }}
-                  >
-                    {check_icon(check_icon_size, icon_color)}
-                  </View>
-
-                  <View
-                    style={{
-                      marginLeft: normalize(15, "width"),
-                      flexDirection: "row",
-                      alignItems: "center"
-                    }}
-                  >
-                    <Text style={styles.benefit_text}>
-                      Full access to chart and stats analytics.
-                    </Text>
-                  </View>
-                </View>
-
-                <View
-                  style={{
-                    marginTop: normalize(5, "height")
-                  }}
-                >
-                  <View
-                    style={{
-                      marginLeft: check_icon_size + normalize(15, "width")
-                    }}
-                  >
-                    <Text style={styles.versus_text}>
-                      (Limited access in Free plan)
-                    </Text>
-                  </View>
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginTop: normalize(21, "height")
-                  }}
-                >
-                  <View
-                    style={{
-                      width: check_icon_size,
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }}
-                  >
-                    {check_icon(check_icon_size, icon_color)}
-                  </View>
-
-                  <View
-                    style={{
-                      marginLeft: normalize(15, "width"),
-                      flexDirection: "row",
-                      alignItems: "center"
-                    }}
-                  >
-                    <Text style={styles.benefit_text}>
-                      Instant access to incoming features.
-                    </Text>
-                  </View>
-                </View>
-              </View>
-
-              <View
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginTop: normalize(52, "height"),
-                  marginBottom: normalize(93, "height")
-                }}
-              >
-                {this.state.is_pay_button_usable ? (
-                  <TouchableOpacity
-                    style={styles.upgrade_button_container}
-                    onPress={this._pay}
-                  >
-                    <View>
-                      <Text style={styles.upgrade_button_normal_text}>
-                        Pay €2.99/month
+                  {this.props.motivation_text &&
+                  this.props.motivation_text.length > 0 &&
+                  this.props.motivation_text !== "" ? (
+                    <View style={{ marginBottom: normalize(10, "height") }}>
+                      <Text style={styles.motivation_text}>
+                        {this.props.motivation_text}
                       </Text>
                     </View>
-                  </TouchableOpacity>
-                ) : (
+                  ) : null}
+
+                  <Text style={styles.title}>Upgrade to Premium</Text>
+                </View>
+
+                <View
+                  style={{
+                    height: normalize(220, "height"),
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: normalize(48, "height")
+                  }}
+                >
+                  <Image
+                    source={premium_1x_image}
+                    resizeMode="contain"
+                    style={{
+                      flex: 1
+                    }}
+                  />
+                </View>
+
+                <View
+                  style={{
+                    marginTop: normalize(27, "height"),
+                    paddingHorizontal: normalize(35, "width")
+                  }}
+                >
                   <View
-                    style={styles.upgrade_button_container}
-                    onPress={this._pay}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginTop: normalize(21, "height")
+                    }}
                   >
-                    <ActivityIndicator color="white" size="small" />
+                    <View
+                      style={{
+                        width: check_icon_size,
+                        justifyContent: "center",
+                        alignItems: "center"
+                      }}
+                    >
+                      {check_icon(check_icon_size, icon_color)}
+                    </View>
+
+                    <View
+                      style={{
+                        marginLeft: normalize(15, "width")
+                      }}
+                    >
+                      <Text style={styles.benefit_text}>
+                        Up to {this.state.number_of_tasks_per_category_premium}{" "}
+                        tasks per category.
+                      </Text>
+                    </View>
                   </View>
-                )}
-              </View>
-            </ScrollView>
+
+                  <View
+                    style={{
+                      marginTop: normalize(5, "height")
+                    }}
+                  >
+                    <View
+                      style={{
+                        marginLeft: check_icon_size + normalize(15, "width")
+                      }}
+                    >
+                      <Text style={styles.versus_text}>
+                        ({this.state.number_of_tasks_per_category_free} tasks
+                        per category in Free plan)
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginTop: normalize(21, "height")
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: check_icon_size,
+                        justifyContent: "center",
+                        alignItems: "center"
+                      }}
+                    >
+                      {check_icon(check_icon_size, icon_color)}
+                    </View>
+
+                    <View
+                      style={{
+                        marginLeft: normalize(15, "width")
+                      }}
+                    >
+                      <Text style={styles.benefit_text}>
+                        Up to {this.state.number_of_categories_premium}{" "}
+                        categories and rewards.
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View
+                    style={{
+                      marginTop: normalize(5, "height")
+                    }}
+                  >
+                    <View
+                      style={{
+                        marginLeft: check_icon_size + normalize(15, "width")
+                      }}
+                    >
+                      <Text style={styles.versus_text}>
+                        ({this.state.number_of_categories_free} categories and
+                        rewards in Free plan)
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginTop: normalize(21, "height")
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: check_icon_size,
+                        justifyContent: "center",
+                        alignItems: "center"
+                      }}
+                    >
+                      {check_icon(check_icon_size, icon_color)}
+                    </View>
+
+                    <View
+                      style={{
+                        marginLeft: normalize(15, "width"),
+                        flexDirection: "row",
+                        alignItems: "center"
+                      }}
+                    >
+                      <Text style={styles.benefit_text}>
+                        Full access to chart and stats analytics.
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View
+                    style={{
+                      marginTop: normalize(5, "height")
+                    }}
+                  >
+                    <View
+                      style={{
+                        marginLeft: check_icon_size + normalize(15, "width")
+                      }}
+                    >
+                      <Text style={styles.versus_text}>
+                        (Limited access in Free plan)
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginTop: normalize(21, "height")
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: check_icon_size,
+                        justifyContent: "center",
+                        alignItems: "center"
+                      }}
+                    >
+                      {check_icon(check_icon_size, icon_color)}
+                    </View>
+
+                    <View
+                      style={{
+                        marginLeft: normalize(15, "width"),
+                        flexDirection: "row",
+                        alignItems: "center"
+                      }}
+                    >
+                      <Text style={styles.benefit_text}>
+                        Instant access to incoming features.
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                <View
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: normalize(52, "height"),
+                    marginBottom: normalize(93, "height")
+                  }}
+                >
+                  {this.state.is_pay_button_usable ? (
+                    <TouchableOpacity
+                      style={styles.upgrade_button_container}
+                      onPress={this._pay}
+                    >
+                      <View>
+                        <Text style={styles.upgrade_button_normal_text}>
+                          Pay €2.99/month
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  ) : (
+                    <View
+                      style={styles.upgrade_button_container}
+                      onPress={this._pay}
+                    >
+                      <ActivityIndicator color="white" size="small" />
+                    </View>
+                  )}
+                </View>
+              </ScrollView>
+            </SafeAreaView>
           </Animated.View>
         </View>
       </Modal>
@@ -533,41 +536,41 @@ const _handleSuccessfulPurchase = async purchase => {
   }
 };
 
-// // Set purchase listener
-// InAppPurchase.setPurchaseListener(
-//   async ({ responseCode, results, errorCode }) => {
-//     // Purchase was successful
-//     if (responseCode === InAppPurchase.IAPResponseCode.OK) {
-//       results.forEach(purchase => {
-//         _handleSuccessfulPurchase(purchase);
-//       });
-//     }
+// Set purchase listener
+InAppPurchase.setPurchaseListener(
+  async ({ responseCode, results, errorCode }) => {
+    // Purchase was successful
+    if (responseCode === InAppPurchase.IAPResponseCode.OK) {
+      results.forEach(purchase => {
+        _handleSuccessfulPurchase(purchase);
+      });
+    }
 
-//     // Else find out what went wrong
-//     else if (responseCode === InAppPurchase.IAPResponseCode.USER_CANCELED) {
-//       InAppPurchase.disconnectAsync()
-//         .then(() => {})
-//         .catch(err => {
-//           alert(err);
-//         });
-//     } else if (responseCode === InAppPurchase.IAPResponseCode.DEFERRED) {
-//       // alert('User does not have permissions to buy but requested parental approval (iOS only)');
-//       InAppPurchase.disconnectAsync()
-//         .then(() => {})
-//         .catch(err => {
-//           alert(err);
-//         });
-//     } else {
-//       // alert(`Something went wrong with the purchase. Received errorCode ${errorCode}`);
-//       InAppPurchase.disconnectAsync()
-//         .then(() => {})
-//         .catch(err => {
-//           alert(err);
-//         });
-//     }
-//   }
-// )
-//   .then(() => {})
-//   .catch(err => {
-//     alert(err);
-//   });
+    // Else find out what went wrong
+    else if (responseCode === InAppPurchase.IAPResponseCode.USER_CANCELED) {
+      InAppPurchase.disconnectAsync()
+        .then(() => {})
+        .catch(err => {
+          alert(err);
+        });
+    } else if (responseCode === InAppPurchase.IAPResponseCode.DEFERRED) {
+      // alert('User does not have permissions to buy but requested parental approval (iOS only)');
+      InAppPurchase.disconnectAsync()
+        .then(() => {})
+        .catch(err => {
+          alert(err);
+        });
+    } else {
+      // alert(`Something went wrong with the purchase. Received errorCode ${errorCode}`);
+      InAppPurchase.disconnectAsync()
+        .then(() => {})
+        .catch(err => {
+          alert(err);
+        });
+    }
+  }
+)
+  .then(() => {})
+  .catch(err => {
+    alert(err);
+  });

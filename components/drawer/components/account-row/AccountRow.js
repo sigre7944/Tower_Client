@@ -1,6 +1,13 @@
 import React from "react";
 import { DrawerActions } from "react-navigation-drawer";
-import { TouchableOpacity, Text, View, Image } from "react-native";
+import {
+  TouchableOpacity,
+  Text,
+  View,
+  Image,
+  SafeAreaView,
+  Platform
+} from "react-native";
 
 import { styles } from "./styles/styles";
 
@@ -194,11 +201,15 @@ export default class AccountRow extends React.PureComponent {
 
   render() {
     return (
-      <>
+      <SafeAreaView
+        style={{
+          paddingTop: Platform.OS === "android" ? 25 : 0
+        }}
+      >
         {!this.state.is_logged_in ? (
           <TouchableOpacity
             style={{
-              marginTop: normalize(45, "height"),
+              marginTop: normalize(25, "height"),
               flexDirection: "row",
               alignItems: "center",
               marginHorizontal: normalize(22, "width")
@@ -303,7 +314,7 @@ export default class AccountRow extends React.PureComponent {
             )}
           </>
         ) : null}
-      </>
+      </SafeAreaView>
     );
   }
 }

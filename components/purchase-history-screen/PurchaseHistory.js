@@ -144,7 +144,7 @@ class PurchasedTimestamp extends React.PureComponent {
     return (
       <View
         style={{
-          marginTop: normalize(32, "height")
+          marginTop: normalize(12, "height")
         }}
       >
         <TouchableOpacity onPress={this._ToggleDisplayingOptionsBool}>
@@ -236,7 +236,7 @@ class PurchasedItem extends React.PureComponent {
     return (
       <View
         style={{
-          marginTop: normalize(6, "height"),
+          marginVertical: normalize(3, "height"),
           flexDirection: "row",
           height: normalize(72, "height"),
           backgroundColor: "white",

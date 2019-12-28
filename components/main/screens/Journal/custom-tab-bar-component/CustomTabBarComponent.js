@@ -84,6 +84,7 @@ export default class CustomTabBarComponent extends React.PureComponent {
     return (
       <View
         style={{
+          // marginTop: normalize(13, "height"),
           height: normalize(41, "height"),
           justifyContent: "center"
         }}

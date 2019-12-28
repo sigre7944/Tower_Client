@@ -68,10 +68,10 @@ export default class App extends React.Component {
     return (
       <>
         <Provider store={store}>
-          <AppContainer />
-          {/* <PersistGate persistor={persistor}>
-               <AppContainer />
-             </PersistGate> */}
+          {/* <AppContainer /> */}
+          <PersistGate persistor={persistor}>
+            <AppContainer />
+          </PersistGate>
 
           {this.state.is_ready ? null : (
             <MainLoading _setReady={this._setReady} />

@@ -10,7 +10,8 @@ import {
   Modal,
   ActivityIndicator,
   Easing,
-  Platform
+  Platform,
+  SafeAreaView
 } from "react-native";
 
 import { styles } from "./styles/styles";
@@ -116,84 +117,89 @@ export default class SignInScreen extends React.PureComponent {
 
   render() {
     return (
-      <ScrollView
+      <SafeAreaView
         style={{
           flex: 1,
           backgroundColor: "white",
-          paddingHorizontal: normalize(32, "width")
+          overflow: "hidden"
         }}
-        scrollEnabled={false}
-        keyboardDismissMode="on-drag"
       >
-        <View
+        <ScrollView
           style={{
-            marginTop: normalize(45, "height")
+            paddingHorizontal: normalize(32, "width")
           }}
+          scrollEnabled={false}
+          keyboardDismissMode="on-drag"
         >
-          <TouchableOpacity
+          <View
             style={{
-              width: icon_size
+              marginTop: normalize(24, "height")
             }}
-            onPress={this._goBack}
           >
-            {left_arrow_icon(icon_size, icon_color)}
-          </TouchableOpacity>
-        </View>
-
-        <View
-          style={{
-            marginTop: normalize(15, "height")
-          }}
-        >
-          <Text style={styles.title_text}>Sign</Text>
-          <Text style={styles.title_text}>In</Text>
-        </View>
-
-        <View
-          style={{
-            marginTop: normalize(53, "height")
-          }}
-        >
-          <Text style={styles.input_title}>Email:</Text>
+            <TouchableOpacity
+              style={{
+                width: icon_size
+              }}
+              onPress={this._goBack}
+            >
+              {left_arrow_icon(icon_size, icon_color)}
+            </TouchableOpacity>
+          </View>
 
           <View
             style={{
-              marginTop: normalize(12, "height")
+              marginTop: normalize(15, "height")
             }}
           >
-            <TextInput
-              style={styles.input_text}
-              placeholder="example@domain.com"
-              keyboardType="email-address"
-              value={this.state.email}
-              onChange={this._onChangeEmail}
-            />
+            <Text style={styles.title_text}>Sign</Text>
+            <Text style={styles.title_text}>In</Text>
           </View>
-        </View>
-
-        <View
-          style={{
-            marginTop: normalize(28, "height")
-          }}
-        >
-          <Text style={styles.input_title}>Password:</Text>
 
           <View
             style={{
-              marginTop: normalize(12, "height")
+              marginTop: normalize(53, "height")
             }}
           >
-            <TextInput
-              style={styles.input_text}
-              placeholder="Insert password here"
-              secureTextEntry={true}
-              value={this.state.password}
-              onChange={this._onChangePassword}
-            />
-          </View>
-        </View>
+            <Text style={styles.input_title}>Email:</Text>
 
-        {/* <TouchableOpacity
+            <View
+              style={{
+                marginTop: normalize(12, "height")
+              }}
+            >
+              <TextInput
+                style={styles.input_text}
+                placeholder="example@domain.com"
+                keyboardType="email-address"
+                value={this.state.email}
+                onChange={this._onChangeEmail}
+              />
+            </View>
+          </View>
+
+          <View
+            style={{
+              marginTop: normalize(28, "height")
+            }}
+          >
+            <Text style={styles.input_title}>Password:</Text>
+
+            <View
+              style={{
+                marginTop: normalize(12, "height")
+              }}
+            >
+              <TextInput
+                style={styles.input_text}
+                placeholder="Insert password here"
+                secureTextEntry={true}
+                value={this.state.password}
+                onChange={this._onChangePassword}
+              />
+            </View>
+          </View>
+
+          {/* <TouchableOpacity
           style={{
             marginTop: 12
           }}
@@ -201,64 +207,65 @@ export default class SignInScreen extends React.PureComponent {
           <Text style={styles.forgot_password_text}>Forgot your password?</Text>
         </TouchableOpacity> */}
 
-        <View
-          style={{
-            marginTop: normalize(32, "height")
-          }}
-        >
           <View
             style={{
-              shadowOffset: {
-                width: 0,
-                height: 4
-              },
-              shadowRadius: 8,
-              shadowColor: "black",
-              shadowOpacity: 0.25,
-              elevation: 4,
-              backgroundColor: "white"
+              marginTop: normalize(32, "height")
             }}
           >
-            <TouchableOpacity
-              style={styles.button_container}
-              onPress={this._signIn}
+            <View
+              style={{
+                shadowOffset: {
+                  width: 0,
+                  height: 4
+                },
+                shadowRadius: 8,
+                shadowColor: "black",
+                shadowOpacity: 0.25,
+                elevation: 4,
+                backgroundColor: "white"
+              }}
             >
-              {this.state.should_replace_with_activity_indicator ? (
-                <ActivityIndicator color="white" size="small" />
-              ) : (
-                <Text style={styles.sign_in_text}>SIGN IN</Text>
-              )}
+              <TouchableOpacity
+                style={styles.button_container}
+                onPress={this._signIn}
+              >
+                {this.state.should_replace_with_activity_indicator ? (
+                  <ActivityIndicator color="white" size="small" />
+                ) : (
+                  <Text style={styles.sign_in_text}>SIGN IN</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View
+            style={{
+              marginTop: normalize(32, "height"),
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+          >
+            <Text style={styles.sign_up_small_text}>New to Quint?</Text>
+
+            <TouchableOpacity
+              style={{
+                marginLeft: normalize(5, "width")
+              }}
+              onPress={this._goToSignUpScreen}
+            >
+              <Text style={styles.sign_up_small_underline_text}>Sign up</Text>
             </TouchableOpacity>
           </View>
-        </View>
 
-        <View
-          style={{
-            marginTop: normalize(32, "height"),
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <Text style={styles.sign_up_small_text}>New to Quint?</Text>
-
-          <TouchableOpacity
-            style={{
-              marginLeft: normalize(5, "width")
-            }}
-            onPress={this._goToSignUpScreen}
-          >
-            <Text style={styles.sign_up_small_underline_text}>Sign up</Text>
-          </TouchableOpacity>
-        </View>
-
-        {this.state.should_display_error_banner ? (
-          <ErrorBanner
-            _hideErrorBanner={this._hideErrorBanner}
-            error_msg={this.state.error_msg}
-          />
-        ) : null}
-      </ScrollView>
+          {this.state.should_display_error_banner ? (
+            <ErrorBanner
+              _hideErrorBanner={this._hideErrorBanner}
+              error_msg={this.state.error_msg}
+            />
+          ) : null}
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 }
@@ -306,7 +313,7 @@ class ErrorBanner extends React.PureComponent {
               paddingHorizontal: normalize(22, "width"),
               width: normalize(250, "width"),
               borderRadius: normalize(10, "width"),
-              opacity: this.opacity_value,
+              opacity: this.opacity_value
             }}
           >
             <View

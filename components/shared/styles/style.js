@@ -1,8 +1,9 @@
+import { Platform } from "react-native";
 // export const sf_ui_display_light_font = "SFUIDisplay-Light";
 // export const sf_ui_display_medium_font = "SFUIDisplay-Medium";
 
-export const sf_ui_display_light_font = "Arial"
-export const sf_ui_display_medium_font = "Arial"
+export const sf_ui_display_light_font = Platform.OS === "ios" ? "Arial": "Roboto"
+export const sf_ui_display_medium_font = Platform.OS === "ios" ? "Arial": "Roboto"
 
 export const primary_colors = {
   prim_1: "#05838B",

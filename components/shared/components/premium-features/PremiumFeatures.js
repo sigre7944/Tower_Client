@@ -8,7 +8,8 @@ import {
   Image,
   Animated,
   Easing,
-  Platform
+  Platform,
+  SafeAreaView
 } from "react-native";
 
 import { styles } from "./styles/styles";
@@ -81,214 +82,216 @@ export default class PremiumFeatures extends React.PureComponent {
               position: "absolute"
             }}
           >
-            <View
-              style={{
-                marginTop: normalize(42, "height"),
-                paddingHorizontal: normalize(22, "width"),
-                alignItems: "flex-start"
-              }}
-            >
-              <TouchableOpacity onPress={this._close}>
-                {close_icon(icon_size, icon_color)}
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                marginTop: normalize(12, "height"),
-                justifyContent: "center",
-                alignItems: "center"
-              }}
-            >
-              <Text style={styles.title}>Premium plan</Text>
-            </View>
-
-            <View
-              style={{
-                height: normalize(220, "height"),
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: normalize(48, "height")
-              }}
-            >
-              <Image
-                source={premium_1x_image}
-                resizeMode="contain"
-                style={{
-                  flex: 1
-                }}
-              />
-            </View>
-
-            <View
-              style={{
-                marginTop: normalize(27, "height"),
-                paddingHorizontal: normalize(35, "width")
-              }}
-            >
+            <SafeAreaView>
               <View
                 style={{
-                  flexDirection: "row",
+                  marginTop: normalize(21, "height"),
+                  paddingHorizontal: normalize(22, "width"),
+                  alignItems: "flex-start"
+                }}
+              >
+                <TouchableOpacity onPress={this._close}>
+                  {close_icon(icon_size, icon_color)}
+                </TouchableOpacity>
+              </View>
+              <View
+                style={{
+                  marginTop: normalize(12, "height"),
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+              >
+                <Text style={styles.title}>Premium plan</Text>
+              </View>
+
+              <View
+                style={{
+                  height: normalize(220, "height"),
+                  justifyContent: "center",
                   alignItems: "center",
-                  marginTop: normalize(21, "height")
+                  marginTop: normalize(48, "height")
                 }}
               >
-                <View
+                <Image
+                  source={premium_1x_image}
+                  resizeMode="contain"
                   style={{
-                    width: check_icon_size,
-                    justifyContent: "center",
-                    alignItems: "center"
+                    flex: 1
                   }}
-                >
-                  {check_icon(check_icon_size, icon_color)}
-                </View>
-
-                <View
-                  style={{
-                    marginLeft: normalize(15, "width")
-                  }}
-                >
-                  <Text style={styles.benefit_text}>
-                    Up to 99 tasks per category.
-                  </Text>
-                </View>
+                />
               </View>
 
               <View
                 style={{
-                  marginTop: normalize(5, "height")
+                  marginTop: normalize(27, "height"),
+                  paddingHorizontal: normalize(35, "width")
                 }}
               >
                 <View
                   style={{
-                    marginLeft: check_icon_size + normalize(15, "width")
-                  }}
-                >
-                  <Text style={styles.versus_text}>
-                    (5 tasks per category in Free plan)
-                  </Text>
-                </View>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: normalize(21, "height")
-                }}
-              >
-                <View
-                  style={{
-                    width: check_icon_size,
-                    justifyContent: "center",
-                    alignItems: "center"
-                  }}
-                >
-                  {check_icon(check_icon_size, icon_color)}
-                </View>
-
-                <View
-                  style={{
-                    marginLeft: normalize(15, "width")
-                  }}
-                >
-                  <Text style={styles.benefit_text}>
-                    Up to 99 categories and rewards.
-                  </Text>
-                </View>
-              </View>
-
-              <View
-                style={{
-                  marginTop: normalize(5, "height")
-                }}
-              >
-                <View
-                  style={{
-                    marginLeft: check_icon_size + normalize(15, "width")
-                  }}
-                >
-                  <Text style={styles.versus_text}>
-                    (5 categories and rewards in Free plan)
-                  </Text>
-                </View>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: normalize(21, "height")
-                }}
-              >
-                <View
-                  style={{
-                    width: check_icon_size,
-                    justifyContent: "center",
-                    alignItems: "center"
-                  }}
-                >
-                  {check_icon(check_icon_size, icon_color)}
-                </View>
-
-                <View
-                  style={{
-                    marginLeft: normalize(15, "width"),
                     flexDirection: "row",
-                    alignItems: "center"
+                    alignItems: "center",
+                    marginTop: normalize(21, "height")
                   }}
                 >
-                  <Text style={styles.benefit_text}>
-                    Full access to chart and stats analytics.
-                  </Text>
-                </View>
-              </View>
+                  <View
+                    style={{
+                      width: check_icon_size,
+                      justifyContent: "center",
+                      alignItems: "center"
+                    }}
+                  >
+                    {check_icon(check_icon_size, icon_color)}
+                  </View>
 
-              <View
-                style={{
-                  marginTop: normalize(5, "height")
-                }}
-              >
-                <View
-                  style={{
-                    marginLeft: check_icon_size + normalize(15, "width")
-                  }}
-                >
-                  <Text style={styles.versus_text}>
-                    (Limited access in Free plan)
-                  </Text>
-                </View>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: normalize(21, "height")
-                }}
-              >
-                <View
-                  style={{
-                    width: check_icon_size,
-                    justifyContent: "center",
-                    alignItems: "center"
-                  }}
-                >
-                  {check_icon(check_icon_size, icon_color)}
+                  <View
+                    style={{
+                      marginLeft: normalize(15, "width")
+                    }}
+                  >
+                    <Text style={styles.benefit_text}>
+                      Up to 99 tasks per category.
+                    </Text>
+                  </View>
                 </View>
 
                 <View
                   style={{
-                    marginLeft: normalize(15, "width"),
+                    marginTop: normalize(5, "height")
+                  }}
+                >
+                  <View
+                    style={{
+                      marginLeft: check_icon_size + normalize(15, "width")
+                    }}
+                  >
+                    <Text style={styles.versus_text}>
+                      (5 tasks per category in Free plan)
+                    </Text>
+                  </View>
+                </View>
+
+                <View
+                  style={{
                     flexDirection: "row",
-                    alignItems: "center"
+                    alignItems: "center",
+                    marginTop: normalize(21, "height")
                   }}
                 >
-                  <Text style={styles.benefit_text}>
-                    Instant access to incoming features.
-                  </Text>
+                  <View
+                    style={{
+                      width: check_icon_size,
+                      justifyContent: "center",
+                      alignItems: "center"
+                    }}
+                  >
+                    {check_icon(check_icon_size, icon_color)}
+                  </View>
+
+                  <View
+                    style={{
+                      marginLeft: normalize(15, "width")
+                    }}
+                  >
+                    <Text style={styles.benefit_text}>
+                      Up to 99 categories and rewards.
+                    </Text>
+                  </View>
+                </View>
+
+                <View
+                  style={{
+                    marginTop: normalize(5, "height")
+                  }}
+                >
+                  <View
+                    style={{
+                      marginLeft: check_icon_size + normalize(15, "width")
+                    }}
+                  >
+                    <Text style={styles.versus_text}>
+                      (5 categories and rewards in Free plan)
+                    </Text>
+                  </View>
+                </View>
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginTop: normalize(21, "height")
+                  }}
+                >
+                  <View
+                    style={{
+                      width: check_icon_size,
+                      justifyContent: "center",
+                      alignItems: "center"
+                    }}
+                  >
+                    {check_icon(check_icon_size, icon_color)}
+                  </View>
+
+                  <View
+                    style={{
+                      marginLeft: normalize(15, "width"),
+                      flexDirection: "row",
+                      alignItems: "center"
+                    }}
+                  >
+                    <Text style={styles.benefit_text}>
+                      Full access to chart and stats analytics.
+                    </Text>
+                  </View>
+                </View>
+
+                <View
+                  style={{
+                    marginTop: normalize(5, "height")
+                  }}
+                >
+                  <View
+                    style={{
+                      marginLeft: check_icon_size + normalize(15, "width")
+                    }}
+                  >
+                    <Text style={styles.versus_text}>
+                      (Limited access in Free plan)
+                    </Text>
+                  </View>
+                </View>
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginTop: normalize(21, "height")
+                  }}
+                >
+                  <View
+                    style={{
+                      width: check_icon_size,
+                      justifyContent: "center",
+                      alignItems: "center"
+                    }}
+                  >
+                    {check_icon(check_icon_size, icon_color)}
+                  </View>
+
+                  <View
+                    style={{
+                      marginLeft: normalize(15, "width"),
+                      flexDirection: "row",
+                      alignItems: "center"
+                    }}
+                  >
+                    <Text style={styles.benefit_text}>
+                      Instant access to incoming features.
+                    </Text>
+                  </View>
                 </View>
               </View>
-            </View>
+            </SafeAreaView>
           </Animated.View>
         </View>
       </Modal>
