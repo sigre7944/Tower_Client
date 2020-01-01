@@ -29,31 +29,29 @@ export default class MonthFlatlist extends React.PureComponent {
   start_index = -1;
 
   state = {
-    // should_update: 0,
-
-    current_month_index: 0,
-    last_month_index: 0
+    should_update: 0,
+    current_month_index: -1,
+    last_month_index: -1
   };
 
   chooseMonth = month_index => {
     if (this.state.current_month_index !== month_index) {
-      this.setState(
-        prevState => ({
-          last_month_index: prevState.current_month_index,
-          current_month_index: month_index,
+      let month = this.month_data[month_index].month,
+        year = this.month_data[month_index].year;
 
-          // should_update: prevState.should_update + 1
-        }),
-        () => {
-          let month = this.month_data[month_index].month,
-            year = this.month_data[month_index].year;
-
-          this.props.setChosenDateData({ month, year });
-
-          this.scrollToIndex(month_index);
-        }
-      );
+      this.props.setChosenDateData({ month, year });
     }
+
+    this.setState(
+      prevState => ({
+        last_month_index: prevState.current_month_index,
+        current_month_index: month_index,
+        should_update: prevState.should_update + 1
+      }),
+      () => {
+        this.scrollToIndex(month_index);
+      }
+    );
   };
 
   scrollToIndex = index => {
@@ -179,10 +177,10 @@ export default class MonthFlatlist extends React.PureComponent {
       if (this.props.currentRoute === "Month") {
         let string;
 
-        if (this.month_data[this.state.current_month_index].month >= 0)
+        if (this.month_data[this.state.current_month_index].month >= 0) {
           string = `${this.month_data[this.state.current_month_index].year}`;
-
-        this.props.updateHeaderText(string);
+          this.props.updateHeaderText(string);
+        }
       }
     }
   }
@@ -196,7 +194,7 @@ export default class MonthFlatlist extends React.PureComponent {
       >
         <FlatList
           data={this.month_data}
-          // extraData={this.state.should_update}
+          extraData={this.state.should_update}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
           horizontal={true}
@@ -205,7 +203,6 @@ export default class MonthFlatlist extends React.PureComponent {
           ref={this.setRef}
           onScroll={this._onScroll}
           scrollEventThrottle={6}
-          // removeClippedSubviews={true}
           showsHorizontalScrollIndicator={false}
           onLayout={this._onLayout}
           windowSize={5}
@@ -233,14 +230,6 @@ class MonthHolder extends React.Component {
     "December"
   ];
 
-  state = {
-    month_style: styles.not_chosen_month,
-    text_style: styles.not_chosen_month_text,
-
-    inform_text_container_style: styles.not_chosen_inform_text_container,
-    inform_text_style: styles.not_chosen_inform_text
-  };
-
   shouldComponentUpdate(nextProps, nextState) {
     return (
       this.props.month_index === nextProps.current_month_index ||
@@ -248,31 +237,23 @@ class MonthHolder extends React.Component {
     );
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.month_index === nextProps.current_month_index) {
-      return {
-        month_style: styles.chosen_month,
-        text_style: styles.chosen_month_text,
-        inform_text_container_style: styles.chosen_inform_text_container,
-        inform_text_style: styles.chosen_inform_text
-      };
-    } else if (nextProps.month_index === nextProps.last_month_index) {
-      return {
-        month_style: styles.not_chosen_month,
-        text_style: styles.not_chosen_month_text,
-        inform_text_container_style: styles.not_chosen_inform_text_container,
-        inform_text_style: styles.not_chosen_inform_text
-      };
-    }
-
-    return null;
-  }
-
   _onPress = () => {
     this.props.chooseMonth(this.props.month_index);
   };
 
   render() {
+    let month_style = styles.not_chosen_month,
+      text_style = styles.not_chosen_month_text,
+      inform_text_container_style = styles.not_chosen_inform_text_container,
+      inform_text_style = styles.not_chosen_inform_text;
+
+    if (this.props.month_index === this.props.current_month_index) {
+      month_style = styles.chosen_month;
+      text_style = styles.chosen_month_text;
+      inform_text_container_style = styles.chosen_inform_text_container;
+      inform_text_style = styles.chosen_inform_text;
+    }
+
     return (
       <TouchableOpacity
         style={{
@@ -282,14 +263,14 @@ class MonthHolder extends React.Component {
         }}
         onPress={this._onPress}
       >
-        <View style={this.state.month_style}>
-          <Text style={this.state.text_style}>
+        <View style={month_style}>
+          <Text style={text_style}>
             {this.month_text_arr[this.props.data.month]}
           </Text>
         </View>
 
-        <View style={this.state.inform_text_container_style}>
-          <Text style={this.state.inform_text_style}>
+        <View style={inform_text_container_style}>
+          <Text style={inform_text_style}>
             {`week ${this.props.data.start_week} - ${this.props.data.end_week}`}
           </Text>
         </View>

@@ -281,9 +281,10 @@ export default class CRUDRewardSection extends React.PureComponent {
       reward_data.push(entry);
     });
 
-    this.setState({
-      reward_data
-    });
+    this.setState(prevState => ({
+      reward_data,
+      should_flatlist_update: prevState.should_flatlist_update + 1
+    }));
   };
 
   componentDidMount() {

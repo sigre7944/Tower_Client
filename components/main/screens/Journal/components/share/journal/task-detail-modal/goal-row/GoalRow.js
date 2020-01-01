@@ -15,6 +15,7 @@ export default class GoalRow extends React.PureComponent {
           flexDirection: "row",
           marginTop: normalize(25, "height"),
           marginHorizontal: normalize(20, "width"),
+          marginBottom: normalize(32, "height"),
           alignItems: "center"
         }}
       >

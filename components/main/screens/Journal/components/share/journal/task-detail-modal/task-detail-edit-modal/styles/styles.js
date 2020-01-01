@@ -20,7 +20,6 @@ export const styles = StyleSheet.create({
   },
 
   text_input: {
-    height: normalize(45, "height"),
     borderColor: "rgba(0, 0, 0, 0.15)",
     borderBottomWidth: 1,
     alignItems: "center",

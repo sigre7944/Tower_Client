@@ -86,9 +86,10 @@ export default class Reward extends React.PureComponent {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.rewards !== prevProps.rewards) {
-      this.setState({
-        should_display_no_rewards_svg: this._checkIfThereIsAnyRewards()
-      });
+      this.setState(prevState => ({
+        should_display_no_rewards_svg: this._checkIfThereIsAnyRewards(),
+        should_flatlist_update: prevState.should_flatlist_update + 1
+      }));
     }
   }
 

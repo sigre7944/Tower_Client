@@ -77,8 +77,8 @@ export default class Category extends React.PureComponent {
       this.setState(
         prevState => ({
           current_category_index: category_index,
-          last_category_index: prevState.current_category_index
-          // should_flatlist_update: prevState.should_flatlist_update + 1
+          last_category_index: prevState.current_category_index,
+          should_flatlist_update: prevState.should_flatlist_update + 1
         }),
         () => {
           this._scrollToRow(category_index);
@@ -158,8 +158,8 @@ export default class Category extends React.PureComponent {
 
       this.setState(prevState => ({
         current_category_index: this.start_index,
-        last_category_index: prevState.current_category_index
-        // should_flatlist_update: prevState.should_flatlist_update + 1
+        last_category_index: prevState.current_category_index,
+        should_flatlist_update: prevState.should_flatlist_update + 1
       }));
     }
   };
@@ -241,8 +241,8 @@ export default class Category extends React.PureComponent {
     this.setState(
       prevState => ({
         current_category_index: latest_index,
-        last_category_index: prevState.current_category_index
-        // should_flatlist_update: prevState.should_flatlist_update + 1
+        last_category_index: prevState.current_category_index,
+        should_flatlist_update: prevState.should_flatlist_update + 1
       }),
       () => {
         this.setState(
@@ -328,7 +328,7 @@ export default class Category extends React.PureComponent {
         >
           <FlatList
             data={OrderedMap(this.props.categories).toArray()}
-            // extraData={this.state.should_flatlist_update}
+            extraData={this.state.should_flatlist_update}
             keyExtractor={this._keyExtractor}
             renderItem={this._renderItem}
             showsVerticalScrollIndicator={false}
