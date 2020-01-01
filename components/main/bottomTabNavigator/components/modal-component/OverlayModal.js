@@ -137,10 +137,10 @@ export default class OverlayModal extends React.PureComponent {
   };
 
   getWeek = date => {
-    var target = new Date(date);
-    var dayNr = (date.getDay() + 6) % 7;
+    let target = new Date(date);
+    let dayNr = (date.getDay() + 6) % 7;
     target.setDate(target.getDate() - dayNr + 3);
-    var firstThursday = target.valueOf();
+    let firstThursday = target.valueOf();
     target.setMonth(0, 1);
     if (target.getDay() != 4) {
       target.setMonth(0, 1 + ((4 - target.getDay() + 7) % 7));
@@ -152,6 +152,13 @@ export default class OverlayModal extends React.PureComponent {
     let dayInWeek = new Date(date).getDay();
     let diff = dayInWeek === 0 ? 6 : dayInWeek - 1;
     return new Date(new Date(date).getTime() - diff * 86400 * 1000);
+  };
+
+  getSunday = date => {
+    let monday = this.getMonday(new Date(date));
+    let sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    return sunday;
   };
 
   getNoWeekInMonth = date => {
@@ -168,312 +175,43 @@ export default class OverlayModal extends React.PureComponent {
     );
   };
 
+  _updateDefaultScheduleData = () => {
+    let date = new Date();
+
+    let day_schedule_data = fromJS({
+      day: date.getDate(),
+      month: date.getMonth(),
+      year: date.getFullYear()
+    });
+
+    let week_schedule_data = fromJS({
+      monday: this.getMonday(date).getDate(),
+      sunday: this.getSunday(date).getDate(),
+      week: this.getWeek(date),
+      start_month: this.getMonday(date).getMonth(),
+      end_month: this.getSunday(date).getMonth(),
+      chosen_month: date.getMonth(),
+      start_year: this.getMonday(date).getFullYear(),
+      end_year: this.getSunday(date).getFullYear(),
+      chosen_year: date.getFullYear(),
+      start_noWeekInMonth: this.getNoWeekInMonth(this.getMonday(date)),
+      end_noWeekInMonth: this.getNoWeekInMonth(this.getSunday(date))
+    });
+
+    let month_schedule_data = fromJS({
+      month: date.getMonth(),
+      year: date.getFullYear()
+    });
+
+    this.props.updateScheduleThunk({
+      day_schedule_data,
+      week_schedule_data,
+      month_schedule_data
+    });
+  };
+
   componentDidMount() {
-    let currentDayTask = Map(this.props.currentDayTask);
-    if (
-      !currentDayTask.has("schedule") ||
-      !currentDayTask.has("category") ||
-      !currentDayTask.has("repeat") ||
-      !currentDayTask.has("end") ||
-      !currentDayTask.has("priority") ||
-      !currentDayTask.has("goal")
-    ) {
-      let date = new Date(),
-        timestamp = date.getTime(),
-        type = "UPDATE_NEW_DAY_TASK";
-
-      let sending_obj = {
-        type,
-        schedule_data: {
-          keyPath: ["schedule"],
-          notSetValue: fromJS({
-            day: date.getDate(),
-            month: date.getMonth(),
-            year: date.getFullYear()
-          }),
-          updater: value =>
-            fromJS({
-              day: date.getDate(),
-              month: date.getMonth(),
-              year: date.getFullYear()
-            })
-        },
-        category_data: {
-          keyPath: ["category"],
-          notSetValue: "cate_0",
-          updater: value => "cate_0"
-        },
-        repeat_data: {
-          keyPath: ["repeat"],
-          notSetValue: fromJS({
-            type: "daily",
-            interval: {
-              value: 1
-            }
-          }),
-          updater: value =>
-            fromJS({
-              type: "daily",
-              interval: {
-                value: 1
-              }
-            })
-        },
-        end_data: {
-          keyPath: ["end"],
-          notSetValue: fromJS({
-            type: "after",
-            occurrence: 1
-          }),
-          updater: value =>
-            fromJS({
-              type: "after",
-              occurrence: 1
-            })
-        },
-        priority_data: {
-          keyPath: ["priority"],
-          notSetValue: fromJS({
-            value: "pri_01"
-          }),
-          updater: value =>
-            fromJS({
-              value: "pri_01"
-            })
-        },
-
-        reward_data: {
-          keyPath: ["reward"],
-          notSetValue: fromJS({
-            value: 5
-          }),
-          updater: value =>
-            fromJS({
-              value: 5
-            })
-        },
-
-        goal_data: {
-          keyPath: ["goal"],
-          notSetValue: fromJS({
-            max: 1,
-            current: 0
-          }),
-          updater: value =>
-            fromJS({
-              max: 1,
-              current: 0
-            })
-        }
-      };
-
-      this.props.updateThunk(sending_obj);
-    }
-
-    let currentWeekTask = this.props.currentWeekTask;
-    if (
-      !currentWeekTask.has("schedule") ||
-      !currentWeekTask.has("category") ||
-      !currentWeekTask.has("repeat") ||
-      !currentWeekTask.has("end") ||
-      !currentWeekTask.has("priority") ||
-      !currentWeekTask.has("goal")
-    ) {
-      let date = new Date(),
-        timestamp = date.getTime(),
-        type = "UPDATE_NEW_WEEK_TASK",
-        week = this.getWeek(date);
-
-      let sending_obj = {
-        type,
-
-        schedule_data: {
-          keyPath: ["schedule"],
-          notSetValue: fromJS({
-            day: this.getMonday(date).getDate(),
-            week,
-            month: this.getMonday(date).getMonth(),
-            year: this.getMonday(date).getFullYear(),
-            noWeekInMonth: this.getNoWeekInMonth(date)
-          }),
-          updater: value =>
-            fromJS({
-              day: this.getMonday(date).getDate(),
-              week,
-              month: this.getMonday(date).getMonth(),
-              year: this.getMonday(date).getFullYear(),
-              noWeekInMonth: this.getNoWeekInMonth(date)
-            })
-        },
-        category_data: {
-          keyPath: ["category"],
-          notSetValue: "cate_0",
-          updater: value => "cate_0"
-        },
-        repeat_data: {
-          keyPath: ["repeat"],
-          notSetValue: fromJS({
-            type: "weekly-w",
-            interval: {
-              value: 1
-            }
-          }),
-          updater: value =>
-            fromJS({
-              type: "weekly-w",
-              interval: {
-                value: 1
-              }
-            })
-        },
-        end_data: {
-          keyPath: ["end"],
-          notSetValue: fromJS({
-            type: "after",
-            occurrence: 1
-          }),
-          updater: value =>
-            fromJS({
-              type: "after",
-              occurrence: 1
-            })
-        },
-        priority_data: {
-          keyPath: ["priority"],
-          notSetValue: fromJS({
-            value: "pri_01"
-          }),
-          updater: value =>
-            fromJS({
-              value: "pri_01"
-            })
-        },
-
-        reward_data: {
-          keyPath: ["reward"],
-          notSetValue: fromJS({
-            value: 5
-          }),
-          updater: value =>
-            fromJS({
-              value: 5
-            })
-        },
-
-        goal_data: {
-          keyPath: ["goal"],
-          notSetValue: fromJS({
-            max: 1,
-            current: 0
-          }),
-          updater: value =>
-            fromJS({
-              max: 1,
-              current: 0
-            })
-        }
-      };
-
-      this.props.updateThunk(sending_obj);
-    }
-
-    let currentMonthTask = this.props.currentMonthTask;
-    if (
-      !currentMonthTask.has("schedule") ||
-      !currentMonthTask.has("category") ||
-      !currentMonthTask.has("repeat") ||
-      !currentMonthTask.has("end") ||
-      !currentMonthTask.has("priority") ||
-      !currentMonthTask.has("goal")
-    ) {
-      let date = new Date(),
-        timestamp = date.getTime(),
-        type = "UPDATE_NEW_MONTH_TASK";
-
-      let sending_obj = {
-        type,
-        schedule_data: {
-          keyPath: ["schedule"],
-          notSetValue: fromJS({
-            month: date.getMonth(),
-            year: date.getFullYear()
-          }),
-          updater: value =>
-            fromJS({
-              month: date.getMonth(),
-              year: date.getFullYear()
-            })
-        },
-        category_data: {
-          keyPath: ["category"],
-          notSetValue: "cate_0",
-          updater: value => "cate_0"
-        },
-        repeat_data: {
-          keyPath: ["repeat"],
-          notSetValue: fromJS({
-            type: "monthly-m",
-            interval: {
-              value: 1
-            }
-          }),
-          updater: value =>
-            fromJS({
-              type: "monthly-m",
-              interval: {
-                value: 1
-              }
-            })
-        },
-        end_data: {
-          keyPath: ["end"],
-          notSetValue: fromJS({
-            type: "after",
-            occurrence: 1
-          }),
-          updater: value =>
-            fromJS({
-              type: "after",
-              occurrence: 1
-            })
-        },
-        priority_data: {
-          keyPath: ["priority"],
-          notSetValue: fromJS({
-            value: "pri_01"
-          }),
-          updater: value =>
-            fromJS({
-              value: "pri_01",
-              reward: 5
-            })
-        },
-
-        reward_data: {
-          keyPath: ["reward"],
-          notSetValue: fromJS({
-            value: 5
-          }),
-          updater: value =>
-            fromJS({
-              value: 5
-            })
-        },
-
-        goal_data: {
-          keyPath: ["goal"],
-          notSetValue: fromJS({
-            max: 1
-          }),
-          updater: value =>
-            fromJS({
-              max: 1
-            })
-        }
-      };
-
-      this.props.updateThunk(sending_obj);
-    }
+    this._updateDefaultScheduleData();
   }
 
   componentDidUpdate(prevProps, prevState) {
