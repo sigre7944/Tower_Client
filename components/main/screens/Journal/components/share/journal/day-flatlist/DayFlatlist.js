@@ -34,32 +34,32 @@ export default class DayFlatlist extends React.PureComponent {
   start_index = -1;
 
   state = {
-    // should_update: 0,
+    should_update: 0,
 
-    current_day_index: 0,
-    last_day_index: 0
+    current_day_index: -1,
+    last_day_index: -1
   };
 
   chooseDay = day_index => {
     if (this.state.current_day_index !== day_index) {
-      this.setState(
-        prevState => ({
-          last_day_index: prevState.current_day_index,
-          current_day_index: day_index,
+      let day = this.day_data[day_index].day,
+        month = this.day_data[day_index].month,
+        year = this.day_data[day_index].year;
 
-          // should_update: prevState.should_update + 1
-        }),
-        () => {
-          let day = this.day_data[day_index].day,
-            month = this.day_data[day_index].month,
-            year = this.day_data[day_index].year;
-
-          this.props.setChosenDateData({ day, month, year });
-
-          this.scrollToIndex(day_index);
-        }
-      );
+      this.props.setChosenDateData({ day, month, year });
     }
+
+    this.setState(
+      prevState => ({
+        last_day_index: prevState.current_day_index,
+        current_day_index: day_index,
+
+        should_update: prevState.should_update + 1
+      }),
+      () => {
+        this.scrollToIndex(day_index);
+      }
+    );
   };
 
   scrollToIndex = index => {
@@ -166,11 +166,17 @@ export default class DayFlatlist extends React.PureComponent {
 
     if (this.props.currentRoute !== prevProps.currentRoute) {
       if (this.props.currentRoute === "Day") {
-        let string = `${
-          this.month_text_arr[this.day_data[this.state.current_day_index].month]
-        } - ${this.day_data[this.state.current_day_index].year}`;
+        let string;
 
-        this.props.updateHeaderText(string);
+        if (this.day_data[this.state.current_day_index].month >= 0) {
+          string = `${
+            this.month_text_arr[
+              this.day_data[this.state.current_day_index].month
+            ]
+          } - ${this.day_data[this.state.current_day_index].year}`;
+
+          this.props.updateHeaderText(string);
+        }
       }
     }
   }
@@ -184,7 +190,7 @@ export default class DayFlatlist extends React.PureComponent {
       >
         <FlatList
           data={this.day_data}
-          // extraData={this.state.should_update}
+          extraData={this.state.should_update}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
           horizontal={true}
@@ -193,7 +199,6 @@ export default class DayFlatlist extends React.PureComponent {
           ref={this.setRef}
           onScroll={this._onScroll}
           scrollEventThrottle={5}
-          // removeClippedSubviews={true}
           showsHorizontalScrollIndicator={false}
           onLayout={this._onLayout}
           windowSize={7}
@@ -206,12 +211,6 @@ export default class DayFlatlist extends React.PureComponent {
 }
 
 class DayHolder extends React.Component {
-  state = {
-    day_style: styles.not_chosen_day,
-    text_style: styles.not_chosen_text,
-    day_text_style: styles.not_chosen_day_text
-  };
-
   shouldComponentUpdate(nextProps, nextState) {
     return (
       this.props.day_index === nextProps.current_day_index ||
@@ -219,29 +218,21 @@ class DayHolder extends React.Component {
     );
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.day_index === nextProps.current_day_index) {
-      return {
-        day_style: styles.chosen_day,
-        text_style: styles.chosen_text,
-        day_text_style: styles.chosen_day_text
-      };
-    } else if (nextProps.day_index === nextProps.last_day_index) {
-      return {
-        day_style: styles.not_chosen_day,
-        text_style: styles.not_chosen_text,
-        day_text_style: styles.not_chosen_day_text
-      };
-    }
-
-    return null;
-  }
-
   _onPress = () => {
     this.props.chooseDay(this.props.day_index);
   };
 
   render() {
+    let day_style = styles.not_chosen_day,
+      text_style = styles.not_chosen_text,
+      day_text_style = styles.not_chosen_day_text;
+
+    if (this.props.day_index === this.props.current_day_index) {
+      day_style = styles.chosen_day;
+      text_style = styles.chosen_text;
+      day_text_style = styles.chosen_day_text;
+    }
+
     return (
       <TouchableOpacity
         style={{
@@ -252,12 +243,10 @@ class DayHolder extends React.Component {
         }}
         onPress={this._onPress}
       >
-        <Text style={this.state.day_text_style}>
-          {this.props.data.day_text}
-        </Text>
+        <Text style={day_text_style}>{this.props.data.day_text}</Text>
 
-        <View style={this.state.day_style}>
-          <Text style={this.state.text_style}>{this.props.data.day}</Text>
+        <View style={day_style}>
+          <Text style={text_style}>{this.props.data.day}</Text>
         </View>
       </TouchableOpacity>
     );

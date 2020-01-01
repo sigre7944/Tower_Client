@@ -27,49 +27,47 @@ export default class WeekFlatlist extends React.PureComponent {
   start_index = 0;
 
   state = {
-    // should_update: 0,
-
-    current_week_index: 0,
-    last_week_index: 0
+    should_update: 0,
+    current_week_index: -1,
+    last_week_index: -1
   };
 
   chooseWeek = week_index => {
     if (this.state.current_week_index !== week_index) {
-      this.setState(
-        prevState => ({
-          last_week_index: prevState.current_week_index,
-          current_week_index: week_index,
-          // should_update: prevState.should_update + 1
-        }),
-        () => {
-          let {
-            monday,
-            sunday,
-            week,
-            start_month,
-            end_month,
-            start_year,
-            end_year,
-            start_noWeekInMonth,
-            end_noWeekInMonth
-          } = this.week_data[week_index];
+      let {
+        monday,
+        sunday,
+        week,
+        start_month,
+        end_month,
+        start_year,
+        end_year,
+        start_noWeekInMonth,
+        end_noWeekInMonth
+      } = this.week_data[week_index];
 
-          this.props.setChosenDateData({
-            monday,
-            sunday,
-            week,
-            start_month,
-            end_month,
-            start_year,
-            end_year,
-            start_noWeekInMonth,
-            end_noWeekInMonth
-          });
-
-          this.scrollToIndex(week_index);
-        }
-      );
+      this.props.setChosenDateData({
+        monday,
+        sunday,
+        week,
+        start_month,
+        end_month,
+        start_year,
+        end_year,
+        start_noWeekInMonth,
+        end_noWeekInMonth
+      });
     }
+    this.setState(
+      prevState => ({
+        last_week_index: prevState.current_week_index,
+        current_week_index: week_index,
+        should_update: prevState.should_update + 1
+      }),
+      () => {
+        this.scrollToIndex(week_index);
+      }
+    );
   };
 
   scrollToIndex = index => {
@@ -189,8 +187,9 @@ export default class WeekFlatlist extends React.PureComponent {
   componentDidMount() {
     this.initializeWeekData();
 
-    let current_week = this.getWeek(new Date()),
-      current_year = new Date().getFullYear();
+    let nearest_monday = this.getMonday(new Date()),
+      current_week = this.getWeek(nearest_monday),
+      current_year = nearest_monday.getFullYear();
 
     this.week_data.every((data, index) => {
       if (data.week === current_week && data.start_year === current_year) {
@@ -214,13 +213,19 @@ export default class WeekFlatlist extends React.PureComponent {
 
     if (this.props.currentRoute !== prevProps.currentRoute) {
       if (this.props.currentRoute === "Week") {
-        let string = `${
-          this.month_text_arr[
-            this.week_data[this.state.current_week_index].start_month
-          ]
-        } - ${this.week_data[this.state.current_week_index].start_year}`;
+        let string = "";
+        if (
+          this.week_data[this.state.current_week_index] &&
+          this.week_data[this.state.current_week_index].start_month >= 0
+        ) {
+          string = `${
+            this.month_text_arr[
+              this.week_data[this.state.current_week_index].start_month
+            ]
+          } - ${this.week_data[this.state.current_week_index].start_year}`;
 
-        this.props.updateHeaderText(string);
+          this.props.updateHeaderText(string);
+        }
       }
     }
   }
@@ -234,7 +239,7 @@ export default class WeekFlatlist extends React.PureComponent {
       >
         <FlatList
           data={this.week_data}
-          // extraData={this.state.should_update}
+          extraData={this.state.should_update}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
           horizontal={true}
@@ -243,7 +248,6 @@ export default class WeekFlatlist extends React.PureComponent {
           ref={this.setRef}
           onScroll={this._onScroll}
           scrollEventThrottle={5}
-          // removeClippedSubviews={true}
           showsHorizontalScrollIndicator={false}
           onLayout={this._onLayout}
           windowSize={5}
@@ -271,39 +275,12 @@ class WeekHolder extends React.Component {
     "Dec"
   ];
 
-  // state = {
-  //   week_style: styles.not_chosen_week,
-  //   text_style: styles.not_chosen_week_text,
-  //   inform_text_style: styles.not_chosen_inform_text,
-  //   inform_text_container_style: styles.not_chosen_inform_text_container
-  // };
-
   shouldComponentUpdate(nextProps, nextState) {
     return (
       this.props.week_index === nextProps.current_week_index ||
       this.props.week_index === nextProps.last_week_index
     );
   }
-
-  // static getDerivedStateFromProps(nextProps, prevState) {
-  //   if (nextProps.week_index === nextProps.current_week_index) {
-  //     return {
-  //       week_style: styles.chosen_week,
-  //       text_style: styles.chosen_week_text,
-  //       inform_text_style: styles.chosen_inform_text,
-  //       inform_text_container_style: styles.chosen_inform_text_container
-  //     };
-  //   } else if (nextProps.week_index === nextProps.last_week_index) {
-  //     return {
-  //       week_style: styles.not_chosen_week,
-  //       text_style: styles.not_chosen_week_text,
-  //       inform_text_style: styles.not_chosen_inform_text,
-  //       inform_text_container_style: styles.not_chosen_inform_text_container
-  //     };
-  //   }
-
-  //   return null;
-  // }
 
   _onPress = () => {
     this.props.chooseWeek(this.props.week_index);

@@ -1197,8 +1197,8 @@ export default class Drawer extends React.PureComponent {
 class CategoryFlatlist extends React.PureComponent {
   state = {
     current_category_index: 0,
-    last_category_index: -1
-    // should_flatlist_update: 0
+    last_category_index: -1,
+    should_flatlist_update: 0
   };
 
   _chooseCategoryIndex = (index, category_data) => {
@@ -1208,8 +1208,8 @@ class CategoryFlatlist extends React.PureComponent {
       this.setState(
         prevState => ({
           current_category_index: index,
-          last_category_index: prevState.current_category_index
-          // should_flatlist_update: prevState.should_flatlist_update + 1
+          last_category_index: prevState.current_category_index,
+          should_flatlist_update: prevState.should_flatlist_update + 1
         }),
         () => {
           this._scrollToRow();
@@ -1324,9 +1324,9 @@ class CategoryFlatlist extends React.PureComponent {
       this.props.categories !== prevProps.categories ||
       this.props.account_plan !== prevProps.account_plan
     ) {
-      // this.setState(prevState => ({
-      //    should_flatlist_update: prevState.should_flatlist_update + 1
-      // }));
+      this.setState(prevState => ({
+        should_flatlist_update: prevState.should_flatlist_update + 1
+      }));
     }
   }
 
@@ -1354,7 +1354,7 @@ class CategoryFlatlist extends React.PureComponent {
         />
         <FlatList
           data={OrderedMap(this.props.categories).toArray()}
-          // extraData={this.state.should_flatlist_update}
+          extraData={this.state.should_flatlist_update}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
           getItemLayout={this._getItemLayout}

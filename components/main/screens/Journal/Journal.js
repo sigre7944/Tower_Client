@@ -14,7 +14,8 @@ const JournalTopNavigator = createMaterialTopTabNavigator(
   },
   {
     initialRouteName: "Day",
-    tabBarComponent: CustomTabBarComponent
+    tabBarComponent: CustomTabBarComponent,
+    lazy: false
   }
 );
 
