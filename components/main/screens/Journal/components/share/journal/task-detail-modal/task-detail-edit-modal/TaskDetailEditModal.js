@@ -501,6 +501,7 @@ class TitleField extends React.PureComponent {
 
         <TextInput
           style={styles.text_input}
+          // multiline={true}
           placeholder={Map(this.props.old_task_data_map).get("title")}
           value={this.props.task_title}
           onChange={this.props._onEditTitleChange}
@@ -523,6 +524,7 @@ class DescriptionField extends React.PureComponent {
 
         <TextInput
           style={styles.text_input}
+          multiline={true}
           placeholder={Map(this.props.old_task_data_map).get("description")}
           value={this.props.task_description}
           onChange={this.props._onEditDescriptionChange}

@@ -263,7 +263,6 @@ class TaskTitleElement extends React.PureComponent {
     return (
       <View
         style={{
-          height: normalize(52, "height"),
           marginHorizontal: normalize(20, "width"),
           marginTop: normalize(13, "height")
         }}
@@ -272,6 +271,7 @@ class TaskTitleElement extends React.PureComponent {
         <TextInput
           ref={this.setTaskTextInputRef}
           style={styles.title_description_text_input}
+          // multiline={true}
           placeholder="Add a task here"
           autoCorrect={false}
           value={this.props.title_value}
@@ -440,7 +440,6 @@ class TaskDescriptionElement extends React.PureComponent {
     return (
       <View
         style={{
-          height: normalize(52, "height"),
           marginHorizontal: normalize(20, "width"),
           marginTop: normalize(15, "height")
         }}
@@ -449,11 +448,12 @@ class TaskDescriptionElement extends React.PureComponent {
         <TextInput
           style={styles.title_description_text_input}
           placeholder="Add task description"
+          multiline={true}
           autoCorrect={false}
           value={this.props.description_value}
           onChange={this._onChange}
-          returnKeyType="done"
-          onSubmitEditing={this._onSubmitEditing}
+          returnKeyType="default"
+          // onSubmitEditing={this._onSubmitEditing}
           ref={this.setDescriptionTextInputRef}
         />
       </View>

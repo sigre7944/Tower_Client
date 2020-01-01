@@ -14,8 +14,6 @@ export const styles = StyleSheet.create({
   },
 
   title_description_text_input: {
-    flex: 1,
-    height: normalize(24, "height"),
     fontFamily: CommonStyle.sf_ui_display_light_font,
     fontSize: normalize(18, "width"),
     lineHeight: normalize(21, "height"),
