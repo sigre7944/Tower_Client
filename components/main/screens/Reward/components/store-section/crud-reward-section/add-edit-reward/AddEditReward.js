@@ -491,6 +491,7 @@ export default class AddEditReward extends React.PureComponent {
                           ? `${this.props.edit_reward_data.name}`
                           : "Max 32 characters."
                       }
+                      placeholderTextColor="#2C2C2C40"
                     />
                   </View>
 
@@ -511,6 +512,7 @@ export default class AddEditReward extends React.PureComponent {
                           ? `${this.props.edit_reward_data.value}`
                           : "Max 9 characters"
                       }
+                      placeholderTextColor="#2C2C2C40"
                     />
                   </View>
 

@@ -31,7 +31,6 @@ export const styles = StyleSheet.create({
         color: CommonStyle.text_icon_colors.ti_1,
         fontFamily: CommonStyle.sf_ui_display_light_font,
         fontSize: normalize(18, "width"),
-        lineHeight: normalize(21, "height"),
         marginBottom: normalize(10, "height"),
     },
 

@@ -14,7 +14,6 @@ export const styles = StyleSheet.create({
   every_option_input: {
     fontFamily: CommonStyle.sf_ui_display_light_font,
     fontSize: normalize(15, "width"),
-    lineHeight: normalize(18, "height"),
     letterSpacing: -0.02,
     color: CommonStyle.primary_colors.prim_1,
     width: normalize(27, "width"),

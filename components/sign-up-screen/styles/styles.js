@@ -22,10 +22,8 @@ export const styles = StyleSheet.create({
 
   input_text: {
     height: normalize(24, "height"),
-    // paddingVertical: normalize(5, "height"),
     fontFamily: CommonStyles.sf_ui_display_light_font,
     fontSize: normalize(18, "width"),
-    lineHeight: normalize(21, "height"),
     letterSpacing: -0.02,
     color: CommonStyles.text_icon_colors.ti_1,
     borderBottomWidth: 1,
