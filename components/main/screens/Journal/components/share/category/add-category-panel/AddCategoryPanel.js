@@ -300,6 +300,7 @@ export default class AddCategoryPanel extends React.PureComponent {
                   <TextInput
                     style={styles.text_input}
                     placeholder="Max 32 characters"
+                    placeholderTextColor="#2C2C2C40"
                     value={this.state.category_title}
                     onChange={this._onCategoryTitleChange}
                     maxLength={32}

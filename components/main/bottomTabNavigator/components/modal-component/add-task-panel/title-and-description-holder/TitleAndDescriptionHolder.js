@@ -272,6 +272,7 @@ class TaskTitleElement extends React.PureComponent {
           ref={this.setTaskTextInputRef}
           style={styles.title_description_text_input}
           placeholder="Add a task here"
+          placeholderTextColor="#2C2C2C40"
           autoCorrect={false}
           value={this.props.title_value}
           onChange={this._onChange}
@@ -447,6 +448,7 @@ class TaskDescriptionElement extends React.PureComponent {
         <TextInput
           style={styles.title_description_text_input}
           placeholder="Add task description"
+          placeholderTextColor="#2C2C2C40"
           multiline={true}
           autoCorrect={false}
           value={this.props.description_value}
