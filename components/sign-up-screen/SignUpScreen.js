@@ -389,7 +389,7 @@ export default class SignUpScreen extends React.PureComponent {
         <Animated.View
           style={{
             transform: [{ translateY: this.translate_y_value }],
-            paddingHorizontal: normalize(32, "width"),
+            paddingHorizontal: normalize(32, "width")
           }}
         >
           <ScrollView showsVerticalScrollIndicator={false}>
@@ -439,7 +439,8 @@ export default class SignUpScreen extends React.PureComponent {
                   collapsed={this.state.should_full_name_warning_collapsed}
                   style={{
                     marginTop: normalize(5, "height"),
-                    height: normalize(20, "height")
+                    // height: normalize(20, "height")
+                    paddingVertical: normalize(5, "height")
                   }}
                 >
                   <Text style={styles.small_warning_text}>
@@ -472,7 +473,8 @@ export default class SignUpScreen extends React.PureComponent {
                   collapsed={this.state.should_email_warning_collapsed}
                   style={{
                     marginTop: normalize(5, "height"),
-                    height: normalize(20, "height")
+                    // height: normalize(20, "height")
+                    paddingVertical: normalize(5, "height")
                   }}
                 >
                   <Text style={styles.small_warning_text}>
@@ -506,7 +508,8 @@ export default class SignUpScreen extends React.PureComponent {
                 collapsed={this.state.should_password_instruction_collapsed}
                 style={{
                   marginTop: normalize(5, "height"),
-                  height: normalize(35, "height")
+                  // height: normalize(35, "height"),
+                  paddingVertical: normalize(5, "height")
                 }}
               >
                 <Text style={styles.small_instruction_password_text}>
@@ -519,7 +522,8 @@ export default class SignUpScreen extends React.PureComponent {
                 collapsed={this.state.should_password_warning_collapsed}
                 style={{
                   marginTop: normalize(5, "height"),
-                  height: normalize(20, "height")
+                  // height: normalize(20, "height")
+                  paddingVertical: normalize(5, "height")
                 }}
               >
                 <Text style={styles.small_warning_text}>Invalid password.</Text>
@@ -551,7 +555,8 @@ export default class SignUpScreen extends React.PureComponent {
                   }
                   style={{
                     marginTop: normalize(5, "height"),
-                    height: normalize(20, "height")
+                    // height: normalize(20, "height")
+                    paddingVertical: normalize(5, "height")
                   }}
                 >
                   <Text style={styles.small_warning_text}>
@@ -598,7 +603,8 @@ export default class SignUpScreen extends React.PureComponent {
                   collapsed={this.state.should_referral_code_inform_collapsed}
                   style={{
                     marginTop: normalize(5, "height"),
-                    height: normalize(20, "height")
+                    // height: normalize(20, "height")
+                    paddingVertical: normalize(5, "height")
                   }}
                 >
                   <View

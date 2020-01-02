@@ -113,7 +113,7 @@ export default class AddCategoryPanel extends React.PureComponent {
         "number_of_categories"
       ]);
 
-      let current_number_of_categories = OrderedMap(this.props.categories).size; 
+      let current_number_of_categories = OrderedMap(this.props.categories).size;
 
       let assigned_plan = "free";
 
@@ -178,7 +178,11 @@ export default class AddCategoryPanel extends React.PureComponent {
     OrderedMap(this.props.categories)
       .valueSeq()
       .every(value => {
-        if (Map(value).get("name") === name) {
+        if (
+          Map(value)
+            .get("name")
+            .trim() === name
+        ) {
           found = true;
           return false;
         }

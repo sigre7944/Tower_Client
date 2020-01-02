@@ -122,7 +122,7 @@ class SuccessBanner extends React.PureComponent {
         >
           <Text style={styles.normal_text}>
             A verification email has been sent to {this.props.email}. Please
-            verify your email before logging in.
+            check your Spam folder if you can't find it.
           </Text>
         </View>
 
@@ -135,7 +135,7 @@ class SuccessBanner extends React.PureComponent {
             style={styles.cancel_sign_up_button}
             onPress={this._cancelAndGoToSignIn}
           >
-            <Text style={styles.cancel_sign_up_text}>CANCEL</Text>
+            <Text style={styles.cancel_sign_up_text}>I KNOW</Text>
           </TouchableOpacity>
         </View>
       </Animated.View>

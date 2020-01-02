@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
   },
 
   text_input: {
-    height: normalize(25, "height"),
+    // height: normalize(25, "height"),
     justifyContent: "center",
     color: CommonStyle.text_icon_colors.ti_1,
     fontFamily: CommonStyle.sf_ui_display_light_font,

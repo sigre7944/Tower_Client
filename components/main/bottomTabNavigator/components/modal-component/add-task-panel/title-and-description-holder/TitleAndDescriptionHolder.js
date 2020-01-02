@@ -271,7 +271,6 @@ class TaskTitleElement extends React.PureComponent {
         <TextInput
           ref={this.setTaskTextInputRef}
           style={styles.title_description_text_input}
-          // multiline={true}
           placeholder="Add a task here"
           autoCorrect={false}
           value={this.props.title_value}
