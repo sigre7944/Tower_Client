@@ -90,8 +90,7 @@ export default class DeleteModal extends React.PureComponent {
       returning_year_chart_stats_map = Map(
         this.props.year_chart_stats
       ).asMutable(),
-      type = this.props.type,
-      task_type = Map(this.props.task_data).get("type");
+      type = this.props.type;
 
     Map(completed_tasks_map.get(task_id))
       .keySeq()
@@ -1012,21 +1011,25 @@ export default class DeleteModal extends React.PureComponent {
         },
 
         return_new_day_chart_stats_data: {
+          should_return: true,
           type: "RETURN_NEW_DAY_CHART_STATS",
           data: new_data.returning_day_chart_stats_map
         },
 
         return_new_week_chart_stats_data: {
+          should_return: true,
           type: "RETURN_NEW_WEEK_CHART_STATS",
           data: new_data.returning_week_chart_stats_map
         },
 
         return_new_month_chart_stats_data: {
+          should_return: true,
           type: "RETURN_NEW_MONTH_CHART_STATS",
           data: new_data.returning_month_chart_stats_map
         },
 
         return_new_year_chart_stats_data: {
+          should_return: true,
           type: "RETURN_NEW_YEAR_CHART_STATS",
           data: new_data.returning_year_chart_stats_map
         },
@@ -1042,11 +1045,16 @@ export default class DeleteModal extends React.PureComponent {
       sending_data.delete_completed_task_data.type =
         "DELETE_COMPLETED_WEEK_TASK";
       sending_data.deleted_task_data.type = "DELETE_DELETED_KEYPATH_WEEK_TASK";
+
+      sending_data.return_new_day_chart_stats_data.should_return = false;
     } else if (type === "month") {
       sending_data.delete_task_data.type = "DELETE_MONTH_TASK";
       sending_data.delete_completed_task_data.type =
         "DELETE_COMPLETED_MONTH_TASK";
       sending_data.deleted_task_data.type = "DELETE_DELETED_KEYPATH_MONTH_TASK";
+
+      sending_data.return_new_day_chart_stats_data.should_return = false;
+      sending_data.return_new_week_chart_stats_data.should_return = false;
     }
 
     this.props.deleteTaskAndHistoryThunk(sending_data);
@@ -1062,18 +1070,6 @@ export default class DeleteModal extends React.PureComponent {
       task_priority_value = task_data_map.getIn(["priority", "value"]),
       chosen_date_data = this.props.chosen_date_data,
       timestamp_toString = "",
-      returning_day_chart_stats_map = Map(
-        this.props.day_chart_stats
-      ).asMutable(),
-      returning_week_chart_stats_map = Map(
-        this.props.week_chart_stats
-      ).asMutable(),
-      returning_month_chart_stats_map = Map(
-        this.props.month_chart_stats
-      ).asMutable(),
-      returning_year_chart_stats_map = Map(
-        this.props.year_chart_stats
-      ).asMutable(),
       completed_tasks_map = Map(this.props.completed_tasks),
       sending_data = {
         delete_timestamp_completed_task_data: {
@@ -1091,28 +1087,41 @@ export default class DeleteModal extends React.PureComponent {
             })
         },
         delete_timestamp_day_chart_stats_data: {
-          // action_bool: false,
+          should_delete: true,
           type: "RETURN_NEW_DAY_CHART_STATS",
-          data: returning_day_chart_stats_map
+          data: {}
         },
         delete_timestamp_week_chart_stats_data: {
-          // action_bool: false,
+          should_delete: true,
           type: "RETURN_NEW_WEEK_CHART_STATS",
-          data: returning_week_chart_stats_map
+          data: {}
         },
         delete_timestamp_month_chart_stats_data: {
-          // action_bool: false,
+          should_delete: true,
           type: "RETURN_NEW_MONTH_CHART_STATS",
-          data: returning_month_chart_stats_map
+          data: {}
         },
         delete_timestamp_year_chart_stats_data: {
-          // action_bool: false,
+          should_delete: true,
           type: "RETURN_NEW_YEAR_CHART_STATS",
-          data: returning_year_chart_stats_map
+          data: {}
         }
       };
 
     if (type === "day") {
+      let returning_day_chart_stats_map = Map(
+          this.props.day_chart_stats
+        ).asMutable(),
+        returning_week_chart_stats_map = Map(
+          this.props.week_chart_stats
+        ).asMutable(),
+        returning_month_chart_stats_map = Map(
+          this.props.month_chart_stats
+        ).asMutable(),
+        returning_year_chart_stats_map = Map(
+          this.props.year_chart_stats
+        ).asMutable();
+
       let { day, month, year } = chosen_date_data;
 
       timestamp_toString = new Date(year, month, day).getTime().toString();
@@ -1258,14 +1267,6 @@ export default class DeleteModal extends React.PureComponent {
             );
           }
         });
-
-        // sending_data.delete_timestamp_day_chart_stats_data.action_bool = true;
-
-        // sending_data.delete_timestamp_week_chart_stats_data.action_bool = true;
-
-        // sending_data.delete_timestamp_month_chart_stats_data.action_bool = true;
-
-        // sending_data.delete_timestamp_year_chart_stats_data.action_bool = true;
       }
 
       sending_data.delete_timestamp_completed_task_data.keyPath = [
@@ -1273,7 +1274,22 @@ export default class DeleteModal extends React.PureComponent {
         timestamp_toString
       ];
       sending_data.deleted_task_data.keyPath = [task_id, timestamp_toString];
+
+      sending_data.delete_timestamp_day_chart_stats_data.data = returning_day_chart_stats_map;
+      sending_data.delete_timestamp_week_chart_stats_data.data = returning_week_chart_stats_map;
+      sending_data.delete_timestamp_month_chart_stats_data.data = returning_month_chart_stats_map;
+      sending_data.delete_timestamp_year_chart_stats_data.data = returning_year_chart_stats_map;
     } else if (type === "week") {
+      let returning_week_chart_stats_map = Map(
+          this.props.week_chart_stats
+        ).asMutable(),
+        returning_month_chart_stats_map = Map(
+          this.props.month_chart_stats
+        ).asMutable(),
+        returning_year_chart_stats_map = Map(
+          this.props.year_chart_stats
+        ).asMutable();
+
       let { monday, start_month, start_year } = chosen_date_data;
 
       timestamp_toString = new Date(start_year, start_month, monday)
@@ -1309,26 +1325,12 @@ export default class DeleteModal extends React.PureComponent {
               month_in_year = date.getMonth(),
               year = date.getFullYear(),
               year_toString = year.toString(),
-              month_timestamp_toString = new Date(year, month_in_year)
-                .getTime()
-                .toString(),
-              day_timestamp_toString = new Date(
-                year,
-                month_in_year,
-                day_in_month
-              )
+              month_timestamp_toString = new Date(start_year, start_month)
                 .getTime()
                 .toString(),
               total_points = parseInt(
                 total_points_array.get(day_in_week_index)
               );
-
-            if (returning_day_chart_stats_map.has(day_timestamp_toString)) {
-              returning_day_chart_stats_map.updateIn(
-                [day_timestamp_toString, "totalPoints"],
-                value => (value - total_points < 0 ? 0 : value - total_points)
-              );
-            }
 
             if (returning_week_chart_stats_map.has(timestamp_toString)) {
               returning_week_chart_stats_map.updateIn(
@@ -1352,19 +1354,6 @@ export default class DeleteModal extends React.PureComponent {
             }
 
             completed_value_array.forEach((completed_value, priority_index) => {
-              if (returning_day_chart_stats_map.has(day_timestamp_toString)) {
-                returning_day_chart_stats_map.updateIn(
-                  [day_timestamp_toString, "current", priority_index],
-                  value =>
-                    value - completed_value < 0 ? 0 : value - completed_value
-                );
-                returning_day_chart_stats_map.updateIn(
-                  [day_timestamp_toString, "task_type_completions", 1],
-                  value =>
-                    value - completed_value < 0 ? 0 : value - completed_value
-                );
-              }
-
               if (returning_week_chart_stats_map.has(timestamp_toString)) {
                 returning_week_chart_stats_map.updateIn(
                   [timestamp_toString, "current", priority_index],
@@ -1438,14 +1427,6 @@ export default class DeleteModal extends React.PureComponent {
             });
           }
         );
-
-        // sending_data.delete_timestamp_day_chart_stats_data.action_bool = true;
-
-        // sending_data.delete_timestamp_week_chart_stats_data.action_bool = true;
-
-        // sending_data.delete_timestamp_month_chart_stats_data.action_bool = true;
-
-        // sending_data.delete_timestamp_year_chart_stats_data.action_bool = true;
       }
 
       sending_data.delete_timestamp_completed_task_data.keyPath = [
@@ -1453,7 +1434,20 @@ export default class DeleteModal extends React.PureComponent {
         timestamp_toString
       ];
       sending_data.deleted_task_data.keyPath = [task_id, timestamp_toString];
+
+      sending_data.delete_timestamp_day_chart_stats_data.should_delete = false;
+
+      sending_data.delete_timestamp_week_chart_stats_data.data = returning_week_chart_stats_map;
+      sending_data.delete_timestamp_month_chart_stats_data.data = returning_month_chart_stats_map;
+      sending_data.delete_timestamp_year_chart_stats_data.data = returning_year_chart_stats_map;
     } else {
+      let returning_month_chart_stats_map = Map(
+          this.props.month_chart_stats
+        ).asMutable(),
+        returning_year_chart_stats_map = Map(
+          this.props.year_chart_stats
+        ).asMutable();
+
       let { month, year } = chosen_date_data;
 
       timestamp_toString = new Date(year, month).getTime().toString();
@@ -1485,36 +1479,11 @@ export default class DeleteModal extends React.PureComponent {
                 timestamp_date.getMonth(),
                 day_in_month
               ),
-              day_in_week = date.getDay(),
               month_in_year = date.getMonth(),
-              year = date.getFullYear(),
               year_toString = date.getFullYear().toString(),
-              monday = this.getMonday(date),
-              day_timestamp_toString = date.getTime().toString(),
-              week_timestamp_toString = new Date(
-                monday.getFullYear(),
-                monday.getMonth(),
-                monday.getDate()
-              )
-                .getTime()
-                .toString(),
               total_points = parseInt(
                 total_points_array.get(day_in_month_index)
               );
-
-            if (returning_day_chart_stats_map.has(day_timestamp_toString)) {
-              returning_day_chart_stats_map.updateIn(
-                [day_timestamp_toString, "totalPoints"],
-                value => (value - total_points < 0 ? 0 : value - total_points)
-              );
-            }
-
-            if (returning_week_chart_stats_map.has(week_timestamp_toString)) {
-              returning_week_chart_stats_map.updateIn(
-                [week_timestamp_toString, "totalPoints"],
-                value => (value - total_points < 0 ? 0 : value - total_points)
-              );
-            }
 
             if (returning_month_chart_stats_map.has(timestamp_toString)) {
               returning_month_chart_stats_map.updateIn(
@@ -1531,42 +1500,6 @@ export default class DeleteModal extends React.PureComponent {
             }
 
             completed_value_array.forEach((completed_value, priority_index) => {
-              if (returning_day_chart_stats_map.has(day_timestamp_toString)) {
-                returning_day_chart_stats_map.updateIn(
-                  [day_timestamp_toString, "current", priority_index],
-                  value =>
-                    value - completed_value < 0 ? 0 : value - completed_value
-                );
-                returning_day_chart_stats_map.updateIn(
-                  [day_timestamp_toString, "task_type_completions", 2],
-                  value =>
-                    value - completed_value < 0 ? 0 : value - completed_value
-                );
-              }
-
-              if (returning_week_chart_stats_map.has(week_timestamp_toString)) {
-                returning_week_chart_stats_map.updateIn(
-                  [week_timestamp_toString, "current", priority_index],
-                  value =>
-                    value - completed_value < 0 ? 0 : value - completed_value
-                );
-                returning_week_chart_stats_map.updateIn(
-                  [
-                    week_timestamp_toString,
-                    "completed_priority_array",
-                    day_in_week,
-                    priority_index
-                  ],
-                  value =>
-                    value - completed_value < 0 ? 0 : value - completed_value
-                );
-                returning_week_chart_stats_map.updateIn(
-                  [week_timestamp_toString, "task_type_completions", 2],
-                  value =>
-                    value - completed_value < 0 ? 0 : value - completed_value
-                );
-              }
-
               if (returning_month_chart_stats_map.has(timestamp_toString)) {
                 returning_month_chart_stats_map.updateIn(
                   [timestamp_toString, "current", priority_index],
@@ -1615,14 +1548,6 @@ export default class DeleteModal extends React.PureComponent {
             });
           }
         );
-
-        // sending_data.delete_timestamp_day_chart_stats_data.action_bool = true;
-
-        // sending_data.delete_timestamp_week_chart_stats_data.action_bool = true;
-
-        // sending_data.delete_timestamp_month_chart_stats_data.action_bool = true;
-
-        // sending_data.delete_timestamp_year_chart_stats_data.action_bool = true;
       }
 
       sending_data.delete_timestamp_completed_task_data.keyPath = [
@@ -1630,6 +1555,12 @@ export default class DeleteModal extends React.PureComponent {
         timestamp_toString
       ];
       sending_data.deleted_task_data.keyPath = [task_id, timestamp_toString];
+
+      sending_data.delete_timestamp_day_chart_stats_data.should_delete = false;
+      sending_data.delete_timestamp_week_chart_stats_data.should_delete = false;
+
+      sending_data.delete_timestamp_month_chart_stats_data.data = returning_month_chart_stats_map;
+      sending_data.delete_timestamp_year_chart_stats_data.data = returning_year_chart_stats_map;
     }
 
     this.props.deleteTaskAndHistoryAtTimeThunk(sending_data);

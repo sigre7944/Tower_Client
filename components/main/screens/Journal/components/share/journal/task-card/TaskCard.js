@@ -667,7 +667,7 @@ export default class TaskCard extends React.PureComponent {
       day_timestamp_toString = "",
       week_timestamp_toString = "",
       month_timestamp_toString = "",
-      year_timestamp_toString = current_date.getFullYear().toString(),
+      year_timestamp_toString = "",
       task_priority = Map(this.props.task_data).getIn(["priority", "value"]),
       task_reward = parseInt(
         Map(this.props.task_data).getIn(["reward", "value"])
@@ -713,6 +713,8 @@ export default class TaskCard extends React.PureComponent {
       )
         .getTime()
         .toString();
+
+      year_timestamp_toString = chosen_date_data.year.toString();
 
       let day_chart_stats_update = this._updateDayChartStats(
         task_type,
@@ -825,6 +827,8 @@ export default class TaskCard extends React.PureComponent {
         .getTime()
         .toString();
 
+      year_timestamp_toString = chosen_date_data.start_year.toString();
+
       let week_chart_stats_update = this._updateWeekChartStats(
         task_type,
         task_reward,
@@ -929,6 +933,8 @@ export default class TaskCard extends React.PureComponent {
       )
         .getTime()
         .toString();
+
+      year_timestamp_toString = chosen_date_data.year.toString();
 
       let month_chart_stats_update = this._updateMonthChartStats(
         task_type,

@@ -111,7 +111,7 @@ export default class ActiveActions extends React.PureComponent {
                   style={styles.understand_container}
                   onPress={this._cancel}
                 >
-                  <Text style={styles.understand_text}>I understand</Text>
+                  <Text style={styles.understand_text}>Later</Text>
                 </TouchableOpacity>
               </View>
             </View>
