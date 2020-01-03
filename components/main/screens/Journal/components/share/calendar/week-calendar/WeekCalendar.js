@@ -404,24 +404,13 @@ class Calendar extends React.Component {
     if (task_data) {
       let task_data_map = Map(task_data),
         start_month = task_data_map.getIn(["schedule", "start_month"]),
-        end_month = task_data_map.getIn(["schedule", "end_month"]),
-        chosen_month = task_data_map.getIn(["schedule", "chosen_month"]),
         start_year = task_data_map.getIn(["schedule", "start_year"]),
-        end_year = task_data_map.getIn(["schedule", "end_year"]),
-        chosen_year = task_data_map.getIn(["schedule", "chosen_year"]),
         start_noWeekInMonth = task_data_map.getIn([
           "schedule",
           "start_noWeekInMonth"
         ]),
-        week_index = start_noWeekInMonth,
-        month_index = this.findMonthIndex(chosen_month, chosen_year);
-
-      if (chosen_month === start_month) {
-        week_index =
-          task_data_map.getIn(["schedule", "start_noWeekInMonth"]) - 1;
-      } else if (chosen_month === end_month) {
-        week_index = task_data_map.getIn(["schedule", "end_noWeekInMonth"]) - 1;
-      }
+        week_index = start_noWeekInMonth - 1,
+        month_index = this.findMonthIndex(start_month, start_year);
 
       this.chooseWeek(month_index, week_index);
       return month_index;

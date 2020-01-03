@@ -877,7 +877,7 @@ class UncompletedTaskCard extends React.PureComponent {
               end_at_day
             ).getTime();
 
-          if (current_date_start_end_week_timestamp >= end_timestamp) {
+          if (current_date_start_end_week_timestamp <= end_timestamp) {
             return true;
           }
 
@@ -923,7 +923,6 @@ class UncompletedTaskCard extends React.PureComponent {
       task_end_month = parseInt(Map(schedule).get("end_month")),
       task_start_year = parseInt(Map(schedule).get("start_year")),
       task_chosen_year = parseInt(Map(schedule).get("chosen_year")),
-      task_week = parseInt(Map(schedule).get("week")),
       task_chosen_noWeekInMonth = parseInt(
         Map(schedule).get("start_noWeekInMonth")
       ),
@@ -981,7 +980,7 @@ class UncompletedTaskCard extends React.PureComponent {
                   end_at_day
                 ).getTime();
 
-              if (current_date_start_end_week_timestamp >= end_timestamp) {
+              if (current_date_start_end_week_timestamp <= end_timestamp) {
                 return true;
               }
 
@@ -1035,7 +1034,7 @@ class UncompletedTaskCard extends React.PureComponent {
                   end_at_day
                 ).getTime();
 
-              if (current_date_start_end_week_timestamp >= end_timestamp) {
+              if (current_date_start_end_week_timestamp <= end_timestamp) {
                 return true;
               }
 
@@ -1179,7 +1178,7 @@ class UncompletedTaskCard extends React.PureComponent {
           ).getTime(),
           chosen_week_timestamp_to_string = chosen_week_timestamp.toString(),
           task_week = parseInt(Map(schedule).get("week")),
-          task_year = parseInt(Map(schedule).get("chosen_year")),
+          task_year = parseInt(Map(schedule).get("start_year")),
           goal_value = parseInt(Map(goal).get("max"));
 
         if (
