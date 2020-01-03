@@ -1,4 +1,5 @@
 import React from "react";
+import { StatusBar } from "react-native";
 import MainNavigator from "./components/main/Main"; //Main screen
 import { Dimensions } from "react-native";
 import {
@@ -16,8 +17,6 @@ import SignInSignUpOptions from "./components/sign-in-sign-up-screen/SignInSignU
 import SignInScreen from "./components/sign-in-screen/SignInScreen";
 import SignUpScreen from "./components/sign-up-screen/SignUpScreen";
 import SettingsAccountScreen from "./components/settings-account-screen/SettingsAccountScreen.Container";
-import MainLoading from "./components/loading/MainLoading.Container";
-
 import { PersistGate } from "redux-persist/lib/integration/react";
 import { persistor, store } from "./store/index";
 import * as FileSystem from "expo-file-system";
@@ -61,6 +60,8 @@ export default class App extends React.Component {
   };
 
   componentDidMount() {
+    // Set status bar style to dark as background will be light colors
+    StatusBar.setBarStyle("dark-content", true);
     // this.reset();
   }
 
@@ -72,10 +73,6 @@ export default class App extends React.Component {
           <PersistGate persistor={persistor}>
             <AppContainer />
           </PersistGate>
-
-          {this.state.is_ready ? null : (
-            <MainLoading _setReady={this._setReady} />
-          )}
         </Provider>
       </>
     );

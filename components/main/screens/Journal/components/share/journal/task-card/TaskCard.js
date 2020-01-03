@@ -1219,52 +1219,50 @@ export default class TaskCard extends React.PureComponent {
 
   _checkComplete = () => {
     if (this.state.is_task_card_able_to_edit) {
-      if (this.props.is_chosen_date_today) {
-        let sending_obj = {};
+      let sending_obj = {};
 
-        sending_obj.completed_task_data = this._doUpdateOnCompletedTask(
-          this.props.flag,
-          this.props.type,
-          "inc"
-        );
+      sending_obj.completed_task_data = this._doUpdateOnCompletedTask(
+        this.props.flag,
+        this.props.type,
+        "inc"
+      );
 
-        sending_obj.chart_data = this._doUpdateOnChartStats(
-          this.props.flag,
-          "inc"
-        );
+      sending_obj.chart_data = this._doUpdateOnChartStats(
+        this.props.flag,
+        "inc"
+      );
 
-        let reward_value = parseInt(
-          Map(this.props.task_data).getIn(["reward", "value"])
-        );
+      let reward_value = parseInt(
+        Map(this.props.task_data).getIn(["reward", "value"])
+      );
 
-        sending_obj.balance_data = this._updateBalanceData(
-          reward_value,
-          this.props.flag,
-          "inc"
-        );
+      sending_obj.balance_data = this._updateBalanceData(
+        reward_value,
+        this.props.flag,
+        "inc"
+      );
 
-        this.props.updateBulkThunk(sending_obj);
+      this.props.updateBulkThunk(sending_obj);
 
-        let general_settings = Map(this.props.generalSettings);
+      let general_settings = Map(this.props.generalSettings);
 
-        if (this.props.flag === "uncompleted") {
-          if (general_settings.get("vibration")) {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-          }
-
-          if (general_settings.get("sound")) {
-            this._playingSound();
-          }
-        } else {
-          if (general_settings.get("vibration")) {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          }
+      if (this.props.flag === "uncompleted") {
+        if (general_settings.get("vibration")) {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         }
 
-        this.setState(prevState => ({
-          checked_complete: !prevState.checked_complete
-        }));
+        if (general_settings.get("sound")) {
+          this._playingSound();
+        }
+      } else {
+        if (general_settings.get("vibration")) {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        }
       }
+
+      this.setState(prevState => ({
+        checked_complete: !prevState.checked_complete
+      }));
     } else {
       this._toggleShouldDisplayPremiumAd();
     }
@@ -1272,34 +1270,32 @@ export default class TaskCard extends React.PureComponent {
 
   _unCheckComplete = () => {
     if (this.state.is_task_card_able_to_edit) {
-      if (this.props.is_chosen_date_today) {
-        let sending_obj = {};
+      let sending_obj = {};
 
-        sending_obj.completed_task_data = this._doUpdateOnCompletedTask(
-          this.props.flag,
-          this.props.type,
-          "dec"
-        );
+      sending_obj.completed_task_data = this._doUpdateOnCompletedTask(
+        this.props.flag,
+        this.props.type,
+        "dec"
+      );
 
-        sending_obj.chart_data = this._doUpdateOnChartStats(
-          this.props.flag,
-          "dec"
-        );
+      sending_obj.chart_data = this._doUpdateOnChartStats(
+        this.props.flag,
+        "dec"
+      );
 
-        let reward_value = parseInt(
-          Map(this.props.task_data).getIn(["reward", "value"])
-        );
+      let reward_value = parseInt(
+        Map(this.props.task_data).getIn(["reward", "value"])
+      );
 
-        sending_obj.balance_data = this._updateBalanceData(
-          reward_value,
-          this.props.flag,
-          "dec"
-        );
+      sending_obj.balance_data = this._updateBalanceData(
+        reward_value,
+        this.props.flag,
+        "dec"
+      );
 
-        this.props.updateBulkThunk(sending_obj);
+      this.props.updateBulkThunk(sending_obj);
 
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     } else {
       this._toggleShouldDisplayPremiumAd();
     }

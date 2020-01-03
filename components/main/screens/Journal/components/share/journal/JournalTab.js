@@ -1114,7 +1114,10 @@ class UncompletedTaskCard extends React.PureComponent {
       category = task_map.get("category"), //category id
       current_goal_value = 0;
 
-    if (current_chosen_category === category || current_chosen_category === "cate_all") {
+    if (
+      current_chosen_category === category ||
+      current_chosen_category === "cate_all"
+    ) {
       if (type === "day") {
         let { day, month, year } = chosen_date_data,
           chosen_day_timestamp = new Date(year, month, day).getTime(),
@@ -1318,10 +1321,10 @@ class UncompletedTaskCard extends React.PureComponent {
   };
 
   render() {
-    let is_chosen_date_today = this.checkIfChosenDateIsToday(
-      this.props.chosen_date_data,
-      this.props.type
-    );
+    // let is_chosen_date_today = this.checkIfChosenDateIsToday(
+    //   this.props.chosen_date_data,
+    //   this.props.type
+    // );
 
     this.handleUpdate(
       this.props.deleted_task_data,
@@ -1341,7 +1344,6 @@ class UncompletedTaskCard extends React.PureComponent {
             task_data={this.props.task_data}
             index={this.props.index}
             openModal={this.props.openModal}
-            is_chosen_date_today={is_chosen_date_today}
             flag={"uncompleted"}
             current_goal_value={this.update_obj.current_goal_value}
             title={this.update_obj.title}
@@ -1519,7 +1521,10 @@ class CompletedTaskCard extends React.PureComponent {
         category = Map(task).get("category"), // category id
         current_goal_value = 0;
 
-      if (current_chosen_category === category || current_chosen_category === "cate_all") {
+      if (
+        current_chosen_category === category ||
+        current_chosen_category === "cate_all"
+      ) {
         if (type === "day") {
           let { day, month, year } = chosen_date_data,
             chosen_day_timestamp = new Date(year, month, day).getTime(),
@@ -1691,6 +1696,11 @@ class CompletedTaskCard extends React.PureComponent {
   };
 
   render() {
+    // let is_chosen_date_today = this.checkIfChosenDateIsToday(
+    //   this.props.chosen_date_data,
+    //   this.props.type
+    // );
+
     this.handleUpdate(
       this.props.task,
       this.props.completed_task,
@@ -1699,10 +1709,6 @@ class CompletedTaskCard extends React.PureComponent {
       this.props.chosen_date_data
     );
 
-    let is_chosen_date_today = this.checkIfChosenDateIsToday(
-      this.props.chosen_date_data,
-      this.props.type
-    );
     return (
       <>
         {this.update_obj.should_render ? (
@@ -1712,7 +1718,6 @@ class CompletedTaskCard extends React.PureComponent {
             task_data={this.update_obj.task_data}
             index={this.props.index}
             openModal={this.props.openModal}
-            is_chosen_date_today={is_chosen_date_today}
             flag={"completed"}
             current_goal_value={this.update_obj.current_goal_value}
             title={this.update_obj.title}

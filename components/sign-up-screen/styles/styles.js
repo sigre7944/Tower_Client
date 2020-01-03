@@ -24,7 +24,6 @@ export const styles = StyleSheet.create({
     height: normalize(24, "height"),
     fontFamily: CommonStyles.sf_ui_display_light_font,
     fontSize: normalize(18, "width"),
-    lineHeight: normalize(21, "height"),
     letterSpacing: -0.02,
     color: CommonStyles.text_icon_colors.ti_1,
     borderBottomWidth: 1,

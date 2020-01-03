@@ -8,7 +8,8 @@ import {
   Modal,
   Dimensions,
   Picker,
-  Platform
+  Platform,
+  SafeAreaView
 } from "react-native";
 
 import { styles } from "./styles/styles";
@@ -78,14 +79,19 @@ export default class RepeatEndOnOptionRow extends React.Component {
       month = parseInt(this.state.selected_month),
       day = parseInt(itemValue);
 
-    let date = new Date(year, month, day);
+    let date = new Date(year, month, day),
+      chosen_date_timestamp = date.getTime(),
+      current_date = new Date(),
+      current_date_timestamp = current_date.getTime();
 
-    if (date.getMonth() !== month) {
-      date = new Date(year, month + 1, 0);
+    if (chosen_date_timestamp < current_date_timestamp) {
+      date = current_date;
     }
 
     this.setState({
-      selected_day: date.getDate().toString()
+      selected_month: date.getMonth().toString(),
+      selected_day: date.getDate().toString(),
+      selected_year: date.getFullYear().toString()
     });
   };
 
@@ -94,15 +100,19 @@ export default class RepeatEndOnOptionRow extends React.Component {
       month = parseInt(itemValue),
       day = parseInt(this.state.selected_day);
 
-    let date = new Date(year, month, day);
+    let date = new Date(year, month, day),
+      chosen_date_timestamp = date.getTime(),
+      current_date = new Date(),
+      current_date_timestamp = current_date.getTime();
 
-    if (date.getMonth() !== month) {
-      date = new Date(year, month + 1, 0);
+    if (chosen_date_timestamp < current_date_timestamp) {
+      date = current_date;
     }
 
     this.setState({
       selected_month: itemValue,
-      selected_day: date.getDate().toString()
+      selected_day: date.getDate().toString(),
+      selected_year: date.getFullYear().toString()
     });
   };
 
@@ -111,15 +121,19 @@ export default class RepeatEndOnOptionRow extends React.Component {
       month = parseInt(this.state.selected_month),
       day = parseInt(this.state.selected_day);
 
-    let date = new Date(year, month, day);
+    let date = new Date(year, month, day),
+      chosen_date_timestamp = date.getTime(),
+      current_date = new Date(),
+      current_date_timestamp = current_date.getTime();
 
-    if (date.getMonth() !== month) {
-      date = new Date(year, month + 1, 0);
+    if (chosen_date_timestamp < current_date_timestamp) {
+      date = current_date;
     }
 
     this.setState({
-      selected_year: itemValue,
-      selected_day: date.getDate().toString()
+      selected_day: date.getDate().toString(),
+      selected_month: date.getMonth().toString(),
+      selected_year: itemValue
     });
   };
 

@@ -88,6 +88,7 @@ export default class AddCategoryPanel extends React.PureComponent {
       !this._checkIfCategoryNameExists(
         Map(this.props.category_data)
           .get("name")
+          .replace(/(\r\n|\n|\r)/gm, " ")
           .trim(),
         this.state.category_title.trim()
       )
@@ -112,14 +113,18 @@ export default class AddCategoryPanel extends React.PureComponent {
   _checkIfCategoryNameExists = (old_name, new_name) => {
     let found = false;
 
-    if (new_name === old_name) {
+    if (new_name.trim() === old_name.trim()) {
       return false;
     }
 
     OrderedMap(this.props.categories)
       .valueSeq()
       .every(value => {
-        if (Map(value).get("name") === new_name) {
+        if (
+          Map(value)
+            .get("name")
+            .trim() === new_name.trim()
+        ) {
           found = true;
           return false;
         }
@@ -238,6 +243,7 @@ export default class AddCategoryPanel extends React.PureComponent {
                   <TextInput
                     style={styles.text_input}
                     placeholder={Map(this.props.category_data).get("name")}
+                    placeholderTextColor="#2C2C2C40"
                     value={this.state.category_title}
                     onChange={this._onCategoryTitleChange}
                     maxLength={32}

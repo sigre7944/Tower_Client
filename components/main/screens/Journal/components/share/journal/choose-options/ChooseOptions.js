@@ -7,7 +7,8 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
   Animated,
-  Easing
+  Easing,
+  SafeAreaView
 } from "react-native";
 
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -189,7 +190,11 @@ export default class ChooseOptions extends React.PureComponent {
                 }}
                 onPress={this._chooseEditMultipleTasks}
               >
-                <FontAwesomeIcon icon={faEdit} size={normalize(20, "width")} color="#05838B" />
+                <FontAwesomeIcon
+                  icon={faEdit}
+                  size={normalize(20, "width")}
+                  color="#05838B"
+                />
 
                 <Text style={styles.edit_text}>Edit multiple tasks</Text>
               </TouchableOpacity>
