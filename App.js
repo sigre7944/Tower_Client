@@ -1,4 +1,5 @@
 import React from "react";
+import { StatusBar } from "react-native";
 import MainNavigator from "./components/main/Main"; //Main screen
 import { Dimensions } from "react-native";
 import {
@@ -61,6 +62,8 @@ export default class App extends React.Component {
   };
 
   componentDidMount() {
+    // Set status bar style to dark as background will be light colors
+    StatusBar.setBarStyle("dark-content", true);
     // this.reset();
   }
 

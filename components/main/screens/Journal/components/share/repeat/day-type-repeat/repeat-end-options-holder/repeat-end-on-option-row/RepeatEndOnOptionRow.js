@@ -8,7 +8,8 @@ import {
   Modal,
   Dimensions,
   Picker,
-  Platform
+  Platform,
+  SafeAreaView
 } from "react-native";
 
 import { styles } from "./styles/styles";
@@ -78,13 +79,18 @@ export default class RepeatEndOnOptionRow extends React.Component {
       month = parseInt(this.state.selected_month),
       day = parseInt(itemValue);
 
-    let date = new Date(year, month, day);
+    let date = new Date(year, month, day),
+      chosen_date_timestamp = date.getTime(),
+      current_date_timestamp = Date.now();
 
     if (date.getMonth() !== month) {
       date = new Date(year, month + 1, 0);
     }
 
+    console.log(date.toLocaleString())
+
     this.setState({
+      selected_month: date.getMonth().toString(),
       selected_day: date.getDate().toString()
     });
   };
