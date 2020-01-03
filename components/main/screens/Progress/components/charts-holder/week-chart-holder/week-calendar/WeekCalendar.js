@@ -47,17 +47,17 @@ export default class WeekCalendar extends React.PureComponent {
 
   save = () => {
     if (
-      this.chosen_monday > 0 &&
-      this.chosen_sunday > 0 &&
-      this.chosen_week > 0 &&
-      this.chosen_start_month > 0 &&
-      this.chosen_end_month > 0 &&
-      this.chosen_selected_month > 0 &&
-      this.chosen_start_year > 0 &&
-      this.chosen_end_year > 0 &&
-      this.chosen_selected_year > 0 &&
-      this.chosen_start_noWeekInMonth > 0 &&
-      this.chosen_end_noWeekInMonth > 0
+      this.chosen_monday >= 0 &&
+      this.chosen_sunday >= 0 &&
+      this.chosen_week >= 0 &&
+      this.chosen_start_month >= 0 &&
+      this.chosen_end_month >= 0 &&
+      this.chosen_selected_month >= 0 &&
+      this.chosen_start_year >= 0 &&
+      this.chosen_end_year >= 0 &&
+      this.chosen_selected_year >= 0 &&
+      this.chosen_start_noWeekInMonth >= 0 &&
+      this.chosen_end_noWeekInMonth >= 0
     ) {
       this.props._setCalendarData(
         this.chosen_monday,
@@ -402,7 +402,7 @@ class Calendar extends React.Component {
             flexDirection: "row",
             alignItems: "center",
             left: outer_panel_padding,
-            right: outer_panel_padding,
+            right: outer_panel_padding
           }}
         >
           <WeekText text="Week" />
