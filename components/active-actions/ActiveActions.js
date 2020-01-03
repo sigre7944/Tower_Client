@@ -78,6 +78,12 @@ export default class ActiveActions extends React.PureComponent {
           .get();
 
         this._updateAccountRedux(get_user_doc.data(), true);
+
+        this.props.updateGeneralSettings(
+          ["active_info", "should_beta_suggest_login"],
+          true,
+          v => false
+        );
       }
       // In beta testing period, when the user doesnt log in, pop up beta banner
       else {
