@@ -1344,8 +1344,6 @@ class UncompletedTaskCard extends React.PureComponent {
             task_data={this.props.task_data}
             index={this.props.index}
             openModal={this.props.openModal}
-            // is_chosen_date_today={is_chosen_date_today}
-            is_chosen_date_today={true}
             flag={"uncompleted"}
             current_goal_value={this.update_obj.current_goal_value}
             title={this.update_obj.title}
@@ -1720,8 +1718,6 @@ class CompletedTaskCard extends React.PureComponent {
             task_data={this.update_obj.task_data}
             index={this.props.index}
             openModal={this.props.openModal}
-            // is_chosen_date_today={is_chosen_date_today}
-            is_chosen_date_today={true}
             flag={"completed"}
             current_goal_value={this.update_obj.current_goal_value}
             title={this.update_obj.title}
