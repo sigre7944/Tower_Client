@@ -382,34 +382,16 @@ export default class DeleteModal extends React.PureComponent {
                   ),
                   day_in_month = date.getDate(),
                   month_in_year = date.getMonth(),
-                  year = date.getFullYear(),
-                  year_toString = year.toString(),
-                  month_timestamp_toString = new Date(year, month_in_year)
-                    .getTime()
-                    .toString(),
-                  day_timestamp_toString = new Date(
-                    year,
-                    month_in_year,
-                    day_in_month
+                  year_toString = date.getFullYear().toString(),
+                  month_timestamp_toString = new Date(
+                    date.getFullYear(),
+                    date.getMonth()
                   )
                     .getTime()
                     .toString(),
                   total_points = parseInt(
                     total_points_array.get(day_in_week_index)
                   );
-
-                if (
-                  returning_day_chart_stats_map.hasIn([
-                    day_timestamp_toString,
-                    "totalPoints"
-                  ])
-                ) {
-                  returning_day_chart_stats_map.updateIn(
-                    [day_timestamp_toString, "totalPoints"],
-                    value =>
-                      value - total_points < 0 ? 0 : value - total_points
-                  );
-                }
 
                 if (
                   returning_week_chart_stats_map.hasIn([
@@ -452,42 +434,6 @@ export default class DeleteModal extends React.PureComponent {
 
                 List(completed_value_array).forEach(
                   (completed_value, priority_index) => {
-                    if (
-                      returning_day_chart_stats_map.hasIn([
-                        day_timestamp_toString,
-                        "current",
-                        priority_index
-                      ])
-                    ) {
-                      returning_day_chart_stats_map.updateIn(
-                        [day_timestamp_toString, "current", priority_index],
-                        value =>
-                          value - completed_value < 0
-                            ? 0
-                            : value - completed_value
-                      );
-                    }
-
-                    if (
-                      returning_day_chart_stats_map.hasIn([
-                        day_timestamp_toString,
-                        "task_type_completions",
-                        this.task_type_order["week"]
-                      ])
-                    ) {
-                      returning_day_chart_stats_map.updateIn(
-                        [
-                          day_timestamp_toString,
-                          "task_type_completions",
-                          this.task_type_order["week"]
-                        ],
-                        value =>
-                          value - completed_value < 0
-                            ? 0
-                            : value - completed_value
-                      );
-                    }
-
                     if (
                       returning_week_chart_stats_map.hasIn([
                         week_timestamp_toString,
@@ -698,32 +644,6 @@ export default class DeleteModal extends React.PureComponent {
                   );
 
                 if (
-                  returning_day_chart_stats_map.hasIn([
-                    day_timestamp_toString,
-                    "totalPoints"
-                  ])
-                ) {
-                  returning_day_chart_stats_map.updateIn(
-                    [day_timestamp_toString, "totalPoints"],
-                    value =>
-                      value - total_points < 0 ? 0 : value - total_points
-                  );
-                }
-
-                if (
-                  returning_week_chart_stats_map.hasIn([
-                    week_timestamp_toString,
-                    "totalPoints"
-                  ])
-                ) {
-                  returning_week_chart_stats_map.updateIn(
-                    [week_timestamp_toString, "totalPoints"],
-                    value =>
-                      value - total_points < 0 ? 0 : value - total_points
-                  );
-                }
-
-                if (
                   returning_month_chart_stats_map.hasIn([
                     month_timestamp_toString,
                     "totalPoints"
@@ -751,100 +671,6 @@ export default class DeleteModal extends React.PureComponent {
 
                 List(completed_value_array).forEach(
                   (completed_value, priority_index) => {
-                    if (
-                      returning_day_chart_stats_map.hasIn([
-                        day_timestamp_toString,
-                        "current",
-                        priority_index
-                      ])
-                    ) {
-                      returning_day_chart_stats_map.updateIn(
-                        [day_timestamp_toString, "current", priority_index],
-                        value =>
-                          value - completed_value < 0
-                            ? 0
-                            : value - completed_value
-                      );
-                    }
-
-                    if (
-                      returning_day_chart_stats_map.hasIn([
-                        day_timestamp_toString,
-                        "task_type_completions",
-                        this.task_type_order["month"]
-                      ])
-                    ) {
-                      returning_day_chart_stats_map.updateIn(
-                        [
-                          day_timestamp_toString,
-                          "task_type_completions",
-                          this.task_type_order["month"]
-                        ],
-                        value =>
-                          value - completed_value < 0
-                            ? 0
-                            : value - completed_value
-                      );
-                    }
-
-                    if (
-                      returning_week_chart_stats_map.hasIn([
-                        week_timestamp_toString,
-                        "current",
-                        priority_index
-                      ])
-                    ) {
-                      returning_week_chart_stats_map.updateIn(
-                        [week_timestamp_toString, "current", priority_index],
-                        value =>
-                          value - completed_value < 0
-                            ? 0
-                            : value - completed_value
-                      );
-                    }
-
-                    if (
-                      returning_week_chart_stats_map.hasIn([
-                        week_timestamp_toString,
-                        "completed_priority_array",
-                        day_in_week,
-                        priority_index
-                      ])
-                    ) {
-                      returning_week_chart_stats_map.updateIn(
-                        [
-                          week_timestamp_toString,
-                          "completed_priority_array",
-                          day_in_week,
-                          priority_index
-                        ],
-                        value =>
-                          value - completed_value < 0
-                            ? 0
-                            : value - completed_value
-                      );
-                    }
-
-                    if (
-                      returning_week_chart_stats_map.hasIn([
-                        week_timestamp_toString,
-                        "task_type_completions",
-                        this.task_type_order["month"]
-                      ])
-                    ) {
-                      returning_week_chart_stats_map.updateIn(
-                        [
-                          week_timestamp_toString,
-                          "task_type_completions",
-                          this.task_type_order["month"]
-                        ],
-                        value =>
-                          value - completed_value < 0
-                            ? 0
-                            : value - completed_value
-                      );
-                    }
-
                     if (
                       returning_month_chart_stats_map.hasIn([
                         month_timestamp_toString,
@@ -1039,7 +865,6 @@ export default class DeleteModal extends React.PureComponent {
           keyPath: [task_id]
         }
       };
-
     if (type === "week") {
       sending_data.delete_task_data.type = "DELETE_WEEK_TASK";
       sending_data.delete_completed_task_data.type =
@@ -1204,6 +1029,8 @@ export default class DeleteModal extends React.PureComponent {
               value =>
                 value - completed_value < 0 ? 0 : value - completed_value
             );
+
+            console.log(day_in_week, week_timestamp_toString, priority_index);
             returning_week_chart_stats_map.updateIn(
               [
                 week_timestamp_toString,
@@ -1325,7 +1152,7 @@ export default class DeleteModal extends React.PureComponent {
               month_in_year = date.getMonth(),
               year = date.getFullYear(),
               year_toString = year.toString(),
-              month_timestamp_toString = new Date(start_year, start_month)
+              month_timestamp_toString = new Date(year, date.getMonth())
                 .getTime()
                 .toString(),
               total_points = parseInt(
