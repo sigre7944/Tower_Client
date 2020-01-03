@@ -377,7 +377,8 @@ class MonthHolder extends React.Component {
       Map(this.props.month_chart_stats).get(month_timestamp_toString) !==
         Map(nextProps.month_chart_stats).get(month_timestamp_toString) ||
       this.props.chart_change_calendar_available !==
-        nextProps.chart_change_calendar_available
+        nextProps.chart_change_calendar_available ||
+      this.props.week_chart_stats !== nextProps.week_chart_stats
     );
   }
 
@@ -420,6 +421,9 @@ class MonthHolder extends React.Component {
         day: new Date(monday).getDate(),
         month,
         year,
+        start_year: new Date(monday).getFullYear(),
+        start_month: new Date(monday).getMonth(),
+        monday: new Date(monday).getDate(),
         noWeekInMonth
       });
 
@@ -464,6 +468,7 @@ class MonthHolder extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (
+      this.props.month_chart_stats !== prevProps.month_chart_stats ||
       this.props.week_chart_stats !== prevProps.week_chart_stats ||
       this.props.day_chart_stats !== prevProps.day_chart_stats
     ) {
@@ -665,6 +670,13 @@ class WeekHolder extends React.Component {
   };
 
   render() {
+    // console.log(
+    //   this.start_year,
+    //   this.start_month,
+    //   this.monday,
+    //   this.week_timestamp_toString
+    // );
+
     let total_points = this._calculateTotalPointsWeek(),
       should_render_point_banner = false;
 
@@ -701,7 +713,7 @@ class WeekHolder extends React.Component {
             >
               <Text style={styles.point_text_white}>{total_points}</Text>
 
-              <Text style={styles.point_text_white}>pt</Text>
+              {/* <Text style={styles.point_text_white}>pt</Text> */}
             </View>
           </View>
         ) : (
@@ -793,7 +805,7 @@ class DayHolder extends React.Component {
             >
               <Text style={styles.point_text_white}>{total_points}</Text>
 
-              <Text style={styles.point_text_white}>pt</Text>
+              {/* <Text style={styles.point_text_white}>pt</Text> */}
             </View>
           </View>
         ) : (
@@ -866,7 +878,7 @@ class UnchosenDayHolder extends React.Component {
             >
               <Text style={styles.point_text_white}>{total_points}</Text>
 
-              <Text style={styles.point_text_white}>pt</Text>
+              {/* <Text style={styles.point_text_white}>pt</Text> */}
             </View>
           </View>
         ) : (

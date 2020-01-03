@@ -69,10 +69,10 @@ export default class App extends React.Component {
     return (
       <>
         <Provider store={store}>
-          {/* <AppContainer /> */}
-          <PersistGate persistor={persistor}>
+          <AppContainer />
+          {/* <PersistGate persistor={persistor}>
             <AppContainer />
-          </PersistGate>
+          </PersistGate> */}
         </Provider>
       </>
     );

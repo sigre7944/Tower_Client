@@ -1192,7 +1192,7 @@ export default class Drawer extends React.PureComponent {
           </>
         )}
 
-        <ActiveActions />
+        <ActiveActions navigation={this.props.navigation} />
       </View>
     );
   }

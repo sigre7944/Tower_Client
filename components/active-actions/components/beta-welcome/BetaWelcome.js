@@ -9,7 +9,15 @@ const window_width = Dimensions.get("window").width;
 export default class ActiveActions extends React.PureComponent {
   state = {};
 
-  _goToSignUp = () => {};
+  _goToSignUp = () => {
+    this.props.updateGeneralSettings(
+      ["active_info", "should_beta_suggest_login"],
+      true,
+      v => false
+    );
+
+    this.props.navigation.navigate("SignUpScreen")
+  };
 
   _cancel = () => {
     this.props.updateGeneralSettings(

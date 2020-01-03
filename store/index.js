@@ -20,7 +20,7 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 const sagaMiddleWare = createSagaMiddleware();
 
 export const store = createStore(
-  persistedReducer,
+  rootReducer,
   applyMiddleware(batchDispatchMiddleware, thunk, sagaMiddleWare)
 );
 

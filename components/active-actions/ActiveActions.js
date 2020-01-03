@@ -148,7 +148,7 @@ export default class ActiveActions extends React.PureComponent {
   render() {
     return (
       <>
-        <BetaWelcome />
+        <BetaWelcome navigation={this.props.navigation} />
       </>
     );
   }

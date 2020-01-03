@@ -1348,6 +1348,7 @@ class UncompletedTaskCard extends React.PureComponent {
             current_goal_value={this.update_obj.current_goal_value}
             title={this.update_obj.title}
             goal_value={this.update_obj.goal_value}
+            chosen_date_data={this.props.chosen_date_data}
           />
         ) : null}
       </View>
@@ -1466,11 +1467,21 @@ class CompletedTaskCardHolder extends React.PureComponent {
 
   componentDidUpdate(prevProps, prevState) {
     if (
+      // this.props.tasks !== prevProps.tasks ||
+      // this.props.completed_tasks !== prevProps.completed_tasks ||
+      // this.props.current_chosen_category !==
+      //   prevProps.current_chosen_category ||
+      // this.props.chosen_date_data !== prevProps.chosen_date_data ||
+      // this.props.sortSettings !== prevProps.sortSettings
+
       this.props.completed_tasks !== prevProps.completed_tasks ||
+      this.props.tasks !== prevProps.tasks ||
       this.props.current_chosen_category !==
         prevProps.current_chosen_category ||
+      this.props.deleted_tasks !== prevProps.deleted_tasks ||
       this.props.chosen_date_data !== prevProps.chosen_date_data ||
-      this.props.sortSettings !== prevProps.sortSettings
+      this.props.sortSettings !== prevProps.sortSettings ||
+      this.props.plan !== prevProps.plan
     ) {
       let sort_settings = List(this.props.sortSettings);
 
@@ -1722,6 +1733,7 @@ class CompletedTaskCard extends React.PureComponent {
             current_goal_value={this.update_obj.current_goal_value}
             title={this.update_obj.title}
             goal_value={this.update_obj.goal_value}
+            chosen_date_data={this.props.chosen_date_data}
           />
         ) : null}
       </>

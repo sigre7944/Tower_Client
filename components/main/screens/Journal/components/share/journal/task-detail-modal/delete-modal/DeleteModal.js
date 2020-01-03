@@ -1656,7 +1656,7 @@ export default class DeleteModal extends React.PureComponent {
             schedule_day
           ).getTime();
 
-        if (Math.floor(task_end_at_timestamp - schedule_timestamp) === 0) {
+        if (Math.floor(task_end_at_timestamp - schedule_timestamp) <= 0) {
           return true;
         }
       } else if (type === "week") {
@@ -1678,8 +1678,9 @@ export default class DeleteModal extends React.PureComponent {
           ).getTime();
 
         if (
-          task_end_at_timestamp >= schedule_start_timestamp &&
-          task_end_at_timestamp <= schedule_end_timestamp
+          (task_end_at_timestamp >= schedule_start_timestamp &&
+            task_end_at_timestamp <= schedule_end_timestamp) ||
+          task_end_at_timestamp <= schedule_start_timestamp
         ) {
           return true;
         }
