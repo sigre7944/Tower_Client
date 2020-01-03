@@ -78,9 +78,18 @@ export default class ActiveActions extends React.PureComponent {
           .get();
 
         this._updateAccountRedux(get_user_doc.data(), true);
-      } else {
+      }
+      // In beta testing period, when the user doesnt log in, pop up beta banner
+      else {
         let sign_out_response = await firebase.auth().signOut();
         this._updateAccountRedux({ package: { plan: "free" } }, false);
+
+        // Pop up beta banner
+        this.props.updateGeneralSettings(
+          ["active_info", "should_beta_suggest_login"],
+          true,
+          v => true
+        );
       }
     } catch (err) {
       // let sign_out_response = await firebase.auth().signOut();
@@ -93,6 +102,22 @@ export default class ActiveActions extends React.PureComponent {
       this.state.appState.match(/inactive|background/) &&
       nextAppState === "active"
     ) {
+      let latest_timestamp = Map(this.props.generalSettings).getIn([
+          "active_info",
+          "latest_timestamp"
+        ]),
+        session_time = Map(this.props.generalSettings).getIn([
+          "active_info",
+          "session_time"
+        ]);
+
+      let current_timestamp = Date.now();
+
+      // Check and update current user account again if user hasn't been active for 30 mins
+      if (current_timestamp - latest_timestamp > session_time) {
+        this._checkAndUpdateCurrentUserAccount();
+      }
+
       // Update latest active timestamp
       this.props.updateGeneralSettings(
         ["active_info", "latest_timestamp"],

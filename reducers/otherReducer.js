@@ -158,7 +158,8 @@ let initial_general_settings = fromJS({
 
   active_info: {
     latest_timestamp: Date.now(),
-    beta_suggest_login: true
+    should_beta_suggest_login: true,
+    session_time: 30 * 60 * 1000
   }
 
   // currency: "EUR",

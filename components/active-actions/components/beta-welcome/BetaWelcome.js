@@ -13,22 +13,22 @@ export default class ActiveActions extends React.PureComponent {
 
   _cancel = () => {
     this.props.updateGeneralSettings(
-      ["active_info", "beta_suggest_login"],
+      ["active_info", "should_beta_suggest_login"],
       true,
-      v => !v
+      v => false
     );
   };
 
   componentDidMount() {}
 
   render() {
-    let beta_suggest_login = Map(this.props.generalSettings).getIn([
+    let should_beta_suggest_login = Map(this.props.generalSettings).getIn([
       "active_info",
-      "beta_suggest_login"
+      "should_beta_suggest_login"
     ]);
     return (
       <>
-        {beta_suggest_login ? (
+        {should_beta_suggest_login ? (
           <Modal transparent={true}>
             <View
               style={{
