@@ -10,6 +10,8 @@ import {
   Animated
 } from "react-native";
 
+import ActiveActions from "../active-actions/ActiveActions.Container";
+
 import AddCategoryPanel from "../main/screens/Journal/components/share/category/add-category-panel/AddCategoryPanel.Container";
 import EditCategoryPanel from "../main/screens/Journal/components/share/category/edit-category-panel/EditCategoryPanel.Container";
 import AccountRow from "./components/account-row/AccountRow.Container";
@@ -1189,6 +1191,8 @@ export default class Drawer extends React.PureComponent {
             )}
           </>
         )}
+
+        <ActiveActions />
       </View>
     );
   }
