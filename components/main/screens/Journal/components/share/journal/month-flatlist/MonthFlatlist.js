@@ -27,6 +27,8 @@ export default class MonthFlatlist extends React.PureComponent {
   _flatlistRef = React.createRef();
 
   start_index = -1;
+  start_year = 0;
+  start_month = 0;
 
   state = {
     should_update: 0,
@@ -145,9 +147,7 @@ export default class MonthFlatlist extends React.PureComponent {
     this.scrollToIndex(this.start_index);
   };
 
-  componentDidMount() {
-    this.initializeMonthData();
-
+  _initialUpdateWithStartIndex = () => {
     let current = new Date();
 
     this.month_data.every((data, index) => {
@@ -157,6 +157,9 @@ export default class MonthFlatlist extends React.PureComponent {
       ) {
         this.start_index = index;
 
+        this.start_month = data.month;
+        this.start_year = data.year;
+
         this.chooseMonth(this.start_index);
 
         return false;
@@ -164,11 +167,26 @@ export default class MonthFlatlist extends React.PureComponent {
 
       return true;
     });
+  };
+
+  componentDidMount() {
+    this.initializeMonthData();
+    this._initialUpdateWithStartIndex();
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.headerPressed !== prevProps.headerPressed) {
       if (this.props.currentRoute === "Month") {
+        let date = new Date();
+        let year_diff = date.getFullYear() - this.start_year;
+
+        let month_diff = date.getMonth() + year_diff - this.start_month;
+
+        this.start_month = date.getMonth();
+        this.start_year = date.getFullYear();
+
+        this.start_index += month_diff;
+
         this.chooseMonth(this.start_index);
       }
     }

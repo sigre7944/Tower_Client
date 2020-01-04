@@ -32,6 +32,7 @@ export default class DayFlatlist extends React.PureComponent {
   _flatlistRef = React.createRef();
 
   start_index = -1;
+  start_timestamp = 0;
 
   state = {
     should_update: 0,
@@ -137,9 +138,7 @@ export default class DayFlatlist extends React.PureComponent {
     this.scrollToIndex(this.start_index);
   };
 
-  componentDidMount() {
-    this.initializeDayData();
-
+  _initialUpdateWithStartIndex = () => {
     let day = new Date().getDate(),
       month = new Date().getMonth(),
       year = new Date().getFullYear();
@@ -148,6 +147,8 @@ export default class DayFlatlist extends React.PureComponent {
       if (data.day === day && data.month === month && data.year === year) {
         this.start_index = index;
 
+        this.start_timestamp = new Date(year, month, day).getTime();
+
         this.chooseDay(this.start_index);
 
         return false;
@@ -155,11 +156,32 @@ export default class DayFlatlist extends React.PureComponent {
 
       return true;
     });
+  };
+
+  componentDidMount() {
+    this.initializeDayData();
+
+    this._initialUpdateWithStartIndex();
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.headerPressed !== prevProps.headerPressed) {
       if (this.props.currentRoute === "Day") {
+        let current_date = new Date();
+        let current_timestamp = Date.now();
+
+        let day_diff = Math.floor(
+          (current_timestamp - this.start_timestamp) / (86400 * 1000)
+        );
+
+        this.start_timestamp = new Date(
+          current_date.getFullYear(),
+          current_date.getMonth(),
+          current_date.getDate()
+        ).getTime();
+        
+        this.start_index += day_diff;
+
         this.chooseDay(this.start_index);
       }
     }
