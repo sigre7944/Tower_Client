@@ -36,7 +36,7 @@ export const updateBulkThunk = ({
     updateBalance(balance_data.type, balance_data.amount)
   ];
 
-  // Update day chart stats if type is day, week, month
+  // Update day chart stats if type is day
   if (chart_data.should_update_day_chart_stats) {
     action_array.push(
       updateChartStats(
@@ -48,7 +48,7 @@ export const updateBulkThunk = ({
     );
   }
 
-  // Update day chart stats if type is week, month
+  // Update week chart stats if type is  day, week
   if (chart_data.should_update_week_chart_stats) {
     action_array.push(
       updateChartStats(
@@ -60,7 +60,30 @@ export const updateBulkThunk = ({
     );
   }
 
-  // Update day chart stats if type is month
+  // Update month chart stats if type is week (start week and end week if diff months)
+  if (chart_data.should_update_month_chart_stats_by_week_if_diff_months) {
+    // Start week
+    action_array.push(
+      updateChartStats(
+        chart_data.month_action_type,
+        chart_data.start_month_chart_keyPath,
+        chart_data.start_month_chart_notSetValue,
+        chart_data.start_month_chart_updater
+      )
+    );
+
+    // End week
+    action_array.push(
+      updateChartStats(
+        chart_data.month_action_type,
+        chart_data.end_month_chart_keyPath,
+        chart_data.end_month_chart_notSetValue,
+        chart_data.end_month_chart_updater
+      )
+    );
+  }
+
+  // Update month chart stats if type is day, week, month
   if (chart_data.should_update_month_chart_stats) {
     action_array.push(
       updateChartStats(
@@ -72,7 +95,7 @@ export const updateBulkThunk = ({
     );
   }
 
-  // Update day chart stats if type is day, week, month
+  // Update year chart stats if type is day, week, month
   if (chart_data.should_update_year_chart_stats) {
     action_array.push(
       updateChartStats(

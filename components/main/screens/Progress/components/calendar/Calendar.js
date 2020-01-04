@@ -647,9 +647,9 @@ class WeekRowHolder extends React.PureComponent {
 }
 
 class WeekHolder extends React.Component {
-  year = this.props.week_row_data.year;
-  month = this.props.week_row_data.month;
-  day = this.props.week_row_data.day;
+  year = this.props.week_row_data.start_year;
+  month = this.props.week_row_data.start_month;
+  day = this.props.week_row_data.monday;
   week_timestamp_toString = new Date(this.year, this.month, this.day)
     .getTime()
     .toString();

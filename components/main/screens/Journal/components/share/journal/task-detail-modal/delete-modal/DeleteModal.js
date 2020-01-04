@@ -1030,7 +1030,6 @@ export default class DeleteModal extends React.PureComponent {
                 value - completed_value < 0 ? 0 : value - completed_value
             );
 
-            console.log(day_in_week, week_timestamp_toString, priority_index);
             returning_week_chart_stats_map.updateIn(
               [
                 week_timestamp_toString,
@@ -1119,6 +1118,17 @@ export default class DeleteModal extends React.PureComponent {
 
       let { monday, start_month, start_year } = chosen_date_data;
 
+      let start_month_date = new Date(
+          chosen_date_data.start_year,
+          chosen_date_data.start_month
+        ),
+        start_month_timestamp_toString = start_month_date.getTime().toString(),
+        end_month_date = new Date(
+          chosen_date_data.end_year,
+          chosen_date_data.end_month
+        ),
+        end_month_timestamp_toString = end_month_date.getTime().toString();
+
       timestamp_toString = new Date(start_year, start_month, monday)
         .getTime()
         .toString();
@@ -1166,11 +1176,39 @@ export default class DeleteModal extends React.PureComponent {
               );
             }
 
-            if (returning_month_chart_stats_map.has(month_timestamp_toString)) {
-              returning_month_chart_stats_map.updateIn(
-                [month_timestamp_toString, "totalPoints"],
-                value => (value - total_points < 0 ? 0 : value - total_points)
-              );
+            // If start month diffs from end month, meaning the start month chart stats
+            // and end month chart stats have been affected.
+            if (start_month_date.getMonth() !== end_month_date.getMonth()) {
+              if (
+                returning_month_chart_stats_map.has(
+                  start_month_timestamp_toString
+                )
+              ) {
+                returning_month_chart_stats_map.updateIn(
+                  [start_month_timestamp_toString, "totalPoints"],
+                  value => (value - total_points < 0 ? 0 : value - total_points)
+                );
+              }
+
+              if (
+                returning_month_chart_stats_map.has(
+                  end_month_timestamp_toString
+                )
+              ) {
+                returning_month_chart_stats_map.updateIn(
+                  [end_month_timestamp_toString, "totalPoints"],
+                  value => (value - total_points < 0 ? 0 : value - total_points)
+                );
+              }
+            } else {
+              if (
+                returning_month_chart_stats_map.has(month_timestamp_toString)
+              ) {
+                returning_month_chart_stats_map.updateIn(
+                  [month_timestamp_toString, "totalPoints"],
+                  value => (value - total_points < 0 ? 0 : value - total_points)
+                );
+              }
             }
 
             if (returning_year_chart_stats_map.has(year_toString)) {
@@ -1222,11 +1260,31 @@ export default class DeleteModal extends React.PureComponent {
                   value =>
                     value - completed_value < 0 ? 0 : value - completed_value
                 );
-                returning_month_chart_stats_map.updateIn(
-                  [month_timestamp_toString, "task_type_completions", 1],
-                  value =>
-                    value - completed_value < 0 ? 0 : value - completed_value
-                );
+                // If start month diffs from end month, meaning the start month chart stats
+                // and end month chart stats have been affected.
+                if (start_month_date.getMonth() !== end_month_date.getMonth()) {
+                  returning_month_chart_stats_map.updateIn(
+                    [
+                      start_month_timestamp_toString,
+                      "task_type_completions",
+                      1
+                    ],
+                    value =>
+                      value - completed_value < 0 ? 0 : value - completed_value
+                  );
+
+                  returning_month_chart_stats_map.updateIn(
+                    [end_month_timestamp_toString, "task_type_completions", 1],
+                    value =>
+                      value - completed_value < 0 ? 0 : value - completed_value
+                  );
+                } else {
+                  returning_month_chart_stats_map.updateIn(
+                    [month_timestamp_toString, "task_type_completions", 1],
+                    value =>
+                      value - completed_value < 0 ? 0 : value - completed_value
+                  );
+                }
               }
 
               if (returning_year_chart_stats_map.has(year_toString)) {

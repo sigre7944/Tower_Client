@@ -35,6 +35,10 @@ export const week_chart_stats = (state = Map(), action) => {
 export const month_chart_stats = (state = Map(), action) => {
   switch (action.type) {
     case "UPDATE_MONTH_CHART_STATS":
+      // console.log(
+      //   "\n",
+      //   state.updateIn(action.keyPath, action.notSetValue, action.updater)
+      // );
       return state.updateIn(action.keyPath, action.notSetValue, action.updater);
 
     case "RETURN_NEW_MONTH_CHART_STATS":
