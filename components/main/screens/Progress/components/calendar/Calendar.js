@@ -498,7 +498,7 @@ class MonthHolder extends React.Component {
             alignItems: "center"
           }}
         >
-          <Text style={styles.point_earned_text}>Point earned:</Text>
+          <Text style={styles.point_earned_text}>Points earned:</Text>
 
           <Text style={styles.points_text}>{total_points}</Text>
         </View>
@@ -713,7 +713,7 @@ class WeekHolder extends React.Component {
             >
               <Text style={styles.point_text_white}>{total_points}</Text>
 
-              {/* <Text style={styles.point_text_white}>pt</Text> */}
+              <Text style={styles.point_text_white}>pt</Text>
             </View>
           </View>
         ) : (
@@ -805,7 +805,7 @@ class DayHolder extends React.Component {
             >
               <Text style={styles.point_text_white}>{total_points}</Text>
 
-              {/* <Text style={styles.point_text_white}>pt</Text> */}
+              <Text style={styles.point_text_white}>pt</Text>
             </View>
           </View>
         ) : (
@@ -878,7 +878,7 @@ class UnchosenDayHolder extends React.Component {
             >
               <Text style={styles.point_text_white}>{total_points}</Text>
 
-              {/* <Text style={styles.point_text_white}>pt</Text> */}
+              <Text style={styles.point_text_white}>pt</Text>
             </View>
           </View>
         ) : (

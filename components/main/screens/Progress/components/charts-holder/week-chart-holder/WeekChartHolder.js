@@ -143,11 +143,6 @@ export default class WeekChartHolder extends React.Component {
   };
 
   _updateYDataAndChartData = () => {
-    // let closet_max = 0,
-    //     diff_with_ten = this.y_max % 10
-
-    // closet_max = this.y_max + (10 - diff_with_ten)
-
     if (this.y_max <= 5) {
       this.number_of_ticks = this.y_max;
     } else {
@@ -155,6 +150,28 @@ export default class WeekChartHolder extends React.Component {
     }
 
     this.y_data = [0, this.y_max];
+  };
+
+  _findYMax = () => {
+    let { monday, start_month, start_year } = this.state,
+      week_timestamp_toString = new Date(start_year, start_month, monday)
+        .getTime()
+        .toString();
+
+    let week_chart_stats = Map(this.props.week_chart_stats),
+      completed_priority_array = List(
+        week_chart_stats.getIn([
+          week_timestamp_toString,
+          "completed_priority_array"
+        ])
+      ).toArray();
+
+    let sum_value_by_day_completed_priority_array = completed_priority_array.map(
+      (day_in_week_array, index) =>
+        day_in_week_array.reduce((total, value) => total + value)
+    );
+
+    return Math.max.apply(null, sum_value_by_day_completed_priority_array);
   };
 
   _updateWeekChartData = () => {
@@ -165,15 +182,7 @@ export default class WeekChartHolder extends React.Component {
       chart_data = this._initChartData(),
       week_chart_stats_map = Map(this.props.week_chart_stats);
 
-    this.y_max = 0;
-
-    if (week_chart_stats_map.hasIn([week_timestamp_toString, "current"])) {
-      let current = List(
-        week_chart_stats_map.getIn([week_timestamp_toString, "current"])
-      );
-
-      this.y_max = current.reduce((total, value) => total + value);
-    }
+    this.y_max = this._findYMax();
 
     if (
       week_chart_stats_map.hasIn([
