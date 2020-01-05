@@ -75,65 +75,82 @@ export default class RepeatEndOnOptionRow extends React.Component {
   };
 
   _changeDayPickerValue = (itemValue, itemIndex) => {
-    let year = parseInt(this.state.selected_year),
-      month = parseInt(this.state.selected_month),
-      day = parseInt(itemValue);
+    let target_date = itemValue;
 
-    let date = new Date(year, month, day),
-      chosen_date_timestamp = date.getTime(),
-      current_date = new Date(),
-      current_date_timestamp = current_date.getTime();
+    let chosen_day_of_month_date = new Date(
+      parseInt(this.state.selected_year),
+      parseInt(this.state.selected_month),
+      parseInt(itemValue)
+    );
 
-    if (chosen_date_timestamp < current_date_timestamp) {
-      date = current_date;
+    let last_day_of_month = new Date(
+      parseInt(this.state.selected_year),
+      parseInt(this.state.selected_month) + 1,
+      0
+    ).getDate();
+
+    if (
+      chosen_day_of_month_date.getMonth() !==
+      parseInt(this.state.selected_month)
+    ) {
+      target_date = last_day_of_month;
     }
 
     this.setState({
-      selected_month: date.getMonth().toString(),
-      selected_day: date.getDate().toString(),
-      selected_year: date.getFullYear().toString()
+      selected_day: target_date.toString()
     });
   };
 
   _changeMonthPickerValue = (itemValue, itemIndex) => {
-    let year = parseInt(this.state.selected_year),
-      month = parseInt(itemValue),
-      day = parseInt(this.state.selected_day);
+    let target_date = this.state.selected_day;
 
-    let date = new Date(year, month, day),
-      chosen_date_timestamp = date.getTime(),
-      current_date = new Date(),
-      current_date_timestamp = current_date.getTime();
+    let chosen_day_of_month_date = new Date(
+      parseInt(this.state.selected_year),
+      parseInt(itemValue),
+      parseInt(this.state.selected_day)
+    );
 
-    if (chosen_date_timestamp < current_date_timestamp) {
-      date = current_date;
+    let last_day_of_month = new Date(
+      parseInt(this.state.selected_year),
+      parseInt(itemValue) + 1,
+      0
+    ).getDate();
+
+    if (chosen_day_of_month_date.getMonth() !== parseInt(itemValue)) {
+      target_date = last_day_of_month;
     }
 
     this.setState({
-      selected_month: itemValue,
-      selected_day: date.getDate().toString(),
-      selected_year: date.getFullYear().toString()
+      selected_month: itemValue.toString(),
+      selected_day: target_date.toString()
     });
   };
 
   _changeYearPickerValue = (itemValue, itemIndex) => {
-    let year = parseInt(itemValue),
-      month = parseInt(this.state.selected_month),
-      day = parseInt(this.state.selected_day);
+    let target_date = this.state.selected_day;
 
-    let date = new Date(year, month, day),
-      chosen_date_timestamp = date.getTime(),
-      current_date = new Date(),
-      current_date_timestamp = current_date.getTime();
+    let chosen_day_of_month_date = new Date(
+      parseInt(itemValue),
+      parseInt(this.state.selected_month),
+      parseInt(this.state.selected_day)
+    );
 
-    if (chosen_date_timestamp < current_date_timestamp) {
-      date = current_date;
+    let last_day_of_month = new Date(
+      parseInt(itemValue),
+      parseInt(this.state.selected_month) + 1,
+      0
+    ).getDate();
+
+    if (
+      chosen_day_of_month_date.getMonth() !==
+      parseInt(this.state.selected_month)
+    ) {
+      target_date = last_day_of_month;
     }
 
     this.setState({
-      selected_day: date.getDate().toString(),
-      selected_month: date.getMonth().toString(),
-      selected_year: itemValue
+      selected_day: target_date.toString(),
+      selected_year: itemValue.toString()
     });
   };
 
@@ -245,7 +262,6 @@ class DatePickerWheel extends React.PureComponent {
       <View
         style={{
           position: "absolute",
-          height: normalize(200, "height"),
           bottom: 0,
           left: 0,
           right: 0,
@@ -291,21 +307,23 @@ class DatePickerWheel extends React.PureComponent {
             <Text style={styles.picker_done_option_text}>Done</Text>
           </TouchableOpacity>
         </View>
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            marginTop: normalize(70, "height")
-          }}
-        >
-          {Platform.OS === "android" ? (
+        {Platform.OS === "android" ? (
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: normalize(70, "height"),
+              marginBottom: normalize(22, "height"),
+              borderTopWidth: 1,
+              borderColor: "#BDBDBD"
+            }}
+          >
             <View
               style={{
                 flexDirection: "row",
                 paddingHorizontal: normalize(22, "width"),
-                // height: normalize(24, "height"),
                 alignItems: "center",
                 justifyContent: "center"
               }}
@@ -323,23 +341,35 @@ class DatePickerWheel extends React.PureComponent {
                 _changeYearPickerValue={this.props._changeYearPickerValue}
               />
             </View>
-          ) : (
-            <>
-              <DayPickerValueHolder
-                day={this.props.day}
-                _changeDayPickerValue={this.props._changeDayPickerValue}
-              />
-              <MonthPickerValueHolder
-                month={this.props.month}
-                _changeMonthPickerValue={this.props._changeMonthPickerValue}
-              />
-              <YearPickerValueHolder
-                year={this.props.year}
-                _changeYearPickerValue={this.props._changeYearPickerValue}
-              />
-            </>
-          )}
-        </View>
+          </View>
+        ) : (
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: normalize(70, "height"),
+              height: normalize(200, "height"),
+              marginBottom: normalize(22, "height"),
+              borderTopWidth: 1,
+              borderColor: "#BDBDBD"
+            }}
+          >
+            <DayPickerValueHolder
+              day={this.props.day}
+              _changeDayPickerValue={this.props._changeDayPickerValue}
+            />
+            <MonthPickerValueHolder
+              month={this.props.month}
+              _changeMonthPickerValue={this.props._changeMonthPickerValue}
+            />
+            <YearPickerValueHolder
+              year={this.props.year}
+              _changeYearPickerValue={this.props._changeYearPickerValue}
+            />
+          </View>
+        )}
       </View>
     );
   }
