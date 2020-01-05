@@ -277,34 +277,12 @@ export default class MonthChartHolder extends React.Component {
         {this.state.chart_change_calendar_available ? (
           <>
             {this.state.should_active_calendar ? (
-              <Modal transparent={true}>
-                <View
-                  style={{
-                    flex: 1,
-                    position: "relative",
-                    justifyContent: "center",
-                    alignItems: "center"
-                  }}
-                >
-                  <TouchableWithoutFeedback onPress={this._toggleCalendar}>
-                    <View
-                      style={{
-                        flex: 1,
-                        width: window_width,
-                        backgroundColor: "black",
-                        opacity: 0.2
-                      }}
-                    ></View>
-                  </TouchableWithoutFeedback>
-
-                  <MonthCalendar
-                    hideAction={this._toggleCalendar}
-                    _setCalendarData={this._setCalendarData}
-                    month={this.state.month}
-                    year={this.state.year}
-                  />
-                </View>
-              </Modal>
+              <MonthCalendar
+                hideAction={this._toggleCalendar}
+                _setCalendarData={this._setCalendarData}
+                month={this.state.month}
+                year={this.state.year}
+              />
             ) : null}
           </>
         ) : (

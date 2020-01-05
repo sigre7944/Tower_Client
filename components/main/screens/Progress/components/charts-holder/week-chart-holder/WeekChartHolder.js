@@ -355,38 +355,16 @@ export default class WeekChartHolder extends React.Component {
         {this.state.chart_change_calendar_available ? (
           <>
             {this.state.should_active_calendar ? (
-              <Modal transparent={true}>
-                <View
-                  style={{
-                    flex: 1,
-                    position: "relative",
-                    justifyContent: "center",
-                    alignItems: "center"
-                  }}
-                >
-                  <TouchableWithoutFeedback onPress={this._toggleCalendar}>
-                    <View
-                      style={{
-                        flex: 1,
-                        width: window_width,
-                        backgroundColor: "black",
-                        opacity: 0.2
-                      }}
-                    ></View>
-                  </TouchableWithoutFeedback>
-
-                  <WeekCalendar
-                    hideAction={this._toggleCalendar}
-                    _setCalendarData={this._setCalendarData}
-                    chosen_month={this.state.month}
-                    start_month={this.state.start_month}
-                    end_month={this.state.end_month}
-                    year={this.state.year}
-                    start_noWeekInMonth={this.state.start_noWeekInMonth}
-                    end_noWeekInMonth={this.state.end_noWeekInMonth}
-                  />
-                </View>
-              </Modal>
+              <WeekCalendar
+                hideAction={this._toggleCalendar}
+                _setCalendarData={this._setCalendarData}
+                chosen_month={this.state.month}
+                start_month={this.state.start_month}
+                end_month={this.state.end_month}
+                year={this.state.year}
+                start_noWeekInMonth={this.state.start_noWeekInMonth}
+                end_noWeekInMonth={this.state.end_noWeekInMonth}
+              />
             ) : null}
           </>
         ) : (

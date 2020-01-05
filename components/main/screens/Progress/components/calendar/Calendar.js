@@ -21,7 +21,7 @@ const panel_width = Dimensions.get("window").width;
 const margin_top_for_calendar_row = normalize(20, "height");
 const margin_top_for_month_year_text = normalize(30, "height");
 
-export default class Calendar extends React.Component {
+export default class Calendar extends React.PureComponent {
   year_in_between = 4;
 
   current_year = new Date().getFullYear();
@@ -670,13 +670,6 @@ class WeekHolder extends React.Component {
   };
 
   render() {
-    // console.log(
-    //   this.start_year,
-    //   this.start_month,
-    //   this.monday,
-    //   this.week_timestamp_toString
-    // );
-
     let total_points = this._calculateTotalPointsWeek(),
       should_render_point_banner = false;
 
