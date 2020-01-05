@@ -1,6 +1,7 @@
 import React from "react";
 import { View, FlatList } from "react-native";
-import Calendar from "./components/calendar/Calendar.Container";
+// import Calendar from "./components/calendar/Calendar.Container";
+import CalendarV2 from "./components/calendar-v2/CalendarV2.Container";
 import SummaryHolder from "./components/summary-holder/SummaryHolder.Container";
 import ChartsHolder from "./components/charts-holder/ChartsHolder.Container";
 
@@ -48,7 +49,13 @@ export default class Progress extends React.PureComponent {
   _renderItem = ({ item, index }) => {
     if (item.id === "calendar") {
       return (
-        <Calendar
+        // <Calendar
+        //   _setChosenMonthFromCalendar={this._setChosenMonthFromCalendar}
+        //   _setChosenYearFromCalendar={this._setChosenYearFromCalendar}
+        //   navigation={this.props.navigation}
+        // />
+
+        <CalendarV2
           _setChosenMonthFromCalendar={this._setChosenMonthFromCalendar}
           _setChosenYearFromCalendar={this._setChosenYearFromCalendar}
           navigation={this.props.navigation}

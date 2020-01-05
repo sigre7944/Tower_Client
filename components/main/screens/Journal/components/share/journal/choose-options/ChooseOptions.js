@@ -207,7 +207,8 @@ export default class ChooseOptions extends React.PureComponent {
                   paddingHorizontal: normalize(33, "width"),
                   flexDirection: "row",
                   alignItems: "center",
-                  height: normalize(60, "height")
+                  height: normalize(60, "height"),
+                  marginBottom: normalize(22, "height")
                 }}
                 onPress={this._chooseSortBy}
               >

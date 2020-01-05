@@ -21,7 +21,7 @@ const panel_width = Dimensions.get("window").width;
 const margin_top_for_calendar_row = normalize(20, "height");
 const margin_top_for_month_year_text = normalize(30, "height");
 
-export default class Calendar extends React.Component {
+export default class Calendar extends React.PureComponent {
   year_in_between = 4;
 
   current_year = new Date().getFullYear();
@@ -377,7 +377,8 @@ class MonthHolder extends React.Component {
       Map(this.props.month_chart_stats).get(month_timestamp_toString) !==
         Map(nextProps.month_chart_stats).get(month_timestamp_toString) ||
       this.props.chart_change_calendar_available !==
-        nextProps.chart_change_calendar_available
+        nextProps.chart_change_calendar_available ||
+      this.props.week_chart_stats !== nextProps.week_chart_stats
     );
   }
 
@@ -420,6 +421,9 @@ class MonthHolder extends React.Component {
         day: new Date(monday).getDate(),
         month,
         year,
+        start_year: new Date(monday).getFullYear(),
+        start_month: new Date(monday).getMonth(),
+        monday: new Date(monday).getDate(),
         noWeekInMonth
       });
 
@@ -464,6 +468,7 @@ class MonthHolder extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (
+      this.props.month_chart_stats !== prevProps.month_chart_stats ||
       this.props.week_chart_stats !== prevProps.week_chart_stats ||
       this.props.day_chart_stats !== prevProps.day_chart_stats
     ) {
@@ -493,7 +498,7 @@ class MonthHolder extends React.Component {
             alignItems: "center"
           }}
         >
-          <Text style={styles.point_earned_text}>Point earned:</Text>
+          <Text style={styles.point_earned_text}>Points earned:</Text>
 
           <Text style={styles.points_text}>{total_points}</Text>
         </View>
@@ -642,9 +647,9 @@ class WeekRowHolder extends React.PureComponent {
 }
 
 class WeekHolder extends React.Component {
-  year = this.props.week_row_data.year;
-  month = this.props.week_row_data.month;
-  day = this.props.week_row_data.day;
+  year = this.props.week_row_data.start_year;
+  month = this.props.week_row_data.start_month;
+  day = this.props.week_row_data.monday;
   week_timestamp_toString = new Date(this.year, this.month, this.day)
     .getTime()
     .toString();

@@ -412,6 +412,27 @@ export default class Drawer extends React.PureComponent {
                 timestamp = parseInt(key),
                 total_points_array = List(data.get("total_points_array"));
 
+              let week_date = new Date(timestamp), // contains start_month, start_year and monday
+                start_month_date = new Date(
+                  week_date.getFullYear(),
+                  week_date.getMonth()
+                ),
+                start_month_timestamp_toString = start_month_date
+                  .getTime()
+                  .toString(),
+                end_week_date = new Date(timestamp);
+
+              end_week_date.setDate(week_date.getDate() + 6);
+
+              let end_month_date = new Date(
+                end_week_date.getFullYear(),
+                end_week_date.getMonth()
+              );
+
+              let end_month_timestamp_toString = end_month_date
+                .getTime()
+                .toString();
+
               completed_priority_array.forEach(
                 (completed_value_array, day_in_week_index) => {
                   let day_in_week =
@@ -463,17 +484,49 @@ export default class Drawer extends React.PureComponent {
                     );
                   }
 
+                  // If start month diffs from end month, meaning the start month chart stats
+                  // and end month chart stats have been affected.
                   if (
-                    new_month_chart_stats.hasIn([
-                      month_timestamp_toString,
-                      "totalPoints"
-                    ])
+                    start_month_date.getMonth() !== end_month_date.getMonth()
                   ) {
-                    new_month_chart_stats.updateIn(
-                      [month_timestamp_toString, "totalPoints"],
-                      value =>
-                        value - total_points < 0 ? 0 : value - total_points
-                    );
+                    if (
+                      new_month_chart_stats.hasIn([
+                        start_month_timestamp_toString,
+                        "totalPoints"
+                      ])
+                    ) {
+                      new_month_chart_stats.updateIn(
+                        [start_month_timestamp_toString, "totalPoints"],
+                        value =>
+                          value - total_points < 0 ? 0 : value - total_points
+                      );
+                    }
+
+                    if (
+                      new_month_chart_stats.hasIn([
+                        end_month_timestamp_toString,
+                        "totalPoints"
+                      ])
+                    ) {
+                      new_month_chart_stats.updateIn(
+                        [end_month_timestamp_toString, "totalPoints"],
+                        value =>
+                          value - total_points < 0 ? 0 : value - total_points
+                      );
+                    }
+                  } else {
+                    if (
+                      new_month_chart_stats.hasIn([
+                        month_timestamp_toString,
+                        "totalPoints"
+                      ])
+                    ) {
+                      new_month_chart_stats.updateIn(
+                        [month_timestamp_toString, "totalPoints"],
+                        value =>
+                          value - total_points < 0 ? 0 : value - total_points
+                      );
+                    }
                   }
 
                   if (
@@ -620,24 +673,71 @@ export default class Drawer extends React.PureComponent {
                         );
                       }
 
+                      // If start month diffs from end month, meaning the start month chart stats
+                      // and end month chart stats have been affected.
                       if (
-                        new_month_chart_stats.hasIn([
-                          month_timestamp_toString,
-                          "task_type_completions",
-                          this.task_type_order["week"]
-                        ])
+                        start_month_date.getMonth() !==
+                        end_month_date.getMonth()
                       ) {
-                        new_month_chart_stats.updateIn(
-                          [
+                        if (
+                          new_month_chart_stats.hasIn([
+                            start_month_timestamp_toString,
+                            "task_type_completions",
+                            this.task_type_order["week"]
+                          ])
+                        ) {
+                          new_month_chart_stats.updateIn(
+                            [
+                              start_month_timestamp_toString,
+                              "task_type_completions",
+                              this.task_type_order["week"]
+                            ],
+                            value =>
+                              value - completed_value < 0
+                                ? 0
+                                : value - completed_value
+                          );
+                        }
+
+                        if (
+                          new_month_chart_stats.hasIn([
+                            end_month_timestamp_toString,
+                            "task_type_completions",
+                            this.task_type_order["week"]
+                          ])
+                        ) {
+                          new_month_chart_stats.updateIn(
+                            [
+                              end_month_timestamp_toString,
+                              "task_type_completions",
+                              this.task_type_order["week"]
+                            ],
+                            value =>
+                              value - completed_value < 0
+                                ? 0
+                                : value - completed_value
+                          );
+                        }
+                      } else {
+                        if (
+                          new_month_chart_stats.hasIn([
                             month_timestamp_toString,
                             "task_type_completions",
                             this.task_type_order["week"]
-                          ],
-                          value =>
-                            value - completed_value < 0
-                              ? 0
-                              : value - completed_value
-                        );
+                          ])
+                        ) {
+                          new_month_chart_stats.updateIn(
+                            [
+                              month_timestamp_toString,
+                              "task_type_completions",
+                              this.task_type_order["week"]
+                            ],
+                            value =>
+                              value - completed_value < 0
+                                ? 0
+                                : value - completed_value
+                          );
+                        }
                       }
 
                       if (
@@ -1192,7 +1292,7 @@ export default class Drawer extends React.PureComponent {
           </>
         )}
 
-        <ActiveActions />
+        <ActiveActions navigation={this.props.navigation} />
       </View>
     );
   }

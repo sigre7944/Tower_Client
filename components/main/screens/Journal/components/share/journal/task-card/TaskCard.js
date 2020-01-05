@@ -69,38 +69,37 @@ export default class TaskCard extends React.PureComponent {
     return new Date(new Date(date).getTime() - diff * 86400 * 1000);
   };
 
-  _doUpdateOnCompletedTask = (flag, type, operation) => {
+  _doUpdateOnCompletedTask = (chosen_date_data, flag, type, operation) => {
     let task_map = Map(this.props.task_data),
       task_id = task_map.get("id"),
       task_category = task_map.get("category"),
       task_priority = task_map.getIn(["priority", "value"]),
       task_reward = parseInt(task_map.getIn(["reward", "value"])),
       current_date = new Date(),
-      monday = this.getMonday(current_date),
-      data = Map(),
+      timestamp_data = Map(),
       completed_tasks_map = Map(this.props.completed_tasks),
       timestamp_toString = 0;
 
     if (type === "day") {
       timestamp_toString = new Date(
-        current_date.getFullYear(),
-        current_date.getMonth(),
-        current_date.getDate()
+        chosen_date_data.year,
+        chosen_date_data.month,
+        chosen_date_data.day
       )
         .getTime()
         .toString();
     } else if (type === "week") {
       timestamp_toString = new Date(
-        monday.getFullYear(),
-        monday.getMonth(),
-        monday.getDate()
+        chosen_date_data.start_year,
+        chosen_date_data.start_month,
+        chosen_date_data.monday
       )
         .getTime()
         .toString();
     } else {
       timestamp_toString = new Date(
-        current_date.getFullYear(),
-        current_date.getMonth()
+        chosen_date_data.year,
+        chosen_date_data.month
       )
         .getTime()
         .toString();
@@ -110,46 +109,41 @@ export default class TaskCard extends React.PureComponent {
       if (flag === "uncompleted") {
         if (completed_tasks_map.hasIn([task_id, timestamp_toString])) {
           if (type === "day") {
-            data = Map(completed_tasks_map.get(task_id)).asMutable();
-            data.updateIn(["category"], value => task_category);
-            data.updateIn(
-              [timestamp_toString, "totalPoints"],
-              value => value + task_reward
-            );
-            data.updateIn([timestamp_toString, "current"], value => value + 1);
-            data.updateIn(
-              [timestamp_toString, "current_priority_value"],
+            // Update timestamp data
+            timestamp_data = Map(
+              completed_tasks_map.getIn([task_id, timestamp_toString])
+            ).asMutable();
+
+            timestamp_data.update("totalPoints", value => value + task_reward);
+            timestamp_data.update("current", value => value + 1);
+            timestamp_data.update(
+              "current_priority_value",
               value => task_priority
             );
-            data.updateIn(
-              [
-                timestamp_toString,
-                "completed_priority_array",
-                this.priority_order[task_priority]
-              ],
+            timestamp_data.updateIn(
+              ["completed_priority_array", this.priority_order[task_priority]],
               value => value + 1
             );
           } else if (type === "week") {
             let day_in_week = current_date.getDay();
 
-            data = Map(completed_tasks_map.get(task_id)).asMutable();
-            data.updateIn(["category"], value => task_category);
-            data.updateIn(
-              [timestamp_toString, "totalPoints"],
+            // Update timestamp data
+            timestamp_data = Map(
+              completed_tasks_map.getIn([task_id, timestamp_toString])
+            ).asMutable();
+
+            timestamp_data.update("totalPoints", value => value + task_reward);
+            timestamp_data.updateIn(
+              ["total_points_array", day_in_week],
               value => value + task_reward
             );
-            data.updateIn(
-              [timestamp_toString, "total_points_array", day_in_week],
-              value => value + task_reward
-            );
-            data.updateIn([timestamp_toString, "current"], value => value + 1);
-            data.updateIn(
-              [timestamp_toString, "current_priority_value"],
+            timestamp_data.update("current", value => value + 1);
+            timestamp_data.update(
+              "current_priority_value",
               value => task_priority
             );
-            data.updateIn(
+            timestamp_data.updateIn(
               [
-                timestamp_toString,
                 "completed_priority_array",
                 day_in_week,
                 this.priority_order[task_priority]
@@ -159,24 +153,23 @@ export default class TaskCard extends React.PureComponent {
           } else {
             let day_in_month = current_date.getDate();
 
-            data = Map(completed_tasks_map.get(task_id)).asMutable();
-            data.updateIn(["category"], value => task_category);
-            data.updateIn(
-              [timestamp_toString, "totalPoints"],
+            // Update timestamp data
+            timestamp_data = Map(
+              completed_tasks_map.getIn([task_id, timestamp_toString])
+            ).asMutable();
+
+            timestamp_data.update("totalPoints", value => value + task_reward);
+            timestamp_data.updateIn(
+              ["total_points_array", day_in_month - 1],
               value => value + task_reward
             );
-            data.updateIn(
-              [timestamp_toString, "total_points_array", day_in_month - 1],
-              value => value + task_reward
-            );
-            data.updateIn([timestamp_toString, "current"], value => value + 1);
-            data.updateIn(
-              [timestamp_toString, "current_priority_value"],
+            timestamp_data.update("current", value => value + 1);
+            timestamp_data.update(
+              "current_priority_value",
               value => task_priority
             );
-            data.updateIn(
+            timestamp_data.updateIn(
               [
-                timestamp_toString,
                 "completed_priority_array",
                 day_in_month - 1,
                 this.priority_order[task_priority]
@@ -185,10 +178,6 @@ export default class TaskCard extends React.PureComponent {
             );
           }
         } else {
-          let pre_convert_obj = {
-            id: task_id,
-            category: task_category
-          };
           let pre_convert_completed_data = {
             current: 1,
             totalPoints: task_reward
@@ -222,8 +211,8 @@ export default class TaskCard extends React.PureComponent {
           } else {
             let day_in_month = current_date.getDate(),
               last_day_in_month = new Date(
-                current_date.getFullYear(),
-                current_date.getMonth() + 1,
+                chosen_date_data.year,
+                chosen_date_data.month + 1,
                 0
               ).getDate(),
               completed_priority_array = [],
@@ -244,9 +233,7 @@ export default class TaskCard extends React.PureComponent {
             pre_convert_completed_data.completed_priority_array = completed_priority_array;
           }
 
-          pre_convert_obj[timestamp_toString] = pre_convert_completed_data;
-
-          data = fromJS(pre_convert_obj);
+          timestamp_data = fromJS(pre_convert_completed_data);
         }
       }
 
@@ -254,82 +241,84 @@ export default class TaskCard extends React.PureComponent {
       else {
         if (completed_tasks_map.hasIn([task_id, timestamp_toString])) {
           if (type === "day") {
-            data = Map(completed_tasks_map.get(task_id)).asMutable();
-            data.updateIn(["category"], value => task_category);
-            data.updateIn([timestamp_toString, "totalPoints"], value =>
+            // Update timestamp data
+            timestamp_data = Map(
+              completed_tasks_map.getIn([task_id, timestamp_toString])
+            ).asMutable();
+
+            timestamp_data.update("totalPoints", value =>
               value - task_reward < 0 ? 0 : value - task_reward
             );
-            data.updateIn([timestamp_toString, "current"], value =>
+            timestamp_data.update("current", value =>
               value - 1 < 0 ? 0 : value - 1
             );
-            data.updateIn(
-              [timestamp_toString, "current_priority_value"],
+            timestamp_data.update(
+              "current_priority_value",
               value => task_priority
             );
-            data.updateIn(
-              [timestamp_toString, "completed_priority_array"],
-              completed_priority_array => {
-                return List(completed_priority_array).update(
-                  this.priority_order[task_priority],
-                  value => (value - 1 < 0 ? 0 : value - 1)
-                );
-              }
+            timestamp_data.updateIn(
+              ["completed_priority_array", this.priority_order[task_priority]],
+              value => (value - 1 < 0 ? 0 : value - 1)
             );
           } else if (type === "week") {
             let day_in_week = current_date.getDay();
 
-            data = Map(completed_tasks_map.get(task_id)).asMutable();
-            data.updateIn(["category"], value => task_category);
-            data.updateIn([timestamp_toString, "totalPoints"], value =>
+            // Update timestamp data
+            timestamp_data = Map(
+              completed_tasks_map.getIn([task_id, timestamp_toString])
+            ).asMutable();
+
+            timestamp_data.update("totalPoints", value =>
               value - task_reward < 0 ? 0 : value - task_reward
             );
-            data.updateIn(
-              [timestamp_toString, "total_points_array", day_in_week],
+            timestamp_data.updateIn(
+              ["total_points_array", day_in_week],
               value => (value - task_reward < 0 ? 0 : value - task_reward)
             );
-            data.updateIn([timestamp_toString, "current"], value =>
+            timestamp_data.update("current", value =>
               value - 1 < 0 ? 0 : value - 1
             );
-            data.updateIn(
-              [timestamp_toString, "current_priority_value"],
+            timestamp_data.update(
+              "current_priority_value",
               value => task_priority
             );
-            data.updateIn(
-              [timestamp_toString, "completed_priority_array"],
-              completed_priority_array => {
-                return List(completed_priority_array).updateIn(
-                  [day_in_week, this.priority_order[task_priority]],
-                  value => (value - 1 < 0 ? 0 : value - 1)
-                );
-              }
+            timestamp_data.updateIn(
+              [
+                "completed_priority_array",
+                day_in_week,
+                this.priority_order[task_priority]
+              ],
+              value => (value - 1 < 0 ? 0 : value - 1)
             );
           } else {
             let day_in_month = current_date.getDate();
 
-            data = Map(completed_tasks_map.get(task_id)).asMutable();
-            data.updateIn(["category"], value => task_category);
-            data.updateIn([timestamp_toString, "totalPoints"], value =>
+            // Update timestamp data
+            timestamp_data = Map(
+              completed_tasks_map.getIn([task_id, timestamp_toString])
+            ).asMutable();
+
+            timestamp_data.update("totalPoints", value =>
               value - task_reward < 0 ? 0 : value - task_reward
             );
-            data.updateIn(
-              [timestamp_toString, "total_points_array", day_in_month - 1],
+            timestamp_data.updateIn(
+              ["total_points_array", day_in_month - 1],
               value => (value - task_reward < 0 ? 0 : value - task_reward)
             );
-            data.updateIn([timestamp_toString, "current"], value =>
+            timestamp_data.update("current", value =>
               value - 1 < 0 ? 0 : value - 1
             );
-            data.updateIn(
-              [timestamp_toString, "current_priority_value"],
+            timestamp_data.update(
+              "current_priority_value",
               value => task_priority
             );
-            data.updateIn(
-              [timestamp_toString, "completed_priority_array"],
-              completed_priority_array => {
-                return List(completed_priority_array).updateIn(
-                  [day_in_month - 1, this.priority_order[task_priority]],
-                  value => (value - 1 < 0 ? 0 : value - 1)
-                );
-              }
+            timestamp_data.updateIn(
+              [
+                "completed_priority_array",
+                day_in_month - 1,
+                this.priority_order[task_priority]
+              ],
+              value => (value - 1 < 0 ? 0 : value - 1)
             );
           }
         }
@@ -338,82 +327,84 @@ export default class TaskCard extends React.PureComponent {
       if (flag === "uncompleted") {
         if (completed_tasks_map.hasIn([task_id, timestamp_toString])) {
           if (type === "day") {
-            data = Map(completed_tasks_map.get(task_id)).asMutable();
-            data.updateIn(["category"], value => task_category);
-            data.updateIn([timestamp_toString, "totalPoints"], value =>
+            // Update timestamp data
+            timestamp_data = Map(
+              completed_tasks_map.getIn([task_id, timestamp_toString])
+            ).asMutable();
+
+            timestamp_data.update("totalPoints", value =>
               value - task_reward < 0 ? 0 : value - task_reward
             );
-            data.updateIn([timestamp_toString, "current"], value =>
+            timestamp_data.update("current", value =>
               value - 1 < 0 ? 0 : value - 1
             );
-            data.updateIn(
-              [timestamp_toString, "current_priority_value"],
+            timestamp_data.update(
+              "current_priority_value",
               value => task_priority
             );
-            data.updateIn(
-              [timestamp_toString, "completed_priority_array"],
-              completed_priority_array => {
-                return List(completed_priority_array).update(
-                  this.priority_order[task_priority],
-                  value => (value - 1 < 0 ? 0 : value - 1)
-                );
-              }
+            timestamp_data.updateIn(
+              ["completed_priority_array", this.priority_order[task_priority]],
+              value => (value - 1 < 0 ? 0 : value - 1)
             );
           } else if (type === "week") {
             let day_in_week = current_date.getDay();
 
-            data = Map(completed_tasks_map.get(task_id)).asMutable();
-            data.updateIn(["category"], value => task_category);
-            data.updateIn([timestamp_toString, "totalPoints"], value =>
+            // Update timestamp data
+            timestamp_data = Map(
+              completed_tasks_map.getIn([task_id, timestamp_toString])
+            ).asMutable();
+
+            timestamp_data.update("totalPoints", value =>
               value - task_reward < 0 ? 0 : value - task_reward
             );
-            data.updateIn(
-              [timestamp_toString, "total_points_array", day_in_week],
+            timestamp_data.updateIn(
+              ["total_points_array", day_in_week],
               value => (value - task_reward < 0 ? 0 : value - task_reward)
             );
-            data.updateIn([timestamp_toString, "current"], value =>
+            timestamp_data.update("current", value =>
               value - 1 < 0 ? 0 : value - 1
             );
-            data.updateIn(
-              [timestamp_toString, "current_priority_value"],
+            timestamp_data.update(
+              "current_priority_value",
               value => task_priority
             );
-            data.updateIn(
-              [timestamp_toString, "completed_priority_array"],
-              completed_priority_array => {
-                return List(completed_priority_array).updateIn(
-                  [day_in_week, this.priority_order[task_priority]],
-                  value => (value - 1 < 0 ? 0 : value - 1)
-                );
-              }
+            timestamp_data.updateIn(
+              [
+                "completed_priority_array",
+                day_in_week,
+                this.priority_order[task_priority]
+              ],
+              value => (value - 1 < 0 ? 0 : value - 1)
             );
           } else {
             let day_in_month = current_date.getDate();
 
-            data = Map(completed_tasks_map.get(task_id)).asMutable();
-            data.updateIn(["category"], value => task_category);
-            data.updateIn([timestamp_toString, "totalPoints"], value =>
+            // Update timestamp data
+            timestamp_data = Map(
+              completed_tasks_map.getIn([task_id, timestamp_toString])
+            ).asMutable();
+
+            timestamp_data.update("totalPoints", value =>
               value - task_reward < 0 ? 0 : value - task_reward
             );
-            data.updateIn(
-              [timestamp_toString, "total_points_array", day_in_month - 1],
+            timestamp_data.updateIn(
+              ["total_points_array", day_in_month - 1],
               value => (value - task_reward < 0 ? 0 : value - task_reward)
             );
-            data.updateIn([timestamp_toString, "current"], value =>
+            timestamp_data.update("current", value =>
               value - 1 < 0 ? 0 : value - 1
             );
-            data.updateIn(
-              [timestamp_toString, "current_priority_value"],
+            timestamp_data.update(
+              "current_priority_value",
               value => task_priority
             );
-            data.updateIn(
-              [timestamp_toString, "completed_priority_array"],
-              completed_priority_array => {
-                return List(completed_priority_array).updateIn(
-                  [day_in_month - 1, this.priority_order[task_priority]],
-                  value => (value - 1 < 0 ? 0 : value - 1)
-                );
-              }
+            timestamp_data.updateIn(
+              [
+                "completed_priority_array",
+                day_in_month - 1,
+                this.priority_order[task_priority]
+              ],
+              value => (value - 1 < 0 ? 0 : value - 1)
             );
           }
         }
@@ -422,104 +413,675 @@ export default class TaskCard extends React.PureComponent {
 
     return {
       type: this.props.action_type,
-      keyPath: [task_id],
-      notSetValue: {},
-      updater: value => data.toMap()
+      update_id: {
+        keyPath: [task_id, "id"],
+        notSetValue: "",
+        updater: value => task_id
+      },
+      update_category: {
+        keyPath: [task_id, "category"],
+        notSetValue: "",
+        updater: value => task_category
+      },
+      update_timestamp_data: {
+        keyPath: [task_id, timestamp_toString],
+        notSetValue: {},
+        updater: value => timestamp_data.toMap()
+      }
     };
   };
 
-  _doUpdateOnChartStats = (flag, operation) => {
-    let current_date = new Date(),
-      day_in_week = current_date.getDay(),
-      day_in_month = current_date.getDate(),
-      month_in_year = current_date.getMonth(),
-      year = current_date.getFullYear(),
-      last_day_in_month = new Date(year, month_in_year + 1, 0).getDate(),
-      monday = this.getMonday(current_date),
-      day_timestamp_toString = new Date(year, month_in_year, day_in_month)
-        .getTime()
-        .toString(),
-      week_timestamp_toString = new Date(
-        monday.getFullYear(),
-        monday.getMonth(),
-        monday.getDate()
-      )
-        .getTime()
-        .toString(),
-      month_timestamp_toString = new Date(
-        current_date.getFullYear(),
-        current_date.getMonth()
-      )
-        .getTime()
-        .toString(),
-      year_timestamp_toString = current_date.getFullYear().toString(),
+  _doUpdateOnChartStats = (chosen_date_data, flag, type, operation) => {
+    let month_in_year = 0,
+      last_day_in_month = 0,
+      day_timestamp_toString = "",
+      week_timestamp_toString = "",
+      month_timestamp_toString = "",
+      year_timestamp_toString = "",
       task_priority = Map(this.props.task_data).getIn(["priority", "value"]),
       task_reward = parseInt(
         Map(this.props.task_data).getIn(["reward", "value"])
       ),
       task_type = Map(this.props.task_data).get("type");
 
-    let day_chart_stats_update = this._updateDayChartStats(
-      task_type,
-      task_reward,
-      task_priority,
-      day_timestamp_toString,
-      flag,
-      operation
-    );
+    if (type === "day") {
+      let chosen_date = new Date(
+          chosen_date_data.year,
+          chosen_date_data.month,
+          chosen_date_data.day
+        ),
+        day_in_week = chosen_date.getDay(),
+        day_in_month = chosen_date.getDate();
 
-    let week_chart_stats_update = this._updateWeekChartStats(
-      task_type,
-      task_reward,
-      task_priority,
-      day_in_week,
-      week_timestamp_toString,
-      flag,
-      operation
-    );
+      last_day_in_month = new Date(
+        chosen_date_data.year,
+        chosen_date_data.month + 1,
+        0
+      ).getDate();
 
-    let month_chart_stats_update = this._updateMonthChartStats(
-      task_type,
-      task_reward,
-      task_priority,
-      day_in_month,
-      last_day_in_month,
-      month_timestamp_toString,
-      flag,
-      operation
-    );
+      month_in_year = chosen_date_data.month;
 
-    let year_chart_stats_update = this._updateYearChartStats(
-      task_type,
-      task_reward,
-      task_priority,
-      month_in_year,
-      year_timestamp_toString,
-      flag,
-      operation
-    );
+      day_timestamp_toString = new Date(
+        chosen_date_data.year,
+        chosen_date_data.month,
+        chosen_date_data.day
+      )
+        .getTime()
+        .toString();
 
-    return {
-      day_action_type: "UPDATE_DAY_CHART_STATS",
-      day_chart_keyPath: [day_timestamp_toString],
-      day_chart_notSetValue: {},
-      day_chart_updater: value => day_chart_stats_update,
+      let monday = this.getMonday(
+        new Date(
+          chosen_date_data.year,
+          chosen_date_data.month,
+          chosen_date_data.day
+        )
+      );
 
-      week_action_type: "UPDATE_WEEK_CHART_STATS",
-      week_chart_keyPath: [week_timestamp_toString],
-      week_chart_notSetValue: {},
-      week_chart_updater: value => week_chart_stats_update,
+      week_timestamp_toString = new Date(
+        monday.getFullYear(),
+        monday.getMonth(),
+        monday.getDate()
+      )
+        .getTime()
+        .toString();
 
-      month_action_type: "UPDATE_MONTH_CHART_STATS",
-      month_chart_keyPath: [month_timestamp_toString],
-      month_chart_notSetValue: {},
-      month_chart_updater: value => month_chart_stats_update,
+      month_timestamp_toString = new Date(
+        chosen_date_data.year,
+        chosen_date_data.month
+      )
+        .getTime()
+        .toString();
 
-      year_action_type: "UPDATE_YEAR_CHART_STATS",
-      year_chart_keyPath: [year_timestamp_toString],
-      year_chart_notSetValue: {},
-      year_chart_updater: value => year_chart_stats_update
-    };
+      year_timestamp_toString = chosen_date_data.year.toString();
+
+      let day_chart_stats_update = this._updateDayChartStats(
+        task_type,
+        task_reward,
+        task_priority,
+        day_timestamp_toString,
+        flag,
+        operation
+      );
+
+      let week_chart_stats_update = this._updateWeekChartStats(
+        task_type,
+        task_reward,
+        task_priority,
+        day_in_week,
+        week_timestamp_toString,
+        flag,
+        operation
+      );
+
+      let month_chart_stats_update = this._updateMonthChartStats(
+        task_type,
+        task_reward,
+        task_priority,
+        day_in_month,
+        last_day_in_month,
+        month_timestamp_toString,
+        flag,
+        operation
+      );
+
+      let year_chart_stats_update = this._updateYearChartStats(
+        task_type,
+        task_reward,
+        task_priority,
+        month_in_year,
+        year_timestamp_toString,
+        flag,
+        operation
+      );
+
+      return {
+        should_update_day_chart_stats: true,
+        day_action_type: "UPDATE_DAY_CHART_STATS",
+        day_chart_keyPath: [day_timestamp_toString],
+        day_chart_notSetValue: {},
+        day_chart_updater: value => day_chart_stats_update,
+
+        should_update_week_chart_stats: true,
+        week_action_type: "UPDATE_WEEK_CHART_STATS",
+        week_chart_keyPath: [week_timestamp_toString],
+        week_chart_notSetValue: {},
+        week_chart_updater: value => week_chart_stats_update,
+
+        should_update_month_chart_stats: true,
+        month_action_type: "UPDATE_MONTH_CHART_STATS",
+        month_chart_keyPath: [month_timestamp_toString],
+        month_chart_notSetValue: {},
+        month_chart_updater: value => month_chart_stats_update,
+
+        should_update_year_chart_stats: true,
+        year_action_type: "UPDATE_YEAR_CHART_STATS",
+        year_chart_keyPath: [year_timestamp_toString],
+        year_chart_notSetValue: {},
+        year_chart_updater: value => year_chart_stats_update
+      };
+    } else if (type === "week") {
+      last_day_in_month = new Date(
+        chosen_date_data.start_year,
+        chosen_date_data.start_month + 1,
+        0
+      ).getDate();
+
+      let current_date = new Date(),
+        current_date_day_in_week = current_date.getDay();
+
+      let monday_date = new Date(
+        chosen_date_data.start_year,
+        chosen_date_data.start_month,
+        chosen_date_data.monday
+      );
+      let target_day_between =
+        current_date_day_in_week - 1 < 0 ? 6 : current_date_day_in_week - 1;
+
+      let target_date = new Date(monday_date);
+      target_date.setDate(monday_date.getDate() + target_day_between);
+
+      day_timestamp_toString = new Date(
+        target_date.getFullYear(),
+        target_date.getMonth(),
+        target_date.getDate()
+      )
+        .getTime()
+        .toString();
+
+      week_timestamp_toString = new Date(
+        chosen_date_data.start_year,
+        chosen_date_data.start_month,
+        chosen_date_data.monday
+      )
+        .getTime()
+        .toString();
+
+      let target_day_in_month = target_date.getDate();
+
+      month_timestamp_toString = new Date(
+        target_date.getFullYear(),
+        target_date.getMonth()
+      )
+        .getTime()
+        .toString();
+
+      month_in_year = target_date.getMonth();
+      year_timestamp_toString = target_date.getFullYear().toString();
+
+      let week_chart_stats_update = this._updateWeekChartStats(
+        task_type,
+        task_reward,
+        task_priority,
+        current_date_day_in_week,
+        week_timestamp_toString,
+        flag,
+        operation
+      );
+
+      // If start month !== end_month, we perform separating total points calculations.
+      if (chosen_date_data.start_month !== chosen_date_data.end_month) {
+        let year_chart_stats_update = this._updateYearChartStats(
+          task_type,
+          task_reward,
+          task_priority,
+          month_in_year,
+          year_timestamp_toString,
+          flag,
+          operation
+        );
+
+        let start_month_timestamp_toString = new Date(
+          chosen_date_data.start_year,
+          chosen_date_data.start_month
+        )
+          .getTime()
+          .toString();
+
+        let start_month_last_day_in_month = new Date(
+          chosen_date_data.start_year,
+          chosen_date_data.start_month + 1,
+          0
+        ).getDate();
+
+        let start_month_chart_other_props_update = this._updateMonthChartOtherPropsByWeekIfDiffMonths(
+          task_type,
+          task_reward,
+          task_priority,
+          target_day_in_month,
+          start_month_last_day_in_month,
+          start_month_timestamp_toString,
+          flag,
+          operation,
+          false
+        );
+
+        let end_month_timestamp_toString = new Date(
+          chosen_date_data.end_year,
+          chosen_date_data.end_month
+        )
+          .getTime()
+          .toString();
+
+        let end_month_last_day_in_month = new Date(
+          chosen_date_data.end_year,
+          chosen_date_data.end_month + 1,
+          0
+        ).getDate();
+
+        let end_month_chart_other_props_update = this._updateMonthChartOtherPropsByWeekIfDiffMonths(
+          task_type,
+          task_reward,
+          task_priority,
+          target_day_in_month,
+          end_month_last_day_in_month,
+          end_month_timestamp_toString,
+          flag,
+          operation,
+          false
+        );
+
+        if (target_date.getMonth() === chosen_date_data.start_month) {
+          start_month_chart_other_props_update = this._updateMonthChartOtherPropsByWeekIfDiffMonths(
+            task_type,
+            task_reward,
+            task_priority,
+            target_day_in_month,
+            start_month_last_day_in_month,
+            start_month_timestamp_toString,
+            flag,
+            operation,
+            true
+          );
+        } else if (target_date.getMonth() === chosen_date_data.end_month) {
+          end_month_chart_other_props_update = this._updateMonthChartOtherPropsByWeekIfDiffMonths(
+            task_type,
+            task_reward,
+            task_priority,
+            target_day_in_month,
+            end_month_last_day_in_month,
+            end_month_timestamp_toString,
+            flag,
+            operation,
+            true
+          );
+        }
+
+        // console.log("start", start_month_chart_other_props_update, "\n");
+        // console.log("end", end_month_chart_other_props_update, "\n");
+        return {
+          should_update_day_chart_stats: false,
+
+          should_update_week_chart_stats: true,
+          week_action_type: "UPDATE_WEEK_CHART_STATS",
+          week_chart_keyPath: [week_timestamp_toString],
+          week_chart_notSetValue: {},
+          week_chart_updater: value => week_chart_stats_update,
+
+          should_update_month_chart_stats: false,
+          month_action_type: "UPDATE_MONTH_CHART_STATS",
+
+          should_update_year_chart_stats: true,
+          year_action_type: "UPDATE_YEAR_CHART_STATS",
+          year_chart_keyPath: [year_timestamp_toString],
+          year_chart_notSetValue: {},
+          year_chart_updater: value => year_chart_stats_update,
+
+          should_update_month_chart_stats_by_week_if_diff_months: true,
+          start_month_chart_keyPath: [start_month_timestamp_toString],
+          start_month_chart_notSetValue: {},
+          start_month_chart_updater: value =>
+            start_month_chart_other_props_update,
+
+          end_month_chart_keyPath: [end_month_timestamp_toString],
+          end_month_chart_notSetValue: {},
+          end_month_chart_updater: value => end_month_chart_other_props_update
+        };
+      } else {
+        let month_chart_stats_update = this._updateMonthChartStats(
+          task_type,
+          task_reward,
+          task_priority,
+          target_day_in_month,
+          last_day_in_month,
+          month_timestamp_toString,
+          flag,
+          operation
+        );
+
+        let year_chart_stats_update = this._updateYearChartStats(
+          task_type,
+          task_reward,
+          task_priority,
+          month_in_year,
+          year_timestamp_toString,
+          flag,
+          operation
+        );
+
+        return {
+          should_update_day_chart_stats: false,
+
+          should_update_week_chart_stats: true,
+          week_action_type: "UPDATE_WEEK_CHART_STATS",
+          week_chart_keyPath: [week_timestamp_toString],
+          week_chart_notSetValue: {},
+          week_chart_updater: value => week_chart_stats_update,
+
+          should_update_month_chart_stats: true,
+          month_action_type: "UPDATE_MONTH_CHART_STATS",
+          month_chart_keyPath: [month_timestamp_toString],
+          month_chart_notSetValue: {},
+          month_chart_updater: value => month_chart_stats_update,
+
+          should_update_year_chart_stats: true,
+          year_action_type: "UPDATE_YEAR_CHART_STATS",
+          year_chart_keyPath: [year_timestamp_toString],
+          year_chart_notSetValue: {},
+          year_chart_updater: value => year_chart_stats_update
+        };
+      }
+    } else {
+      last_day_in_month = new Date(
+        chosen_date_data.year,
+        chosen_date_data.month + 1,
+        0
+      ).getDate();
+
+      month_in_year = chosen_date_data.month;
+
+      let current_date = new Date();
+
+      let target_day_in_month = current_date.getDate(),
+        target_date_last_day_in_month = new Date(
+          chosen_date_data.year,
+          chosen_date_data.month + 1,
+          0
+        ).getDate();
+
+      if (target_day_in_month > target_date_last_day_in_month) {
+        target_day_in_month = target_date_last_day_in_month;
+      }
+
+      day_timestamp_toString = new Date(
+        chosen_date_data.year,
+        chosen_date_data.month,
+        target_day_in_month
+      )
+        .getTime()
+        .toString();
+
+      let monday = this.getMonday(
+        new Date(
+          chosen_date_data.year,
+          chosen_date_data.month,
+          target_day_in_month
+        )
+      );
+
+      week_timestamp_toString = new Date(
+        monday.getFullYear(),
+        monday.getMonth(),
+        monday.getDate()
+      )
+        .getTime()
+        .toString();
+
+      month_timestamp_toString = new Date(
+        chosen_date_data.year,
+        chosen_date_data.month
+      )
+        .getTime()
+        .toString();
+
+      year_timestamp_toString = chosen_date_data.year.toString();
+
+      let month_chart_stats_update = this._updateMonthChartStats(
+        task_type,
+        task_reward,
+        task_priority,
+        target_day_in_month,
+        last_day_in_month,
+        month_timestamp_toString,
+        flag,
+        operation
+      );
+
+      let year_chart_stats_update = this._updateYearChartStats(
+        task_type,
+        task_reward,
+        task_priority,
+        month_in_year,
+        year_timestamp_toString,
+        flag,
+        operation
+      );
+
+      return {
+        should_update_day_chart_stats: false,
+
+        should_update_week_chart_stats: false,
+
+        should_update_month_chart_stats: true,
+        month_action_type: "UPDATE_MONTH_CHART_STATS",
+        month_chart_keyPath: [month_timestamp_toString],
+        month_chart_notSetValue: {},
+        month_chart_updater: value => month_chart_stats_update,
+
+        should_update_year_chart_stats: true,
+        year_action_type: "UPDATE_YEAR_CHART_STATS",
+        year_chart_keyPath: [year_timestamp_toString],
+        year_chart_notSetValue: {},
+        year_chart_updater: value => year_chart_stats_update
+      };
+    }
+  };
+
+  _updateMonthChartOtherPropsByWeekIfDiffMonths = (
+    task_type,
+    task_reward,
+    task_priority,
+    day_in_month,
+    last_day_in_month,
+    timestamp_toString,
+    flag,
+    operation,
+    is_target
+  ) => {
+    let month_chart_stats_map = Map(this.props.month_chart_stats),
+      returning_data = Map();
+
+    if (operation === "inc") {
+      if (flag === "uncompleted") {
+        if (
+          month_chart_stats_map.hasIn([timestamp_toString, "totalPoints"]) &&
+          month_chart_stats_map.hasIn([
+            timestamp_toString,
+            "task_type_completions",
+            this.task_type_order[task_type]
+          ])
+        ) {
+          returning_data = Map(
+            month_chart_stats_map.get(timestamp_toString)
+          ).asMutable();
+
+          returning_data.updateIn(
+            ["totalPoints"],
+            value => value + task_reward
+          );
+          returning_data.updateIn(
+            ["task_type_completions", this.task_type_order[task_type]],
+            value => value + 1
+          );
+
+          if (
+            is_target &&
+            month_chart_stats_map.hasIn([
+              timestamp_toString,
+              "completed_priority_array",
+              day_in_month - 1,
+              this.priority_order[task_priority]
+            ]) &&
+            month_chart_stats_map.hasIn([
+              timestamp_toString,
+              "current",
+              this.priority_order[task_priority]
+            ])
+          ) {
+            returning_data = Map(
+              month_chart_stats_map.get(timestamp_toString)
+            ).asMutable();
+            returning_data.updateIn(
+              ["current", this.priority_order[task_priority]],
+              v => v + 1
+            );
+
+            returning_data.updateIn(
+              [
+                "completed_priority_array",
+                day_in_month - 1,
+                this.priority_order[task_priority]
+              ],
+              v => v + 1
+            );
+          }
+        } else {
+          let prev_converted_timestamp_data = {};
+          let current = [0, 0, 0, 0];
+
+          let completed_priority_array = [];
+
+          for (let i = 0; i < last_day_in_month; i++) {
+            completed_priority_array.push([0, 0, 0, 0]);
+          }
+
+          if (is_target) {
+            current[this.priority_order[task_priority]] += 1;
+
+            completed_priority_array[day_in_month - 1][
+              this.priority_order[task_priority]
+            ] += 1;
+          }
+
+          let task_type_completions = [0, 0, 0];
+          task_type_completions[this.task_type_order[task_type]] += 1;
+
+          prev_converted_timestamp_data = {
+            current,
+            completed_priority_array,
+            totalPoints: task_reward,
+            task_type_completions
+          };
+
+          returning_data = fromJS(prev_converted_timestamp_data);
+        }
+      }
+
+      //flag completed - operation increase => will decrease the goal current value when the complete button is pressed
+      else {
+        if (
+          month_chart_stats_map.hasIn([timestamp_toString, "totalPoints"]) &&
+          month_chart_stats_map.hasIn([
+            timestamp_toString,
+            "task_type_completions",
+            this.task_type_order[task_type]
+          ])
+        ) {
+          returning_data = Map(
+            month_chart_stats_map.get(timestamp_toString)
+          ).asMutable();
+
+          returning_data.updateIn(["totalPoints"], value =>
+            value - task_reward < 0 ? 0 : value - task_reward
+          );
+          returning_data.updateIn(
+            ["task_type_completions", this.task_type_order[task_type]],
+            value => (value - 1 < 0 ? 0 : value - 1)
+          );
+
+          if (
+            is_target &&
+            month_chart_stats_map.hasIn([
+              timestamp_toString,
+              "completed_priority_array",
+              day_in_month - 1,
+              this.priority_order[task_priority]
+            ]) &&
+            month_chart_stats_map.hasIn([
+              timestamp_toString,
+              "current",
+              this.priority_order[task_priority]
+            ])
+          ) {
+            returning_data.updateIn(
+              ["current", this.priority_order[task_priority]],
+              v => (v - 1 < 0 ? 0 : v - 1)
+            );
+            returning_data.updateIn(
+              [
+                "completed_priority_array",
+                day_in_month - 1,
+                this.priority_order[task_priority]
+              ],
+              v => (v - 1 < 0 ? 0 : v - 1)
+            );
+          }
+        }
+      }
+    }
+
+    // operation decrease - flag uncompleted (only uncompleted task has operation increase and decrease, completed only has decrease)
+    else {
+      if (
+        month_chart_stats_map.hasIn([timestamp_toString, "totalPoints"]) &&
+        month_chart_stats_map.hasIn([
+          timestamp_toString,
+          "task_type_completions",
+          this.task_type_order[task_type]
+        ])
+      ) {
+        returning_data = Map(
+          month_chart_stats_map.get(timestamp_toString)
+        ).asMutable();
+
+        returning_data.updateIn(
+          ["current", this.priority_order[task_priority]],
+          v => (v - 1 < 0 ? 0 : v - 1)
+        );
+        returning_data.updateIn(["totalPoints"], value =>
+          value - task_reward < 0 ? 0 : value - task_reward
+        );
+        returning_data.updateIn(
+          ["task_type_completions", this.task_type_order[task_type]],
+          value => (value - 1 < 0 ? 0 : value - 1)
+        );
+
+        if (
+          is_target &&
+          month_chart_stats_map.hasIn([
+            timestamp_toString,
+            "completed_priority_array",
+            day_in_month - 1,
+            this.priority_order[task_priority]
+          ]) &&
+          month_chart_stats_map.hasIn([
+            timestamp_toString,
+            "current",
+            this.priority_order[task_priority]
+          ])
+        ) {
+          returning_data.updateIn(
+            [
+              "completed_priority_array",
+              day_in_month - 1,
+              this.priority_order[task_priority]
+            ],
+            v => (v - 1 < 0 ? 0 : v - 1)
+          );
+        }
+      }
+    }
+
+    return returning_data.toMap();
   };
 
   _updateDayChartStats = (
@@ -561,7 +1123,7 @@ export default class TaskCard extends React.PureComponent {
           );
           returning_data.updateIn(
             ["task_type_completions", this.task_type_order[task_type]],
-            value => value + task_reward
+            value => value + 1
           );
         } else {
           let prev_converted_timestamp_data = {};
@@ -1222,13 +1784,16 @@ export default class TaskCard extends React.PureComponent {
       let sending_obj = {};
 
       sending_obj.completed_task_data = this._doUpdateOnCompletedTask(
+        this.props.chosen_date_data,
         this.props.flag,
         this.props.type,
         "inc"
       );
 
       sending_obj.chart_data = this._doUpdateOnChartStats(
+        this.props.chosen_date_data,
         this.props.flag,
+        this.props.type,
         "inc"
       );
 
@@ -1273,13 +1838,16 @@ export default class TaskCard extends React.PureComponent {
       let sending_obj = {};
 
       sending_obj.completed_task_data = this._doUpdateOnCompletedTask(
+        this.props.chosen_date_data,
         this.props.flag,
         this.props.type,
         "dec"
       );
 
       sending_obj.chart_data = this._doUpdateOnChartStats(
+        this.props.chosen_date_data,
         this.props.flag,
+        this.props.type,
         "dec"
       );
 

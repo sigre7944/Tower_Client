@@ -4,61 +4,70 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Animated,
-  Easing,
-  Platform,
+  Dimensions,
   Modal,
   TouchableWithoutFeedback,
-  Dimensions
+  Animated,
+  Easing,
+  Platform
 } from "react-native";
 
-import { styles } from "./styles/styles";
+import { Map, fromJS, List } from "immutable";
 
+import { styles } from "./styles/styles";
+import { normalize } from "../../../../../../shared/helpers";
 import {
-  check_icon,
   close_icon,
+  check_icon,
   left_chevron_icon,
   right_chevron_icon
-} from "../../../../../../../shared/icons";
-import { normalize } from "../../../../../../../shared/helpers";
+} from "../../../../../../shared/icons";
 const icon_size = normalize(19, "width");
 const icon_color = "white";
 
+const window_width = Dimensions.get("window").width;
 const panel_width = normalize(338, "width");
+const animation_duration = 250;
+const easing = Easing.inOut(Easing.linear);
+const outer_panel_padding = normalize(7, "width");
+
 const margin_top_for_calendar_row = normalize(20, "height");
 const margin_top_for_month_year_text = normalize(30, "height");
 const calendar_total_height =
-  margin_top_for_calendar_row * 3 + normalize(45, "height") * 3;
-const animation_duration = 250;
-const easing = Easing.in();
-const outer_panel_padding = normalize(7, "width");
+  margin_top_for_calendar_row * 3 +
+  normalize(45, "height") * 3 +
+  normalize(24, "height") * 3;
 
-const window_width = Dimensions.get("window").width;
-
-export default class MonthCalendar extends React.PureComponent {
-  chosen_month = -1;
-  chosen_year = -1;
-
+export default class Schedule extends React.PureComponent {
   calendar_opacity_value = new Animated.Value(0);
 
-  save = () => {
-    if (this.chosen_month >= 0 && this.chosen_year >= 0) {
-      this.props._setCalendarData(this.chosen_month, this.chosen_year);
-    }
+  current_year = new Date().getFullYear();
+  current_month = new Date().getMonth();
 
-    this.cancel();
+  year_in_between = 4;
+  left_end_year = this.current_year - this.year_in_between;
+  right_end_year = this.current_year + this.year_in_between;
+
+  present_year_index = -1;
+
+  year_data = [];
+
+  start_index = 0;
+
+  chosen_month = 0;
+  chosen_year = 0;
+
+  state = {
+    should_flatlist_update: 0,
+
+    current_year_index: -1,
+    last_year_index: -1,
+
+    current_month_index: -1,
+    last_month_index: -1
   };
 
-  cancel = () => {
-    this._animateEnd(this.props.hideAction);
-  };
-
-  setData = (month, year) => {
-    this.chosen_month = month;
-    this.chosen_year = year;
-  };
-
-  animateCalendar = () => {
+  _animateStart = () => {
     Animated.timing(this.calendar_opacity_value, {
       toValue: 1,
       duration: animation_duration,
@@ -78,105 +87,16 @@ export default class MonthCalendar extends React.PureComponent {
     });
   };
 
-  componentDidMount() {
-    this.animateCalendar();
-  }
+  _cancelSchedule = () => {
+    this._animateEnd(this.props._toggleSchedule);
+  };
 
-  render() {
-    return (
-      <Modal transparent={true}>
-        <View
-          style={{
-            flex: 1,
-            position: "relative",
-            justifyContent: "center",
-            alignItems: "center"
-          }}
-        >
-          <TouchableWithoutFeedback onPress={this.cancel}>
-            <View
-              style={{
-                flex: 1,
-                width: window_width,
-                backgroundColor: "black",
-                opacity: 0.2
-              }}
-            ></View>
-          </TouchableWithoutFeedback>
-          <Animated.View
-            style={{
-              position: "absolute",
-              width: panel_width,
-              backgroundColor: "white",
-              borderRadius: normalize(10, "width"),
-              flexDirection: "row",
-              overflow: "hidden",
-              opacity: this.calendar_opacity_value
-            }}
-          >
-            <View>
-              {/* Main content of day calendar */}
-              <Calendar
-                setData={this.setData}
-                chosen_month={this.props.month}
-                chosen_year={this.props.year}
-              />
+  _saveSchedule = () => {
+    if (this.chosen_month >= 0 && this.chosen_year >= 0) {
+      this.props._setDateData(this.chosen_month, this.chosen_year);
+    }
 
-              <View style={styles.separating_line}></View>
-
-              <View
-                style={{
-                  marginTop: normalize(28, "height"),
-                  marginHorizontal: normalize(30, "width"),
-                  flexDirection: "row",
-                  justifyContent: "flex-end",
-                  marginBottom: normalize(35, "height")
-                }}
-              >
-                <TouchableOpacity
-                  style={styles.close_icon_holder}
-                  onPress={this.cancel}
-                >
-                  {close_icon(icon_size, icon_color)}
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.save_icon_holder}
-                  onPress={this.save}
-                >
-                  {check_icon(icon_size, icon_color)}
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Animated.View>
-        </View>
-      </Modal>
-    );
-  }
-}
-
-class Calendar extends React.Component {
-  current_year = new Date().getFullYear();
-  current_month = new Date().getMonth();
-
-  year_in_between = 4;
-  left_end_year = this.current_year - this.year_in_between;
-  right_end_year = this.current_year + this.year_in_between;
-
-  present_year_index = -1;
-
-  year_data = [];
-
-  start_index = 0;
-
-  state = {
-    should_flatlist_update: 0,
-
-    current_year_index: -1,
-    last_year_index: -1,
-
-    current_month_index: -1,
-    last_month_index: -1
+    this._cancelSchedule();
   };
 
   scrollToYear = year_index => {
@@ -190,20 +110,25 @@ class Calendar extends React.Component {
 
   _setRef = r => (this._flatlist = r);
 
-  chooseMonth = (year_index, month_index) => {
-    this.setState(prevState => ({
-      current_year_index: year_index,
-      last_year_index: prevState.current_year_index,
+  chooseMonth = (year_index, month_index, month, year) => {
+    this.setState(
+      prevState => ({
+        current_year_index: year_index,
+        last_year_index: prevState.current_year_index,
 
-      current_month_index: month_index,
-      last_month_index: prevState.current_month_index,
+        current_month_index: month_index,
+        last_month_index: prevState.current_month_index,
 
-      should_flatlist_update: prevState.should_flatlist_update + 1
-    }));
+        should_flatlist_update: prevState.should_flatlist_update + 1
+      }),
+      () => {
+        this.chosen_month = month;
+        this.chosen_year = year;
+      }
+    );
   };
 
-  _keyExtractor = (item, index) =>
-    `progress-chart-month-type-calendar-year-${index}`;
+  _keyExtractor = (item, index) => `progress-calendar-schedule-year-${index}`;
 
   _renderItem = ({ item, index }) => (
     <YearHolder
@@ -216,7 +141,6 @@ class Calendar extends React.Component {
       chooseMonth={this.chooseMonth}
       scrollToYear={this.scrollToYear}
       present_year_index={this.present_year_index}
-      setData={this.props.setData}
       task_data={this.props.task_data}
     />
   );
@@ -236,10 +160,7 @@ class Calendar extends React.Component {
       counter += 1;
     }
 
-    this.start_index = this.findStartIndex(
-      this.props.chosen_month,
-      this.props.chosen_year
-    );
+    this.start_index = this.findStartIndex(this.props.month, this.props.year);
   };
 
   _getItemLayout = (data, index) => ({
@@ -262,44 +183,95 @@ class Calendar extends React.Component {
   };
 
   componentDidMount() {
+    this._animateStart();
     this.initYearData();
   }
 
   render() {
     return (
-      <View
-        style={{
-          backgroundColor: "white",
-          borderTopRightRadius: normalize(10, "width"),
-          borderTopLeftRadius: normalize(10, "width"),
-          position: "relative"
-        }}
-      >
+      <Modal transparent={true}>
         <View
           style={{
-            marginHorizontal: outer_panel_padding
+            flex: 1,
+            position: "relative",
+            justifyContent: "center",
+            alignItems: "center"
           }}
         >
-          <FlatList
-            data={this.year_data}
-            extraData={this.state.should_flatlist_update}
-            keyExtractor={this._keyExtractor}
-            renderItem={this._renderItem}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            decelerationRate={0}
-            snapToInterval={panel_width}
-            snapToAlignment="start"
-            getItemLayout={this._getItemLayout}
-            initialScrollIndex={this.start_index}
-            ref={this._setRef}
-            removeClippedSubviews={true}
-            initialNumToRender={3}
-            windowSize={3}
-            maxToRenderPerBatch={3}
-          />
+          <TouchableWithoutFeedback onPress={this._cancelSchedule}>
+            <View
+              style={{
+                flex: 1,
+                width: window_width,
+                backgroundColor: "black",
+                opacity: 0.2
+              }}
+            />
+          </TouchableWithoutFeedback>
+
+          <Animated.View
+            style={{
+              position: "absolute",
+              borderRadius: normalize(10, "width"),
+              width: panel_width,
+              backgroundColor: "white",
+              overflow: "hidden",
+              opacity: this.calendar_opacity_value
+            }}
+          >
+            <View
+              style={{
+                marginHorizontal: outer_panel_padding
+              }}
+            >
+              <FlatList
+                data={this.year_data}
+                extraData={this.state.should_flatlist_update}
+                keyExtractor={this._keyExtractor}
+                renderItem={this._renderItem}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                decelerationRate={0}
+                snapToInterval={panel_width}
+                snapToAlignment="start"
+                getItemLayout={this._getItemLayout}
+                initialScrollIndex={this.start_index}
+                ref={this._setRef}
+                removeClippedSubviews={true}
+                initialNumToRender={3}
+                windowSize={3}
+                maxToRenderPerBatch={3}
+              />
+            </View>
+
+            <View style={styles.separating_line}></View>
+
+            <View
+              style={{
+                marginTop: normalize(28, "height"),
+                marginHorizontal: normalize(30, "width"),
+                flexDirection: "row",
+                justifyContent: "flex-end",
+                marginBottom: normalize(35, "height")
+              }}
+            >
+              <TouchableOpacity
+                style={styles.close_icon_holder}
+                onPress={this._cancelSchedule}
+              >
+                {close_icon(icon_size, icon_color)}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.save_icon_holder}
+                onPress={this._saveSchedule}
+              >
+                {check_icon(icon_size, icon_color)}
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
         </View>
-      </View>
+      </Modal>
     );
   }
 }
@@ -319,7 +291,7 @@ class YearHolder extends React.Component {
   }
 
   _keyExtractor = (item, index) =>
-    `month-type-calendar-${item.month}-${item.year}-${index}`;
+    `progress-calendar-schedule-month-${item.month}-${item.year}-${index}`;
 
   _renderItem = ({ item, index }) => {
     return (
@@ -331,7 +303,6 @@ class YearHolder extends React.Component {
         last_year_index={this.props.last_year_index}
         current_month_index={this.props.current_month_index}
         last_month_index={this.props.last_month_index}
-        setData={this.props.setData}
         chooseMonth={this.props.chooseMonth}
       />
     );
@@ -465,6 +436,18 @@ class MonthHolder extends React.Component {
     "DEC"
   ];
 
+  getWeek = date => {
+    let target = new Date(date);
+    let dayNr = (date.getDay() + 6) % 7;
+    target.setDate(target.getDate() - dayNr + 3);
+    let firstThursday = target.valueOf();
+    target.setMonth(0, 1);
+    if (target.getDay() != 4) {
+      target.setMonth(0, 1 + ((4 - target.getDay() + 7) % 7));
+    }
+    return 1 + Math.ceil((firstThursday - target) / 604800000);
+  };
+
   shouldComponentUpdate(nextProps, nextState) {
     return (
       (this.props.month_index === nextProps.current_month_index &&
@@ -477,8 +460,22 @@ class MonthHolder extends React.Component {
   }
 
   _chooseMonthFromCurrentYear = () => {
-    this.props.chooseMonth(this.props.year_index, this.props.month_index);
-    this.props.setData(this.props.month_data.month, this.props.month_data.year);
+    this.props.chooseMonth(
+      this.props.year_index,
+      this.props.month_index,
+      this.props.month_data.month,
+      this.props.month_data.year
+    );
+  };
+
+  _getWeekString = (month, year) => {
+    let first_day_of_month = new Date(year, month, 1),
+      first_week = this.getWeek(first_day_of_month);
+
+    let last_day_of_month = new Date(year, month + 1, 0),
+      last_week = this.getWeek(last_day_of_month);
+
+    return `W${first_week} - W${last_week}`;
   };
 
   render() {
@@ -514,14 +511,32 @@ class MonthHolder extends React.Component {
       text_style = styles.chosen_month_text;
     }
 
+    let week_string = this._getWeekString(
+      this.props.month_data.month,
+      this.props.month_data.year
+    );
+
     return (
       <TouchableOpacity
-        style={container_style}
+        style={{
+          flex: 1
+        }}
         onPress={this._chooseMonthFromCurrentYear}
       >
-        <Text style={text_style}>
-          {this.month_names[this.props.month_data.month]}
-        </Text>
+        <View style={container_style}>
+          <Text style={text_style}>
+            {this.month_names[this.props.month_data.month]}
+          </Text>
+        </View>
+
+        <View
+          style={{
+            marginTop: normalize(5, "height"),
+            alignItems: "center"
+          }}
+        >
+          <Text style={styles.week_text}>{week_string}</Text>
+        </View>
       </TouchableOpacity>
     );
   }

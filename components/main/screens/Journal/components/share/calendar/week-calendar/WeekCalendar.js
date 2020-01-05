@@ -49,17 +49,17 @@ export default class WeekCalendar extends React.Component {
 
   save = () => {
     if (
-      this.chosen_monday > 0 &&
-      this.chosen_sunday > 0 &&
-      this.chosen_week > 0 &&
-      this.chosen_start_month > 0 &&
-      this.chosen_end_month > 0 &&
-      this.chosen_selected_month > 0 &&
-      this.chosen_start_year > 0 &&
-      this.chosen_end_year > 0 &&
-      this.chosen_selected_year > 0 &&
-      this.chosen_start_noWeekInMonth > 0 &&
-      this.chosen_end_noWeekInMonth > 0
+      this.chosen_monday >= 0 &&
+      this.chosen_sunday >= 0 &&
+      this.chosen_week >= 0 &&
+      this.chosen_start_month >= 0 &&
+      this.chosen_end_month >= 0 &&
+      this.chosen_selected_month >= 0 &&
+      this.chosen_start_year >= 0 &&
+      this.chosen_end_year >= 0 &&
+      this.chosen_selected_year >= 0 &&
+      this.chosen_start_noWeekInMonth >= 0 &&
+      this.chosen_end_noWeekInMonth >= 0
     ) {
       if (this.props.edit) {
         let keyPath = ["schedule"],
@@ -404,24 +404,13 @@ class Calendar extends React.Component {
     if (task_data) {
       let task_data_map = Map(task_data),
         start_month = task_data_map.getIn(["schedule", "start_month"]),
-        end_month = task_data_map.getIn(["schedule", "end_month"]),
-        chosen_month = task_data_map.getIn(["schedule", "chosen_month"]),
         start_year = task_data_map.getIn(["schedule", "start_year"]),
-        end_year = task_data_map.getIn(["schedule", "end_year"]),
-        chosen_year = task_data_map.getIn(["schedule", "chosen_year"]),
         start_noWeekInMonth = task_data_map.getIn([
           "schedule",
           "start_noWeekInMonth"
         ]),
-        week_index = start_noWeekInMonth,
-        month_index = this.findMonthIndex(chosen_month, chosen_year);
-
-      if (chosen_month === start_month) {
-        week_index =
-          task_data_map.getIn(["schedule", "start_noWeekInMonth"]) - 1;
-      } else if (chosen_month === end_month) {
-        week_index = task_data_map.getIn(["schedule", "end_noWeekInMonth"]) - 1;
-      }
+        week_index = start_noWeekInMonth - 1,
+        month_index = this.findMonthIndex(start_month, start_year);
 
       this.chooseWeek(month_index, week_index);
       return month_index;

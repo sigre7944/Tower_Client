@@ -6,7 +6,10 @@ import {
   TouchableOpacity,
   Animated,
   Easing,
-  Platform
+  Platform,
+  Modal,
+  TouchableWithoutFeedback,
+  Dimensions
 } from "react-native";
 
 import { styles } from "./styles/styles";
@@ -30,6 +33,8 @@ const animation_duration = 250;
 const easing = Easing.inOut(Easing.linear);
 const outer_panel_padding = normalize(7, "width");
 
+const window_width = Dimensions.get("window").width;
+
 export default class WeekCalendar extends React.PureComponent {
   chosen_monday = -1;
   chosen_sunday = -1;
@@ -47,17 +52,17 @@ export default class WeekCalendar extends React.PureComponent {
 
   save = () => {
     if (
-      this.chosen_monday > 0 &&
-      this.chosen_sunday > 0 &&
-      this.chosen_week > 0 &&
-      this.chosen_start_month > 0 &&
-      this.chosen_end_month > 0 &&
-      this.chosen_selected_month > 0 &&
-      this.chosen_start_year > 0 &&
-      this.chosen_end_year > 0 &&
-      this.chosen_selected_year > 0 &&
-      this.chosen_start_noWeekInMonth > 0 &&
-      this.chosen_end_noWeekInMonth > 0
+      this.chosen_monday >= 0 &&
+      this.chosen_sunday >= 0 &&
+      this.chosen_week >= 0 &&
+      this.chosen_start_month >= 0 &&
+      this.chosen_end_month >= 0 &&
+      this.chosen_selected_month >= 0 &&
+      this.chosen_start_year >= 0 &&
+      this.chosen_end_year >= 0 &&
+      this.chosen_selected_year >= 0 &&
+      this.chosen_start_noWeekInMonth >= 0 &&
+      this.chosen_end_noWeekInMonth >= 0
     ) {
       this.props._setCalendarData(
         this.chosen_monday,
@@ -134,56 +139,77 @@ export default class WeekCalendar extends React.PureComponent {
 
   render() {
     return (
-      <Animated.View
-        style={{
-          position: "absolute",
-          width: panel_width,
-          backgroundColor: "white",
-          borderRadius: normalize(10, "width"),
-          flexDirection: "row",
-          overflow: "hidden",
-          opacity: this.calendar_opacity_value
-        }}
-      >
-        <View>
-          {/* Main content of day calendar */}
-          <Calendar
-            setData={this.setData}
-            chosen_month={this.props.chosen_month}
-            start_month={this.props.start_month}
-            end_month={this.props.end_month}
-            year={this.props.year}
-            start_noWeekInMonth={this.props.start_noWeekInMonth}
-            end_noWeekInMonth={this.props.end_noWeekInMonth}
-          />
-
-          <View style={styles.separating_line}></View>
-
-          <View
+      <Modal transparent={true}>
+        <View
+          style={{
+            flex: 1,
+            position: "relative",
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
+          <TouchableWithoutFeedback onPress={this.cancel}>
+            <View
+              style={{
+                flex: 1,
+                width: window_width,
+                backgroundColor: "black",
+                opacity: 0.2
+              }}
+            ></View>
+          </TouchableWithoutFeedback>
+          <Animated.View
             style={{
-              marginTop: normalize(28, "height"),
-              marginHorizontal: normalize(30, "width"),
+              position: "absolute",
+              width: panel_width,
+              backgroundColor: "white",
+              borderRadius: normalize(10, "width"),
               flexDirection: "row",
-              justifyContent: "flex-end",
-              marginBottom: normalize(35, "height")
+              overflow: "hidden",
+              opacity: this.calendar_opacity_value
             }}
           >
-            <TouchableOpacity
-              style={styles.close_icon_holder}
-              onPress={this.cancel}
-            >
-              {close_icon(icon_size, icon_color)}
-            </TouchableOpacity>
+            <View>
+              {/* Main content of day calendar */}
+              <Calendar
+                setData={this.setData}
+                chosen_month={this.props.chosen_month}
+                start_month={this.props.start_month}
+                end_month={this.props.end_month}
+                year={this.props.year}
+                start_noWeekInMonth={this.props.start_noWeekInMonth}
+                end_noWeekInMonth={this.props.end_noWeekInMonth}
+              />
 
-            <TouchableOpacity
-              style={styles.save_icon_holder}
-              onPress={this.save}
-            >
-              {check_icon(icon_size, icon_color)}
-            </TouchableOpacity>
-          </View>
+              <View style={styles.separating_line}></View>
+
+              <View
+                style={{
+                  marginTop: normalize(28, "height"),
+                  marginHorizontal: normalize(30, "width"),
+                  flexDirection: "row",
+                  justifyContent: "flex-end",
+                  marginBottom: normalize(35, "height")
+                }}
+              >
+                <TouchableOpacity
+                  style={styles.close_icon_holder}
+                  onPress={this.cancel}
+                >
+                  {close_icon(icon_size, icon_color)}
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.save_icon_holder}
+                  onPress={this.save}
+                >
+                  {check_icon(icon_size, icon_color)}
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Animated.View>
         </View>
-      </Animated.View>
+      </Modal>
     );
   }
 }
@@ -402,7 +428,7 @@ class Calendar extends React.Component {
             flexDirection: "row",
             alignItems: "center",
             left: outer_panel_padding,
-            right: outer_panel_padding,
+            right: outer_panel_padding
           }}
         >
           <WeekText text="Week" />

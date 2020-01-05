@@ -877,7 +877,7 @@ class UncompletedTaskCard extends React.PureComponent {
               end_at_day
             ).getTime();
 
-          if (current_date_start_end_week_timestamp >= end_timestamp) {
+          if (current_date_start_end_week_timestamp <= end_timestamp) {
             return true;
           }
 
@@ -923,7 +923,6 @@ class UncompletedTaskCard extends React.PureComponent {
       task_end_month = parseInt(Map(schedule).get("end_month")),
       task_start_year = parseInt(Map(schedule).get("start_year")),
       task_chosen_year = parseInt(Map(schedule).get("chosen_year")),
-      task_week = parseInt(Map(schedule).get("week")),
       task_chosen_noWeekInMonth = parseInt(
         Map(schedule).get("start_noWeekInMonth")
       ),
@@ -981,7 +980,7 @@ class UncompletedTaskCard extends React.PureComponent {
                   end_at_day
                 ).getTime();
 
-              if (current_date_start_end_week_timestamp >= end_timestamp) {
+              if (current_date_start_end_week_timestamp <= end_timestamp) {
                 return true;
               }
 
@@ -1035,7 +1034,7 @@ class UncompletedTaskCard extends React.PureComponent {
                   end_at_day
                 ).getTime();
 
-              if (current_date_start_end_week_timestamp >= end_timestamp) {
+              if (current_date_start_end_week_timestamp <= end_timestamp) {
                 return true;
               }
 
@@ -1179,7 +1178,7 @@ class UncompletedTaskCard extends React.PureComponent {
           ).getTime(),
           chosen_week_timestamp_to_string = chosen_week_timestamp.toString(),
           task_week = parseInt(Map(schedule).get("week")),
-          task_year = parseInt(Map(schedule).get("chosen_year")),
+          task_year = parseInt(Map(schedule).get("start_year")),
           goal_value = parseInt(Map(goal).get("max"));
 
         if (
@@ -1348,6 +1347,7 @@ class UncompletedTaskCard extends React.PureComponent {
             current_goal_value={this.update_obj.current_goal_value}
             title={this.update_obj.title}
             goal_value={this.update_obj.goal_value}
+            chosen_date_data={this.props.chosen_date_data}
           />
         ) : null}
       </View>
@@ -1466,11 +1466,21 @@ class CompletedTaskCardHolder extends React.PureComponent {
 
   componentDidUpdate(prevProps, prevState) {
     if (
+      // this.props.tasks !== prevProps.tasks ||
+      // this.props.completed_tasks !== prevProps.completed_tasks ||
+      // this.props.current_chosen_category !==
+      //   prevProps.current_chosen_category ||
+      // this.props.chosen_date_data !== prevProps.chosen_date_data ||
+      // this.props.sortSettings !== prevProps.sortSettings
+
       this.props.completed_tasks !== prevProps.completed_tasks ||
+      this.props.tasks !== prevProps.tasks ||
       this.props.current_chosen_category !==
         prevProps.current_chosen_category ||
+      this.props.deleted_tasks !== prevProps.deleted_tasks ||
       this.props.chosen_date_data !== prevProps.chosen_date_data ||
-      this.props.sortSettings !== prevProps.sortSettings
+      this.props.sortSettings !== prevProps.sortSettings ||
+      this.props.plan !== prevProps.plan
     ) {
       let sort_settings = List(this.props.sortSettings);
 
@@ -1722,6 +1732,7 @@ class CompletedTaskCard extends React.PureComponent {
             current_goal_value={this.update_obj.current_goal_value}
             title={this.update_obj.title}
             goal_value={this.update_obj.goal_value}
+            chosen_date_data={this.props.chosen_date_data}
           />
         ) : null}
       </>
