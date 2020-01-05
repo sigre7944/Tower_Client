@@ -124,26 +124,6 @@ export default class TaskCard extends React.PureComponent {
               ["completed_priority_array", this.priority_order[task_priority]],
               value => value + 1
             );
-
-            // data = Map(completed_tasks_map.get(task_id)).asMutable();
-            // data.updateIn(["category"], value => task_category);
-            // data.updateIn(
-            //   [timestamp_toString, "totalPoints"],
-            //   value => value + task_reward
-            // );
-            // data.updateIn([timestamp_toString, "current"], value => value + 1);
-            // data.updateIn(
-            //   [timestamp_toString, "current_priority_value"],
-            //   value => task_priority
-            // );
-            // data.updateIn(
-            //   [
-            //     timestamp_toString,
-            //     "completed_priority_array",
-            //     this.priority_order[task_priority]
-            //   ],
-            //   value => value + 1
-            // );
           } else if (type === "week") {
             let day_in_week = current_date.getDay();
 
@@ -170,31 +150,6 @@ export default class TaskCard extends React.PureComponent {
               ],
               value => value + 1
             );
-
-            // data = Map(completed_tasks_map.get(task_id)).asMutable();
-            // data.updateIn(["category"], value => task_category);
-            // data.updateIn(
-            //   [timestamp_toString, "totalPoints"],
-            //   value => value + task_reward
-            // );
-            // data.updateIn(
-            //   [timestamp_toString, "total_points_array", day_in_week],
-            //   value => value + task_reward
-            // );
-            // data.updateIn([timestamp_toString, "current"], value => value + 1);
-            // data.updateIn(
-            //   [timestamp_toString, "current_priority_value"],
-            //   value => task_priority
-            // );
-            // data.updateIn(
-            //   [
-            //     timestamp_toString,
-            //     "completed_priority_array",
-            //     day_in_week,
-            //     this.priority_order[task_priority]
-            //   ],
-            //   value => value + 1
-            // );
           } else {
             let day_in_month = current_date.getDate();
 
@@ -221,31 +176,6 @@ export default class TaskCard extends React.PureComponent {
               ],
               value => value + 1
             );
-
-            // data = Map(completed_tasks_map.get(task_id)).asMutable();
-            // data.updateIn(["category"], value => task_category);
-            // data.updateIn(
-            //   [timestamp_toString, "totalPoints"],
-            //   value => value + task_reward
-            // );
-            // data.updateIn(
-            //   [timestamp_toString, "total_points_array", day_in_month - 1],
-            //   value => value + task_reward
-            // );
-            // data.updateIn([timestamp_toString, "current"], value => value + 1);
-            // data.updateIn(
-            //   [timestamp_toString, "current_priority_value"],
-            //   value => task_priority
-            // );
-            // data.updateIn(
-            //   [
-            //     timestamp_toString,
-            //     "completed_priority_array",
-            //     day_in_month - 1,
-            //     this.priority_order[task_priority]
-            //   ],
-            //   value => value + 1
-            // );
           }
         } else {
           let pre_convert_completed_data = {
