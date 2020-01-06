@@ -47,27 +47,39 @@ export default class Calendar extends React.PureComponent {
     should_display_schedule: false,
 
     month: new Date().getMonth(),
-    year: new Date().getFullYear()
+    year: new Date().getFullYear(),
+
+    chart_change_calendar_available: false,
+
+    should_display_premium_ad: false
   };
 
   _goToPreviousMonth = () => {
-    let { month, year } = this.state;
-    let target_date = new Date(year, month - 1, 1);
+    if (this.state.chart_change_calendar_available) {
+      let { month, year } = this.state;
+      let target_date = new Date(year, month - 1, 1);
 
-    this.setState({
-      month: target_date.getMonth(),
-      year: target_date.getFullYear()
-    });
+      this.setState({
+        month: target_date.getMonth(),
+        year: target_date.getFullYear()
+      });
+    } else {
+      this._toggleDisplayPremiumAd();
+    }
   };
 
   _goToNextMonth = () => {
-    let { month, year } = this.state;
-    let target_date = new Date(year, month + 1, 1);
+    if (this.state.chart_change_calendar_available) {
+      let { month, year } = this.state;
+      let target_date = new Date(year, month + 1, 1);
 
-    this.setState({
-      month: target_date.getMonth(),
-      year: target_date.getFullYear()
-    });
+      this.setState({
+        month: target_date.getMonth(),
+        year: target_date.getFullYear()
+      });
+    } else {
+      this._toggleDisplayPremiumAd();
+    }
   };
 
   _setDateData = (month, year) => {
@@ -84,9 +96,13 @@ export default class Calendar extends React.PureComponent {
   };
 
   _toggleSchedule = () => {
-    this.setState(prevState => ({
-      should_display_schedule: !prevState.should_display_schedule
-    }));
+    if (this.state.chart_change_calendar_available) {
+      this.setState(prevState => ({
+        should_display_schedule: !prevState.should_display_schedule
+      }));
+    } else {
+      this._toggleDisplayPremiumAd();
+    }
   };
 
   _calculateTotalPointsInMonth = () => {
@@ -99,6 +115,42 @@ export default class Calendar extends React.PureComponent {
       month_chart_stats_map.getIn([month_timestamp_toString, "totalPoints"], 0)
     );
   };
+
+  _toggleDisplayPremiumAd = () => {
+    this.setState(prevState => ({
+      should_display_premium_ad: !prevState.should_display_premium_ad
+    }));
+  };
+
+  _updateChartChangeCalendarAvailable = () => {
+    let plan = Map(this.props.generalSettings).getIn([
+        "account",
+        "package",
+        "plan"
+      ]),
+      chart_change_calendar_available = Map(this.props.generalSettings).getIn([
+        "package_limitations",
+        plan,
+        "chart_change_calendar_available"
+      ]);
+
+    this.setState({
+      chart_change_calendar_available
+    });
+  };
+
+  componentDidMount() {
+    this._updateChartChangeCalendarAvailable();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      Map(this.props.generalSettings).getIn(["account", "package", "plan"]) !==
+      Map(prevProps.generalSettings).getIn(["account", "package", "plan"])
+    ) {
+      this._updateChartChangeCalendarAvailable();
+    }
+  }
 
   render() {
     let total_points = this._calculateTotalPointsInMonth();
@@ -211,6 +263,13 @@ export default class Calendar extends React.PureComponent {
             _setDateData={this._setDateData}
             month={this.state.month}
             year={this.state.year}
+          />
+        ) : null}
+
+        {this.state.should_display_premium_ad ? (
+          <PremiumAd
+            dismissAction={this._toggleDisplayPremiumAd}
+            _goToLogin={this._goToLogin}
           />
         ) : null}
       </View>

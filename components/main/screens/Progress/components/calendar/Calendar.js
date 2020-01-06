@@ -138,9 +138,7 @@ export default class Calendar extends React.PureComponent {
     );
   };
 
-  componentDidMount() {
-    this.initMonthData();
-
+  _updateChartChangeCalendarAvailable = () => {
     let plan = Map(this.props.generalSettings).getIn([
         "account",
         "package",
@@ -155,6 +153,12 @@ export default class Calendar extends React.PureComponent {
     this.setState({
       chart_change_calendar_available
     });
+  };
+
+  componentDidMount() {
+    this.initMonthData();
+
+    this._updateChartChangeCalendarAvailable();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -172,22 +176,7 @@ export default class Calendar extends React.PureComponent {
       Map(this.props.generalSettings).getIn(["account", "package", "plan"]) !==
       Map(prevProps.generalSettings).getIn(["account", "package", "plan"])
     ) {
-      let plan = Map(this.props.generalSettings).getIn([
-          "account",
-          "package",
-          "plan"
-        ]),
-        chart_change_calendar_available = Map(
-          this.props.generalSettings
-        ).getIn([
-          "package_limitations",
-          plan,
-          "chart_change_calendar_available"
-        ]);
-
-      this.setState({
-        chart_change_calendar_available
-      });
+      this._updateChartChangeCalendarAvailable();
     }
   }
 
