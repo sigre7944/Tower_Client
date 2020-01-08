@@ -95,11 +95,6 @@ export default class MonthChartHolder extends React.Component {
   };
 
   _updateYDataAndChartData = () => {
-    // let closet_max = 0,
-    //     diff_with_ten = this.y_max % 10
-
-    // closet_max = this.y_max + (10 - diff_with_ten)
-
     if (this.y_max <= 5) {
       this.number_of_ticks = this.y_max;
     } else {
@@ -109,6 +104,26 @@ export default class MonthChartHolder extends React.Component {
     this.y_data = [0, this.y_max];
   };
 
+  _findYMax = () => {
+    let { month, year } = this.state,
+      month_timestamp_toString = new Date(year, month).getTime().toString();
+
+    let month_chart_stats = Map(this.props.month_chart_stats),
+      completed_priority_array = List(
+        month_chart_stats.getIn([
+          month_timestamp_toString,
+          "completed_priority_array"
+        ])
+      ).toArray();
+
+    let sum_value_by_day_completed_priority_array = completed_priority_array.map(
+      (day_in_month_array, index) =>
+        day_in_month_array.reduce((total, value) => total + value)
+    );
+
+    return Math.max.apply(null, sum_value_by_day_completed_priority_array);
+  };
+
   _updateMonthChartData = () => {
     let { month, year } = this.state,
       month_timestamp_toString = new Date(year, month).getTime().toString(),
@@ -116,15 +131,7 @@ export default class MonthChartHolder extends React.Component {
       chart_data = this._initChartData(last_day_in_month),
       month_chart_stats_map = Map(this.props.month_chart_stats);
 
-    this.y_max = 0;
-
-    if (month_chart_stats_map.hasIn([month_timestamp_toString, "current"])) {
-      let current = List(
-        month_chart_stats_map.getIn([month_timestamp_toString, "current"])
-      );
-
-      this.y_max = current.reduce((total, value) => total + value);
-    }
+    this.y_max = this._findYMax();
 
     if (
       month_chart_stats_map.hasIn([
@@ -270,34 +277,12 @@ export default class MonthChartHolder extends React.Component {
         {this.state.chart_change_calendar_available ? (
           <>
             {this.state.should_active_calendar ? (
-              <Modal transparent={true}>
-                <View
-                  style={{
-                    flex: 1,
-                    position: "relative",
-                    justifyContent: "center",
-                    alignItems: "center"
-                  }}
-                >
-                  <TouchableWithoutFeedback onPress={this._toggleCalendar}>
-                    <View
-                      style={{
-                        flex: 1,
-                        width: window_width,
-                        backgroundColor: "black",
-                        opacity: 0.2
-                      }}
-                    ></View>
-                  </TouchableWithoutFeedback>
-
-                  <MonthCalendar
-                    hideAction={this._toggleCalendar}
-                    _setCalendarData={this._setCalendarData}
-                    month={this.state.month}
-                    year={this.state.year}
-                  />
-                </View>
-              </Modal>
+              <MonthCalendar
+                hideAction={this._toggleCalendar}
+                _setCalendarData={this._setCalendarData}
+                month={this.state.month}
+                year={this.state.year}
+              />
             ) : null}
           </>
         ) : (

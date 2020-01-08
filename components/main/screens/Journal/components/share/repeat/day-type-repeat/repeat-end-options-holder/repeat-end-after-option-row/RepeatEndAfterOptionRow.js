@@ -85,7 +85,7 @@ export default class RepeatEndAfterOptionRow extends React.Component {
               style={input_text_style}
               maxLength={2}
               keyboardType="number-pad"
-              placeholder="1"
+              // placeholder="1"
               value={this.props.after_occurrence_value}
               onChange={this.props._onChangeAfterOccurrenceValue}
               ref={this._setTextInputRef}

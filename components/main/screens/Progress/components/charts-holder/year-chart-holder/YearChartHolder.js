@@ -46,11 +46,6 @@ export default class YearChartHolder extends React.Component {
   };
 
   _updateYDataAndChartData = () => {
-    // let closet_max = 0,
-    //     diff_with_ten = this.y_max % 10
-
-    // closet_max = this.y_max + (10 - diff_with_ten)
-
     if (this.y_max <= 5) {
       this.number_of_ticks = this.y_max;
     } else {
@@ -60,21 +55,30 @@ export default class YearChartHolder extends React.Component {
     this.y_data = [0, this.y_max];
   };
 
+  _findYMax = () => {
+    let { year } = this.state,
+      year_toString = year.toString();
+
+    let year_chart_stats = Map(this.props.year_chart_stats),
+      completed_priority_array = List(
+        year_chart_stats.getIn([year_toString, "completed_priority_array"])
+      ).toArray();
+
+    let sum_value_by_day_completed_priority_array = completed_priority_array.map(
+      (month_in_year_array, index) =>
+        month_in_year_array.reduce((total, value) => total + value)
+    );
+
+    return Math.max.apply(null, sum_value_by_day_completed_priority_array);
+  };
+
   _updateYearChartData = () => {
     let { year } = this.state,
       year_toString = year.toString(),
       chart_data = this._initChartData(),
       year_chart_stats_map = Map(this.props.year_chart_stats);
 
-    this.y_max = 0;
-
-    if (year_chart_stats_map.hasIn([year_toString, "current"])) {
-      let current = List(
-        year_chart_stats_map.getIn([year_toString, "current"])
-      );
-
-      this.y_max = current.reduce((total, value) => total + value);
-    }
+    this.y_max = this._findYMax();
 
     if (
       year_chart_stats_map.hasIn([year_toString, "completed_priority_array"])

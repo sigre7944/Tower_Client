@@ -7,7 +7,8 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
   Animated,
-  Easing
+  Easing,
+  SafeAreaView
 } from "react-native";
 
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -189,7 +190,11 @@ export default class ChooseOptions extends React.PureComponent {
                 }}
                 onPress={this._chooseEditMultipleTasks}
               >
-                <FontAwesomeIcon icon={faEdit} size={normalize(20, "width")} color="#05838B" />
+                <FontAwesomeIcon
+                  icon={faEdit}
+                  size={normalize(20, "width")}
+                  color="#05838B"
+                />
 
                 <Text style={styles.edit_text}>Edit multiple tasks</Text>
               </TouchableOpacity>
@@ -202,7 +207,8 @@ export default class ChooseOptions extends React.PureComponent {
                   paddingHorizontal: normalize(33, "width"),
                   flexDirection: "row",
                   alignItems: "center",
-                  height: normalize(60, "height")
+                  height: normalize(60, "height"),
+                  marginBottom: normalize(22, "height")
                 }}
                 onPress={this._chooseSortBy}
               >

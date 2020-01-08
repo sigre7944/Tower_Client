@@ -389,7 +389,7 @@ export default class SignUpScreen extends React.PureComponent {
         <Animated.View
           style={{
             transform: [{ translateY: this.translate_y_value }],
-            paddingHorizontal: normalize(32, "width"),
+            paddingHorizontal: normalize(32, "width")
           }}
         >
           <ScrollView showsVerticalScrollIndicator={false}>
@@ -430,6 +430,7 @@ export default class SignUpScreen extends React.PureComponent {
                 <TextInput
                   style={styles.input_text}
                   placeholder="Type your full name (max 30 chars)"
+                  placeholderTextColor="#2C2C2C40"
                   value={this.state.full_name}
                   onChange={this._onChangeFullName}
                   maxLength={30}
@@ -463,6 +464,7 @@ export default class SignUpScreen extends React.PureComponent {
                 <TextInput
                   style={styles.input_text}
                   placeholder="example@domain.com"
+                  placeholderTextColor="#2C2C2C40"
                   keyboardType="email-address"
                   value={this.state.email}
                   onChange={this._onChangeEmail}
@@ -495,6 +497,7 @@ export default class SignUpScreen extends React.PureComponent {
                 <TextInput
                   style={styles.input_text}
                   placeholder="Type your password"
+                  placeholderTextColor="#2C2C2C40"
                   secureTextEntry={true}
                   value={this.state.password}
                   onChange={this._onChangePassword}
@@ -506,7 +509,7 @@ export default class SignUpScreen extends React.PureComponent {
                 collapsed={this.state.should_password_instruction_collapsed}
                 style={{
                   marginTop: normalize(5, "height"),
-                  height: normalize(35, "height")
+                  height: normalize(40, "height")
                 }}
               >
                 <Text style={styles.small_instruction_password_text}>
@@ -539,6 +542,7 @@ export default class SignUpScreen extends React.PureComponent {
                 <TextInput
                   style={styles.input_text}
                   placeholder="Type your password again"
+                  placeholderTextColor="#2C2C2C40"
                   secureTextEntry={true}
                   value={this.state.confirm_password}
                   onChange={this._onChangeConfirmPassword}
@@ -581,6 +585,7 @@ export default class SignUpScreen extends React.PureComponent {
                   <TextInput
                     style={{ ...styles.input_text, ...{ flex: 1 } }}
                     placeholder="e.g: AbCd12"
+                    placeholderTextColor="#2C2C2C40"
                     value={this.state.referral_code}
                     onChange={this._onChangeReferralCode}
                     maxLength={6}

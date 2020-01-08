@@ -877,7 +877,7 @@ class UncompletedTaskCard extends React.PureComponent {
               end_at_day
             ).getTime();
 
-          if (current_date_start_end_week_timestamp >= end_timestamp) {
+          if (current_date_start_end_week_timestamp <= end_timestamp) {
             return true;
           }
 
@@ -923,7 +923,6 @@ class UncompletedTaskCard extends React.PureComponent {
       task_end_month = parseInt(Map(schedule).get("end_month")),
       task_start_year = parseInt(Map(schedule).get("start_year")),
       task_chosen_year = parseInt(Map(schedule).get("chosen_year")),
-      task_week = parseInt(Map(schedule).get("week")),
       task_chosen_noWeekInMonth = parseInt(
         Map(schedule).get("start_noWeekInMonth")
       ),
@@ -981,7 +980,7 @@ class UncompletedTaskCard extends React.PureComponent {
                   end_at_day
                 ).getTime();
 
-              if (current_date_start_end_week_timestamp >= end_timestamp) {
+              if (current_date_start_end_week_timestamp <= end_timestamp) {
                 return true;
               }
 
@@ -1035,7 +1034,7 @@ class UncompletedTaskCard extends React.PureComponent {
                   end_at_day
                 ).getTime();
 
-              if (current_date_start_end_week_timestamp >= end_timestamp) {
+              if (current_date_start_end_week_timestamp <= end_timestamp) {
                 return true;
               }
 
@@ -1114,7 +1113,10 @@ class UncompletedTaskCard extends React.PureComponent {
       category = task_map.get("category"), //category id
       current_goal_value = 0;
 
-    if (current_chosen_category === category || current_chosen_category === "cate_all") {
+    if (
+      current_chosen_category === category ||
+      current_chosen_category === "cate_all"
+    ) {
       if (type === "day") {
         let { day, month, year } = chosen_date_data,
           chosen_day_timestamp = new Date(year, month, day).getTime(),
@@ -1176,7 +1178,7 @@ class UncompletedTaskCard extends React.PureComponent {
           ).getTime(),
           chosen_week_timestamp_to_string = chosen_week_timestamp.toString(),
           task_week = parseInt(Map(schedule).get("week")),
-          task_year = parseInt(Map(schedule).get("chosen_year")),
+          task_year = parseInt(Map(schedule).get("start_year")),
           goal_value = parseInt(Map(goal).get("max"));
 
         if (
@@ -1318,10 +1320,10 @@ class UncompletedTaskCard extends React.PureComponent {
   };
 
   render() {
-    let is_chosen_date_today = this.checkIfChosenDateIsToday(
-      this.props.chosen_date_data,
-      this.props.type
-    );
+    // let is_chosen_date_today = this.checkIfChosenDateIsToday(
+    //   this.props.chosen_date_data,
+    //   this.props.type
+    // );
 
     this.handleUpdate(
       this.props.deleted_task_data,
@@ -1341,11 +1343,11 @@ class UncompletedTaskCard extends React.PureComponent {
             task_data={this.props.task_data}
             index={this.props.index}
             openModal={this.props.openModal}
-            is_chosen_date_today={is_chosen_date_today}
             flag={"uncompleted"}
             current_goal_value={this.update_obj.current_goal_value}
             title={this.update_obj.title}
             goal_value={this.update_obj.goal_value}
+            chosen_date_data={this.props.chosen_date_data}
           />
         ) : null}
       </View>
@@ -1464,11 +1466,21 @@ class CompletedTaskCardHolder extends React.PureComponent {
 
   componentDidUpdate(prevProps, prevState) {
     if (
+      // this.props.tasks !== prevProps.tasks ||
+      // this.props.completed_tasks !== prevProps.completed_tasks ||
+      // this.props.current_chosen_category !==
+      //   prevProps.current_chosen_category ||
+      // this.props.chosen_date_data !== prevProps.chosen_date_data ||
+      // this.props.sortSettings !== prevProps.sortSettings
+
       this.props.completed_tasks !== prevProps.completed_tasks ||
+      this.props.tasks !== prevProps.tasks ||
       this.props.current_chosen_category !==
         prevProps.current_chosen_category ||
+      this.props.deleted_tasks !== prevProps.deleted_tasks ||
       this.props.chosen_date_data !== prevProps.chosen_date_data ||
-      this.props.sortSettings !== prevProps.sortSettings
+      this.props.sortSettings !== prevProps.sortSettings ||
+      this.props.plan !== prevProps.plan
     ) {
       let sort_settings = List(this.props.sortSettings);
 
@@ -1519,7 +1531,10 @@ class CompletedTaskCard extends React.PureComponent {
         category = Map(task).get("category"), // category id
         current_goal_value = 0;
 
-      if (current_chosen_category === category || current_chosen_category === "cate_all") {
+      if (
+        current_chosen_category === category ||
+        current_chosen_category === "cate_all"
+      ) {
         if (type === "day") {
           let { day, month, year } = chosen_date_data,
             chosen_day_timestamp = new Date(year, month, day).getTime(),
@@ -1691,6 +1706,11 @@ class CompletedTaskCard extends React.PureComponent {
   };
 
   render() {
+    // let is_chosen_date_today = this.checkIfChosenDateIsToday(
+    //   this.props.chosen_date_data,
+    //   this.props.type
+    // );
+
     this.handleUpdate(
       this.props.task,
       this.props.completed_task,
@@ -1699,10 +1719,6 @@ class CompletedTaskCard extends React.PureComponent {
       this.props.chosen_date_data
     );
 
-    let is_chosen_date_today = this.checkIfChosenDateIsToday(
-      this.props.chosen_date_data,
-      this.props.type
-    );
     return (
       <>
         {this.update_obj.should_render ? (
@@ -1712,11 +1728,11 @@ class CompletedTaskCard extends React.PureComponent {
             task_data={this.update_obj.task_data}
             index={this.props.index}
             openModal={this.props.openModal}
-            is_chosen_date_today={is_chosen_date_today}
             flag={"completed"}
             current_goal_value={this.update_obj.current_goal_value}
             title={this.update_obj.title}
             goal_value={this.update_obj.goal_value}
+            chosen_date_data={this.props.chosen_date_data}
           />
         ) : null}
       </>

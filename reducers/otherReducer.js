@@ -156,48 +156,54 @@ let initial_general_settings = fromJS({
     }
   },
 
-  currency: "EUR",
-  exchange_rates: {
-    EUR: {
-      base: "EUR",
-      date: "2019-11-29",
-      rates: {
-        JPY: 120.43,
-        USD: 1.0982,
-        GBP: 0.85225
-      }
-    },
-
-    USD: {
-      rates: {
-        EUR: 0.9105809506,
-        JPY: 109.6612638864,
-        GBP: 0.7760426152
-      },
-      base: "USD",
-      date: "2019-11-29"
-    },
-
-    GBP: {
-      rates: {
-        EUR: 1.1733646231,
-        JPY: 141.3083015547,
-        USD: 1.288589029
-      },
-      base: "GBP",
-      date: "2019-11-29"
-    },
-
-    JPY: {
-      rates: {
-        EUR: 0.0083035788,
-        USD: 0.0091189903,
-        GBP: 0.0070767251
-      },
-      base: "JPY",
-      date: "2019-11-29"
-    }
+  active_info: {
+    latest_timestamp: Date.now(),
+    should_beta_suggest_login: false,
+    session_time: 30 * 60 * 1000
   }
+
+  // currency: "EUR",
+  // exchange_rates: {
+  //   EUR: {
+  //     base: "EUR",
+  //     date: "2019-11-29",
+  //     rates: {
+  //       JPY: 120.43,
+  //       USD: 1.0982,
+  //       GBP: 0.85225
+  //     }
+  //   },
+
+  //   USD: {
+  //     rates: {
+  //       EUR: 0.9105809506,
+  //       JPY: 109.6612638864,
+  //       GBP: 0.7760426152
+  //     },
+  //     base: "USD",
+  //     date: "2019-11-29"
+  //   },
+
+  //   GBP: {
+  //     rates: {
+  //       EUR: 1.1733646231,
+  //       JPY: 141.3083015547,
+  //       USD: 1.288589029
+  //     },
+  //     base: "GBP",
+  //     date: "2019-11-29"
+  //   },
+
+  //   JPY: {
+  //     rates: {
+  //       EUR: 0.0083035788,
+  //       USD: 0.0091189903,
+  //       GBP: 0.0070767251
+  //     },
+  //     base: "JPY",
+  //     date: "2019-11-29"
+  //   }
+  // }
 });
 
 export const generalSettings = (state = initial_general_settings, action) => {

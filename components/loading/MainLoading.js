@@ -3,15 +3,14 @@ import { View, Image, Modal, Animated, Platform } from "react-native";
 // import * as Font from "expo-font";
 import { Asset } from "expo-asset";
 import * as firebase from "firebase";
-import { Map } from "immutable";
+import { Map, fromJS } from "immutable";
 import axios from "axios";
 import { SERVER_URL } from "../../config";
-import { fromJS } from "immutable";
 // import SplashScreen from "react-native-splash-screen";
 
 const waiting_time = 0; // 1s to load components
 
-export default class MainLoading extends React.Component {
+export default class MainLoading extends React.PureComponent {
   opacity_value = new Animated.Value(1);
 
   state = {
@@ -123,7 +122,7 @@ export default class MainLoading extends React.Component {
         this._updateAccountRedux({ package: { plan: "free" } }, false);
       }
     } catch (err) {
-      let sign_out_response = await firebase.auth().signOut();
+      // let sign_out_response = await firebase.auth().signOut();
       this._updateAccountRedux({ package: { plan: "free" } }, false);
     }
   };

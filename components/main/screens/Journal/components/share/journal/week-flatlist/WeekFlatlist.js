@@ -25,6 +25,7 @@ export default class WeekFlatlist extends React.PureComponent {
   week_data = [];
 
   start_index = 0;
+  start_week_timestamp = 0;
 
   state = {
     should_update: 0,
@@ -184,16 +185,18 @@ export default class WeekFlatlist extends React.PureComponent {
     this.scrollToIndex(this.start_index);
   };
 
-  componentDidMount() {
-    this.initializeWeekData();
-
+  _initialUpdateWithStartIndex = () => {
     let nearest_monday = this.getMonday(new Date()),
       current_week = this.getWeek(nearest_monday),
-      current_year = nearest_monday.getFullYear();
+      current_year = nearest_monday.getFullYear(),
+      current_monday = nearest_monday.getDate(),
+      current_month = nearest_monday.getMonth();
 
     this.week_data.every((data, index) => {
       if (data.week === current_week && data.start_year === current_year) {
         this.start_index = index;
+
+        this.start_week_timestamp = nearest_monday.getTime();
 
         this.chooseWeek(this.start_index);
 
@@ -202,11 +205,29 @@ export default class WeekFlatlist extends React.PureComponent {
 
       return true;
     });
+  };
+
+  componentDidMount() {
+    this.initializeWeekData();
+
+    this._initialUpdateWithStartIndex();
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.headerPressed !== prevProps.headerPressed) {
       if (this.props.currentRoute === "Week") {
+        let current_near_monday = this.getMonday(new Date()),
+          current_monday_timestamp = current_near_monday.getTime();
+
+        let week_diff = Math.floor(
+          (current_monday_timestamp - this.start_week_timestamp) /
+            (7 * 86400 * 1000)
+        );
+
+        this.start_week_timestamp = current_monday_timestamp;
+
+        this.start_index += week_diff;
+
         this.chooseWeek(this.start_index);
       }
     }

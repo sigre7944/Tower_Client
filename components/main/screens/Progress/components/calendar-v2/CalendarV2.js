@@ -4,7 +4,8 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
+  Modal
 } from "react-native";
 
 import { Map, fromJS, List } from "immutable";
@@ -12,130 +13,113 @@ import { Map, fromJS, List } from "immutable";
 import { styles } from "./styles/styles";
 
 import PremiumAd from "../../../../../shared/components/premium-ad/PremiumAd.Container";
+
+import Schedule from "./schedule/Schedule";
+
 import { normalize } from "../../../../../shared/helpers";
 import {
   left_chevron_icon,
   right_chevron_icon
 } from "../../../../../shared/icons";
-const panel_width = Dimensions.get("window").width;
+const window_width = Dimensions.get("window").width;
 const margin_top_for_calendar_row = normalize(20, "height");
 const margin_top_for_month_year_text = normalize(30, "height");
 
+const padding_horizontal_value = normalize(5, "width");
+
 export default class Calendar extends React.PureComponent {
-  year_in_between = 4;
-
-  current_year = new Date().getFullYear();
-  current_month = new Date().getMonth();
-
-  left_end_year = this.current_year - this.year_in_between;
-  right_end_year = this.current_year + this.year_in_between;
-
-  present_month_index = -1;
-
-  month_data = [];
-
-  start_index = 0;
+  month_names = [
+    "January",
+    "Febuary",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
 
   state = {
-    should_flatlist_update: 0,
+    should_display_schedule: false,
+
+    month: new Date().getMonth(),
+    year: new Date().getFullYear(),
+
     chart_change_calendar_available: false,
+
     should_display_premium_ad: false
   };
 
-  scrollToMonth = month_index => {
-    if (this._flatlist) {
-      this._flatlist.scrollToOffset({
-        animated: true,
-        offset: month_index * panel_width
+  _goToPreviousMonth = () => {
+    if (this.state.chart_change_calendar_available) {
+      let { month, year } = this.state;
+      let target_date = new Date(year, month - 1, 1);
+
+      this.setState({
+        month: target_date.getMonth(),
+        year: target_date.getFullYear()
       });
+    } else {
+      this._toggleDisplayPremiumAd();
     }
   };
 
-  _setRef = r => (this._flatlist = r);
+  _goToNextMonth = () => {
+    if (this.state.chart_change_calendar_available) {
+      let { month, year } = this.state;
+      let target_date = new Date(year, month + 1, 1);
 
-  _keyExtractor = (item, index) => `progress-calendar-month-${index}`;
-
-  _renderItem = ({ item, index }) => {
-    return (
-      <MonthHolder
-        data={item}
-        month_index={index}
-        scrollToMonth={this.scrollToMonth}
-        present_month_index={this.present_month_index}
-        day_chart_stats={this.props.day_chart_stats}
-        week_chart_stats={this.props.week_chart_stats}
-        month_chart_stats={this.props.month_chart_stats}
-        chart_change_calendar_available={
-          this.state.chart_change_calendar_available
-        }
-        _toggleDisplayPremiumAd={this._toggleDisplayPremiumAd}
-      />
-    );
+      this.setState({
+        month: target_date.getMonth(),
+        year: target_date.getFullYear()
+      });
+    } else {
+      this._toggleDisplayPremiumAd();
+    }
   };
 
-  getMonday = date => {
-    let dayInWeek = new Date(date).getDay();
-    let diff = dayInWeek === 0 ? 6 : dayInWeek - 1;
-    return new Date(new Date(date).getTime() - diff * 86400 * 1000);
-  };
-
-  initMonthData = () => {
-    let counter = 0;
-
-    for (let year = this.left_end_year; year <= this.right_end_year; year++) {
-      for (let month = 0; month < 12; month++) {
-        if (month === this.current_month && year === this.current_year) {
-          this.present_month_index = counter;
-          this.start_index = counter;
-        }
-
-        this.month_data.push({
-          month,
-          year
-        });
-
-        counter += 1;
+  _setDateData = (month, year) => {
+    this.setState(
+      {
+        month,
+        year
+      },
+      () => {
+        this.props._setChosenMonthFromCalendar(month);
+        this.props._setChosenYearFromCalendar(year);
       }
-    }
-
-    this.setState(prevState => ({
-      should_flatlist_update: prevState.should_flatlist_update + 1
-    }));
+    );
   };
 
-  _getItemLayout = (data, index) => ({
-    length: panel_width,
-    offset: panel_width * index,
-    index
-  });
+  _toggleSchedule = () => {
+    if (this.state.chart_change_calendar_available) {
+      this.setState(prevState => ({
+        should_display_schedule: !prevState.should_display_schedule
+      }));
+    } else {
+      this._toggleDisplayPremiumAd();
+    }
+  };
 
-  _onMomentumScrollEnd = ({ nativeEvent }) => {
-    let number_of_months = Math.floor(
-      nativeEvent.contentOffset.x / panel_width
+  _calculateTotalPointsInMonth = () => {
+    let month_timestamp_toString = new Date(this.state.year, this.state.month)
+      .getTime()
+      .toString();
+    let month_chart_stats_map = Map(this.props.month_chart_stats);
+
+    return parseInt(
+      month_chart_stats_map.getIn([month_timestamp_toString, "totalPoints"], 0)
     );
-
-    let month = number_of_months % 12,
-      year = Math.floor(number_of_months / 12) + this.left_end_year;
-
-    this.props._setChosenMonthFromCalendar(month);
-    this.props._setChosenYearFromCalendar(year);
   };
 
   _toggleDisplayPremiumAd = () => {
     this.setState(prevState => ({
       should_display_premium_ad: !prevState.should_display_premium_ad
     }));
-  };
-
-  _goToLogin = () => {
-    this.setState(
-      {
-        should_display_premium_ad: false
-      },
-      () => {
-        this.props.navigation.navigate("SignInScreen");
-      }
-    );
   };
 
   _updateChartChangeCalendarAvailable = () => {
@@ -156,22 +140,10 @@ export default class Calendar extends React.PureComponent {
   };
 
   componentDidMount() {
-    this.initMonthData();
-
     this._updateChartChangeCalendarAvailable();
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (
-      this.props.day_chart_stats !== prevProps.day_chart_stats ||
-      this.props.week_chart_stats !== prevProps.week_chart_stats ||
-      this.props.month_chart_stats !== prevProps.month_chart_stats
-    ) {
-      this.setState(prevState => ({
-        should_flatlist_update: prevState.should_flatlist_update + 1
-      }));
-    }
-
     if (
       Map(this.props.generalSettings).getIn(["account", "package", "plan"]) !==
       Map(prevProps.generalSettings).getIn(["account", "package", "plan"])
@@ -181,51 +153,90 @@ export default class Calendar extends React.PureComponent {
   }
 
   render() {
+    let total_points = this._calculateTotalPointsInMonth();
     return (
       <View
         style={{
-          position: "relative",
-          flex: 1,
-          alignItems: "center"
+          alignItems: "center",
+          paddingHorizontal: padding_horizontal_value
         }}
       >
-        <View>
-          <FlatList
-            data={this.month_data}
-            extraData={this.state.should_flatlist_update}
-            keyExtractor={this._keyExtractor}
-            renderItem={this._renderItem}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            decelerationRate={0}
-            snapToInterval={panel_width}
-            snapToAlignment="start"
-            getItemLayout={this._getItemLayout}
-            initialScrollIndex={this.start_index}
-            ref={this._setRef}
-            initialNumToRender={3}
-            windowSize={3}
-            maxToRenderPerBatch={3}
-            day_stats={this.props.day_stats}
-            week_stats={this.props.week_stats}
-            week_stats={this.props.week_stats}
-            onMomentumScrollEnd={this._onMomentumScrollEnd}
-            scrollEnabled={this.state.chart_change_calendar_available}
-          />
-        </View>
         <View
           style={{
-            position: "absolute",
-            top:
-              margin_top_for_month_year_text +
-              normalize(21, "height") +
-              margin_top_for_calendar_row +
-              (normalize(19, "height") + normalize(20, "height")),
+            marginTop: normalize(10, "height"),
+            flexDirection: "row",
+            alignItems: "center"
+          }}
+        >
+          <Text style={styles.point_earned_text}>Points earned:</Text>
+
+          <Text style={styles.points_text}>{total_points}</Text>
+        </View>
+
+        <View
+          style={{
+            marginTop: margin_top_for_month_year_text
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              width: normalize(250, "width")
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                width: normalize(24, "width"),
+                height: normalize(24, "width"),
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+              onPress={this._goToPreviousMonth}
+            >
+              {left_chevron_icon(normalize(18, "width"), "rgba(0, 0, 0, 0.54)")}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                marginHorizontal: normalize(25, "width"),
+                flex: 1
+              }}
+              onPress={this._toggleSchedule}
+            >
+              <Text style={styles.month_text}>
+                {this.month_names[this.state.month]}
+              </Text>
+              <Text style={styles.year_text}>{this.state.year}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{
+                width: normalize(24, "width"),
+                height: normalize(24, "width"),
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+              onPress={this._goToNextMonth}
+            >
+              {right_chevron_icon(
+                normalize(18, "width"),
+                "rgba(0, 0, 0, 0.54)"
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View
+          style={{
             flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",
-            left: 0,
-            right: 0
+            marginTop: margin_top_for_calendar_row
           }}
         >
           <WeekText text="Week" />
@@ -238,6 +249,23 @@ export default class Calendar extends React.PureComponent {
           <DayText text="S" />
         </View>
 
+        <MonthCalendar
+          month={this.state.month}
+          year={this.state.year}
+          month_chart_stats={this.props.month_chart_stats}
+          week_chart_stats={this.props.week_chart_stats}
+          day_chart_stats={this.props.day_chart_stats}
+        />
+
+        {this.state.should_display_schedule ? (
+          <Schedule
+            _toggleSchedule={this._toggleSchedule}
+            _setDateData={this._setDateData}
+            month={this.state.month}
+            year={this.state.year}
+          />
+        ) : null}
+
         {this.state.should_display_premium_ad ? (
           <PremiumAd
             dismissAction={this._toggleDisplayPremiumAd}
@@ -249,25 +277,13 @@ export default class Calendar extends React.PureComponent {
   }
 }
 
-class MonthHolder extends React.Component {
-  month_names = [
-    "January",
-    "Febuary",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-  ];
-
-  weeks_in_month_data = [];
+class MonthCalendar extends React.Component {
+  month_timestamp_toString = new Date(this.props.year, this.props.month)
+    .getTime()
+    .toString();
 
   state = {
+    month_data: [],
     should_flatlist_update: 0
   };
 
@@ -303,277 +319,26 @@ class MonthHolder extends React.Component {
     );
   };
 
-  _keyExtractor = (item, index) =>
-    `progress-calendar-${item[0].week}-${item[0].month}-${item[0].year}-${index}`;
-
-  _renderItem = ({ item, index }) => {
-    return (
-      <WeekRowHolder
-        week_data={item}
-        week_index={index}
-        day_chart_stats={this.props.day_chart_stats}
-        week_chart_stats={this.props.week_chart_stats}
-      />
-    );
-  };
-
-  _returnToCurrentMonth = () => {
-    if (this.props.chart_change_calendar_available) {
-      this.props.scrollToMonth(this.props.present_month_index);
-    } else {
-      this.props._toggleDisplayPremiumAd();
-    }
-  };
-
-  _calculateTotalPointsInMonth = () => {
-    let month_timestamp_toString = new Date(
-      this.props.data.year,
-      this.props.data.month
-    )
-      .getTime()
-      .toString();
-    let month_chart_stats_map = Map(this.props.month_chart_stats);
-
-    return parseInt(
-      month_chart_stats_map.getIn([month_timestamp_toString, "totalPoints"])
-    );
-  };
-
-  _goToPreviousMonth = () => {
-    if (this.props.chart_change_calendar_available) {
-      this.props.scrollToMonth(this.props.month_index - 1);
-    } else {
-      this.props._toggleDisplayPremiumAd();
-    }
-  };
-
-  _goToNextMonth = () => {
-    if (this.props.chart_change_calendar_available) {
-      this.props.scrollToMonth(this.props.month_index + 1);
-    } else {
-      this.props._toggleDisplayPremiumAd();
-    }
-  };
-
   shouldComponentUpdate(nextProps, nextState) {
-    let month_timestamp_toString = new Date(
-      this.props.data.year,
-      this.props.data.month
-    )
-      .getTime()
-      .toString();
     return (
-      Map(this.props.month_chart_stats).get(month_timestamp_toString) !==
-        Map(nextProps.month_chart_stats).get(month_timestamp_toString) ||
-      this.props.chart_change_calendar_available !==
-        nextProps.chart_change_calendar_available ||
-      this.props.week_chart_stats !== nextProps.week_chart_stats
+      this.props.month !== nextProps.month ||
+      this.props.year !== nextProps.year ||
+      this.state !== nextState ||
+      Map(this.props.month_chart_stats).get(this.month_timestamp_toString) !==
+        Map(nextProps.month_chart_stats).get(this.month_timestamp_toString)
     );
   }
-
-  componentDidMount() {
-    let { month, year } = this.props.data,
-      first_day_of_month = new Date(year, month, 1),
-      number_of_days_from_last_month =
-        first_day_of_month.getDay() === 0 ? 6 : first_day_of_month.getDay() - 1,
-      first_day_from_last_month = new Date(first_day_of_month),
-      last_day_of_month = new Date(year, month + 1, 0),
-      number_of_days_from_next_month =
-        last_day_of_month.getDay() === 0 ? 0 : 7 - last_day_of_month.getDay(),
-      last_day_from_next_month = new Date(last_day_of_month);
-
-    first_day_from_last_month.setDate(
-      first_day_of_month.getDate() - number_of_days_from_last_month
-    );
-    last_day_from_next_month.setDate(
-      last_day_of_month.getDate() + number_of_days_from_next_month
-    );
-
-    let start_timestamp = first_day_from_last_month.getTime(),
-      end_timestamp = this.getMonday(last_day_from_next_month).getTime(),
-      tracking_timestamp = start_timestamp,
-      number_of_weeks =
-        Math.round((end_timestamp - start_timestamp) / (7 * 86400 * 1000)) + 1;
-
-    for (
-      let noWeekInMonth = 1;
-      noWeekInMonth <= number_of_weeks;
-      noWeekInMonth++
-    ) {
-      let monday = this.getMonday(tracking_timestamp).getTime();
-
-      let data = [];
-
-      data.push({
-        is_week_holder: true,
-        week: this.getWeek(new Date(monday)),
-        day: new Date(monday).getDate(),
-        month,
-        year,
-        start_year: new Date(monday).getFullYear(),
-        start_month: new Date(monday).getMonth(),
-        monday: new Date(monday).getDate(),
-        noWeekInMonth
-      });
-
-      for (let i = 0; i < 7; i++) {
-        let date = new Date(i * 86400 * 1000 + monday),
-          week = this.getWeek(date);
-
-        if (date.getMonth() !== month) {
-          data.push({
-            unchosen: true,
-            day: date.getDate(),
-            week,
-            month: date.getMonth(),
-            year: date.getFullYear(),
-            noWeekInMonth: this.getNoWeekInMonth(date)
-          });
-        } else {
-          data.push({
-            day: date.getDate(),
-            week,
-            month: date.getMonth(),
-            year: date.getFullYear(),
-            noWeekInMonth: this.getNoWeekInMonth(date)
-          });
-        }
-      }
-
-      this.weeks_in_month_data.push(data);
-
-      let tracking_date = new Date(tracking_timestamp),
-        new_tracking_date = tracking_date;
-
-      new_tracking_date.setDate(tracking_date.getDate() + 7);
-
-      tracking_timestamp = new_tracking_date.getTime();
-    }
-
-    this.setState(prevState => ({
-      should_flatlist_update: prevState.should_flatlist_update + 1
-    }));
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (
-      this.props.month_chart_stats !== prevProps.month_chart_stats ||
-      this.props.week_chart_stats !== prevProps.week_chart_stats ||
-      this.props.day_chart_stats !== prevProps.day_chart_stats
-    ) {
-      this.setState(prevState => ({
-        should_flatlist_update: prevState.should_flatlist_update + 1
-      }));
-    }
-  }
-
-  render() {
-    let total_points = this._calculateTotalPointsInMonth();
-    if (!total_points) {
-      total_points = 0;
-    }
-
-    return (
-      <View
-        style={{
-          width: panel_width,
-          alignItems: "center"
-        }}
-      >
-        <View
-          style={{
-            marginTop: normalize(10, "height"),
-            flexDirection: "row",
-            alignItems: "center"
-          }}
-        >
-          <Text style={styles.point_earned_text}>Points earned:</Text>
-
-          <Text style={styles.points_text}>{total_points}</Text>
-        </View>
-        <View
-          style={{
-            marginTop: margin_top_for_month_year_text
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              width: normalize(250, "width")
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                width: normalize(24, "width"),
-                height: normalize(24, "width"),
-                justifyContent: "center",
-                alignItems: "center"
-              }}
-              onPress={this._goToPreviousMonth}
-            >
-              {left_chevron_icon(normalize(18, "width"), "rgba(0, 0, 0, 0.54)")}
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                marginHorizontal: normalize(25, "width"),
-                flex: 1
-              }}
-              onPress={this._returnToCurrentMonth}
-            >
-              <Text style={styles.month_text}>
-                {this.month_names[this.props.data.month]}
-              </Text>
-              <Text style={styles.year_text}>{this.props.data.year}</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={{
-                width: normalize(24, "width"),
-                height: normalize(24, "width"),
-                justifyContent: "center",
-                alignItems: "center"
-              }}
-              onPress={this._goToNextMonth}
-            >
-              {right_chevron_icon(
-                normalize(18, "width"),
-                "rgba(0, 0, 0, 0.54)"
-              )}
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View
-          style={{
-            marginTop: margin_top_for_calendar_row + normalize(32, "height")
-          }}
-        >
-          <FlatList
-            data={this.weeks_in_month_data}
-            extraData={this.state.should_flatlist_update}
-            keyExtractor={this._keyExtractor}
-            renderItem={this._renderItem}
-            scrollEnabled={false}
-          />
-        </View>
-      </View>
-    );
-  }
-}
-
-class WeekRowHolder extends React.PureComponent {
-  state = {
-    should_flatlist_update: 0
-  };
 
   _keyExtractor = (item, index) => {
-    return `progress-calendar-week-row-${item.week}-${item.day}-${item.month}-${item.year}`;
+    if (item.is_week_holder) {
+      return `progress-calendar-week-holder-${item.day}-${item.week}-${item.month}-${item.year}`;
+    } else {
+      if (item.unchosen) {
+        return `progress-calendar-unchosen-day-holder-${item.day}-${item.week}-${item.month}-${item.year}`;
+      } else {
+        return `progress-calendar-day-holder-${item.day}-${item.week}-${item.month}-${item.year}`;
+      }
+    }
   };
 
   _renderItem = ({ item, index }) => {
@@ -603,10 +368,109 @@ class WeekRowHolder extends React.PureComponent {
     }
   };
 
+  _updateRenderComponents = (month, year) => {
+    let month_data = [],
+      render_components = [];
+
+    let first_day_of_month = new Date(year, month, 1),
+      number_of_days_from_last_month =
+        first_day_of_month.getDay() === 0 ? 6 : first_day_of_month.getDay() - 1,
+      first_day_from_last_month = new Date(first_day_of_month),
+      last_day_of_month = new Date(year, month + 1, 0),
+      number_of_days_from_next_month =
+        last_day_of_month.getDay() === 0 ? 0 : 7 - last_day_of_month.getDay(),
+      last_day_from_next_month = new Date(last_day_of_month);
+
+    first_day_from_last_month.setDate(
+      first_day_of_month.getDate() - number_of_days_from_last_month
+    );
+    last_day_from_next_month.setDate(
+      last_day_of_month.getDate() + number_of_days_from_next_month
+    );
+
+    let start_timestamp = first_day_from_last_month.getTime(),
+      end_timestamp = this.getMonday(last_day_from_next_month).getTime(),
+      tracking_timestamp = start_timestamp,
+      number_of_weeks =
+        Math.round((end_timestamp - start_timestamp) / (7 * 86400 * 1000)) + 1;
+
+    for (
+      let noWeekInMonth = 1;
+      noWeekInMonth <= number_of_weeks;
+      noWeekInMonth++
+    ) {
+      let monday = this.getMonday(tracking_timestamp).getTime();
+
+      month_data.push({
+        is_week_holder: true,
+        week: this.getWeek(new Date(monday)),
+        day: new Date(monday).getDate(),
+        month,
+        year,
+        start_year: new Date(monday).getFullYear(),
+        start_month: new Date(monday).getMonth(),
+        monday: new Date(monday).getDate(),
+        noWeekInMonth
+      });
+
+      for (let i = 0; i < 7; i++) {
+        let date = new Date(i * 86400 * 1000 + monday),
+          week = this.getWeek(date);
+
+        if (date.getMonth() !== month) {
+          month_data.push({
+            unchosen: true,
+            day: date.getDate(),
+            week,
+            month: date.getMonth(),
+            year: date.getFullYear(),
+            noWeekInMonth: this.getNoWeekInMonth(date)
+          });
+        } else {
+          month_data.push({
+            day: date.getDate(),
+            week,
+            month: date.getMonth(),
+            year: date.getFullYear(),
+            noWeekInMonth: this.getNoWeekInMonth(date)
+          });
+        }
+      }
+
+      let tracking_date = new Date(tracking_timestamp),
+        new_tracking_date = tracking_date;
+
+      new_tracking_date.setDate(tracking_date.getDate() + 7);
+
+      tracking_timestamp = new_tracking_date.getTime();
+    }
+
+    this.setState({
+      month_data
+    });
+  };
+
+  componentDidMount() {
+    this._updateRenderComponents(this.props.month, this.props.year);
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if (
-      this.props.week_chart_stats !== prevProps.week_chart_stats ||
-      this.props.day_chart_stats !== prevProps.day_chart_stats
+      this.props.month !== prevProps.month ||
+      this.props.year !== prevProps.year
+    ) {
+      this._updateRenderComponents(this.props.month, this.props.year);
+      this.month_timestamp_toString = new Date(
+        this.props.year,
+        this.props.month
+      )
+        .getTime()
+        .toString();
+    }
+
+    if (
+      Map(this.props.month_chart_stats).get(this.month_timestamp_toString) !==
+      Map(prevProps.month_chart_stats).get(this.month_timestamp_toString)
     ) {
       this.setState(prevState => ({
         should_flatlist_update: prevState.should_flatlist_update + 1
@@ -618,16 +482,16 @@ class WeekRowHolder extends React.PureComponent {
     return (
       <View
         style={{
-          width: panel_width,
-          marginTop: margin_top_for_calendar_row
+          flexDirection: "row",
+          flexWrap: "wrap"
         }}
       >
         <FlatList
-          data={this.props.week_data}
+          data={this.state.month_data}
           extraData={this.state.should_flatlist_update}
-          numColumns={8}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
+          numColumns={8}
           scrollEnabled={false}
         />
       </View>
@@ -672,8 +536,9 @@ class WeekHolder extends React.Component {
     return (
       <View
         style={{
-          flex: 1,
-          alignItems: "center"
+          width: (window_width - 2 * padding_horizontal_value) / 8,
+          alignItems: "center",
+          marginTop: margin_top_for_calendar_row
         }}
       >
         {should_render_point_banner ? (
@@ -766,8 +631,9 @@ class DayHolder extends React.Component {
     return (
       <View
         style={{
-          flex: 1,
-          alignItems: "center"
+          width: (window_width - 2 * padding_horizontal_value) / 8,
+          alignItems: "center",
+          marginTop: margin_top_for_calendar_row
         }}
       >
         {should_render_point_banner ? (
@@ -837,8 +703,9 @@ class UnchosenDayHolder extends React.Component {
     return (
       <View
         style={{
-          flex: 1,
-          alignItems: "center"
+          width: (window_width - 2 * padding_horizontal_value) / 8,
+          alignItems: "center",
+          marginTop: margin_top_for_calendar_row
         }}
       >
         {should_render_point_banner ? (

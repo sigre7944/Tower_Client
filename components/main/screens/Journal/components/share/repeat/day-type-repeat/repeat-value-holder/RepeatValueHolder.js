@@ -112,6 +112,7 @@ export default class RepeatValueHolder extends React.PureComponent {
 
             <TextInput
               style={styles.every_option_input}
+              multiline={true}
               maxLength={2}
               keyboardType="number-pad"
               value={this.props.repeat_input_value}

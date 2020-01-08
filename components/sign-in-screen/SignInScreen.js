@@ -170,6 +170,7 @@ export default class SignInScreen extends React.PureComponent {
               <TextInput
                 style={styles.input_text}
                 placeholder="example@domain.com"
+                placeholderTextColor="#2C2C2C40"
                 keyboardType="email-address"
                 value={this.state.email}
                 onChange={this._onChangeEmail}
@@ -192,6 +193,7 @@ export default class SignInScreen extends React.PureComponent {
               <TextInput
                 style={styles.input_text}
                 placeholder="Insert password here"
+                placeholderTextColor="#2C2C2C40"
                 secureTextEntry={true}
                 value={this.state.password}
                 onChange={this._onChangePassword}
