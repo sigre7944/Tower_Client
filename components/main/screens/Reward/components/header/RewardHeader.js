@@ -27,16 +27,16 @@ export default class RewardHeader extends React.PureComponent {
             marginTop: normalize(17, "height")
           }}
         >
-          <TouchableOpacity
+          <View
             style={styles.end_icon_container}
-            onPress={this._openDrawer}
+            // onPress={this._openDrawer}
           >
-            <FontAwesomeIcon
+            {/* <FontAwesomeIcon
               icon={faBars}
               size={normalize(20, "width")}
               color={"#BDBDBD"}
-            />
-          </TouchableOpacity>
+            /> */}
+          </View>
 
           <View>
             <Text style={styles.middle_text_style}>Reward</Text>
