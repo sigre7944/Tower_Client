@@ -6,10 +6,9 @@ import { fromJS } from "immutable";
 export default class Daily extends React.Component {
   static navigationOptions = ({ navigation, navigationOptions }) => ({
     swipeEnabled: false
-})
+  });
 
-  componentDidMount() {
-  }
+  componentDidMount() {}
 
   render() {
     return (

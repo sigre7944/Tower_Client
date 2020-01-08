@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  Dimensions,
-  ScrollView,
-  Switch
-} from "react-native";
+import { View, Text, Dimensions, ScrollView, Switch } from "react-native";
 
 import SettingHeader from "./components/header/SettingHeader";
 import UserAccount from "./components/user-account/UserAccount.Container";
@@ -13,7 +7,6 @@ import PremiumRow from "./components/premium-row/PremiumRow.Container";
 import { styles } from "./styles/styles";
 import { normalize } from "../../../shared/helpers";
 import { Map } from "immutable";
-
 const window_width = Dimensions.get("window").width;
 
 export default class Settings extends React.Component {
@@ -79,7 +72,7 @@ export default class Settings extends React.Component {
               shadowRadius: 8,
               shadowColor: "black",
               shadowOpacity: 0.08,
-              elevation: 4,
+              elevation: 4
             }}
           >
             <View

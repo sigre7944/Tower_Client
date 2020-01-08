@@ -1,7 +1,7 @@
 import React from "react";
 import { StatusBar, Platform } from "react-native";
 import MainNavigator from "./components/main/Main"; //Main screen
-import { Dimensions } from "react-native";
+import { Dimensions, StatusBar, View } from "react-native";
 import {
   createStackNavigator,
   createAppContainer,
@@ -25,7 +25,11 @@ import * as firebase from "firebase";
 import "firebase/firestore";
 import { FIREBASE_CONFIG } from "./config/index";
 
+import { getStatusBarHeight } from "react-native-status-bar-height";
+
 firebase.initializeApp(FIREBASE_CONFIG);
+
+const STATUSBAR_HEIGHT = getStatusBarHeight();
 
 export default class App extends React.Component {
   initialState = {};
@@ -71,14 +75,31 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <>
+      <View
+        style={{
+          flex: 1
+        }}
+      >
+        <View
+          style={{
+            height: STATUSBAR_HEIGHT,
+            backgroundColor: "#05838B"
+          }}
+        >
+          <StatusBar
+            translucent={false}
+            backgroundColor={"#05838B"}
+            barStyle={"light-content"}
+            animated={true}
+          />
+        </View>
         <Provider store={store}>
           <AppContainer />
           {/* <PersistGate persistor={persistor}>
             <AppContainer />
           </PersistGate> */}
         </Provider>
-      </>
+      </View>
     );
   }
 }
@@ -92,7 +113,8 @@ const DrawerNavigator = createDrawerNavigator(
     contentComponent: Drawer,
     drawerType: "slide",
     drawerWidth: Dimensions.get("window").width * 0.8,
-    overlayColor: "gray"
+    overlayColor: "gray",
+    minSwipeDistance: 1
   }
 );
 
