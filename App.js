@@ -102,12 +102,11 @@ const DrawerNavigator = createDrawerNavigator(
     MainNavigator: MainNavigator
   },
   {
-    drawerLockMode: "locked-closed",
     contentComponent: Drawer,
-    drawerType: "slide",
+    drawerType: "front",
     drawerWidth: Dimensions.get("window").width * 0.8,
-    overlayColor: "gray",
-    minSwipeDistance: 1
+    overlayColor: "#BDBDBD",
+    minSwipeDistance: 10,
   }
 );
 

@@ -1556,8 +1556,8 @@ class AllTasksRow extends React.Component {
         overshootRight={false}
         useNativeAnimations={true}
         rightThreshold={1}
-        friction={3}
-        overshootFriction={8}
+        friction={1}
+        overshootFriction={10}
       >
         <TouchableOpacity
           style={{
@@ -1681,8 +1681,8 @@ class InboxRow extends React.Component {
         overshootRight={false}
         useNativeAnimations={true}
         rightThreshold={1}
-        friction={3}
-        overshootFriction={8}
+        friction={1}
+        overshootFriction={10}
       >
         <TouchableOpacity
           style={{
@@ -1896,8 +1896,8 @@ class CategoryRow extends React.Component {
         overshootRight={false}
         useNativeAnimations={true}
         rightThreshold={1}
-        friction={3}
-        overshootFriction={8}
+        friction={1}
+        overshootFriction={10}
       >
         <View
           style={{

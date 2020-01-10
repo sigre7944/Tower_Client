@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Dimensions } from "react-native";
 import Journal from "./screens/Journal/Journal";
 import Progress from "./screens/Progress/Progress.Container";
 import Reward from "./screens/Reward/Reward.Container";
@@ -33,17 +33,27 @@ const MainNavigator = createBottomTabNavigator(
     RewardStackNavigator,
     SettingsStackNavigator
   },
-    {
-      initialRouteName: "JournalStackNavigator",
-      tabBarComponent: props => <BottomTabNavigator {...props} />,
-      lazy: false
-    }
+  {
+    initialRouteName: "JournalStackNavigator",
+    tabBarComponent: props => <BottomTabNavigator {...props} />,
+    lazy: false
+  }
 );
 
 MainNavigator.navigationOptions = ({ navigation }) => {
   let drawerLockMode = "unlocked";
+
+  const parent = navigation.dangerouslyGetParent();
+  const isDrawerOpen = parent && parent.state && parent.state.isDrawerOpen;
+
   if (navigation.state.index > 0) {
     drawerLockMode = "locked-closed";
+  }
+
+  if (isDrawerOpen) {
+    return {
+      edgeWidth: -Dimensions.get("window").width * 0.2
+    };
   }
 
   return {
