@@ -425,9 +425,9 @@ export default class DayTypeRepeat extends React.PureComponent {
       }
 
       this.chooseEndOption(end_current_index);
+      this._setRepeatType(selected_repeat_type);
 
       this.setState({
-        selected_repeat_type,
         repeat_input_value: repeat_value,
         goal_value,
         end_current_index,

@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Modal,
-  Dimensions
+  Dimensions,
+  ScrollView
 } from "react-native";
 import { StackedBarChart, YAxis, Grid } from "react-native-svg-charts";
 import { Map, List } from "immutable";
@@ -301,6 +302,7 @@ export default class MonthChartHolder extends React.Component {
             marginTop: normalize(30, "height"),
             width: window_width
           }}
+          horizontal={true}
         >
           <View
             style={{
@@ -324,7 +326,8 @@ export default class MonthChartHolder extends React.Component {
             />
             <StackedBarChart
               style={{
-                flex: 1
+                flex: 1,
+                height: normalize(320, "height")
               }}
               keys={this.keys}
               colors={this.colors}
