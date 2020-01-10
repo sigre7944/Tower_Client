@@ -103,7 +103,7 @@ const DrawerNavigator = createDrawerNavigator(
   },
   {
     contentComponent: Drawer,
-    drawerType: "front",
+    drawerType: "slide",
     drawerWidth: Dimensions.get("window").width * 0.8,
     overlayColor: "#BDBDBD",
     minSwipeDistance: 10,

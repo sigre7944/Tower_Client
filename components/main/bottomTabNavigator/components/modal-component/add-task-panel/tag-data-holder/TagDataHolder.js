@@ -176,10 +176,26 @@ class DayTagDataElement extends React.PureComponent {
         )
       });
     } else if (property === "repeat") {
-      let end_type = Map(this.props.currentTask).getIn(["end", "type"]),
-        end_value = Map(this.props.currentTask).getIn(["end", "occurrence"]);
+      let end_type = Map(this.props.currentTask).getIn(["end", "type"]);
+      let occurrence_value = Map(this.props.currentTask).getIn([
+        "end",
+        "occurrence"
+      ]);
+      // let end_at_timestamp = new Date(
+      //   parseInt(Map(this.props.currentTask).getIn(["end", "endAt"]))
+      // ).getTime();
+      // let current_date = new Date(),
+      //   current_date_timestamp = new Date(
+      //     current_date.getFullYear(),
+      //     current_date.getMonth(),
+      //     current_date.getDate()
+      //   ).getTime();
 
-      if (end_type === "after" && end_value === 1) {
+      if (
+        end_type === "after" &&
+        occurrence_value <= 1
+        // (end_type === "on" && current_date_timestamp === end_at_timestamp)
+      ) {
         this.setState({
           render_component: null
         });
@@ -917,7 +933,7 @@ class MonthTagDataElement extends React.PureComponent {
         render_component: (
           <TouchableOpacity
             style={styles.day_tag_container}
-            onPress={this.props.chooseRepeatOptionp}
+            onPress={this.props.chooseRepeatOption}
           >
             {goal_icon(icon_size, icon_color)}
 
