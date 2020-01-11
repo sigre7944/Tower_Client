@@ -3,7 +3,9 @@ import { View, Text, TouchableOpacity, FlatList } from "react-native";
 
 import { styles } from "./styles/styles";
 import { normalize } from "../../../../../../../shared/helpers";
+import { Map } from "immutable";
 const week_holder_width = normalize(102, "width");
+
 export default class WeekFlatlist extends React.PureComponent {
   month_text_arr = [
     "Jan",
@@ -156,6 +158,36 @@ export default class WeekFlatlist extends React.PureComponent {
     }
   };
 
+  _findWeekIndex = (mon, sun, start_month, end_month, start_year, end_year) => {
+    let result = 0;
+    let current_year = new Date().getFullYear(),
+      number_of_years_in_between = 4,
+      left_end_year = current_year - number_of_years_in_between,
+      right_end_year = current_year + number_of_years_in_between,
+      first_day_of_left_end_year = new Date(left_end_year, 0, 1),
+      last_day_of_right_end_year = new Date(right_end_year, 12, 0),
+      tracked_timestamp = first_day_of_left_end_year.getTime();
+
+    while (tracked_timestamp <= last_day_of_right_end_year.getTime()) {
+      let monday = this.getMonday(tracked_timestamp),
+        sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+
+      if (
+        monday.getDate() === mon &&
+        monday.getMonth() === start_month &&
+        monday.getFullYear() === start_year &&
+        sunday.getDate() === sun &&
+        sunday.getMonth() === end_month &&
+        sunday.getFullYear() === end_year
+      ) {
+        return result;
+      }
+      result += 1;
+      tracked_timestamp = sunday.getTime() + 86400 * 1000;
+    }
+  };
+
   _getItemLayout = (data, index) => ({
     length: week_holder_width,
     offset: index * week_holder_width,
@@ -248,6 +280,32 @@ export default class WeekFlatlist extends React.PureComponent {
           this.props.updateHeaderText(string);
         }
       }
+    }
+
+    if (
+      this.props.correspondToCreatedWeekTask !==
+      prevProps.correspondToCreatedWeekTask
+    ) {
+      let correspond_to_created_week_task = Map(
+        this.props.correspondToCreatedWeekTask
+      );
+
+      let monday = correspond_to_created_week_task.get("monday"),
+        sunday = correspond_to_created_week_task.get("sunday"),
+        start_month = correspond_to_created_week_task.get("start_month"),
+        end_month = correspond_to_created_week_task.get("end_month"),
+        start_year = correspond_to_created_week_task.get("start_year"),
+        end_year = correspond_to_created_week_task.get("end_year");
+
+      let week_index = this._findWeekIndex(
+        monday,
+        sunday,
+        start_month,
+        end_month,
+        start_year,
+        end_year
+      );
+      this.chooseWeek(week_index);
     }
   }
 

@@ -33,6 +33,10 @@ import {
     currentChosenJournalType,
     sortSettings,
     generalSettings,
+
+    correspondToCreatedDayTask,
+    correspondToCreatedMonthTask,
+    correspondToCreatedWeekTask
 } from './otherReducer'
 
 import {
@@ -102,7 +106,11 @@ const rootReducer = combineReducers({
     currentChosenJournalType,
 
     sortSettings,
-    generalSettings
+    generalSettings,
+
+    correspondToCreatedDayTask,
+    correspondToCreatedMonthTask,
+    correspondToCreatedWeekTask
 })
 
 export default rootReducer

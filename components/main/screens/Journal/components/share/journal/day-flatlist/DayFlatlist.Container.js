@@ -1,19 +1,17 @@
-import { connect } from 'react-redux'
-import { updateHeaderText } from '../../../../../../../shared/actions/otherAction'
-import DayFlatlist from './DayFlatlist'
+import { connect } from "react-redux";
+import { updateHeaderText } from "../../../../../../../shared/actions/otherAction";
+import DayFlatlist from "./DayFlatlist";
 
 const mapStateToProps = (state, ownProps) => {
-    return ({
-        headerPressed: state["headerPressed"],
-        currentRoute: state["currentRoute"]
-    })
-}
+  return {
+    headerPressed: state["headerPressed"],
+    currentRoute: state["currentRoute"],
+    correspondToCreatedDayTask: state["correspondToCreatedDayTask"]
+  };
+};
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    updateHeaderText: (data) => dispatch(updateHeaderText(data))
-})
+  updateHeaderText: data => dispatch(updateHeaderText(data))
+});
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(DayFlatlist)
+export default connect(mapStateToProps, mapDispatchToProps)(DayFlatlist);

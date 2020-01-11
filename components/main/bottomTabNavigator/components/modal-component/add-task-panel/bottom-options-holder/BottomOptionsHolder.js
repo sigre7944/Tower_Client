@@ -253,8 +253,21 @@ class BottomConfirmElement extends React.PureComponent {
             keyPath: [priority_value, "tasks"],
             notSetValue: [],
             updater: tasks => List(tasks).push(priority_data)
+          },
+
+          return_correspond_created_task: {
+            type: "RETURN_CORRESPOND_TO_CREATED_DAY_TASK",
+            data: new_task_with_id.get("schedule")
           }
         };
+
+        if (this.props.currentAnnotation === "week") {
+          sending_obj.return_correspond_created_task.type =
+            "RETURN_CORRESPOND_TO_CREATED_WEEK_TASK";
+        } else if (this.props.currentAnnotation === "month") {
+          sending_obj.return_correspond_created_task.type =
+            "RETURN_CORRESPOND_TO_CREATED_MONTH_TASK";
+        }
 
         this.props.addTaskThunk(sending_obj);
         Keyboard.dismiss();

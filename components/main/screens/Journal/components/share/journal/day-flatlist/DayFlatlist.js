@@ -4,6 +4,7 @@ import { View, Text, TouchableOpacity, FlatList } from "react-native";
 import { styles } from "./styles/styles";
 
 import { normalize } from "../../../../../../../shared/helpers";
+import { Map } from "immutable";
 
 const day_holder_width = normalize(64, "width"); // each dayholder has a width of 64 (width = 50, marginHorizontal = 7)
 
@@ -134,6 +135,25 @@ export default class DayFlatlist extends React.PureComponent {
     }
   };
 
+  _findDayIndex = (day, month, year) => {
+    let result = 0;
+    let number_of_years_in_between = 4;
+    let left_end_year = new Date().getFullYear() - number_of_years_in_between;
+
+    for (let y = left_end_year; y <= year; y++) {
+      for (let m = 0; m < 12; m++) {
+        let last_day_in_month = new Date(y, m + 1, 0).getDate();
+
+        for (let d = 1; d <= last_day_in_month; d++) {
+          if (m === month && d === day && y === year) {
+            return result;
+          }
+          result += 1;
+        }
+      }
+    }
+  };
+
   _onLayout = () => {
     this.scrollToIndex(this.start_index);
   };
@@ -179,7 +199,7 @@ export default class DayFlatlist extends React.PureComponent {
           current_date.getMonth(),
           current_date.getDate()
         ).getTime();
-        
+
         this.start_index += day_diff;
 
         this.chooseDay(this.start_index);
@@ -200,6 +220,21 @@ export default class DayFlatlist extends React.PureComponent {
           this.props.updateHeaderText(string);
         }
       }
+    }
+
+    if (
+      this.props.correspondToCreatedDayTask !==
+      prevProps.correspondToCreatedDayTask
+    ) {
+      let correspond_to_create_day_task = Map(
+        this.props.correspondToCreatedDayTask
+      );
+      let day = correspond_to_create_day_task.get("day");
+      let month = correspond_to_create_day_task.get("month");
+      let year = correspond_to_create_day_task.get("year");
+      let day_index = this._findDayIndex(day, month, year);
+
+      this.chooseDay(day_index);
     }
   }
 

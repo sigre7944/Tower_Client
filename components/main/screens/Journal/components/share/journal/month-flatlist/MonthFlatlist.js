@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, FlatList } from "react-native";
 
 import { styles } from "./styles/styles";
 import { normalize } from "../../../../../../../shared/helpers";
-
+import { Map } from "immutable";
 const month_holder_width = normalize(97, "width");
 
 export default class MonthFlatlist extends React.PureComponent {
@@ -169,6 +169,23 @@ export default class MonthFlatlist extends React.PureComponent {
     });
   };
 
+  _findMonthIndex = (month, year) => {
+    let result = 0;
+    let current_year = new Date().getFullYear(),
+      number_of_years_in_between = 4,
+      left_end_year = current_year - number_of_years_in_between;
+
+    for (let y = left_end_year; y <= year; y++) {
+      for (let m = 0; m < 12; m++) {
+        if (m === month && y === year) {
+          return result;
+        }
+
+        result += 1;
+      }
+    }
+  };
+
   componentDidMount() {
     this.initializeMonthData();
     this._initialUpdateWithStartIndex();
@@ -200,6 +217,20 @@ export default class MonthFlatlist extends React.PureComponent {
           this.props.updateHeaderText(string);
         }
       }
+    }
+
+    if (
+      this.props.correspondToCreatedMonthTask !==
+      prevProps.correspondToCreatedMonthTask
+    ) {
+      let correspond_to_create_month_task = Map(
+        this.props.correspondToCreatedMonthTask
+      );
+
+      let month = correspond_to_create_month_task.get("month"),
+        year = correspond_to_create_month_task.get("year");
+
+      this.chooseMonth(this._findMonthIndex(month, year));
     }
   }
 
