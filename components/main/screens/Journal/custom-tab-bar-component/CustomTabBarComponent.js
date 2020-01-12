@@ -5,11 +5,12 @@ import {
   TouchableOpacity,
   Dimensions,
   Easing,
-  Animated
+  Animated,
+  Platform
 } from "react-native";
 
 const window_width = Dimensions.get("window").width;
-
+const anim_duration = 150;
 import { styles } from "./styles";
 import { normalize } from "../../../../shared/helpers";
 
@@ -23,7 +24,38 @@ export default class CustomTabBarComponent extends React.PureComponent {
   goToDayScreen = () => {
     Animated.timing(this.translate_x, {
       toValue: 0,
-      duration: 300,
+      duration: anim_duration,
+      easing: Easing.in(),
+      // useNativeDriver: Platform.OS === "android" ? true : false
+      useNativeDriver: true
+    }).start(() => {
+      this.setState(
+        {
+          current_index: 0
+        },
+        () => {
+          // this.props.navigation.navigate("Day");
+          this.props.changeRouteAction("Day");
+          this.props.updateCurrentChosenJournalType("day");
+        }
+      );
+    });
+
+    // this.setState(
+    //   {
+    //     current_index: 0
+    //   },
+    //   () => {
+    //     this.props.navigation.navigate("Day");
+    //     this.props.updateCurrentChosenJournalType("day");
+    //   }
+    // );
+  };
+
+  _chooseDayTab = () => {
+    Animated.timing(this.translate_x, {
+      toValue: 0,
+      duration: anim_duration,
       easing: Easing.in(),
       useNativeDriver: true
     }).start();
@@ -33,15 +65,48 @@ export default class CustomTabBarComponent extends React.PureComponent {
         current_index: 0
       },
       () => {
-        this.props.navigation.navigate("Day");
+        this.props.changeRouteAction("Day");
         this.props.updateCurrentChosenJournalType("day");
+        this.props._chooseTab(0);
       }
     );
   };
+
   goToWeekScreen = () => {
     Animated.timing(this.translate_x, {
       toValue: (window_width * 1) / 3,
-      duration: 300,
+      duration: anim_duration,
+      easing: Easing.in(),
+      // useNativeDriver: Platform.OS === "android" ? true : false
+      useNativeDriver: true
+    }).start(() => {
+      this.setState(
+        {
+          current_index: 1
+        },
+        () => {
+          // this.props.navigation.navigate("Week");
+          this.props.changeRouteAction("Week");
+          this.props.updateCurrentChosenJournalType("week");
+        }
+      );
+    });
+
+    // this.setState(
+    //   {
+    //     current_index: 1
+    //   },
+    //   () => {
+    //     this.props.navigation.navigate("Week");
+    //     this.props.updateCurrentChosenJournalType("week");
+    //   }
+    // );
+  };
+
+  _chooseWeekTab = () => {
+    Animated.timing(this.translate_x, {
+      toValue: (window_width * 1) / 3,
+      duration: anim_duration,
       easing: Easing.in(),
       useNativeDriver: true
     }).start();
@@ -51,8 +116,9 @@ export default class CustomTabBarComponent extends React.PureComponent {
         current_index: 1
       },
       () => {
-        this.props.navigation.navigate("Week");
+        this.props.changeRouteAction("Week");
         this.props.updateCurrentChosenJournalType("week");
+        this.props._chooseTab(1);
       }
     );
   };
@@ -60,7 +126,38 @@ export default class CustomTabBarComponent extends React.PureComponent {
   goToMonthScreen = () => {
     Animated.timing(this.translate_x, {
       toValue: (window_width * 2) / 3,
-      duration: 300,
+      duration: anim_duration,
+      easing: Easing.in(),
+      // useNativeDriver: Platform.OS === "android" ? true : false
+      useNativeDriver: true
+    }).start(() => {
+      this.setState(
+        {
+          current_index: 2
+        },
+        () => {
+          // this.props.navigation.navigate("Month");
+          this.props.changeRouteAction("Month");
+          this.props.updateCurrentChosenJournalType("month");
+        }
+      );
+    });
+
+    // this.setState(
+    //   {
+    //     current_index: 2
+    //   },
+    //   () => {
+    //     this.props.navigation.navigate("Month");
+    //     this.props.updateCurrentChosenJournalType("month");
+    //   }
+    // );
+  };
+
+  _chooseMonthTab = () => {
+    Animated.timing(this.translate_x, {
+      toValue: (window_width * 2) / 3,
+      duration: anim_duration,
       easing: Easing.in(),
       useNativeDriver: true
     }).start();
@@ -70,8 +167,9 @@ export default class CustomTabBarComponent extends React.PureComponent {
         current_index: 2
       },
       () => {
-        this.props.navigation.navigate("Month");
+        this.props.changeRouteAction("Month");
         this.props.updateCurrentChosenJournalType("month");
+        this.props._chooseTab(2);
       }
     );
   };
@@ -117,7 +215,8 @@ export default class CustomTabBarComponent extends React.PureComponent {
         >
           <TouchableOpacity
             style={styles.annotation_container}
-            onPress={this.goToDayScreen}
+            // onPress={this.goToDayScreen}
+            onPress={this._chooseDayTab}
           >
             <Text
               style={
@@ -132,7 +231,8 @@ export default class CustomTabBarComponent extends React.PureComponent {
 
           <TouchableOpacity
             style={styles.annotation_container}
-            onPress={this.goToWeekScreen}
+            // onPress={this.goToWeekScreen}
+            onPress={this._chooseWeekTab}
           >
             <Text
               style={
@@ -147,7 +247,8 @@ export default class CustomTabBarComponent extends React.PureComponent {
 
           <TouchableOpacity
             style={styles.annotation_container}
-            onPress={this.goToMonthScreen}
+            // onPress={this.goToMonthScreen}
+            onPress={this._chooseMonthTab}
           >
             <Text
               style={

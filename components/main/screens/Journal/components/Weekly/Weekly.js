@@ -4,9 +4,9 @@ import JournalTab from '../share/journal/JournalTab.Container'
 
 
 export default class Weekly extends React.Component {
-    static navigationOptions = {
-        swipeEnabled: false,
-    }
+    // static navigationOptions = {
+    //     swipeEnabled: false,
+    // }
 
 
     render() {

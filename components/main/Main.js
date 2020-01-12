@@ -50,11 +50,11 @@ MainNavigator.navigationOptions = ({ navigation }) => {
     drawerLockMode = "locked-closed";
   }
 
-  if (isDrawerOpen) {
-    return {
-      edgeWidth: -Dimensions.get("window").width * 0.2
-    };
-  }
+  // if (isDrawerOpen) {
+  //   return {
+  //     edgeWidth: -Dimensions.get("window").width * 0.2
+  //   };
+  // }
 
   return {
     drawerLockMode

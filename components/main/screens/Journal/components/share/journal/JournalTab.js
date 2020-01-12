@@ -15,10 +15,10 @@ import { List, Map, hasIn, getIn, fromJS } from "immutable";
 const window_width = Dimensions.get("window").width;
 
 export default class JournalTab extends React.PureComponent {
-  static navigationOptions = {
-    swipeEnabled: false,
-    header: null
-  };
+  // static navigationOptions = {
+  //   swipeEnabled: false,
+  //   header: null
+  // };
 
   getWeek = date => {
     let target = new Date(date);

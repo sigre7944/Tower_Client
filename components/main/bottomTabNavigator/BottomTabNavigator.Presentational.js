@@ -19,7 +19,7 @@ import {
   progress_icon,
   settings_icon
 } from "../../shared/icons";
-import { primary_colors } from "../../shared/styles/style";
+import { primary_colors, text_icon_colors } from "../../shared/styles/style";
 import { normalize } from "../../shared/helpers";
 
 const icon_color = primary_colors.prim_1;
@@ -152,42 +152,30 @@ export default class BottomTabNavigator extends React.PureComponent {
 }
 
 class ScreenComponent extends React.Component {
-  state = {
-    icon_style: styles.not_chosen_screen_component_icon,
-    icon_text_style: styles.not_chosen_screen_component_text
-  };
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (
-      (nextProps.routeName === "Day" ||
-        nextProps.routeName === "Week" ||
-        nextProps.routeName === "Month") &&
-      nextProps.screen_route_name === "Journal"
-    ) {
-      return {
-        icon_style: styles.chosen_screen_component_icon,
-        icon_text_style: styles.chosen_screen_component_text
-      };
-    }
-
-    if (nextProps.routeName === nextProps.screen_route_name) {
-      return {
-        icon_style: styles.chosen_screen_component_icon,
-        icon_text_style: styles.chosen_screen_component_text
-      };
-    } else {
-      return {
-        icon_style: styles.not_chosen_screen_component_icon,
-        icon_text_style: styles.not_chosen_screen_component_text
-      };
-    }
-  }
-
   _onPress = () => {
     this.props.chooseNewScreen(this.props.screen_route_name);
   };
 
   render() {
+    let route_name = this.props.routeName,
+      screen_route_name = this.props.screen_route_name;
+
+    let icon_text_style = styles.not_chosen_screen_component_text,
+      icon_color = text_icon_colors.ti_3;
+
+    if (route_name === screen_route_name) {
+      icon_text_style = styles.chosen_screen_component_text;
+      icon_color = primary_colors.prim_1;
+    } else if (
+      (route_name === "Day" ||
+        route_name === "Week" ||
+        route_name === "Month") &&
+      screen_route_name === "Journal"
+    ) {
+      icon_text_style = styles.chosen_screen_component_text;
+      icon_color = primary_colors.prim_1;
+    }
+
     return (
       <TouchableOpacity
         onPress={this._onPress}
@@ -216,7 +204,7 @@ class ScreenComponent extends React.Component {
                 >
                   {journal_icon(normalize(20, "width"), icon_color)}
                 </View>
-                <Text style={this.state.icon_text_style}>
+                <Text style={icon_text_style}>
                   {this.props.screen_route_name}
                 </Text>
               </>
@@ -233,7 +221,7 @@ class ScreenComponent extends React.Component {
                     >
                       {progress_icon(normalize(20, "width"), icon_color)}
                     </View>
-                    <Text style={this.state.icon_text_style}>
+                    <Text style={icon_text_style}>
                       {this.props.screen_route_name}
                     </Text>
                   </>
@@ -253,7 +241,7 @@ class ScreenComponent extends React.Component {
                             icon_color
                           )}
                         </View>
-                        <Text style={this.state.icon_text_style}>
+                        <Text style={icon_text_style}>
                           {this.props.screen_route_name}
                         </Text>
                       </>
@@ -268,7 +256,7 @@ class ScreenComponent extends React.Component {
                         >
                           {settings_icon(normalize(20, "width"), icon_color)}
                         </View>
-                        <Text style={this.state.icon_text_style}>
+                        <Text style={icon_text_style}>
                           {this.props.screen_route_name}
                         </Text>
                       </>
