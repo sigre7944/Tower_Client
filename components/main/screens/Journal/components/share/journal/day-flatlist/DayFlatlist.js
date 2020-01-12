@@ -186,7 +186,7 @@ export default class DayFlatlist extends React.PureComponent {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.headerPressed !== prevProps.headerPressed) {
-      if (this.props.currentRoute === "Day") {
+      if (this.props.currentJournalTab === "Day") {
         let current_date = new Date();
         let current_timestamp = Date.now();
 
@@ -203,22 +203,6 @@ export default class DayFlatlist extends React.PureComponent {
         this.start_index += day_diff;
 
         this.chooseDay(this.start_index);
-      }
-    }
-
-    if (this.props.currentRoute !== prevProps.currentRoute) {
-      if (this.props.currentRoute === "Day") {
-        let string;
-
-        if (this.day_data[this.state.current_day_index].month >= 0) {
-          string = `${
-            this.month_text_arr[
-              this.day_data[this.state.current_day_index].month
-            ]
-          } - ${this.day_data[this.state.current_day_index].year}`;
-
-          this.props.updateHeaderText(string);
-        }
       }
     }
 

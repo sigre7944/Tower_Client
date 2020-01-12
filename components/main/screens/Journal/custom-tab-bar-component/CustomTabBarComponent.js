@@ -65,7 +65,7 @@ export default class CustomTabBarComponent extends React.PureComponent {
         current_index: 0
       },
       () => {
-        this.props.changeRouteAction("Day");
+        this.props.updateCurrentJournalTab("Day");
         this.props.updateCurrentChosenJournalType("day");
         this.props._chooseTab(0);
       }
@@ -116,7 +116,7 @@ export default class CustomTabBarComponent extends React.PureComponent {
         current_index: 1
       },
       () => {
-        this.props.changeRouteAction("Week");
+        this.props.updateCurrentJournalTab("Week");
         this.props.updateCurrentChosenJournalType("week");
         this.props._chooseTab(1);
       }
@@ -167,7 +167,7 @@ export default class CustomTabBarComponent extends React.PureComponent {
         current_index: 2
       },
       () => {
-        this.props.changeRouteAction("Month");
+        this.props.updateCurrentJournalTab("Month");
         this.props.updateCurrentChosenJournalType("month");
         this.props._chooseTab(2);
       }
@@ -175,7 +175,7 @@ export default class CustomTabBarComponent extends React.PureComponent {
   };
 
   componentDidMount() {
-    this.goToDayScreen();
+    this._chooseDayTab();
   }
 
   render() {
@@ -215,7 +215,6 @@ export default class CustomTabBarComponent extends React.PureComponent {
         >
           <TouchableOpacity
             style={styles.annotation_container}
-            // onPress={this.goToDayScreen}
             onPress={this._chooseDayTab}
           >
             <Text
@@ -231,7 +230,6 @@ export default class CustomTabBarComponent extends React.PureComponent {
 
           <TouchableOpacity
             style={styles.annotation_container}
-            // onPress={this.goToWeekScreen}
             onPress={this._chooseWeekTab}
           >
             <Text
@@ -247,7 +245,6 @@ export default class CustomTabBarComponent extends React.PureComponent {
 
           <TouchableOpacity
             style={styles.annotation_container}
-            // onPress={this.goToMonthScreen}
             onPress={this._chooseMonthTab}
           >
             <Text

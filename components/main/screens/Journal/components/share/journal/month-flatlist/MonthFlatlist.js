@@ -193,7 +193,7 @@ export default class MonthFlatlist extends React.PureComponent {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.headerPressed !== prevProps.headerPressed) {
-      if (this.props.currentRoute === "Month") {
+      if (this.props.currentJournalTab === "Month") {
         let date = new Date();
         let year_diff = date.getFullYear() - this.start_year;
 
@@ -205,17 +205,6 @@ export default class MonthFlatlist extends React.PureComponent {
         this.start_index += month_diff;
 
         this.chooseMonth(this.start_index);
-      }
-    }
-
-    if (this.props.currentRoute !== prevProps.currentRoute) {
-      if (this.props.currentRoute === "Month") {
-        let string;
-
-        if (this.month_data[this.state.current_month_index].month >= 0) {
-          string = `${this.month_data[this.state.current_month_index].year}`;
-          this.props.updateHeaderText(string);
-        }
       }
     }
 

@@ -247,7 +247,7 @@ export default class WeekFlatlist extends React.PureComponent {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.headerPressed !== prevProps.headerPressed) {
-      if (this.props.currentRoute === "Week") {
+      if (this.props.currentJournalTab === "Week") {
         let current_near_monday = this.getMonday(new Date()),
           current_monday_timestamp = current_near_monday.getTime();
 
@@ -261,24 +261,6 @@ export default class WeekFlatlist extends React.PureComponent {
         this.start_index += week_diff;
 
         this.chooseWeek(this.start_index);
-      }
-    }
-
-    if (this.props.currentRoute !== prevProps.currentRoute) {
-      if (this.props.currentRoute === "Week") {
-        let string = "";
-        if (
-          this.week_data[this.state.current_week_index] &&
-          this.week_data[this.state.current_week_index].start_month >= 0
-        ) {
-          string = `${
-            this.month_text_arr[
-              this.week_data[this.state.current_week_index].start_month
-            ]
-          } - ${this.week_data[this.state.current_week_index].start_year}`;
-
-          this.props.updateHeaderText(string);
-        }
       }
     }
 

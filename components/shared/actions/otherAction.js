@@ -66,3 +66,8 @@ export const returnCorrespondCreatedTask = (type, data) => ({
   type,
   data
 });
+
+export const updateCurrentJournalTab = data => ({
+  type: "UPDATE_CURRENT_JOURNAL_TAB",
+  data
+});

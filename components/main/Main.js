@@ -43,18 +43,9 @@ const MainNavigator = createBottomTabNavigator(
 MainNavigator.navigationOptions = ({ navigation }) => {
   let drawerLockMode = "unlocked";
 
-  const parent = navigation.dangerouslyGetParent();
-  const isDrawerOpen = parent && parent.state && parent.state.isDrawerOpen;
-
   if (navigation.state.index > 0) {
     drawerLockMode = "locked-closed";
   }
-
-  // if (isDrawerOpen) {
-  //   return {
-  //     edgeWidth: -Dimensions.get("window").width * 0.2
-  //   };
-  // }
 
   return {
     drawerLockMode

@@ -10,7 +10,8 @@ import {
   Modal,
   Dimensions,
   SafeAreaView,
-  Platform
+  Platform,
+  StatusBar
 } from "react-native";
 
 import { check_icon, close_icon } from "../../../../../../../shared/icons";
@@ -26,10 +27,14 @@ const window_width = Dimensions.get("window").width;
 const easing = Easing.in();
 const animation_duration = 250;
 
+import { getStatusBarHeight } from "react-native-status-bar-height";
+const STATUSBAR_HEIGHT = getStatusBarHeight();
+const target_height = window_height - STATUSBAR_HEIGHT;
+
 export default class AddCategoryPanel extends React.PureComponent {
-  anim_translate_y = new Animated.Value(window_height);
+  anim_translate_y = new Animated.Value(target_height);
   anim_opacity_value = this.anim_translate_y.interpolate({
-    inputRange: [0, window_height],
+    inputRange: [0, target_height],
     outputRange: [1, 0],
     extrapolate: "clamp"
   });
@@ -58,7 +63,7 @@ export default class AddCategoryPanel extends React.PureComponent {
 
   _appearAnim = () => {
     Animated.timing(this.anim_translate_y, {
-      toValue: 0,
+      toValue: STATUSBAR_HEIGHT,
       duration: animation_duration,
       easing,
       useNativeDriver: Platform.OS === "android" ? true : false
@@ -67,7 +72,7 @@ export default class AddCategoryPanel extends React.PureComponent {
 
   _disappearAnim = callback => {
     Animated.timing(this.anim_translate_y, {
-      toValue: window_height,
+      toValue: target_height,
       duration: animation_duration,
       easing,
       useNativeDriver: Platform.OS === "android" ? true : false
@@ -78,8 +83,6 @@ export default class AddCategoryPanel extends React.PureComponent {
 
   _close = () => {
     this._disappearAnim(this.props._closeAddCategoryPanel);
-
-    // this.props._closeAddCategoryPanel()
   };
 
   _save = () => {
@@ -184,7 +187,7 @@ export default class AddCategoryPanel extends React.PureComponent {
           <Animated.ScrollView
             style={{
               width: window_width,
-              height: window_height,
+              height: target_height,
               backgroundColor: "white",
               transform: [{ translateY: this.anim_translate_y }],
               position: "absolute",
@@ -193,7 +196,7 @@ export default class AddCategoryPanel extends React.PureComponent {
             scrollEnabled={false}
             keyboardDismissMode="on-drag"
           >
-            <SafeAreaView>
+            <View>
               <View
                 style={{
                   flexDirection: "row",
@@ -311,28 +314,7 @@ export default class AddCategoryPanel extends React.PureComponent {
                   _closeTitleWarning={this._closeTitleWarning}
                 />
               ) : null}
-
-              {/* <View
-                                    style={{
-                                        marginTop: 30,
-                                    }}
-                                >
-                                    <Text
-                                        style={styles.small_text}
-                                    >
-                                        Shared with
-                                </Text>
-
-                                    <TouchableOpacity
-                                    >
-                                        <Text
-                                            style={styles.invite_friends_text}
-                                        >
-                                            Invite friends
-                                    </Text>
-                                    </TouchableOpacity>
-                                </View> */}
-            </SafeAreaView>
+            </View>
           </Animated.ScrollView>
         </View>
       </Modal>

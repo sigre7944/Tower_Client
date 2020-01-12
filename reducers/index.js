@@ -36,7 +36,9 @@ import {
 
     correspondToCreatedDayTask,
     correspondToCreatedMonthTask,
-    correspondToCreatedWeekTask
+    correspondToCreatedWeekTask,
+
+    currentJournalTab
 } from './otherReducer'
 
 import {
@@ -110,7 +112,9 @@ const rootReducer = combineReducers({
 
     correspondToCreatedDayTask,
     correspondToCreatedMonthTask,
-    correspondToCreatedWeekTask
+    correspondToCreatedWeekTask,
+
+    currentJournalTab
 })
 
 export default rootReducer

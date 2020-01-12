@@ -248,3 +248,13 @@ export const correspondToCreatedMonthTask = (state = Map(), action) => {
       return state;
   }
 };
+
+export const currentJournalTab = (state = "Day", action) => {
+  switch (action.type) {
+    case "UPDATE_CURRENT_JOURNAL_TAB":
+      return action.data;
+
+    default:
+      return state;
+  }
+};

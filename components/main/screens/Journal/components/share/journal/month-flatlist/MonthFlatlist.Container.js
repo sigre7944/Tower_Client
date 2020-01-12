@@ -5,7 +5,7 @@ import MonthFlatlist from "./MonthFlatlist";
 const mapStateToProps = (state, ownProps) => {
   return {
     headerPressed: state["headerPressed"],
-    currentRoute: state["currentRoute"],
+    currentJournalTab: state["currentJournalTab"],
     correspondToCreatedMonthTask: state["correspondToCreatedMonthTask"]
   };
 };
