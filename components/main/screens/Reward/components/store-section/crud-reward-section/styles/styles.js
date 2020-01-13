@@ -57,7 +57,9 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: CommonStyles.primary_colors.prim_1,
     borderRadius: normalize(30, "width"),
-    marginTop: normalize(22, "height")
+    marginTop: normalize(22, "height"),
+
+    position: "relative"
   },
 
   reward_get_text: {
@@ -66,5 +68,13 @@ export const styles = StyleSheet.create({
     lineHeight: normalize(19, "height"),
     letterSpacing: -0.02,
     color: "white"
+  },
+
+  inform_bought_item_text: {
+    fontFamily: CommonStyles.sf_ui_display_light_font,
+    fontSize: normalize(16, "width"),
+    lineHeight: normalize(19, "height"),
+    letterSpacing: -0.02,
+    color: CommonStyles.primary_colors.prim_1
   }
 });

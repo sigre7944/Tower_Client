@@ -13,7 +13,7 @@ const mapStateToProps = (state, ownProps) => ({
 
   addTaskDescription: state["addTaskDescription"],
   addTaskTitle: state["addTaskTitle"],
-  currentRoute: state["currentRoute"]
+  currentJournalTab: state["currentJournalTab"]
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

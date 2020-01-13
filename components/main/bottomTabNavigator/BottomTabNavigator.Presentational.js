@@ -51,12 +51,7 @@ export default class BottomTabNavigator extends React.PureComponent {
   };
 
   componentDidMount() {
-    if (
-      this.props.routeName === "Day" ||
-      this.props.routeName === "Week" ||
-      this.props.routeName === "Month" ||
-      this.props.routeName === "Journal"
-    ) {
+    if (this.props.routeName === "Journal") {
       this.setState({
         should_AddTaskButton_be_displayed: true
       });
@@ -65,12 +60,7 @@ export default class BottomTabNavigator extends React.PureComponent {
 
   componentDidUpdate = (prevProps, prevState) => {
     if (this.props.routeName !== prevProps.routeName) {
-      if (
-        this.props.routeName === "Day" ||
-        this.props.routeName === "Week" ||
-        this.props.routeName === "Month" ||
-        this.props.routeName === "Journal"
-      ) {
+      if (this.props.routeName === "Journal") {
         this.setState({
           should_AddTaskButton_be_displayed: true
         });
@@ -164,14 +154,6 @@ class ScreenComponent extends React.Component {
       icon_color = text_icon_colors.ti_3;
 
     if (route_name === screen_route_name) {
-      icon_text_style = styles.chosen_screen_component_text;
-      icon_color = primary_colors.prim_1;
-    } else if (
-      (route_name === "Day" ||
-        route_name === "Week" ||
-        route_name === "Month") &&
-      screen_route_name === "Journal"
-    ) {
       icon_text_style = styles.chosen_screen_component_text;
       icon_color = primary_colors.prim_1;
     }
