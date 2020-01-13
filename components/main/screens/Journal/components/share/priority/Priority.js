@@ -285,7 +285,7 @@ export default class Priority extends React.PureComponent {
 
     let sending_obj = {
       priority_data: {
-        keyPath: ["priority"],
+        keyPath: [Map(this.props.edit_task_data).get("id"), "priority"],
         notSetValue: {},
         updater: value =>
           fromJS({
@@ -304,16 +304,8 @@ export default class Priority extends React.PureComponent {
     };
 
     if (this.props.edit) {
-      this.props._editFieldData(
-        sending_obj.priority_data.keyPath,
-        sending_obj.priority_data.notSetValue,
-        sending_obj.priority_data.updater
-      );
-      this.props._editFieldData(
-        sending_obj.reward_data.keyPath,
-        sending_obj.reward_data.notSetValue,
-        sending_obj.reward_data.updater
-      );
+      this.props._editPriorityFieldData(priority_id);
+      this.props._editRewardFieldData(reward_value);
     } else {
       this.props.updateTaskPriorityAndReward(sending_obj);
     }

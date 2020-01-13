@@ -307,17 +307,17 @@ export default class WeekTypeRepeat extends React.PureComponent {
 
     let sending_data = {
       repeat_data: {
-        keyPath: ["repeat"],
+        keyPath: [Map(this.props.edit_task_data).get("id"), "repeat"],
         notSetValue: {},
         updater: value => fromJS(repeat_value_data)
       },
       goal_data: {
-        keyPath: ["goal", "max"],
+        keyPath: [Map(this.props.edit_task_data).get("id"), "goal", "max"],
         notSetValue: parseInt(goal_value),
         updater: value => parseInt(goal_value)
       },
       end_data: {
-        keyPath: ["end"],
+        keyPath: [Map(this.props.edit_task_data).get("id"), "end"],
         notSetValue: {},
         updater: value => fromJS(end_value_data)
       }

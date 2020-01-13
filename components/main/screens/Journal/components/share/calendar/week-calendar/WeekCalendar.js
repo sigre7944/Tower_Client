@@ -62,7 +62,7 @@ export default class WeekCalendar extends React.Component {
       this.chosen_end_noWeekInMonth >= 0
     ) {
       if (this.props.edit) {
-        let keyPath = ["schedule"],
+        let keyPath = [Map(this.props.edit_task_data).get("id"), "schedule"],
           notSetValue = {},
           updater = value =>
             fromJS({

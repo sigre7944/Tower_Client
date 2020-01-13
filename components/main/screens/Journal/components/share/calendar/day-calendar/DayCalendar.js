@@ -44,7 +44,7 @@ export default class DayCalendar extends React.PureComponent {
   save = () => {
     if (this.chosen_day > 0 && this.chosen_month >= 0 && this.chosen_year > 0) {
       if (this.props.edit) {
-        let keyPath = ["schedule"],
+        let keyPath = [Map(this.props.edit_task_data).get("id"), "schedule"],
           notSetValue = {},
           updater = value =>
             fromJS({

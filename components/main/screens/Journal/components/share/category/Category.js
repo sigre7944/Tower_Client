@@ -189,11 +189,7 @@ export default class Category extends React.PureComponent {
 
   _save = () => {
     if (this.props.edit) {
-      let keyPath = ["category"],
-        notSetValue = this.chosen_category_id,
-        updater = value => this.chosen_category_id;
-
-      this.props._editFieldData(keyPath, notSetValue, updater);
+      this.props._editCategoryFieldData(this.chosen_category_id);
     } else if (this.props.edit_multiple) {
       this.props._editMultipleFieldData(this.chosen_category_id);
     } else {

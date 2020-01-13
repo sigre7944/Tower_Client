@@ -17,6 +17,7 @@ import {
     day_tasks,
     month_tasks,
     week_tasks,
+    editTaskId
 } from './taskReducer'
 
 import {
@@ -114,7 +115,9 @@ const rootReducer = combineReducers({
     correspondToCreatedMonthTask,
     correspondToCreatedWeekTask,
 
-    currentJournalTab
+    currentJournalTab,
+
+    editTaskId
 })
 
 export default rootReducer

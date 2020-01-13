@@ -43,7 +43,7 @@ export default class MonthCalendar extends React.Component {
   save = () => {
     if (this.chosen_month >= 0 && this.chosen_year >= 0) {
       if (this.props.edit) {
-        let keyPath = ["schedule"],
+        let keyPath = [Map(this.props.edit_task_data).get("id"), "schedule"],
           notSetValue = {},
           updater = value =>
             fromJS({

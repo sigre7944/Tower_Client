@@ -312,9 +312,9 @@ export default class EditMultipleTasks extends React.PureComponent {
               />
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={this._toggleReturn}>
+            <View>
               <Text style={styles.middle_text_style}>Edit multiple tasks</Text>
-            </TouchableOpacity>
+            </View>
 
             <TouchableOpacity
               style={styles.end_icon_container}

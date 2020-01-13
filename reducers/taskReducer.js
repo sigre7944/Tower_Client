@@ -326,3 +326,13 @@ export const currentWeekTask = (state = initial_currentWeekTask, action) => {
       return state;
   }
 };
+
+export const editTaskId = (state = Map(), action) => {
+  switch (action.type) {
+    case "UPDATE_EDIT_TASK_ID":
+      return action.data;
+
+    default:
+      return state;
+  }
+};

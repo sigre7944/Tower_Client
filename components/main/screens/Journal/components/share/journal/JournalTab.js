@@ -125,10 +125,15 @@ export default class JournalTab extends React.PureComponent {
   };
 
   openModal = task_data => {
-    this.setState({
-      isModalOpened: true,
-      task_data: Map(task_data).toMap()
-    });
+    // this.setState({
+    //   isModalOpened: true,
+    //   task_data: Map(task_data).toMap()
+    // });
+
+    this.props.updateEditTaskId(
+      fromJS({ id: Map(task_data).get("id"), type: Map(task_data).get("type") })
+    );
+    this.props.navigation.navigate("EditTaskScreen");
   };
 
   closeModal = () => {
