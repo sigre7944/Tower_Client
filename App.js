@@ -90,10 +90,10 @@ export default class App extends React.Component {
           />
         </View>
         <Provider store={store}>
-          <AppContainer />
-          {/* <PersistGate persistor={persistor}>
+          {/* <AppContainer /> */}
+          <PersistGate persistor={persistor}>
             <AppContainer />
-          </PersistGate> */}
+          </PersistGate>
         </Provider>
       </View>
     );
@@ -106,7 +106,7 @@ const DrawerNavigator = createDrawerNavigator(
   },
   {
     contentComponent: Drawer,
-    drawerType: "back",
+    drawerType: "front",
     drawerWidth: Dimensions.get("window").width * 0.85,
     overlayColor: "#BDBDBD",
     minSwipeDistance: 10

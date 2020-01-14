@@ -8,12 +8,16 @@ import * as Haptics from "expo-haptics";
 import { Audio } from "expo-av";
 import PremiumAd from "../../../../../shared/components/premium-ad/PremiumAd.Container";
 import { normalize } from "../../../../../shared/helpers";
+import InformPurchaseAction from "../inform-purchase-action/InformPurchaseAction";
+
 const no_main_reward_1x = require("../../../../../../assets/pngs/no_main_reward_1x.png");
 
 export default class TrackingSection extends React.PureComponent {
   state = {
     can_choose: false,
-    should_display_premium_ad: false
+    should_display_premium_ad: false,
+    should_display_bought_inform_action: false,
+    new_balance: this.props.balance
   };
 
   _toggleShouldDisplayPremiumAd = () => {
@@ -30,6 +34,12 @@ export default class TrackingSection extends React.PureComponent {
       );
       await completing_sound.playAsync();
     } catch (error) {}
+  };
+
+  _toggleShouldDisplayBoughtInformAction = () => {
+    this.setState(prevState => ({
+      should_display_bought_inform_action: !prevState.should_display_bought_inform_action
+    }));
   };
 
   _getReward = () => {
@@ -178,6 +188,11 @@ export default class TrackingSection extends React.PureComponent {
             this._playingSound();
           }
         }
+
+        this.setState({
+          should_display_bought_inform_action: true,
+          new_balance: balance - reward_value
+        })
       } else {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       }
@@ -491,6 +506,16 @@ export default class TrackingSection extends React.PureComponent {
                 dismissAction={this._toggleShouldDisplayPremiumAd}
                 motivation_text="The reward was disabled due to Free plan"
                 _goToLogin={this._goToLogin}
+              />
+            ) : null}
+
+            {this.state.should_display_bought_inform_action ? (
+              <InformPurchaseAction
+                reward_name={main_reward_name}
+                balance={this.state.new_balance}
+                _toggleDisplayInformBoughtItem={
+                  this._toggleShouldDisplayBoughtInformAction
+                }
               />
             ) : null}
           </View>
