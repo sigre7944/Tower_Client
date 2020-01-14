@@ -1,20 +1,14 @@
-// import React from 'react'
+import React from "react";
 
-// import { Dimensions } from "react-native";
-import {
-  createMaterialTopTabNavigator,
-  // createDrawerNavigator,
-  // createStackNavigator
-} from "react-navigation";
+import { View, Text } from "react-native";
+import { createMaterialTopTabNavigator } from "react-navigation";
 
-// import Drawer from "../../../drawer/Drawer.Container";
 import Day from "./components/Daily/Daily.Container";
 import Week from "./components/Weekly/Weekly";
 import Month from "./components/Monthly/Monthly";
-// import JournalHeader from "./components/header/JournalHeader.Container"
 
 import CustomTabBarComponent from "./custom-tab-bar-component/CustomTabBarComponent.Container";
-
+import JournalHeader from "./components/header/JournalHeader.Container";
 const JournalTopNavigator = createMaterialTopTabNavigator(
   {
     Day: { screen: Day, navigationOptions: { header: null } },
@@ -28,27 +22,37 @@ const JournalTopNavigator = createMaterialTopTabNavigator(
   }
 );
 
-// const JournalStackNavigator = createStackNavigator(
-//   { JournalTopNavigator },
-//   {
-//     defaultNavigationOptions: ({ navigation }) => ({
-//       header: <JournalHeader navigation={navigation} />
-//     })
-//   }
-// );
+// export default JournalTopNavigator;
 
-// const DrawerNavigator = createDrawerNavigator(
-//   {
-//     JournalStackNavigator: JournalStackNavigator
-//   },
-//   {
-//     drawerLockMode: "unlocked",
-//     contentComponent: Drawer,
-//     drawerType: "slide",
-//     drawerWidth: Dimensions.get("window").width * 0.8,
-//     overlayColor: "gray",
-//     minSwipeDistance: 1
-//   }
-// );
+export default class Journal extends React.PureComponent {
+  state = {
+    index: 0 // 0: Day, 1: Week, 2: Month
+  };
 
-export default JournalTopNavigator;
+  _chooseTab = index => {
+    this.setState({
+      index
+    });
+  };
+
+  componentDidMount() {}
+
+  render() {
+    return (
+      <View style={{ flex: 1 }}>
+        <CustomTabBarComponent _chooseTab={this._chooseTab} />
+        {this.state.index === 0 ? (
+          <Day navigation={this.props.navigation} />
+        ) : (
+          <>
+            {this.state.index === 1 ? (
+              <Week navigation={this.props.navigation} />
+            ) : (
+              <Month navigation={this.props.navigation} />
+            )}
+          </>
+        )}
+      </View>
+    );
+  }
+}

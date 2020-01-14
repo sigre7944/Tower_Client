@@ -16,6 +16,9 @@ import SignInSignUpOptions from "./components/sign-in-sign-up-screen/SignInSignU
 import SignInScreen from "./components/sign-in-screen/SignInScreen";
 import SignUpScreen from "./components/sign-up-screen/SignUpScreen";
 import SettingsAccountScreen from "./components/settings-account-screen/SettingsAccountScreen.Container";
+
+import EditTaskScreen from "./components/edit-task-screen/EditTaskScreen.Container";
+
 import { PersistGate } from "redux-persist/lib/integration/react";
 import { persistor, store } from "./store/index";
 import * as FileSystem from "expo-file-system";
@@ -102,12 +105,11 @@ const DrawerNavigator = createDrawerNavigator(
     MainNavigator: MainNavigator
   },
   {
-    drawerLockMode: "locked-closed",
     contentComponent: Drawer,
-    drawerType: "slide",
-    drawerWidth: Dimensions.get("window").width * 0.8,
-    overlayColor: "gray",
-    minSwipeDistance: 1
+    drawerType: "back",
+    drawerWidth: Dimensions.get("window").width * 0.85,
+    overlayColor: "#BDBDBD",
+    minSwipeDistance: 10
   }
 );
 
@@ -122,7 +124,8 @@ const AppStackNavigator = createStackNavigator(
     SignInSignUp: { screen: SignInSignUpOptions },
     SignInScreen: { screen: SignInScreen },
     SignUpScreen: { screen: SignUpScreen },
-    SettingsAccountScreen: { screen: SettingsAccountScreen }
+    SettingsAccountScreen: { screen: SettingsAccountScreen },
+    EditTaskScreen: { screen: EditTaskScreen }
   },
   {
     initialRouteName: "DrawerNavigator",

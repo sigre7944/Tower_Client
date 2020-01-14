@@ -43,7 +43,7 @@ export default class MonthCalendar extends React.Component {
   save = () => {
     if (this.chosen_month >= 0 && this.chosen_year >= 0) {
       if (this.props.edit) {
-        let keyPath = ["schedule"],
+        let keyPath = [Map(this.props.edit_task_data).get("id"), "schedule"],
           notSetValue = {},
           updater = value =>
             fromJS({
@@ -52,11 +52,25 @@ export default class MonthCalendar extends React.Component {
             });
 
         this.props._editFieldData(keyPath, notSetValue, updater);
+
+        this.props.returnCorrespondCreatedTask(
+          fromJS({
+            month: this.chosen_month,
+            year: this.chosen_year
+          })
+        );
       } else if (this.props.edit_multiple) {
         this.props._editMultipleFieldData({
           month: this.chosen_month,
           year: this.chosen_year
         });
+
+        this.props.returnCorrespondCreatedTask(
+          fromJS({
+            month: this.chosen_month,
+            year: this.chosen_year
+          })
+        );
       } else {
         this._updateTask(this.chosen_month, this.chosen_year);
       }

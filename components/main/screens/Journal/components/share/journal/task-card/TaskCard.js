@@ -37,9 +37,9 @@ export default class TaskCard extends React.PureComponent {
     should_display_premium_ad: false
   };
 
-  _openModal = () => {
+  _goToEditTaskScreen = () => {
     if (this.state.is_task_card_able_to_edit) {
-      this.props.openModal(this.props.task_data);
+      this.props._goToEditTaskScreen(this.props.task_data);
     } else {
       this._toggleShouldDisplayPremiumAd();
     }
@@ -1982,7 +1982,7 @@ export default class TaskCard extends React.PureComponent {
               flex: 1,
               justifyContent: "center"
             }}
-            onPress={this._openModal}
+            onPress={this._goToEditTaskScreen}
           >
             <Text style={task_title_style}>{title}</Text>
 

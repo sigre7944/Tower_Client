@@ -245,8 +245,29 @@ class TaskTitleElement extends React.PureComponent {
             keyPath: [priority_value, "tasks"],
             notSetValue: [],
             updater: tasks => List(tasks).push(priority_data)
+          },
+
+          return_correspond_created_task: {
+            type: "RETURN_CORRESPOND_TO_CREATED_DAY_TASK",
+            data: new_task_with_id.get("schedule").toMap()
+          },
+
+          update_task_type_created: {
+            data: "day"
           }
         };
+
+        if (this.props.currentAnnotation === "week") {
+          sending_obj.return_correspond_created_task.type =
+            "RETURN_CORRESPOND_TO_CREATED_WEEK_TASK";
+
+          sending_obj.update_task_type_created.data = "week";
+        } else if (this.props.currentAnnotation === "month") {
+          sending_obj.return_correspond_created_task.type =
+            "RETURN_CORRESPOND_TO_CREATED_MONTH_TASK";
+
+          sending_obj.update_task_type_created.data = "month";
+        }
 
         this.props.addTaskThunk(sending_obj);
 
@@ -451,6 +472,7 @@ class TaskDescriptionElement extends React.PureComponent {
           placeholderTextColor="#2C2C2C40"
           multiline={true}
           autoCorrect={false}
+          scrollEnabled={false}
           value={this.props.description_value}
           onChange={this._onChange}
           returnKeyType="default"

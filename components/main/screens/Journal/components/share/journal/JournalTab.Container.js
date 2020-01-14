@@ -3,6 +3,9 @@ import {
   changeRouteAction,
   returnNewChosenDateData
 } from "../../../../../../shared/actions/otherAction";
+
+import { updateEditTaskId } from "../../../../../../shared/actions/taskAction";
+
 import JournalTab from "./JournalTab";
 
 const mapStateToProps = (state, ownProps) => {
@@ -48,7 +51,9 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => ({
   changeRouteAction: routeName => dispatch(changeRouteAction(routeName)),
   returnNewChosenDateData: (type, data) =>
-    dispatch(returnNewChosenDateData(type, data))
+    dispatch(returnNewChosenDateData(type, data)),
+
+  updateEditTaskId: data => dispatch(updateEditTaskId(data))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(JournalTab);

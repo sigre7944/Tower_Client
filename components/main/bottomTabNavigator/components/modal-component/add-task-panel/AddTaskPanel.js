@@ -197,7 +197,13 @@ export default class AddTaskPanel extends Component {
             navigation={this.props.navigation}
           />
 
-          <TagDataHolder currentAnnotation={this.props.currentAnnotation} />
+          <TagDataHolder
+            currentAnnotation={this.props.currentAnnotation}
+            chooseCalenderOption={this.props.chooseCalenderOption}
+            chosenCategoryOption={this.props.chosenCategoryOption}
+            choosePriorityOption={this.props.choosePriorityOption}
+            chooseRepeatOption={this.props.chooseRepeatOption}
+          />
         </ScrollView>
 
         <BottomOptionsHolder

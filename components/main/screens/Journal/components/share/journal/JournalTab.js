@@ -2,7 +2,6 @@ import React from "react";
 import { View, Text, FlatList, Dimensions } from "react-native";
 
 import TaskCard from "./task-card/TaskCard.Container";
-import TaskDetailModal from "./task-detail-modal/TaskDetailModal.Container";
 
 import DayFlatlist from "./day-flatlist/DayFlatlist.Container";
 import WeekFlatlist from "./week-flatlist/WeekFlatlist.Container";
@@ -15,10 +14,10 @@ import { List, Map, hasIn, getIn, fromJS } from "immutable";
 const window_width = Dimensions.get("window").width;
 
 export default class JournalTab extends React.PureComponent {
-  static navigationOptions = {
-    swipeEnabled: false,
-    header: null
-  };
+  // static navigationOptions = {
+  //   swipeEnabled: false,
+  //   header: null
+  // };
 
   getWeek = date => {
     let target = new Date(date);
@@ -95,7 +94,6 @@ export default class JournalTab extends React.PureComponent {
   };
 
   state = {
-    isModalOpened: false,
     task_data: Map(),
     chosen_date_data: this.initChosenDateData()
   };
@@ -124,17 +122,15 @@ export default class JournalTab extends React.PureComponent {
     this.props.returnNewChosenDateData(action_type, sending_data);
   };
 
-  openModal = task_data => {
-    this.setState({
-      isModalOpened: true,
-      task_data: Map(task_data).toMap()
-    });
-  };
-
-  closeModal = () => {
-    this.setState({
-      isModalOpened: false
-    });
+  _goToEditTaskScreen = task_data => {
+    this.props.updateEditTaskId(
+      fromJS({
+        id: Map(task_data).get("id"),
+        type: Map(task_data).get("type"),
+        chosen_date_data: this.state.chosen_date_data
+      })
+    );
+    this.props.navigation.navigate("EditTaskScreen");
   };
 
   componentDidMount() {
@@ -192,7 +188,7 @@ export default class JournalTab extends React.PureComponent {
             completed_tasks={this.props.completed_tasks}
             type={this.props.type}
             chosen_date_data={this.state.chosen_date_data}
-            openModal={this.openModal}
+            _goToEditTaskScreen={this._goToEditTaskScreen}
             current_chosen_category={this.props.current_chosen_category}
             deleted_tasks={this.props.deleted_tasks}
             sortSettings={this.props.sortSettings}
@@ -203,20 +199,6 @@ export default class JournalTab extends React.PureComponent {
             ])}
           />
         </View>
-
-        {this.state.isModalOpened ? (
-          <TaskDetailModal
-            closeModal={this.closeModal}
-            task_data={this.state.task_data}
-            categories={this.props.categories}
-            priorities={this.props.priorities}
-            action_type={this.props.action_type}
-            type={this.props.type}
-            chosen_date_data={this.state.chosen_date_data}
-          />
-        ) : (
-          <></>
-        )}
       </View>
     );
   }
@@ -240,7 +222,7 @@ class FlatlistGroup extends React.PureComponent {
             completed_tasks={this.props.completed_tasks}
             type={this.props.type}
             chosen_date_data={this.props.chosen_date_data}
-            openModal={this.props.openModal}
+            _goToEditTaskScreen={this.props._goToEditTaskScreen}
             current_chosen_category={this.props.current_chosen_category}
             deleted_tasks={this.props.deleted_tasks}
             sortSettings={this.props.sortSettings}
@@ -261,7 +243,7 @@ class FlatlistGroup extends React.PureComponent {
             completed_tasks={this.props.completed_tasks}
             type={this.props.type}
             chosen_date_data={this.props.chosen_date_data}
-            openModal={this.props.openModal}
+            _goToEditTaskScreen={this.props._goToEditTaskScreen}
             current_chosen_category={this.props.current_chosen_category}
             sortSettings={this.props.sortSettings}
             plan={Map(this.props.generalSettings).getIn([
@@ -352,7 +334,7 @@ class UncompletedTaskCardHolder extends React.PureComponent {
         completed_task={Map(this.props.completed_tasks).get(item[0])}
         type={this.props.type}
         chosen_date_data={this.props.chosen_date_data}
-        openModal={this.props.openModal}
+        _goToEditTaskScreen={this.props._goToEditTaskScreen}
         deleted_task_data={Map(this.props.deleted_tasks).get(item[0])}
         plan={Map(this.props.generalSettings).getIn([
           "account",
@@ -1320,11 +1302,6 @@ class UncompletedTaskCard extends React.PureComponent {
   };
 
   render() {
-    // let is_chosen_date_today = this.checkIfChosenDateIsToday(
-    //   this.props.chosen_date_data,
-    //   this.props.type
-    // );
-
     this.handleUpdate(
       this.props.deleted_task_data,
       this.props.completed_task,
@@ -1342,7 +1319,7 @@ class UncompletedTaskCard extends React.PureComponent {
             type={this.props.type}
             task_data={this.props.task_data}
             index={this.props.index}
-            openModal={this.props.openModal}
+            _goToEditTaskScreen={this.props._goToEditTaskScreen}
             flag={"uncompleted"}
             current_goal_value={this.update_obj.current_goal_value}
             title={this.update_obj.title}
@@ -1373,7 +1350,7 @@ class CompletedTaskCardHolder extends React.PureComponent {
       task={Map(this.props.tasks).get(item[0])}
       type={this.props.type}
       chosen_date_data={this.props.chosen_date_data}
-      openModal={this.props.openModal}
+      _goToEditTaskScreen={this.props._goToEditTaskScreen}
     />
   );
 
@@ -1466,13 +1443,6 @@ class CompletedTaskCardHolder extends React.PureComponent {
 
   componentDidUpdate(prevProps, prevState) {
     if (
-      // this.props.tasks !== prevProps.tasks ||
-      // this.props.completed_tasks !== prevProps.completed_tasks ||
-      // this.props.current_chosen_category !==
-      //   prevProps.current_chosen_category ||
-      // this.props.chosen_date_data !== prevProps.chosen_date_data ||
-      // this.props.sortSettings !== prevProps.sortSettings
-
       this.props.completed_tasks !== prevProps.completed_tasks ||
       this.props.tasks !== prevProps.tasks ||
       this.props.current_chosen_category !==
@@ -1706,11 +1676,6 @@ class CompletedTaskCard extends React.PureComponent {
   };
 
   render() {
-    // let is_chosen_date_today = this.checkIfChosenDateIsToday(
-    //   this.props.chosen_date_data,
-    //   this.props.type
-    // );
-
     this.handleUpdate(
       this.props.task,
       this.props.completed_task,
@@ -1727,7 +1692,7 @@ class CompletedTaskCard extends React.PureComponent {
             type={this.props.type}
             task_data={this.update_obj.task_data}
             index={this.props.index}
-            openModal={this.props.openModal}
+            _goToEditTaskScreen={this.props._goToEditTaskScreen}
             flag={"completed"}
             current_goal_value={this.update_obj.current_goal_value}
             title={this.update_obj.title}

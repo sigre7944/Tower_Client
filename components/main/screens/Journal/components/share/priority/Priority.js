@@ -283,38 +283,30 @@ export default class Priority extends React.PureComponent {
       priority_id = "pri_04";
     }
 
-    let sending_obj = {
-      priority_data: {
-        keyPath: ["priority"],
-        notSetValue: {},
-        updater: value =>
-          fromJS({
-            value: priority_id
-          })
-      },
-
-      reward_data: {
-        keyPath: ["reward"],
-        notSetValue: {},
-        updater: value =>
-          fromJS({
-            value: parseInt(reward_value)
-          })
-      }
-    };
-
     if (this.props.edit) {
-      this.props._editFieldData(
-        sending_obj.priority_data.keyPath,
-        sending_obj.priority_data.notSetValue,
-        sending_obj.priority_data.updater
-      );
-      this.props._editFieldData(
-        sending_obj.reward_data.keyPath,
-        sending_obj.reward_data.notSetValue,
-        sending_obj.reward_data.updater
-      );
+      this.props._editPriorityFieldData(priority_id);
+      this.props._editRewardFieldData(reward_value);
     } else {
+      let sending_obj = {
+        priority_data: {
+          keyPath: ["priority"],
+          notSetValue: {},
+          updater: value =>
+            fromJS({
+              value: priority_id
+            })
+        },
+
+        reward_data: {
+          keyPath: ["reward"],
+          notSetValue: {},
+          updater: value =>
+            fromJS({
+              value: parseInt(reward_value)
+            })
+        }
+      };
+
       this.props.updateTaskPriorityAndReward(sending_obj);
     }
 

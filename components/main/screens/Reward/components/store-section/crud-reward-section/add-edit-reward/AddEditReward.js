@@ -488,7 +488,7 @@ export default class AddEditReward extends React.PureComponent {
                       value={this.state.reward_title}
                       placeholder={
                         this.props.edit_reward_data
-                          ? `${this.props.edit_reward_data.name}`
+                          ? `${this.props.edit_reward_data.get("name")}`
                           : "Max 32 characters."
                       }
                       placeholderTextColor="#2C2C2C40"
@@ -509,7 +509,7 @@ export default class AddEditReward extends React.PureComponent {
                       maxLength={9}
                       placeholder={
                         this.props.edit_reward_data
-                          ? `${this.props.edit_reward_data.value}`
+                          ? `${this.props.edit_reward_data.get("value")}`
                           : "Max 9 characters"
                       }
                       placeholderTextColor="#2C2C2C40"

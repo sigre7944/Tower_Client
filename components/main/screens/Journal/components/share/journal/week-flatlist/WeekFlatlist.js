@@ -3,7 +3,9 @@ import { View, Text, TouchableOpacity, FlatList } from "react-native";
 
 import { styles } from "./styles/styles";
 import { normalize } from "../../../../../../../shared/helpers";
+import { Map } from "immutable";
 const week_holder_width = normalize(102, "width");
+
 export default class WeekFlatlist extends React.PureComponent {
   month_text_arr = [
     "Jan",
@@ -156,6 +158,36 @@ export default class WeekFlatlist extends React.PureComponent {
     }
   };
 
+  _findWeekIndex = (mon, sun, start_month, end_month, start_year, end_year) => {
+    let result = 0;
+    let current_year = new Date().getFullYear(),
+      number_of_years_in_between = 4,
+      left_end_year = current_year - number_of_years_in_between,
+      right_end_year = current_year + number_of_years_in_between,
+      first_day_of_left_end_year = new Date(left_end_year, 0, 1),
+      last_day_of_right_end_year = new Date(right_end_year, 12, 0),
+      tracked_timestamp = first_day_of_left_end_year.getTime();
+
+    while (tracked_timestamp <= last_day_of_right_end_year.getTime()) {
+      let monday = this.getMonday(tracked_timestamp),
+        sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+
+      if (
+        monday.getDate() === mon &&
+        monday.getMonth() === start_month &&
+        monday.getFullYear() === start_year &&
+        sunday.getDate() === sun &&
+        sunday.getMonth() === end_month &&
+        sunday.getFullYear() === end_year
+      ) {
+        return result;
+      }
+      result += 1;
+      tracked_timestamp = sunday.getTime() + 86400 * 1000;
+    }
+  };
+
   _getItemLayout = (data, index) => ({
     length: week_holder_width,
     offset: index * week_holder_width,
@@ -188,9 +220,23 @@ export default class WeekFlatlist extends React.PureComponent {
   _initialUpdateWithStartIndex = () => {
     let nearest_monday = this.getMonday(new Date()),
       current_week = this.getWeek(nearest_monday),
-      current_year = nearest_monday.getFullYear(),
-      current_monday = nearest_monday.getDate(),
-      current_month = nearest_monday.getMonth();
+      current_year = nearest_monday.getFullYear();
+
+    let chosen_week_date_data = Map(this.props.chosenDateData);
+
+    if (
+      chosen_week_date_data.has("week") &&
+      chosen_week_date_data.has("monday") &&
+      chosen_week_date_data.has("start_year")
+    ) {
+      nearest_monday = new Date(
+        chosen_week_date_data.get("start_year"),
+        chosen_week_date_data.get("start_month"),
+        chosen_week_date_data.get("monday")
+      );
+      current_week = chosen_week_date_data.get("week");
+      current_year = chosen_week_date_data.get("start_year");
+    }
 
     this.week_data.every((data, index) => {
       if (data.week === current_week && data.start_year === current_year) {
@@ -207,15 +253,43 @@ export default class WeekFlatlist extends React.PureComponent {
     });
   };
 
+  _goToWeekAccordingToCreatedTask = () => {
+    let correspond_to_created_week_task = Map(
+      this.props.correspondToCreatedWeekTask
+    );
+
+    let monday = correspond_to_created_week_task.get("monday"),
+      sunday = correspond_to_created_week_task.get("sunday"),
+      start_month = correspond_to_created_week_task.get("start_month"),
+      end_month = correspond_to_created_week_task.get("end_month"),
+      start_year = correspond_to_created_week_task.get("start_year"),
+      end_year = correspond_to_created_week_task.get("end_year");
+
+    let week_index = this._findWeekIndex(
+      monday,
+      sunday,
+      start_month,
+      end_month,
+      start_year,
+      end_year
+    );
+    this.chooseWeek(week_index);
+    this.props.returnCorrespondCreatedTask(null);
+  };
+
   componentDidMount() {
     this.initializeWeekData();
 
     this._initialUpdateWithStartIndex();
+
+    if (this.props.correspondToCreatedWeekTask) {
+      this._goToWeekAccordingToCreatedTask();
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.headerPressed !== prevProps.headerPressed) {
-      if (this.props.currentRoute === "Week") {
+      if (this.props.currentJournalTab === "Week") {
         let current_near_monday = this.getMonday(new Date()),
           current_monday_timestamp = current_near_monday.getTime();
 
@@ -232,22 +306,12 @@ export default class WeekFlatlist extends React.PureComponent {
       }
     }
 
-    if (this.props.currentRoute !== prevProps.currentRoute) {
-      if (this.props.currentRoute === "Week") {
-        let string = "";
-        if (
-          this.week_data[this.state.current_week_index] &&
-          this.week_data[this.state.current_week_index].start_month >= 0
-        ) {
-          string = `${
-            this.month_text_arr[
-              this.week_data[this.state.current_week_index].start_month
-            ]
-          } - ${this.week_data[this.state.current_week_index].start_year}`;
-
-          this.props.updateHeaderText(string);
-        }
-      }
+    if (
+      this.props.correspondToCreatedWeekTask !==
+        prevProps.correspondToCreatedWeekTask &&
+      this.props.correspondToCreatedWeekTask !== null
+    ) {
+      this._goToWeekAccordingToCreatedTask();
     }
   }
 

@@ -1,19 +1,28 @@
-import { connect } from 'react-redux'
-import { updateHeaderText } from '../../../../../../../shared/actions/otherAction'
-import MonthFlatlist from './MonthFlatlist'
+import { connect } from "react-redux";
+import {
+  updateHeaderText,
+  returnCorrespondCreatedTask
+} from "../../../../../../../shared/actions/otherAction";
+import MonthFlatlist from "./MonthFlatlist";
 
 const mapStateToProps = (state, ownProps) => {
-    return ({
-        headerPressed: state["headerPressed"],
-        currentRoute: state["currentRoute"]
-    })
-}
+  return {
+    headerPressed: state["headerPressed"],
+    currentJournalTab: state["currentJournalTab"],
+    correspondToCreatedMonthTask: state["correspondToCreatedMonthTask"],
+    chosenDateData: state["chosenMonthDateData"]
+  };
+};
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    updateHeaderText: (data) => dispatch(updateHeaderText(data))
-})
+  updateHeaderText: data => dispatch(updateHeaderText(data)),
+  returnCorrespondCreatedTask: data =>
+    dispatch(
+      returnCorrespondCreatedTask(
+        "RETURN_CORRESPOND_TO_CREATED_MONTH_TASK",
+        data
+      )
+    )
+});
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(MonthFlatlist)
+export default connect(mapStateToProps, mapDispatchToProps)(MonthFlatlist);

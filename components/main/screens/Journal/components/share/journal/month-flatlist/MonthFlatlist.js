@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, FlatList } from "react-native";
 
 import { styles } from "./styles/styles";
 import { normalize } from "../../../../../../../shared/helpers";
-
+import { Map } from "immutable";
 const month_holder_width = normalize(97, "width");
 
 export default class MonthFlatlist extends React.PureComponent {
@@ -150,11 +150,21 @@ export default class MonthFlatlist extends React.PureComponent {
   _initialUpdateWithStartIndex = () => {
     let current = new Date();
 
+    let month = current.getMonth();
+    let year = current.getFullYear();
+
+    let chosen_month_date_data = Map(this.props.chosenDateData);
+
+    if (
+      chosen_month_date_data.has("month") &&
+      chosen_month_date_data.has("year")
+    ) {
+      month = chosen_month_date_data.get("month");
+      year = chosen_month_date_data.get("year");
+    }
+
     this.month_data.every((data, index) => {
-      if (
-        data.month === current.getMonth() &&
-        data.year === current.getFullYear()
-      ) {
+      if (data.month === month && data.year === year) {
         this.start_index = index;
 
         this.start_month = data.month;
@@ -169,14 +179,47 @@ export default class MonthFlatlist extends React.PureComponent {
     });
   };
 
+  _findMonthIndex = (month, year) => {
+    let result = 0;
+    let current_year = new Date().getFullYear(),
+      number_of_years_in_between = 4,
+      left_end_year = current_year - number_of_years_in_between;
+
+    for (let y = left_end_year; y <= year; y++) {
+      for (let m = 0; m < 12; m++) {
+        if (m === month && y === year) {
+          return result;
+        }
+
+        result += 1;
+      }
+    }
+  };
+
+  _goToMonthAccordingToCreatedTask = () => {
+    let correspond_to_create_month_task = Map(
+      this.props.correspondToCreatedMonthTask
+    );
+
+    let month = correspond_to_create_month_task.get("month"),
+      year = correspond_to_create_month_task.get("year");
+
+    this.chooseMonth(this._findMonthIndex(month, year));
+    this.props.returnCorrespondCreatedTask(null);
+  };
+
   componentDidMount() {
     this.initializeMonthData();
     this._initialUpdateWithStartIndex();
+
+    if (this.props.correspondToCreatedMonthTask) {
+      this._goToMonthAccordingToCreatedTask();
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.headerPressed !== prevProps.headerPressed) {
-      if (this.props.currentRoute === "Month") {
+      if (this.props.currentJournalTab === "Month") {
         let date = new Date();
         let year_diff = date.getFullYear() - this.start_year;
 
@@ -191,15 +234,12 @@ export default class MonthFlatlist extends React.PureComponent {
       }
     }
 
-    if (this.props.currentRoute !== prevProps.currentRoute) {
-      if (this.props.currentRoute === "Month") {
-        let string;
-
-        if (this.month_data[this.state.current_month_index].month >= 0) {
-          string = `${this.month_data[this.state.current_month_index].year}`;
-          this.props.updateHeaderText(string);
-        }
-      }
+    if (
+      this.props.correspondToCreatedMonthTask !==
+        prevProps.correspondToCreatedMonthTask &&
+      this.props.correspondToCreatedMonthTask !== null
+    ) {
+      this._goToMonthAccordingToCreatedTask();
     }
   }
 

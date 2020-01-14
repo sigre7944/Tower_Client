@@ -4,6 +4,7 @@ import { View, Text, TouchableOpacity, FlatList } from "react-native";
 import { styles } from "./styles/styles";
 
 import { normalize } from "../../../../../../../shared/helpers";
+import { Map } from "immutable";
 
 const day_holder_width = normalize(64, "width"); // each dayholder has a width of 64 (width = 50, marginHorizontal = 7)
 
@@ -134,14 +135,44 @@ export default class DayFlatlist extends React.PureComponent {
     }
   };
 
+  _findDayIndex = (day, month, year) => {
+    let result = 0;
+    let number_of_years_in_between = 4;
+    let left_end_year = new Date().getFullYear() - number_of_years_in_between;
+
+    for (let y = left_end_year; y <= year; y++) {
+      for (let m = 0; m < 12; m++) {
+        let last_day_in_month = new Date(y, m + 1, 0).getDate();
+
+        for (let d = 1; d <= last_day_in_month; d++) {
+          if (m === month && d === day && y === year) {
+            return result;
+          }
+          result += 1;
+        }
+      }
+    }
+  };
+
   _onLayout = () => {
     this.scrollToIndex(this.start_index);
   };
 
   _initialUpdateWithStartIndex = () => {
+    let chosen_day_date_data = Map(this.props.chosenDateData);
     let day = new Date().getDate(),
       month = new Date().getMonth(),
       year = new Date().getFullYear();
+
+    if (
+      chosen_day_date_data.has("day") &&
+      chosen_day_date_data.has("month") &&
+      chosen_day_date_data.has("year")
+    ) {
+      day = chosen_day_date_data.get("day");
+      month = chosen_day_date_data.get("month");
+      year = chosen_day_date_data.get("year");
+    }
 
     this.day_data.every((data, index) => {
       if (data.day === day && data.month === month && data.year === year) {
@@ -158,15 +189,32 @@ export default class DayFlatlist extends React.PureComponent {
     });
   };
 
+  _goToDateAccordingToCreatedTask = () => {
+    let correspond_to_create_day_task = Map(
+      this.props.correspondToCreatedDayTask
+    );
+    let day = correspond_to_create_day_task.get("day");
+    let month = correspond_to_create_day_task.get("month");
+    let year = correspond_to_create_day_task.get("year");
+    let day_index = this._findDayIndex(day, month, year);
+
+    this.chooseDay(day_index);
+    this.props.returnCorrespondCreatedTask(null);
+  };
+
   componentDidMount() {
     this.initializeDayData();
 
     this._initialUpdateWithStartIndex();
+
+    if (this.props.correspondToCreatedDayTask) {
+      this._goToDateAccordingToCreatedTask();
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.headerPressed !== prevProps.headerPressed) {
-      if (this.props.currentRoute === "Day") {
+      if (this.props.currentJournalTab === "Day") {
         let current_date = new Date();
         let current_timestamp = Date.now();
 
@@ -179,27 +227,19 @@ export default class DayFlatlist extends React.PureComponent {
           current_date.getMonth(),
           current_date.getDate()
         ).getTime();
-        
+
         this.start_index += day_diff;
 
         this.chooseDay(this.start_index);
       }
     }
 
-    if (this.props.currentRoute !== prevProps.currentRoute) {
-      if (this.props.currentRoute === "Day") {
-        let string;
-
-        if (this.day_data[this.state.current_day_index].month >= 0) {
-          string = `${
-            this.month_text_arr[
-              this.day_data[this.state.current_day_index].month
-            ]
-          } - ${this.day_data[this.state.current_day_index].year}`;
-
-          this.props.updateHeaderText(string);
-        }
-      }
+    if (
+      this.props.correspondToCreatedDayTask !==
+        prevProps.correspondToCreatedDayTask &&
+      this.props.correspondToCreatedDayTask !== null
+    ) {
+      this._goToDateAccordingToCreatedTask();
     }
   }
 

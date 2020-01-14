@@ -4,7 +4,7 @@ import * as CommonStyles from "../../../shared/styles/style";
 import { normalize } from "../../../shared/helpers";
 export const styles = StyleSheet.create({
   container: {
-    height: normalize(27 + 32 + 23 + 10, "height"),
+    height: normalize(27 + 23 + 17, "height"),
     paddingTop: Platform.OS === "android" ? 25 : 0,
     backgroundColor: "white"
   },

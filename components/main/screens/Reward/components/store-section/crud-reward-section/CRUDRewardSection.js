@@ -4,7 +4,9 @@ import {
   Text,
   Dimensions,
   TouchableOpacity,
-  FlatList
+  FlatList,
+  Animated,
+  Easing
 } from "react-native";
 
 import { Map, fromJS, OrderedMap, isKeyed } from "immutable";
@@ -12,6 +14,7 @@ import { Map, fromJS, OrderedMap, isKeyed } from "immutable";
 import AddEditReward from "./add-edit-reward/AddEditReward.Container";
 
 import InsufficientWarning from "./insufficient-warning/InsufficientWarning";
+import InformPurchaseAction from "../../inform-purchase-action/InformPurchaseAction";
 
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPlus, faEdit } from "@fortawesome/free-solid-svg-icons";
@@ -261,6 +264,7 @@ export default class CRUDRewardSection extends React.PureComponent {
             "plan"
           ])}
           navigation={this.props.navigation}
+          balance={this.props.balance}
         />
       );
     }
@@ -349,9 +353,56 @@ export default class CRUDRewardSection extends React.PureComponent {
 }
 
 class RewardHolder extends React.PureComponent {
+  inform_bought_item_translate_y_value = 30;
+  inform_bought_item_easing = Easing.in();
+  inform_bought_item_duration = 150;
+  inform_bought_item_opacity = new Animated.Value(0);
+  inform_bought_item_translate_y = new Animated.Value(
+    this.inform_bought_item_translate_y_value
+  );
+
+  _start_anim_inform_bought_item_action = Animated.parallel([
+    Animated.timing(this.inform_bought_item_opacity, {
+      toValue: 1,
+      duration: this.inform_bought_item_duration,
+      easing: this.inform_bought_item_easing,
+      isInteraction: true,
+      useNativeDriver: true
+    }),
+
+    Animated.timing(this.inform_bought_item_translate_y, {
+      toValue: 0,
+      duration: this.inform_bought_item_duration,
+      easing: this.inform_bought_item_easing,
+      useNativeDriver: true
+    })
+  ]);
+
+  _end_anim_inform_bought_item_action = Animated.parallel([
+    Animated.timing(this.inform_bought_item_opacity, {
+      toValue: 0,
+      duration: this.inform_bought_item_duration,
+      easing: this.inform_bought_item_easing,
+      useNativeDriver: true
+    }),
+
+    Animated.timing(this.inform_bought_item_translate_y, {
+      toValue: this.inform_bought_item_translate_y_value,
+      duration: this.inform_bought_item_duration,
+      easing: this.inform_bought_item_easing,
+      useNativeDriver: true
+    })
+  ]);
+
   state = {
     can_choose: false,
-    should_display_premium_ad: false
+    should_display_premium_ad: false,
+
+    should_display_inform_bought_item: false,
+
+    balance_anim_value: this.props.balance,
+
+    new_balance: this.props.balance
   };
 
   _toggleShouldDisplayPremiumAd = () => {
@@ -376,9 +427,36 @@ class RewardHolder extends React.PureComponent {
         data_map.get("name"),
         data_map.get("value")
       );
+
+      let balance = parseInt(this.props.balance);
+
+      // If balance is enough to buy, indicate an bought animation
+      if (balance >= parseInt(data_map.get("value"))) {
+        // this._start_anim_inform_bought_item_action.stop();
+        // this._end_anim_inform_bought_item_action.stop();
+        this.setState(
+          {
+            should_display_inform_bought_item: true,
+            new_balance: balance - parseInt(data_map.get("value"))
+          },
+          () => {
+            // this._animateNumber(
+            //   balance,
+            //   balance - parseInt(data_map.get("value")),
+            //   1000
+            // );
+          }
+        );
+      }
     } else {
       this._toggleShouldDisplayPremiumAd();
     }
+  };
+
+  _toggleDisplayInformBoughtItem = () => {
+    this.setState(prevState => ({
+      should_display_inform_bought_item: !prevState.should_display_inform_bought_item
+    }));
   };
 
   _checkIfCanChoose = () => {
@@ -408,6 +486,54 @@ class RewardHolder extends React.PureComponent {
     );
   };
 
+  _startInformBoughtItemAnim = () => {
+    this._start_anim_inform_bought_item_action.start(() => {
+      setTimeout(() => {
+        this._endInformBoughtItemAnim();
+      }, 3000);
+    });
+  };
+
+  _endInformBoughtItemAnim = () => {
+    this._end_anim_inform_bought_item_action.start(() => {
+      this._toggleDisplayInformBoughtItem();
+    });
+  };
+
+  _animateNumber = (start, end, duration) => {
+    let range = end - start;
+    // no timer shorter than 50ms (not really visible any way)
+    let minTimer = 50;
+    // calc step time to show all intermediate values
+    let stepTime = Math.abs(Math.floor(duration / range));
+
+    // never go below minTimer
+    stepTime = Math.max(stepTime, minTimer);
+
+    // get current time and calculate desired end time
+    let startTime = new Date().getTime();
+    let endTime = startTime + duration;
+    let timer;
+
+    run = () => {
+      let now = new Date().getTime();
+      let remaining = Math.max((endTime - now) / duration, 0);
+      let value = Math.round(end - remaining * range);
+
+      this.setState(prevState => ({ balance_anim_value: value }));
+
+      if (value == end) {
+        this.setState({
+          should_display_inform_bought_item: false
+        });
+        clearInterval(timer);
+      }
+    };
+
+    timer = setInterval(run, stepTime);
+    run();
+  };
+
   componentDidMount() {
     this._checkIfCanChoose();
   }
@@ -415,6 +541,15 @@ class RewardHolder extends React.PureComponent {
   componentDidUpdate(prevProps, prevState) {
     if (this.props.account_plan !== prevProps.account_plan) {
       this._checkIfCanChoose();
+    }
+
+    if (
+      this.state.should_display_inform_bought_item !==
+      prevState.should_display_inform_bought_item
+    ) {
+      if (this.state.should_display_inform_bought_item) {
+        // this._startInformBoughtItemAnim();
+      }
     }
   }
 
@@ -491,6 +626,42 @@ class RewardHolder extends React.PureComponent {
             onPress={this._getReward}
           >
             <Text style={styles.reward_get_text}>Get</Text>
+
+            {this.state.should_display_inform_bought_item ? (
+              // <Animated.View
+              //   style={{
+              //     position: "absolute",
+              //     top: normalize(50, "height"),
+              //     justifyContent: "center",
+              //     alignItems: "center",
+              //     opacity: this.inform_bought_item_opacity,
+              //     transform: [
+              //       { translateY: this.inform_bought_item_translate_y }
+              //     ]
+              //   }}
+              // >
+              //   <Text style={styles.inform_bought_item_text}></Text>
+              // </Animated.View>
+
+              // <View
+              //   style={{
+              //     position: "absolute",
+              //     top: normalize(50, "height"),
+              //     justifyContent: "center",
+              //     alignItems: "center"
+              //   }}
+              // >
+              //   <Text>{this.state.balance_anim_value}</Text>
+              // </View>
+
+              <InformPurchaseAction
+                reward_name={this.props.data.get("name")}
+                balance={this.state.new_balance}
+                _toggleDisplayInformBoughtItem={
+                  this._toggleDisplayInformBoughtItem
+                }
+              />
+            ) : null}
           </TouchableOpacity>
         </View>
 

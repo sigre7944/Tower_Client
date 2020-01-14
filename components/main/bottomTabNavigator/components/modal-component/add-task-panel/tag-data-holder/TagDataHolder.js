@@ -1,6 +1,6 @@
 import React from "react";
 
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 
 import { styles } from "./styles/styles";
 import { Map, List } from "immutable";
@@ -41,6 +41,10 @@ export default class TagDataHolder extends React.PureComponent {
             categories={this.props.categories}
             priorities={this.props.priorities}
             currentAnnotation={this.props.currentAnnotation}
+            chooseCalenderOption={this.props.chooseCalenderOption}
+            chosenCategoryOption={this.props.chosenCategoryOption}
+            choosePriorityOption={this.props.choosePriorityOption}
+            chooseRepeatOption={this.props.chooseRepeatOption}
           />
         ) : (
           <>
@@ -50,6 +54,10 @@ export default class TagDataHolder extends React.PureComponent {
                 categories={this.props.categories}
                 priorities={this.props.priorities}
                 currentAnnotation={this.props.currentAnnotation}
+                chooseCalenderOption={this.props.chooseCalenderOption}
+                chosenCategoryOption={this.props.chosenCategoryOption}
+                choosePriorityOption={this.props.choosePriorityOption}
+                chooseRepeatOption={this.props.chooseRepeatOption}
               />
             ) : (
               <MonthTagDataList
@@ -57,6 +65,10 @@ export default class TagDataHolder extends React.PureComponent {
                 categories={this.props.categories}
                 priorities={this.props.priorities}
                 currentAnnotation={this.props.currentAnnotation}
+                chooseCalenderOption={this.props.chooseCalenderOption}
+                chosenCategoryOption={this.props.chosenCategoryOption}
+                choosePriorityOption={this.props.choosePriorityOption}
+                chooseRepeatOption={this.props.chooseRepeatOption}
               />
             )}
           </>
@@ -81,6 +93,10 @@ class DayTagDataList extends React.PureComponent {
               priorities={this.props.priorities}
               currentAnnotation={this.props.currentAnnotation}
               currentTask={this.props.currentTask}
+              chooseCalenderOption={this.props.chooseCalenderOption}
+              chosenCategoryOption={this.props.chosenCategoryOption}
+              choosePriorityOption={this.props.choosePriorityOption}
+              chooseRepeatOption={this.props.chooseRepeatOption}
             />
           ))}
       </>
@@ -146,21 +162,40 @@ class DayTagDataElement extends React.PureComponent {
 
       this.setState({
         render_component: (
-          <View style={styles.day_tag_container}>
+          <TouchableOpacity
+            style={styles.day_tag_container}
+            onPress={this.props.chooseCalenderOption}
+          >
             {calendar_icon(icon_size, icon_color)}
             <Text style={styles.day_tag_uncolorful_text}>
               {`${this.daysInWeekText[date.getDay()]} ${date.getDate()} ${
                 this.monthNames[date.getMonth()]
               } ${year}`}
             </Text>
-          </View>
+          </TouchableOpacity>
         )
       });
     } else if (property === "repeat") {
-      let end_type = Map(this.props.currentTask).getIn(["end", "type"]),
-        end_value = Map(this.props.currentTask).getIn(["end", "occurrence"]);
+      let end_type = Map(this.props.currentTask).getIn(["end", "type"]);
+      let occurrence_value = Map(this.props.currentTask).getIn([
+        "end",
+        "occurrence"
+      ]);
+      // let end_at_timestamp = new Date(
+      //   parseInt(Map(this.props.currentTask).getIn(["end", "endAt"]))
+      // ).getTime();
+      // let current_date = new Date(),
+      //   current_date_timestamp = new Date(
+      //     current_date.getFullYear(),
+      //     current_date.getMonth(),
+      //     current_date.getDate()
+      //   ).getTime();
 
-      if (end_type === "after" && end_value === 1) {
+      if (
+        end_type === "after" &&
+        occurrence_value <= 1
+        // (end_type === "on" && current_date_timestamp === end_at_timestamp)
+      ) {
         this.setState({
           render_component: null
         });
@@ -188,19 +223,25 @@ class DayTagDataElement extends React.PureComponent {
 
           this.setState({
             render_component: (
-              <View style={styles.day_tag_container}>
+              <TouchableOpacity
+                style={styles.day_tag_container}
+                onPress={this.props.chooseRepeatOption}
+              >
                 {repeat_icon(icon_size, icon_color)}
 
                 <Text style={styles.day_tag_uncolorful_text}>
                   {`every ${value} week ${string}`}
                 </Text>
-              </View>
+              </TouchableOpacity>
             )
           });
         } else {
           this.setState({
             render_component: (
-              <View style={styles.day_tag_container}>
+              <TouchableOpacity
+                style={styles.day_tag_container}
+                onPress={this.props.chooseRepeatOption}
+              >
                 {repeat_icon(icon_size, icon_color)}
 
                 <Text style={styles.day_tag_uncolorful_text}>
@@ -208,7 +249,7 @@ class DayTagDataElement extends React.PureComponent {
                     ? `every ${value} day`
                     : `every ${value} month`}
                 </Text>
-              </View>
+              </TouchableOpacity>
             )
           });
         }
@@ -219,10 +260,13 @@ class DayTagDataElement extends React.PureComponent {
       if (type === "never") {
         this.setState({
           render_component: (
-            <View style={styles.day_tag_container}>
+            <TouchableOpacity
+              style={styles.day_tag_container}
+              onPress={this.props.chooseRepeatOption}
+            >
               {end_icon(normalize(14, "width"), icon_color)}
               <Text style={styles.day_tag_uncolorful_text}>never</Text>
-            </View>
+            </TouchableOpacity>
           )
         });
       } else if (type === "on") {
@@ -230,7 +274,10 @@ class DayTagDataElement extends React.PureComponent {
 
         this.setState({
           render_component: (
-            <View style={styles.day_tag_container}>
+            <TouchableOpacity
+              style={styles.day_tag_container}
+              onPress={this.props.chooseRepeatOption}
+            >
               {end_icon(normalize(14, "width"), icon_color)}
 
               <Text style={styles.day_tag_uncolorful_text}>
@@ -240,7 +287,7 @@ class DayTagDataElement extends React.PureComponent {
                   this.monthNames[end_date.getMonth()]
                 } ${end_date.getFullYear()}`}
               </Text>
-            </View>
+            </TouchableOpacity>
           )
         });
       } else {
@@ -253,13 +300,16 @@ class DayTagDataElement extends React.PureComponent {
         } else {
           this.setState({
             render_component: (
-              <View style={styles.day_tag_container}>
+              <TouchableOpacity
+                style={styles.day_tag_container}
+                onPress={this.props.chooseRepeatOption}
+              >
                 {end_icon(normalize(14, "width"), icon_color)}
 
                 <Text style={styles.day_tag_uncolorful_text}>
                   {`after ${occurrences} occurrences`}
                 </Text>
-              </View>
+              </TouchableOpacity>
             )
           });
         }
@@ -272,13 +322,16 @@ class DayTagDataElement extends React.PureComponent {
 
       this.setState({
         render_component: (
-          <View style={styles.day_tag_container}>
+          <TouchableOpacity
+            style={styles.day_tag_container}
+            onPress={this.props.chosenCategoryOption}
+          >
             {category_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>
               {`${category_name}`}
             </Text>
-          </View>
+          </TouchableOpacity>
         )
       });
     } else if (property === "priority") {
@@ -289,35 +342,44 @@ class DayTagDataElement extends React.PureComponent {
 
       this.setState({
         render_component: (
-          <View style={styles.day_tag_container}>
+          <TouchableOpacity
+            style={styles.day_tag_container}
+            onPress={this.props.choosePriorityOption}
+          >
             {priority_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>{`${prio}`}</Text>
-          </View>
+          </TouchableOpacity>
         )
       });
     } else if (property === "reward") {
       let value = Map(this.props.data).get("value");
       this.setState({
         render_component: (
-          <View style={styles.day_tag_container}>
+          <TouchableOpacity
+            style={styles.day_tag_container}
+            onPress={this.props.choosePriorityOption}
+          >
             {reward_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>{`${value} pts`}</Text>
-          </View>
+          </TouchableOpacity>
         )
       });
     } else if (property === "goal") {
       let value = Map(this.props.data).get("max");
       this.setState({
         render_component: (
-          <View style={styles.day_tag_container}>
+          <TouchableOpacity
+            style={styles.day_tag_container}
+            onPress={this.props.chooseRepeatOption}
+          >
             {goal_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>
               {`${value} times per ${this.props.currentAnnotation}`}
             </Text>
-          </View>
+          </TouchableOpacity>
         )
       });
     }
@@ -343,6 +405,10 @@ class WeekTagDataList extends React.PureComponent {
               priorities={this.props.priorities}
               currentAnnotation={this.props.currentAnnotation}
               currentTask={this.props.currentTask}
+              chooseCalenderOption={this.props.chooseCalenderOption}
+              chosenCategoryOption={this.props.chosenCategoryOption}
+              choosePriorityOption={this.props.choosePriorityOption}
+              chooseRepeatOption={this.props.chooseRepeatOption}
             />
           ))}
       </>
@@ -425,13 +491,16 @@ class WeekTagDataElement extends React.PureComponent {
 
       this.setState({
         render_component: (
-          <View style={styles.day_tag_container}>
+          <TouchableOpacity
+            style={styles.day_tag_container}
+            onPress={this.props.chooseCalenderOption}
+          >
             {calendar_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>
               {`Week ${week} ${string}`}
             </Text>
-          </View>
+          </TouchableOpacity>
         )
       });
     } else if (property === "repeat") {
@@ -463,23 +532,29 @@ class WeekTagDataElement extends React.PureComponent {
 
           this.setState({
             render_component: (
-              <View style={styles.day_tag_container}>
+              <TouchableOpacity
+                style={styles.day_tag_container}
+                onPress={this.props.chooseRepeatOption}
+              >
                 {repeat_icon(icon_size, icon_color)}
 
                 <Text style={styles.day_tag_uncolorful_text}>{string}</Text>
-              </View>
+              </TouchableOpacity>
             )
           });
         } else {
           this.setState({
             render_component: (
-              <View style={styles.day_tag_container}>
+              <TouchableOpacity
+                style={styles.day_tag_container}
+                onPress={this.props.chooseRepeatOption}
+              >
                 {repeat_icon(icon_size, icon_color)}
 
                 <Text style={styles.day_tag_uncolorful_text}>
                   {`every ${value} week`}
                 </Text>
-              </View>
+              </TouchableOpacity>
             )
           });
         }
@@ -490,11 +565,14 @@ class WeekTagDataElement extends React.PureComponent {
       if (type === "never") {
         this.setState({
           render_component: (
-            <View style={styles.day_tag_container}>
+            <TouchableOpacity
+              style={styles.day_tag_container}
+              onPress={this.props.chooseRepeatOption}
+            >
               {end_icon(normalize(14, "width"), icon_color)}
 
               <Text style={styles.day_tag_uncolorful_text}>never</Text>
-            </View>
+            </TouchableOpacity>
           )
         });
       } else if (type === "on") {
@@ -502,7 +580,10 @@ class WeekTagDataElement extends React.PureComponent {
 
         this.setState({
           render_component: (
-            <View style={styles.day_tag_container}>
+            <TouchableOpacity
+              style={styles.day_tag_container}
+              onPress={this.props.chooseRepeatOption}
+            >
               {end_icon(normalize(14, "width"), icon_color)}
 
               <Text style={styles.day_tag_uncolorful_text}>
@@ -512,7 +593,7 @@ class WeekTagDataElement extends React.PureComponent {
                   this.monthNames[end_date.getMonth()]
                 } ${end_date.getFullYear()}`}
               </Text>
-            </View>
+            </TouchableOpacity>
           )
         });
       } else {
@@ -525,13 +606,16 @@ class WeekTagDataElement extends React.PureComponent {
         } else {
           this.setState({
             render_component: (
-              <View style={styles.day_tag_container}>
+              <TouchableOpacity
+                style={styles.day_tag_container}
+                onPress={this.props.chooseRepeatOption}
+              >
                 {end_icon(normalize(14, "width"), icon_color)}
 
                 <Text style={styles.day_tag_uncolorful_text}>
                   {`after ${occurrences} occurrences`}
                 </Text>
-              </View>
+              </TouchableOpacity>
             )
           });
         }
@@ -544,13 +628,16 @@ class WeekTagDataElement extends React.PureComponent {
 
       this.setState({
         render_component: (
-          <View style={styles.day_tag_container}>
+          <TouchableOpacity
+            style={styles.day_tag_container}
+            onPress={this.props.chosenCategoryOption}
+          >
             {category_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>
               {`${category_name}`}
             </Text>
-          </View>
+          </TouchableOpacity>
         )
       });
     } else if (property === "priority") {
@@ -561,35 +648,44 @@ class WeekTagDataElement extends React.PureComponent {
 
       this.setState({
         render_component: (
-          <View style={styles.day_tag_container}>
+          <TouchableOpacity
+            style={styles.day_tag_container}
+            onPress={this.props.choosePriorityOption}
+          >
             {priority_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>{`${prio}`}</Text>
-          </View>
+          </TouchableOpacity>
         )
       });
     } else if (property === "reward") {
       let value = Map(this.props.data).get("value");
       this.setState({
         render_component: (
-          <View style={styles.day_tag_container}>
+          <TouchableOpacity
+            style={styles.day_tag_container}
+            onPress={this.props.choosePriorityOption}
+          >
             {reward_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>{`${value} pts`}</Text>
-          </View>
+          </TouchableOpacity>
         )
       });
     } else if (property === "goal") {
       let value = Map(this.props.data).get("max");
       this.setState({
         render_component: (
-          <View style={styles.day_tag_container}>
+          <TouchableOpacity
+            style={styles.day_tag_container}
+            onPress={this.props.chooseRepeatOption}
+          >
             {goal_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>
               {`${value} times per ${this.props.currentAnnotation}`}
             </Text>
-          </View>
+          </TouchableOpacity>
         )
       });
     }
@@ -615,6 +711,10 @@ class MonthTagDataList extends React.PureComponent {
               priorities={this.props.priorities}
               currentAnnotation={this.props.currentAnnotation}
               currentTask={this.props.currentTask}
+              chooseCalenderOption={this.props.chooseCalenderOption}
+              chosenCategoryOption={this.props.chosenCategoryOption}
+              choosePriorityOption={this.props.choosePriorityOption}
+              chooseRepeatOption={this.props.chooseRepeatOption}
             />
           ))}
       </>
@@ -676,13 +776,16 @@ class MonthTagDataElement extends React.PureComponent {
 
       this.setState({
         render_component: (
-          <View style={styles.day_tag_container}>
+          <TouchableOpacity
+            style={styles.day_tag_container}
+            onPress={this.props.chooseCalenderOption}
+          >
             {calendar_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>
               {`${this.monthNames[month]} ${year}`}
             </Text>
-          </View>
+          </TouchableOpacity>
         )
       });
     } else if (property === "repeat") {
@@ -698,13 +801,16 @@ class MonthTagDataElement extends React.PureComponent {
 
         this.setState({
           render_component: (
-            <View style={styles.day_tag_container}>
+            <TouchableOpacity
+              style={styles.day_tag_container}
+              onPress={this.props.chooseRepeatOption}
+            >
               {repeat_icon(icon_size, icon_color)}
 
               <Text style={styles.day_tag_uncolorful_text}>
                 every {value} month
               </Text>
-            </View>
+            </TouchableOpacity>
           )
         });
       }
@@ -714,11 +820,14 @@ class MonthTagDataElement extends React.PureComponent {
       if (type === "never") {
         this.setState({
           render_component: (
-            <View style={styles.day_tag_container}>
+            <TouchableOpacity
+              style={styles.day_tag_container}
+              onPress={this.props.chooseRepeatOption}
+            >
               {end_icon(normalize(14, "width"), icon_color)}
 
               <Text style={styles.day_tag_uncolorful_text}>never</Text>
-            </View>
+            </TouchableOpacity>
           )
         });
       } else if (type === "on") {
@@ -726,7 +835,10 @@ class MonthTagDataElement extends React.PureComponent {
 
         this.setState({
           render_component: (
-            <View style={styles.day_tag_container}>
+            <TouchableOpacity
+              style={styles.day_tag_container}
+              onPress={this.props.chooseRepeatOption}
+            >
               {end_icon(normalize(14, "width"), icon_color)}
 
               <Text style={styles.day_tag_uncolorful_text}>
@@ -736,7 +848,7 @@ class MonthTagDataElement extends React.PureComponent {
                   this.monthNames[end_date.getMonth()]
                 } ${end_date.getFullYear()}`}
               </Text>
-            </View>
+            </TouchableOpacity>
           )
         });
       } else {
@@ -749,13 +861,16 @@ class MonthTagDataElement extends React.PureComponent {
         } else {
           this.setState({
             render_component: (
-              <View style={styles.day_tag_container}>
+              <TouchableOpacity
+                style={styles.day_tag_container}
+                onPress={this.props.chooseRepeatOption}
+              >
                 {end_icon(normalize(14, "width"), icon_color)}
 
                 <Text style={styles.day_tag_uncolorful_text}>
                   {`after ${occurrences} occurrences`}
                 </Text>
-              </View>
+              </TouchableOpacity>
             )
           });
         }
@@ -768,13 +883,16 @@ class MonthTagDataElement extends React.PureComponent {
 
       this.setState({
         render_component: (
-          <View style={styles.day_tag_container}>
+          <TouchableOpacity
+            style={styles.day_tag_container}
+            onPress={this.props.chosenCategoryOption}
+          >
             {category_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>
               {`${category_name}`}
             </Text>
-          </View>
+          </TouchableOpacity>
         )
       });
     } else if (property === "priority") {
@@ -785,35 +903,44 @@ class MonthTagDataElement extends React.PureComponent {
 
       this.setState({
         render_component: (
-          <View style={styles.day_tag_container}>
+          <TouchableOpacity
+            style={styles.day_tag_container}
+            onPress={this.props.choosePriorityOption}
+          >
             {priority_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>{`${prio}`}</Text>
-          </View>
+          </TouchableOpacity>
         )
       });
     } else if (property === "reward") {
       let value = Map(this.props.data).get("value");
       this.setState({
         render_component: (
-          <View style={styles.day_tag_container}>
+          <TouchableOpacity
+            style={styles.day_tag_container}
+            onPress={this.props.choosePriorityOption}
+          >
             {reward_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>{`${value} pts`}</Text>
-          </View>
+          </TouchableOpacity>
         )
       });
     } else if (property === "goal") {
       let value = Map(this.props.data).get("max");
       this.setState({
         render_component: (
-          <View style={styles.day_tag_container}>
+          <TouchableOpacity
+            style={styles.day_tag_container}
+            onPress={this.props.chooseRepeatOption}
+          >
             {goal_icon(icon_size, icon_color)}
 
             <Text style={styles.day_tag_uncolorful_text}>
               {`${value} times per ${this.props.currentAnnotation}`}
             </Text>
-          </View>
+          </TouchableOpacity>
         )
       });
     }

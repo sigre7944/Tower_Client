@@ -1,22 +1,24 @@
-import { connect } from 'react-redux'
-import { updateTaskSchedule } from './actions/updateThunk'
-import DayCalendar from './DayCalendar'
+import { connect } from "react-redux";
+import { updateTaskSchedule } from "./actions/updateThunk";
+import { returnCorrespondCreatedTask } from "../../../../../../../shared/actions/otherAction";
+import DayCalendar from "./DayCalendar";
 
 const mapStateToProps = (state, ownProps) => {
-    if (!ownProps.edit) {
-        return ({
-            task_data: state["currentDayTask"]
-        })
-    }
+  if (!ownProps.edit) {
+    return {
+      task_data: state["currentDayTask"]
+    };
+  }
 
-    return {}
-}
+  return {};
+};
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    updateTaskSchedule: (data) => dispatch(updateTaskSchedule(data))
-})
+  updateTaskSchedule: data => dispatch(updateTaskSchedule(data)),
+  returnCorrespondCreatedTask: data =>
+    dispatch(
+      returnCorrespondCreatedTask("RETURN_CORRESPOND_TO_CREATED_DAY_TASK", data)
+    )
+});
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(DayCalendar)
+export default connect(mapStateToProps, mapDispatchToProps)(DayCalendar);
