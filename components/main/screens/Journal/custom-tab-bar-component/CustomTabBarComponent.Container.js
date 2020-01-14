@@ -6,6 +6,10 @@ import {
 } from "../../../../shared/actions/otherAction";
 import CustomTabBarComponent from "./CustomTabBarComponent";
 
+const mapStateToProps = (state, ownProps) => ({
+  taskTypeCreated: state["taskTypeCreated"]
+});
+
 const mapDispatchToProps = (dispatch, ownProps) => ({
   updateCurrentChosenJournalType: data =>
     dispatch(updateCurrentChosenJournalType(data)),
@@ -13,4 +17,4 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   updateCurrentJournalTab: data => dispatch(updateCurrentJournalTab(data))
 });
 
-export default connect(null, mapDispatchToProps)(CustomTabBarComponent);
+export default connect(mapStateToProps, mapDispatchToProps)(CustomTabBarComponent);

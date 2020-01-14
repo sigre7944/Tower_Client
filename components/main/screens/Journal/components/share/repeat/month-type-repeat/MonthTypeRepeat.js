@@ -269,25 +269,25 @@ export default class WeekTypeRepeat extends React.PureComponent {
       value: parseInt(repeat_input_value)
     };
 
-    let sending_data = {
-      repeat_data: {
-        keyPath: [Map(this.props.edit_task_data).get("id"), "repeat"],
-        notSetValue: {},
-        updater: value => fromJS(repeat_value_data)
-      },
-      goal_data: {
-        keyPath: [Map(this.props.edit_task_data).get("id"), "goal", "max"],
-        notSetValue: parseInt(goal_value),
-        updater: value => parseInt(goal_value)
-      },
-      end_data: {
-        keyPath: [Map(this.props.edit_task_data).get("id"), "end"],
-        notSetValue: {},
-        updater: value => fromJS(end_value_data)
-      }
-    };
-
     if (this.props.edit) {
+      let sending_data = {
+        repeat_data: {
+          keyPath: [Map(this.props.edit_task_data).get("id"), "repeat"],
+          notSetValue: {},
+          updater: value => fromJS(repeat_value_data)
+        },
+        goal_data: {
+          keyPath: [Map(this.props.edit_task_data).get("id"), "goal", "max"],
+          notSetValue: parseInt(goal_value),
+          updater: value => parseInt(goal_value)
+        },
+        end_data: {
+          keyPath: [Map(this.props.edit_task_data).get("id"), "end"],
+          notSetValue: {},
+          updater: value => fromJS(end_value_data)
+        }
+      };
+
       this.props._editFieldData(
         sending_data.repeat_data.keyPath,
         sending_data.repeat_data.notSetValue,
@@ -304,6 +304,24 @@ export default class WeekTypeRepeat extends React.PureComponent {
         sending_data.end_data.updater
       );
     } else {
+      let sending_data = {
+        repeat_data: {
+          keyPath: ["repeat"],
+          notSetValue: {},
+          updater: value => fromJS(repeat_value_data)
+        },
+        goal_data: {
+          keyPath: ["goal", "max"],
+          notSetValue: parseInt(goal_value),
+          updater: value => parseInt(goal_value)
+        },
+        end_data: {
+          keyPath: ["end"],
+          notSetValue: {},
+          updater: value => fromJS(end_value_data)
+        }
+      };
+
       this.props.updateThunk(sending_data);
     }
 

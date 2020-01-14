@@ -150,11 +150,21 @@ export default class MonthFlatlist extends React.PureComponent {
   _initialUpdateWithStartIndex = () => {
     let current = new Date();
 
+    let month = current.getMonth();
+    let year = current.getFullYear();
+
+    let chosen_month_date_data = Map(this.props.chosenDateData);
+
+    if (
+      chosen_month_date_data.has("month") &&
+      chosen_month_date_data.has("year")
+    ) {
+      month = chosen_month_date_data.get("month");
+      year = chosen_month_date_data.get("year");
+    }
+
     this.month_data.every((data, index) => {
-      if (
-        data.month === current.getMonth() &&
-        data.year === current.getFullYear()
-      ) {
+      if (data.month === month && data.year === year) {
         this.start_index = index;
 
         this.start_month = data.month;
@@ -186,9 +196,25 @@ export default class MonthFlatlist extends React.PureComponent {
     }
   };
 
+  _goToMonthAccordingToCreatedTask = () => {
+    let correspond_to_create_month_task = Map(
+      this.props.correspondToCreatedMonthTask
+    );
+
+    let month = correspond_to_create_month_task.get("month"),
+      year = correspond_to_create_month_task.get("year");
+
+    this.chooseMonth(this._findMonthIndex(month, year));
+    this.props.returnCorrespondCreatedTask(null);
+  };
+
   componentDidMount() {
     this.initializeMonthData();
     this._initialUpdateWithStartIndex();
+
+    if (this.props.correspondToCreatedMonthTask) {
+      this._goToMonthAccordingToCreatedTask();
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -210,16 +236,10 @@ export default class MonthFlatlist extends React.PureComponent {
 
     if (
       this.props.correspondToCreatedMonthTask !==
-      prevProps.correspondToCreatedMonthTask
+        prevProps.correspondToCreatedMonthTask &&
+      this.props.correspondToCreatedMonthTask !== null
     ) {
-      let correspond_to_create_month_task = Map(
-        this.props.correspondToCreatedMonthTask
-      );
-
-      let month = correspond_to_create_month_task.get("month"),
-        year = correspond_to_create_month_task.get("year");
-
-      this.chooseMonth(this._findMonthIndex(month, year));
+      this._goToMonthAccordingToCreatedTask();
     }
   }
 

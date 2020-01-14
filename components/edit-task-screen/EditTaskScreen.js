@@ -14,6 +14,8 @@ import {
 import { styles } from "./styles/styles";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import IoniconsIcon from "react-native-vector-icons/Ionicons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { normalize } from "../shared/helpers";
 
 import { Map, OrderedMap, List, getIn, hasIn, fromJS } from "immutable";
@@ -24,6 +26,7 @@ import Calendar from "../main/screens/Journal/components/share/calendar/Calendar
 import Category from "../main/screens/Journal/components/share/category/Category.Container";
 import Priority from "../main/screens/Journal/components/share/priority/Priority.Container";
 import Repeat from "../main/screens/Journal/components/share/repeat/Repeat";
+import DeleteModal from "./components/delete-modal/DeleteModal.Container";
 
 const window_width = Dimensions.get("window").width;
 
@@ -34,34 +37,7 @@ export default class EditTaskScreen extends React.PureComponent {
     };
   };
 
-  month_names = [
-    "January",
-    "Febuary",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-  ];
-  short_month_names = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec"
-  ];
+  agree_to_delete = false;
 
   state = {
     edit_task: Map(),
@@ -74,19 +50,77 @@ export default class EditTaskScreen extends React.PureComponent {
     should_display_category: false,
     should_display_repeat: false,
     should_display_priority: false,
-    should_call_end_animation_from_parent: false
+    should_call_end_animation_from_parent: false,
+
+    should_display_delete_modal: false
   };
 
   _onEditTitleChange = e => {
-    this.setState({
-      edit_title: e.nativeEvent.text
-    });
+    this.setState(
+      {
+        edit_title: e.nativeEvent.text
+      },
+      () => {
+        let { edit_task_type } = this.state;
+
+        if (edit_task_type === "day") {
+          this.props.updateTask(
+            "UPDATE_DAY_TASK",
+            [Map(this.state.edit_task).get("id"), "title"],
+            "",
+            v => this.state.edit_title
+          );
+        } else if (edit_task_type === "week") {
+          this.props.updateTask(
+            "UPDATE_WEEK_TASK",
+            [Map(this.state.edit_task).get("id"), "title"],
+            "",
+            v => this.state.edit_title
+          );
+        } else {
+          this.props.updateTask(
+            "UPDATE_MONTH_TASK",
+            [Map(this.state.edit_task).get("id"), "title"],
+            "",
+            v => this.state.edit_title
+          );
+        }
+      }
+    );
   };
 
   _onEditDescriptionChange = e => {
-    this.setState({
-      edit_description: e.nativeEvent.text
-    });
+    this.setState(
+      {
+        edit_description: e.nativeEvent.text
+      },
+      () => {
+        let { edit_task_type } = this.state;
+
+        if (edit_task_type === "day") {
+          this.props.updateTask(
+            "UPDATE_DAY_TASK",
+            [Map(this.state.edit_task).get("id"), "description"],
+            "",
+            v => this.state.edit_description
+          );
+        } else if (edit_task_type === "week") {
+          this.props.updateTask(
+            "UPDATE_WEEK_TASK",
+            [Map(this.state.edit_task).get("id"), "description"],
+            "",
+            v => this.state.edit_description
+          );
+        } else {
+          this.props.updateTask(
+            "UPDATE_MONTH_TASK",
+            [Map(this.state.edit_task).get("id"), "description"],
+            "",
+            v => this.state.edit_description
+          );
+        }
+      }
+    );
   };
 
   _chooseCalendarOption = () => {
@@ -314,6 +348,16 @@ export default class EditTaskScreen extends React.PureComponent {
     });
   };
 
+  _toggleDelete = () => {
+    this.setState(prevState => ({
+      should_display_delete_modal: !prevState.should_display_delete_modal
+    }));
+  };
+
+  _agreeDelete = () => {
+    this.agree_to_delete = true;
+  };
+
   componentDidMount() {
     this._updateEdittingTask();
   }
@@ -324,8 +368,15 @@ export default class EditTaskScreen extends React.PureComponent {
       this.props.week_tasks !== prevProps.week_tasks ||
       this.props.month_tasks !== prevProps.month_tasks
     ) {
-      console.log(true);
       this._updateEdittingTask();
+    }
+
+    if (
+      this.state.should_display_delete_modal !==
+        prevState.should_display_delete_modal &&
+      this.agree_to_delete
+    ) {
+      this._goBack();
     }
   }
 
@@ -367,12 +418,12 @@ export default class EditTaskScreen extends React.PureComponent {
 
             <TouchableOpacity
               style={styles.end_icon_container}
-              onPress={this._save}
+              onPress={this._toggleDelete}
             >
-              <FeatherIcon
-                name="check"
-                size={normalize(30, "width")}
-                color="#05838B"
+              <FontAwesomeIcon
+                icon={faTrashAlt}
+                size={normalize(20, "width")}
+                color="#EB5757"
               />
             </TouchableOpacity>
           </View>
@@ -380,9 +431,7 @@ export default class EditTaskScreen extends React.PureComponent {
 
         <ScrollView
           style={{
-            // paddingHorizontal: normalize(22, "width")
-            flex: 1,
-            overflow: "scroll"
+            flex: 1
           }}
         >
           <View
@@ -582,6 +631,18 @@ export default class EditTaskScreen extends React.PureComponent {
               />
             </View>
           </Modal>
+        ) : null}
+
+        {this.state.should_display_delete_modal ? (
+          <DeleteModal
+            _toggleDelete={this._toggleDelete}
+            _agreeDelete={this._agreeDelete}
+            task_data={this.state.edit_task}
+            type={this.state.edit_task_type}
+            chosen_date_data={Map(this.props.editTaskId).get(
+              "chosen_date_data"
+            )}
+          />
         ) : null}
       </View>
     );

@@ -80,6 +80,21 @@ export default class WeekCalendar extends React.Component {
             });
 
         this.props._editFieldData(keyPath, notSetValue, updater);
+        this.props.returnCorrespondCreatedTask(
+          fromJS({
+            monday: this.chosen_monday,
+            sunday: this.chosen_sunday,
+            week: this.chosen_week,
+            start_month: this.chosen_start_month,
+            end_month: this.chosen_end_month,
+            chosen_month: this.chosen_selected_month,
+            start_year: this.chosen_start_year,
+            end_year: this.chosen_end_year,
+            chosen_year: this.chosen_selected_year,
+            start_noWeekInMonth: this.chosen_start_noWeekInMonth,
+            end_noWeekInMonth: this.chosen_end_noWeekInMonth
+          })
+        );
       } else if (this.props.edit_multiple) {
         this.props._editMultipleFieldData({
           monday: this.chosen_monday,
@@ -94,6 +109,22 @@ export default class WeekCalendar extends React.Component {
           start_noWeekInMonth: this.chosen_start_noWeekInMonth,
           end_noWeekInMonth: this.chosen_end_noWeekInMonth
         });
+
+        this.props.returnCorrespondCreatedTask(
+          fromJS({
+            monday: this.chosen_monday,
+            sunday: this.chosen_sunday,
+            week: this.chosen_week,
+            start_month: this.chosen_start_month,
+            end_month: this.chosen_end_month,
+            chosen_month: this.chosen_selected_month,
+            start_year: this.chosen_start_year,
+            end_year: this.chosen_end_year,
+            chosen_year: this.chosen_selected_year,
+            start_noWeekInMonth: this.chosen_start_noWeekInMonth,
+            end_noWeekInMonth: this.chosen_end_noWeekInMonth
+          })
+        );
       } else {
         this._updateTask(
           this.chosen_monday,

@@ -257,16 +257,24 @@ class BottomConfirmElement extends React.PureComponent {
 
           return_correspond_created_task: {
             type: "RETURN_CORRESPOND_TO_CREATED_DAY_TASK",
-            data: new_task_with_id.get("schedule")
+            data: new_task_with_id.get("schedule").toMap()
+          },
+
+          update_task_type_created: {
+            data: "day"
           }
         };
 
         if (this.props.currentAnnotation === "week") {
           sending_obj.return_correspond_created_task.type =
             "RETURN_CORRESPOND_TO_CREATED_WEEK_TASK";
+
+          sending_obj.update_task_type_created.data = "week";
         } else if (this.props.currentAnnotation === "month") {
           sending_obj.return_correspond_created_task.type =
             "RETURN_CORRESPOND_TO_CREATED_MONTH_TASK";
+
+          sending_obj.update_task_type_created.data = "month";
         }
 
         this.props.addTaskThunk(sending_obj);

@@ -71,3 +71,8 @@ export const updateCurrentJournalTab = data => ({
   type: "UPDATE_CURRENT_JOURNAL_TAB",
   data
 });
+
+export const updateTaskTypeCreated = data => ({
+  type: "UPDATE_TASK_TYPE_CREATED",
+  data
+});

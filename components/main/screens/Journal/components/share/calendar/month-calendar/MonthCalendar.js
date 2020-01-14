@@ -52,11 +52,25 @@ export default class MonthCalendar extends React.Component {
             });
 
         this.props._editFieldData(keyPath, notSetValue, updater);
+
+        this.props.returnCorrespondCreatedTask(
+          fromJS({
+            month: this.chosen_month,
+            year: this.chosen_year
+          })
+        );
       } else if (this.props.edit_multiple) {
         this.props._editMultipleFieldData({
           month: this.chosen_month,
           year: this.chosen_year
         });
+
+        this.props.returnCorrespondCreatedTask(
+          fromJS({
+            month: this.chosen_month,
+            year: this.chosen_year
+          })
+        );
       } else {
         this._updateTask(this.chosen_month, this.chosen_year);
       }

@@ -54,12 +54,28 @@ export default class DayCalendar extends React.PureComponent {
             });
 
         this.props._editFieldData(keyPath, notSetValue, updater);
+        
+        this.props.returnCorrespondCreatedTask(
+          fromJS({
+            day: this.chosen_day,
+            month: this.chosen_month,
+            year: this.chosen_year
+          })
+        );
       } else if (this.props.edit_multiple) {
         this.props._editMultipleFieldData({
           day: this.chosen_day,
           month: this.chosen_month,
           year: this.chosen_year
         });
+
+        this.props.returnCorrespondCreatedTask(
+          fromJS({
+            day: this.chosen_day,
+            month: this.chosen_month,
+            year: this.chosen_year
+          })
+        );
       } else {
         this._updateTask(this.chosen_day, this.chosen_month, this.chosen_year);
       }

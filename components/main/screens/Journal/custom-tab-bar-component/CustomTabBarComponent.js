@@ -178,6 +178,18 @@ export default class CustomTabBarComponent extends React.PureComponent {
     this._chooseDayTab();
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.taskTypeCreated !== prevProps.taskTypeCreated) {
+      if (this.props.taskTypeCreated === "day") {
+        this._chooseDayTab();
+      } else if (this.props.taskTypeCreated === "week") {
+        this._chooseWeekTab();
+      } else {
+        this._chooseMonthTab();
+      }
+    }
+  }
+
   render() {
     return (
       <View

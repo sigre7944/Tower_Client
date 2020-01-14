@@ -219,30 +219,40 @@ export const generalSettings = (state = initial_general_settings, action) => {
   }
 };
 
-export const correspondToCreatedDayTask = (state = Map(), action) => {
+export const correspondToCreatedDayTask = (state = null, action) => {
   switch (action.type) {
     case "RETURN_CORRESPOND_TO_CREATED_DAY_TASK":
-      return action.data.toMap();
+      return action.data;
 
     default:
       return state;
   }
 };
 
-export const correspondToCreatedWeekTask = (state = Map(), action) => {
+export const correspondToCreatedWeekTask = (state = null, action) => {
   switch (action.type) {
     case "RETURN_CORRESPOND_TO_CREATED_WEEK_TASK":
-      return action.data.toMap();
+      return action.data;
 
     default:
       return state;
   }
 };
 
-export const correspondToCreatedMonthTask = (state = Map(), action) => {
+export const correspondToCreatedMonthTask = (state = null, action) => {
   switch (action.type) {
     case "RETURN_CORRESPOND_TO_CREATED_MONTH_TASK":
-      return action.data.toMap();
+      return action.data;
+
+    default:
+      return state;
+  }
+};
+
+export const taskTypeCreated = (state = "day", action) => {
+  switch (action.type) {
+    case "UPDATE_TASK_TYPE_CREATED":
+      return action.data;
 
     default:
       return state;

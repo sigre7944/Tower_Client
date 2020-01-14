@@ -159,9 +159,20 @@ export default class DayFlatlist extends React.PureComponent {
   };
 
   _initialUpdateWithStartIndex = () => {
+    let chosen_day_date_data = Map(this.props.chosenDateData);
     let day = new Date().getDate(),
       month = new Date().getMonth(),
       year = new Date().getFullYear();
+
+    if (
+      chosen_day_date_data.has("day") &&
+      chosen_day_date_data.has("month") &&
+      chosen_day_date_data.has("year")
+    ) {
+      day = chosen_day_date_data.get("day");
+      month = chosen_day_date_data.get("month");
+      year = chosen_day_date_data.get("year");
+    }
 
     this.day_data.every((data, index) => {
       if (data.day === day && data.month === month && data.year === year) {
@@ -178,10 +189,27 @@ export default class DayFlatlist extends React.PureComponent {
     });
   };
 
+  _goToDateAccordingToCreatedTask = () => {
+    let correspond_to_create_day_task = Map(
+      this.props.correspondToCreatedDayTask
+    );
+    let day = correspond_to_create_day_task.get("day");
+    let month = correspond_to_create_day_task.get("month");
+    let year = correspond_to_create_day_task.get("year");
+    let day_index = this._findDayIndex(day, month, year);
+
+    this.chooseDay(day_index);
+    this.props.returnCorrespondCreatedTask(null);
+  };
+
   componentDidMount() {
     this.initializeDayData();
 
     this._initialUpdateWithStartIndex();
+
+    if (this.props.correspondToCreatedDayTask) {
+      this._goToDateAccordingToCreatedTask();
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -208,17 +236,10 @@ export default class DayFlatlist extends React.PureComponent {
 
     if (
       this.props.correspondToCreatedDayTask !==
-      prevProps.correspondToCreatedDayTask
+        prevProps.correspondToCreatedDayTask &&
+      this.props.correspondToCreatedDayTask !== null
     ) {
-      let correspond_to_create_day_task = Map(
-        this.props.correspondToCreatedDayTask
-      );
-      let day = correspond_to_create_day_task.get("day");
-      let month = correspond_to_create_day_task.get("month");
-      let year = correspond_to_create_day_task.get("year");
-      let day_index = this._findDayIndex(day, month, year);
-
-      this.chooseDay(day_index);
+      this._goToDateAccordingToCreatedTask();
     }
   }
 

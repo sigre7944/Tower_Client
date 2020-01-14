@@ -2,7 +2,8 @@ import { batchActions } from "redux-batched-actions";
 import {
   updateTitle,
   updateDescription,
-  returnCorrespondCreatedTask
+  returnCorrespondCreatedTask,
+  updateTaskTypeCreated
 } from "../../../../../../../shared/actions/otherAction";
 import {
   updateTask,
@@ -16,7 +17,8 @@ export const addTaskThunk = ({
   category_data,
   reset_new_task_type,
   priority_data,
-  return_correspond_created_task
+  return_correspond_created_task,
+  update_task_type_created
 }) => (dispatch, getState) => {
   let actions_array = [
     updateTitle(""),
@@ -41,7 +43,8 @@ export const addTaskThunk = ({
     returnCorrespondCreatedTask(
       return_correspond_created_task.type,
       return_correspond_created_task.data
-    )
+    ),
+    updateTaskTypeCreated(update_task_type_created.data)
   ];
 
   dispatch(batchActions(actions_array));
