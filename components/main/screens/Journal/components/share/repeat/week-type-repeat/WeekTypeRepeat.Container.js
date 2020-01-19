@@ -4,7 +4,7 @@ import WeekTypeRepeat from './WeekTypeRepeat'
 import {updateThunk} from './actions/updateThunk'
 
 const mapStateToProps = (state) => ({
-    currentTask: state.get("currentWeekTask"),
+    currentTask: state["currentWeekTask"],
 })
 
 const mapDispatchToProps = (dispatch) => ({

@@ -6,26 +6,30 @@ const mapStateToProps = (state, ownProps) => {
     if (!ownProps.edit) {
         if (ownProps.currentAnnotation === "day") {
             return ({
-                task_data: state.get("currentDayTask"),
-                categories: state.get("categories")
+                task_data: state["currentDayTask"],
+                categories: state["categories"],
+                generalSettings: state["generalSettings"]
             })
         }
 
         else if (ownProps.currentAnnotation === "week") {
             return ({
-                task_data: state.get("currentWeekTask"),
-                categories: state.get("categories")
+                task_data: state["currentWeekTask"],
+                categories: state["categories"],
+                generalSettings: state["generalSettings"]
             })
         }
 
         return ({
-            task_data: state.get("currentMonthTask"),
-            categories: state.get("categories")
+            task_data: state["currentMonthTask"],
+            categories: state["categories"],
+            generalSettings: state["generalSettings"]
         })
     }
 
     return {
-        categories: state.get("categories")
+        categories: state["categories"],
+        generalSettings: state["generalSettings"]
     }
 }
 

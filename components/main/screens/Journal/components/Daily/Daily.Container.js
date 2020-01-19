@@ -1,19 +1,8 @@
-import { connect } from 'react-redux'
-import { changeRouteAction } from '../../../../../shared/actions/otherAction'
-import { updateHeaderText } from '../../../../../shared/actions/otherAction'
-import Daily from './Daily.Presentational'
-
-const mapStateToProps = (state) => ({
-    routeName: state.get("currentRoute"),
-})
-
+import { connect } from "react-redux";
+import Daily from "./Daily";
+import { updateGeneralSettings } from "../../../../../shared/actions/otherAction";
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    changeRouteAction: (routeName) => dispatch(changeRouteAction(routeName)),
-
-    updateHeaderText: (data) => dispatch(updateHeaderText(data))
-})
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Daily)
+  updateGeneralSettings: (keyPath, notSetValue, updater) =>
+    dispatch(updateGeneralSettings(keyPath, notSetValue, updater))
+});
+export default connect(null, mapDispatchToProps)(Daily);

@@ -1,31 +1,28 @@
-import { connect } from 'react-redux'
-import {
-    updateType
-} from '../../../../../../shared/actions/otherAction'
+import { connect } from "react-redux";
+import { updateType } from "../../../../../../shared/actions/otherAction";
 
-import TaskAnnotationTypeHolder from './TaskAnnotationTypeHolder'
+import TaskAnnotationTypeHolder from "./TaskAnnotationTypeHolder";
 
+const mapStateToProps = (state, ownProps) => ({
+  currentDayTask: state["currentDayTask"],
+  currentWeekTask: state["currentWeekTask"],
+  currentMonthTask: state["currentMonthTask"],
 
-const mapStateToProps = (state) => ({
-    currentDayTask: state.get("currentDayTask"),
-    currentWeekTask: state.get("currentWeekTask"),
-    currentMonthTask: state.get("currentMonthTask"),
+  categories: state["categories"],
+  priorities: state["priorities"],
 
-    categories: state.get("categories"),
-    priorities: state.get("priorities"),
-
-    addTaskDescription: state.get("addTaskDescription"),
-    addTaskTitle: state.get("addTaskTitle")
-})
-
+  addTaskDescription: state["addTaskDescription"],
+  addTaskTitle: state["addTaskTitle"],
+  currentJournalTab: state["currentJournalTab"]
+});
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    updateType: (type, keyPath, notSetValue, updater) => {
-        dispatch(updateType(type, keyPath, notSetValue, updater))
-    },
-})
+  updateType: (type, keyPath, notSetValue, updater) => {
+    dispatch(updateType(type, keyPath, notSetValue, updater));
+  }
+});
 
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(TaskAnnotationTypeHolder)
+  mapStateToProps,
+  mapDispatchToProps
+)(TaskAnnotationTypeHolder);
