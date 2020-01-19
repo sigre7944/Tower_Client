@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import RepeatValueHolder from './RepeatValueHolder'
 
 const mapStateToProps = (state) => ({
-    currentDayTask: state.get("currentDayTask"),
+    currentWeekTask: state["currentWeekTask"],
 })
 
 export default connect(

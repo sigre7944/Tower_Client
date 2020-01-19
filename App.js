@@ -1,211 +1,136 @@
-import React from 'react';
-import MainNavigator from './components/main/Main' //Main screen
-import { Dimensions, Animated, Easing } from 'react-native'
-import { createStackNavigator, createAppContainer, createDrawerNavigator } from 'react-navigation'
-import { createStore, applyMiddleware } from 'redux'
-import thunk from 'redux-thunk'
-import { batchDispatchMiddleware } from 'redux-batched-actions'
-import { Provider } from 'react-redux'
-import rootReducer from './reducers'
-import Drawer from './components/drawer/Drawer.Container'
-import Header from './components/main/header/Header.Container'
-import * as FileSystem from 'expo-file-system';
+import React from "react";
+import MainNavigator from "./components/main/Main"; //Main screen
+import { Dimensions, StatusBar, View } from "react-native";
+import {
+  createStackNavigator,
+  createAppContainer,
+  createDrawerNavigator
+} from "react-navigation";
+import { Provider } from "react-redux";
+import Drawer from "./components/drawer/Drawer.Container";
 
-import PurchaseHistory from './components/main/header/reward-purchase-history-tab/PurchaseHistory.Container'
+import PurchaseHistory from "./components/purchase-history-screen/PurchaseHistory.Container";
+import EditMultipleTasks from "./components/edit-multiple-tasks-screen/EditMultipleTasks.Container";
 
-import * as Font from 'expo-font'
+import SignInSignUpOptions from "./components/sign-in-sign-up-screen/SignInSignUpOptions";
+import SignInScreen from "./components/sign-in-screen/SignInScreen";
+import SignUpScreen from "./components/sign-up-screen/SignUpScreen";
+import SettingsAccountScreen from "./components/settings-account-screen/SettingsAccountScreen.Container";
 
-let categories = {},
-  currentTask = {},
-  cate_filePath = FileSystem.documentDirectory + "categories.json",
-  currentTask_filePath = FileSystem.documentDirectory + "currentTask.json"
+import EditTaskScreen from "./components/edit-task-screen/EditTaskScreen.Container";
+
+import { PersistGate } from "redux-persist/lib/integration/react";
+import { persistor, store } from "./store/index";
+import * as FileSystem from "expo-file-system";
+
+import * as firebase from "firebase";
+import "firebase/firestore";
+import { FIREBASE_CONFIG } from "./config/index";
+
+import { getStatusBarHeight } from "react-native-status-bar-height";
+
+firebase.initializeApp(FIREBASE_CONFIG);
+
+const STATUSBAR_HEIGHT = getStatusBarHeight();
 
 export default class App extends React.Component {
+  initialState = {};
 
-  initialState = {}
-
-  currentDate = new Date()
+  currentDate = new Date();
 
   state = {
-    store: undefined,
-    finished_loading_fonts: false
-  }
+    is_ready: false
+  };
 
-  loadCategoriesFromFile = async (filePath) => {
+  reset = async () => {
+    try {
+      let read_res = await FileSystem.readDirectoryAsync(
+        FileSystem.documentDirectory
+      );
 
-    let info = await FileSystem.getInfoAsync(filePath)
+      console.log(read_res);
+      let delete_res = await FileSystem.deleteAsync(
+        FileSystem.documentDirectory + "reduxPersist"
+      );
 
-    if (info.exists) {
-      let readData = await FileSystem.readAsStringAsync(filePath)
-
-      categories = JSON.parse(readData)
-
-      this.initialState = { ... this.initialState, ... { categories } }
-
+      console.log("delete");
+    } catch (err) {
+      console.log(err);
     }
+  };
 
-    else {
-      let writtenData = await FileSystem.writeAsStringAsync(
-        filePath,
-        JSON.stringify({
-          cate_0: {
-            name: "Inbox",
-            color: "red"
-          }
-        })
-      )
-
-      let readData = await FileSystem.readAsStringAsync(filePath)
-
-      categories = JSON.parse(readData)
-
-      this.initialState = { ... this.initialState, ... { categories } }
-
-    }
-  }
-
-  loadCurrentTaskFromFile = async (filePath) => {
-    let info = await FileSystem.getInfoAsync(filePath)
-
-    if (info.exists) {
-      let readData = await FileSystem.readAsStringAsync(filePath)
-
-      currentTask = JSON.parse(readData)
-
-      this.initialState = { ... this.initialState, ... { currentTask } }
-    }
-
-    else {
-      let writtenData = await FileSystem.writeAsStringAsync(
-        filePath,
-        JSON.stringify({
-          title: "",
-          description: "",
-          type: "day",
-          category: "cate_0",
-          schedule: {
-            year: this.currentDate.getFullYear(),
-            month: this.currentDate.getMonth(),
-            day: this.currentDate.getDate()
-          },
-          repeat: {
-            type: "daily",
-            interval: {
-              value: 86400 * 1000
-            }
-          },
-          end: {
-            type: "never"
-          },
-          priority: {
-            value: "pri_01",
-            reward: 0
-          },
-          goal: {
-            max: 1,
-            current: 0
-          }
-        })
-      )
-
-      let readData = await FileSystem.readAsStringAsync(filePath)
-
-      currentTask = JSON.parse(readData)
-
-      this.initialState = { ... this.initialState, ... { currentTask } }
-    }
-  }
-
-  InitializeLoading = async () => {
-    let results = await Promise.all([
-      this.loadCategoriesFromFile(cate_filePath),
-      this.loadCurrentTaskFromFile(currentTask_filePath)
-    ])
-
+  _setReady = () => {
     this.setState({
-      store: createStore(rootReducer)
-    })
-  }
-
-  loadFonts = async () => {
-    let finished_loading = await Font.loadAsync({
-      'sf-ui-display-light': require('./assets/fonts/sf-ui-display/sf-ui-display-light.otf'),
-      'sf-ui-display-medium': require('./assets/fonts/sf-ui-display/sf-ui-display-medium.otf')
-    })
-
-    this.setState({
-      finished_loading_fonts: true
-    })
-  }
+      is_ready: true
+    });
+  };
 
   componentDidMount() {
-    // this.InitializeLoading().catch(err => console.log(err))
-
-    this.loadFonts()
-
-    this.setState({
-      store: createStore(rootReducer, applyMiddleware(batchDispatchMiddleware, thunk))
-    })
+    // this.reset();
   }
 
   render() {
     return (
-      <>
-        {
-          this.state.finished_loading_fonts ?
-            <>
-              {this.state.store ?
-                <Provider store={this.state.store}>
-                  <AppContainer />
-                </Provider>
-
-                :
-
-                null
-              }
-            </>
-            :
-            null
-        }
-      </>
-
-    )
+      <View
+        style={{
+          flex: 1
+        }}
+      >
+        <View
+          style={{
+            height: STATUSBAR_HEIGHT,
+            backgroundColor: "#05838B"
+          }}
+        >
+          <StatusBar
+            translucent={false}
+            backgroundColor={"#05838B"}
+            barStyle={"light-content"}
+            animated={true}
+          />
+        </View>
+        <Provider store={store}>
+          {/* <AppContainer /> */}
+          <PersistGate persistor={persistor}>
+            <AppContainer />
+          </PersistGate>
+        </Provider>
+      </View>
+    );
   }
 }
 
-const ContentNavigator = createStackNavigator(
-  { //Stack navigator works as a history object in a web browser, which helps popping out in pushing in screen to proceed navigations
-    Main: MainNavigator,
-    PurchaseHistory: { screen: PurchaseHistory }
+const DrawerNavigator = createDrawerNavigator(
+  {
+    MainNavigator: MainNavigator
   },
   {
-    initialRouteName: "Main",
-    transitionConfig: () => ({
-      transitionSpec: {
-        duration: 0,
-        timing: Animated.timing,
-        easing: Easing.step0
-      }
-    }),
-    defaultNavigationOptions: ({ navigation }) => ({
-      header: <Header navigation={navigation} />
-    }),
+    contentComponent: Drawer,
+    drawerType: "front",
+    drawerWidth: Dimensions.get("window").width * 0.85,
+    overlayColor: "#BDBDBD",
+    minSwipeDistance: 10
   }
-)
+);
 
-const drawerNavigator = createDrawerNavigator({
-  ContentNavigator: ContentNavigator,
-}, {
-  drawerLockMode: 'locked-closed',
-  contentComponent: Drawer,
-  drawerType: 'slide',
-  drawerWidth: Dimensions.get("window").width * 0.80,
-  overlayColor: "gray"
-})
+const AppStackNavigator = createStackNavigator(
+  {
+    DrawerNavigator: {
+      screen: DrawerNavigator,
+      navigationOptions: { header: null }
+    },
+    PurchaseHistory: { screen: PurchaseHistory },
+    EditMultipleTasks: { screen: EditMultipleTasks },
+    SignInSignUp: { screen: SignInSignUpOptions },
+    SignInScreen: { screen: SignInScreen },
+    SignUpScreen: { screen: SignUpScreen },
+    SettingsAccountScreen: { screen: SettingsAccountScreen },
+    EditTaskScreen: { screen: EditTaskScreen }
+  },
+  {
+    initialRouteName: "DrawerNavigator",
+    headerMode: "screen"
+  }
+);
 
-const AppContainer = createAppContainer(drawerNavigator) //return a React component, which is to wrap the stack navigator 
-
-
-
-
-
+const AppContainer = createAppContainer(AppStackNavigator); //return a React component, which is to wrap the stack navigator

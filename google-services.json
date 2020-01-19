@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "722933801897",
+    "firebase_url": "https://quint-a7b04.firebaseio.com",
+    "project_id": "quint-a7b04",
+    "storage_bucket": "quint-a7b04.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:722933801897:android:485a1d9865003e4d1f1ab8",
+        "android_client_info": {
+          "package_name": "com.quint.expo.googlesignin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "722933801897-i6f69cgu7ebjofff2ia3bjcdb92em472.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsUg_Ujflax8iXtt2LiotARGa5hd-Kn8M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "722933801897-i6f69cgu7ebjofff2ia3bjcdb92em472.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "722933801897-rum0bm6ef6c4gki6k8lhi487416r0ise.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.quint.expo.googlesignin"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

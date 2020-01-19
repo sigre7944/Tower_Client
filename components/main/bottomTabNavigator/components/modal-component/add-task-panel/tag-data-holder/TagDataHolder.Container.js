@@ -5,28 +5,28 @@ import TagDataHolder from './TagDataHolder'
 const mapStateToProps = (state, ownProps) => {
     if (ownProps.currentAnnotation === "day") {
         return ({
-            currentTask: state.get("currentDayTask"),
+            currentTask: state["currentDayTask"],
 
-            categories: state.get("categories"),
-            priorities: state.get("priorities"),
+            categories: state["categories"],
+            priorities: state["priorities"],
         })
     }
 
     else if (ownProps.currentAnnotation === "week") {
         return ({
-            currentTask: state.get("currentWeekTask"),
+            currentTask: state["currentWeekTask"],
 
-            categories: state.get("categories"),
-            priorities: state.get("priorities"),
+            categories: state["categories"],
+            priorities: state["priorities"],
         })
     }
 
     else
         return ({
-            currentTask: state.get("currentMonthTask"),
+            currentTask: state["currentMonthTask"],
 
-            categories: state.get("categories"),
-            priorities: state.get("priorities"),
+            categories: state["categories"],
+            priorities: state["priorities"],
         })
 }
 

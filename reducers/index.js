@@ -1,90 +1,121 @@
-// import { combineReducers } from 'redux'
-import { combineReducers } from 'redux-immutable'
-import { priorities } from './priorityReducer'
+// import { combineReducers as immutableCombineReducers } from 'redux-immutable'
+import { combineReducers } from "redux";
+import { priorities } from "./priorityReducer";
+
+import { currentChosenCategory, categories } from "./categoryReducer";
 
 import {
-    currentChosenCategory,
-    categories
-} from './categoryReducer'
+  completed_day_tasks,
+  completed_week_tasks,
+  completed_month_tasks,
+  currentDayTask,
+  currentMonthTask,
+  currentWeekTask,
+  day_tasks,
+  month_tasks,
+  week_tasks,
+  editTaskId
+} from "./taskReducer";
 
 import {
-    completed_day_tasks,
-    completed_week_tasks,
-    completed_month_tasks,
-    currentDayTask,
-    currentMonthTask,
-    currentWeekTask,
-    day_tasks,
-    month_tasks,
-    week_tasks,
-} from './taskReducer'
+  addTaskDescription,
+  addTaskTitle,
+  currentAnnotation,
+  currentRoute,
+  currentWeekInMonth,
+  headerPressed,
+  headerText,
+  chosenDayDateData,
+  chosenWeekDateData,
+  chosenMonthDateData,
+  currentChosenJournalType,
+  sortSettings,
+  generalSettings,
+  correspondToCreatedDayTask,
+  correspondToCreatedMonthTask,
+  correspondToCreatedWeekTask,
+  currentJournalTab,
+  taskTypeCreated
+} from "./otherReducer";
 
 import {
-    addTaskDescription,
-    addTaskTitle,
-    currentAnnotation,
-    currentRoute,
-    currentWeekInMonth,
-    headerPressed,
-    headerText
-} from './otherReducer'
+  day_chart_stats,
+  month_chart_stats,
+  week_chart_stats,
+  year_chart_stats
+} from "./chartStatsReducer";
 
 import {
-    day_stats,
-    month_stats,
-    week_stats
-} from './statsReducer'
+  rewards,
+  balance,
+  main_reward,
+  purchase_history
+} from "./rewardReducer";
 
 import {
-    month_chart_stats,
-    week_chart_stats,
-    year_chart_stats
-} from './chartStatsReducer'
+  deleted_day_tasks,
+  deleted_week_tasks,
+  deleted_month_tasks
+} from "./deletedTasksReducer";
 
-import {
-    rewards,
-    balance,
-    main_reward,
-    purchase_history
-} from './rewardReducer'
+import {} from "immutable";
 
 const rootReducer = combineReducers({
-    currentRoute,
-    currentWeekInMonth,
+  currentRoute,
+  currentWeekInMonth,
 
-    day_tasks,
-    week_tasks,
-    month_tasks,
+  day_tasks,
+  week_tasks,
+  month_tasks,
 
-    completed_day_tasks,
-    completed_week_tasks,
-    completed_month_tasks,
+  completed_day_tasks,
+  completed_week_tasks,
+  completed_month_tasks,
 
-    categories,
-    priorities,
-    currentDayTask,
-    currentWeekTask,
-    currentMonthTask,
-    currentAnnotation,
-    headerText,
-    headerPressed,
+  categories,
+  priorities,
+  currentDayTask,
+  currentWeekTask,
+  currentMonthTask,
+  currentAnnotation,
+  headerText,
+  headerPressed,
 
-    addTaskDescription,
-    addTaskTitle,
-    currentChosenCategory,
+  addTaskDescription,
+  addTaskTitle,
+  currentChosenCategory,
 
-    day_stats,
-    month_stats,
-    week_stats,
+  day_chart_stats,
+  month_chart_stats,
+  week_chart_stats,
+  year_chart_stats,
 
-    month_chart_stats,
-    week_chart_stats,
-    year_chart_stats,
+  rewards,
+  balance,
+  main_reward,
+  purchase_history,
 
-    rewards,
-    balance,
-    main_reward,
-    purchase_history
-})
+  deleted_day_tasks,
+  deleted_week_tasks,
+  deleted_month_tasks,
 
-export default rootReducer
+  chosenDayDateData,
+  chosenWeekDateData,
+  chosenMonthDateData,
+  currentChosenJournalType,
+
+  sortSettings,
+  generalSettings,
+
+  correspondToCreatedDayTask,
+  correspondToCreatedMonthTask,
+  correspondToCreatedWeekTask,
+
+  currentJournalTab,
+
+  editTaskId,
+  
+  taskTypeCreated
+});
+
+export default rootReducer;

@@ -4,7 +4,7 @@ import DayTypeRepeat from './DayTypeRepeat'
 import {updateThunk} from './actions/updateThunk'
 
 const mapStateToProps = (state) => ({
-    currentTask: state.get("currentDayTask"),
+    currentTask: state["currentDayTask"],
 })
 
 const mapDispatchToProps = (dispatch) => ({

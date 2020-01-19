@@ -1,19 +1,20 @@
-import {connect} from 'react-redux'
-import {changeRouteAction} from '../../../shared/actions/otherAction'
-import CustomTabBarComponent from './CustomTabBarComponent'
+import { connect } from "react-redux";
+import {
+  updateCurrentChosenJournalType,
+  changeRouteAction,
+  updateCurrentJournalTab
+} from "../../../../shared/actions/otherAction";
+import CustomTabBarComponent from "./CustomTabBarComponent";
 
-const mapStateToProps = (state) => ({
-    currentRoute: state.get("currentRoute"),
-    day_tasks: state.get("day_tasks"),
-    week_tasks: state.get("week_tasks"),
-    month_tasks: state.get("month_tasks"),
-})
+const mapStateToProps = (state, ownProps) => ({
+  taskTypeCreated: state["taskTypeCreated"]
+});
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    changeRouteAction: (routeName) => dispatch(changeRouteAction(routeName))
-})
+  updateCurrentChosenJournalType: data =>
+    dispatch(updateCurrentChosenJournalType(data)),
+  changeRouteAction: routeName => dispatch(changeRouteAction(routeName)),
+  updateCurrentJournalTab: data => dispatch(updateCurrentJournalTab(data))
+});
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(CustomTabBarComponent)
+export default connect(mapStateToProps, mapDispatchToProps)(CustomTabBarComponent);

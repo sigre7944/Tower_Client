@@ -1,61 +1,30 @@
-import React from 'react';
-import {
-    View,
-    Text,
-    Dimensions,
-    ScrollView,
-    TouchableOpacity
-} from 'react-native';
+import React from "react";
+import { View, Text } from "react-native";
 
-import CRUDRewardSection from './crud-reward-section/CRUDRewardSection.Container'
-import BalanceHolder from './balance-holder/BalanceHolder.Container'
+import CRUDRewardSection from "./crud-reward-section/CRUDRewardSection.Container";
+import BalanceHolder from "./balance-holder/BalanceHolder.Container";
+
+import { normalize } from "../../../../../shared/helpers";
+import { styles } from "./styles/styles";
+
 export default class TrackingSection extends React.PureComponent {
+  render() {
+    return (
+      <View
+        style={{
+          paddingHorizontal: normalize(22, "width"),
+          paddingTop: normalize(32, "height"),
+          paddingBottom: normalize(64, "height")
+        }}
+      >
+        <BalanceHolder />
 
-    render() {
-        return (
-            <View
-                style={{
-                    backgroundColor: "white",
-                    shadowOffset: {
-                        width: 0,
-                        height: 0
-                    },
-                    shadowRadius: 8,
-                    shadowOpacity: 1,
-                    shadowColor: "rgba(0, 0, 0, 0.12)",
-                    paddingHorizontal: 22,
-                    paddingTop: 32,
-                    paddingBottom: 64,
-                }}
-            >
-                <BalanceHolder />
+        <View style={styles.separating_line}></View>
 
-                <View
-                    style={{
-                        flexDirection: "row",
-                        height: 1,
-                        backgroundColor: "rgba(0, 0, 0, 0.2)",
-                        marginTop: 22,
-                    }}
-                >
+        <Text style={styles.other_rewards_title}>Other rewards</Text>
 
-                </View>
-
-                <Text
-                    style={{
-                        color: "rgba(0, 0, 0, 0.87)",
-                        fontWeight: "500",
-                        fontSize: 20,
-                        lineHeight: 23,
-                        letterSpacing: -0.02,
-                        marginTop: 22,
-                    }}
-                >
-                    Other rewards
-                </Text>
-
-                <CRUDRewardSection />
-            </View>
-        )
-    }
+        <CRUDRewardSection navigation={this.props.navigation} />
+      </View>
+    );
+  }
 }

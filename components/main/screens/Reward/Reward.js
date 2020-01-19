@@ -1,54 +1,169 @@
-import React from 'react';
+import React from "react";
 
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  Keyboard,
-  Animated,
-  KeyboardAvoidingView
-} from 'react-native';
+import { View, FlatList, Image, Text, TouchableOpacity } from "react-native";
 
-import TrackingSection from './components/tracking-section/TrackingSection.Container'
-import StoreSection from './components/store-section/StoreSection'
+import TrackingSection from "./components/tracking-section/TrackingSection.Container";
+import StoreSection from "./components/store-section/StoreSection";
 
-export default class Reward extends React.Component {
+import RewardHeader from "./components/header/RewardHeader";
+
+import { plus_icon } from "../../../shared/icons";
+import { normalize } from "../../../shared/helpers";
+const icon_size = normalize(19, "width");
+const icon_color = "white";
+
+import { OrderedMap } from "immutable";
+
+import { styles } from "./styles/styles";
+
+import AddEditReward from "./components/store-section/crud-reward-section/add-edit-reward/AddEditReward.Container";
+
+const have_no_reward_1x = require("../../../../assets/pngs/have_no_reward_1x.png");
+
+export default class Reward extends React.PureComponent {
+  static navigationOptions = ({ navigation, navigationOptions }) => {
+    return {
+      header: <RewardHeader navigation={navigation} />,
+      swipeEnabled: false
+    };
+  };
+
+  state = {
+    data: [],
+    should_flatlist_update: 0,
+    should_display_no_rewards_svg: true,
+
+    should_display_add_new_reward_modal: false
+  };
+
+  _keyExtractory = (item, index) => `reward-${item.id}-holder`;
+
+  _renderItem = ({ item, index }) => {
+    if (item.id === "tracking-main-reward") {
+      return <TrackingSection navigation={this.props.navigation} />;
+    }
+
+    return <StoreSection navigation={this.props.navigation} />;
+  };
+
+  _checkIfThereIsAnyRewards = () => {
+    let rewards_map = OrderedMap(this.props.rewards);
+
+    if (rewards_map.size === 0) {
+      return true;
+    }
+    return false;
+  };
+
+  _toggleShouldDisplayNewRewardModal = () => {
+    this.setState(prevState => ({
+      should_display_add_new_reward_modal: !prevState.should_display_add_new_reward_modal
+    }));
+  };
 
   componentDidMount() {
     const didFocusScreen = this.props.navigation.addListener(
-      'didFocus',
+      "didFocus",
       payload => {
-        this.props.changeRouteAction(payload.state.routeName)
+        this.props.changeRouteAction(payload.state.routeName);
       }
-    )
+    );
 
-    // const willFocusScreen = this.props.navigation.addListener(
-    //   'willFocus',
-    //   payload => {
-    //     this.props.changeRouteAction(payload.state.routeName)
-    //   }
-    // )
+    let data = [];
+
+    data.push({
+      id: "tracking-main-reward"
+    });
+    data.push({
+      id: "balance-store-section"
+    });
+
+    this.setState({
+      data,
+      should_display_no_rewards_svg: this._checkIfThereIsAnyRewards()
+    });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.rewards !== prevProps.rewards) {
+      this.setState(prevState => ({
+        should_display_no_rewards_svg: this._checkIfThereIsAnyRewards(),
+        should_flatlist_update: prevState.should_flatlist_update + 1
+      }));
+    }
   }
 
   render() {
     return (
-      <ScrollView
+      <View
         style={{
-          backgroundColor: "#F2F2F2",
+          backgroundColor: "white",
+          flex: 1
         }}
       >
-        {/* Tracking section */}
-        <TrackingSection
-        />
+        {this.state.should_display_no_rewards_svg ? (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          >
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                height: normalize(172, "height")
+              }}
+            >
+              <Image
+                source={have_no_reward_1x}
+                resizeMode="contain"
+                style={{
+                  flex: 1
+                }}
+              />
+            </View>
 
-        {/* Store Section */}
-        <StoreSection
-        />
-      </ScrollView>
+            <View
+              style={{
+                marginTop: normalize(48, "height"),
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+            >
+              <Text style={styles.informing_text}>
+                Uh oh! - you don't have any reward.
+              </Text>
+
+              <Text style={styles.motivating_text}>
+                Add one to stay motivated!
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              style={styles.add_reward_button_container}
+              onPress={this._toggleShouldDisplayNewRewardModal}
+            >
+              {plus_icon(icon_size, icon_color)}
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <FlatList
+            keyExtractor={this._keyExtractory}
+            renderItem={this._renderItem}
+            data={this.state.data}
+            extraData={this.state.should_flatlist_update}
+          />
+        )}
+
+        {this.state.should_display_add_new_reward_modal ? (
+          <AddEditReward
+            dismissAction={this._toggleShouldDisplayNewRewardModal}
+            navigation={this.props.navigation}
+          />
+        ) : null}
+      </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-
-})
